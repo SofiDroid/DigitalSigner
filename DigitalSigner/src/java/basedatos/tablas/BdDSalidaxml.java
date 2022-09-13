@@ -9,27 +9,29 @@ import java.util.HashMap;
  *
  * @author ihuegal
  */
-public class BdTAutoridad extends OperacionSQL implements InterfazDAO {
+public class BdDSalidaxml extends OperacionSQL implements InterfazDAO {
     
-    protected Integer idAutoridad;
-    protected String coAutoridad;
-    protected String dsAutoridad;
-    protected Integer idUnidad;
+    protected Integer idSalidaxml;
+    protected byte[] blSalidaxml;
+    protected Integer idDocumento;
+    protected Integer idSituacionxml;
+    protected String dsRuta;
     protected Date feAlta;
     protected Date feDesactivo;
     protected String usuariobd;
     protected Date tstbd;
 
-    public BdTAutoridad() {
+    public BdDSalidaxml() {
         // NADA
     }
 
     @Override
     public Object getClaseMapeada(HashMap<String,Object> bld) throws Exception {
-        recuperaValorCampo(this, "idAutoridad", "ID_AUTORIDAD", bld);
-        recuperaValorCampo(this, "coAutoridad", "CO_AUTORIDAD", bld);
-        recuperaValorCampo(this, "dsAutoridad", "DS_AUTORIDAD", bld);
-        recuperaValorCampo(this, "idUnidad", "ID_UNIDAD", bld);
+        recuperaValorCampo(this, "idSalidaxml", "ID_SALIDAXML", bld);
+        recuperaValorCampo(this, "blSalidaxml", "BL_SALIDAXML", bld);
+        recuperaValorCampo(this, "idDocumento", "ID_DOCUMENTO", bld);
+        recuperaValorCampo(this, "idSituacionxml", "ID_SITUACIONXML", bld);
+        recuperaValorCampo(this, "dsRuta", "DS_RUTA", bld);
         recuperaValorCampo(this, "feAlta", "FE_ALTA", bld);
         recuperaValorCampo(this, "feDesactivo", "FE_DESACTIVO", bld);
         recuperaValorCampo(this, "usuariobd", "USUARIOBD", bld);
@@ -40,27 +42,28 @@ public class BdTAutoridad extends OperacionSQL implements InterfazDAO {
     
     public String getSelectFiltro() {
         StringBuilder sb_sql = new StringBuilder("SELECT ");
-        sb_sql.append("ID_AUTORIDAD");
-        sb_sql.append(",CO_AUTORIDAD");
-        sb_sql.append(",DS_AUTORIDAD");
-        sb_sql.append(",ID_UNIDAD");
+        sb_sql.append("ID_SALIDAXML");
+        sb_sql.append(",BL_SALIDAXML");
+        sb_sql.append(",ID_DOCUMENTO");
+        sb_sql.append(",ID_SITUACIONXML");
+        sb_sql.append(",DS_RUTA");
         sb_sql.append(",FE_ALTA");
         sb_sql.append(",FE_DESACTIVO");
         sb_sql.append(",USUARIOBD");
         sb_sql.append(",TSTBD");
         
-        sb_sql.append(" FROM BD_T_AUTORIDAD WHERE 1=1 ");
-        if (idAutoridad != null) {
-            sb_sql.append(" AND ID_AUTORIDAD = :ID_AUTORIDAD");
+        sb_sql.append(" FROM BD_D_SALIDAXML WHERE 1=1 ");
+        if (idSalidaxml != null) {
+            sb_sql.append(" AND ID_SALIDAXML = :ID_SALIDAXML");
         }
-        if (coAutoridad != null) {
-            sb_sql.append(" AND UPPER(CO_AUTORIDAD) = UPPER(:CO_AUTORIDAD)");
+        if (idDocumento != null) {
+            sb_sql.append(" AND ID_DOCUMENTO = :ID_DOCUMENTO");
         }
-        if (dsAutoridad != null) {
-            sb_sql.append(" AND UPPER(DS_AUTORIDAD) = UPPER(:DS_AUTORIDAD)");
+        if (idSituacionxml != null) {
+            sb_sql.append(" AND ID_SITUACIONXML = :ID_SITUACIONXML");
         }
-        if (idUnidad != null) {
-            sb_sql.append(" AND ID_UNIDAD = :ID_UNIDAD");
+        if (dsRuta != null) {
+            sb_sql.append(" AND UPPER(DS_RUTA) = UPPER(:DS_RUTA)");
         }
         if (feAlta != null) {
             sb_sql.append(" AND (FE_ALTA <= :FE_ALTA)");
@@ -78,36 +81,44 @@ public class BdTAutoridad extends OperacionSQL implements InterfazDAO {
         return sb_sql.toString();
     }
 
-    public Integer getIdAutoridad() {
-        return idAutoridad;
+    public Integer getIdSalidaxml() {
+        return idSalidaxml;
     }
 
-    public void setIdAutoridad(Integer idAutoridad) {
-        this.idAutoridad = idAutoridad;
+    public void setIdSalidaxml(Integer idSalidaxml) {
+        this.idSalidaxml = idSalidaxml;
     }
 
-    public String getCoAutoridad() {
-        return coAutoridad;
+    public byte[] getBlSalidaxml() {
+        return blSalidaxml;
     }
 
-    public void setCoAutoridad(String coAutoridad) {
-        this.coAutoridad = coAutoridad;
+    public void setBlSalidaxml(byte[] blSalidaxml) {
+        this.blSalidaxml = blSalidaxml;
     }
 
-    public String getDsAutoridad() {
-        return dsAutoridad;
+    public Integer getIdDocumento() {
+        return idDocumento;
     }
 
-    public void setDsAutoridad(String dsAutoridad) {
-        this.dsAutoridad = dsAutoridad;
+    public void setIdDocumento(Integer idDocumento) {
+        this.idDocumento = idDocumento;
     }
 
-    public Integer getIdUnidad() {
-        return idUnidad;
+    public Integer getIdSituacionxml() {
+        return idSituacionxml;
     }
 
-    public void setIdUnidad(Integer idUnidad) {
-        this.idUnidad = idUnidad;
+    public void setIdSituacionxml(Integer idSituacionxml) {
+        this.idSituacionxml = idSituacionxml;
+    }
+
+    public String getDsRuta() {
+        return dsRuta;
+    }
+
+    public void setDsRuta(String dsRuta) {
+        this.dsRuta = dsRuta;
     }
 
     public Date getFeAlta() {

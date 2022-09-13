@@ -9,25 +9,25 @@ import java.util.HashMap;
  *
  * @author ihuegal
  */
-public class BdTUnidad extends OperacionSQL implements InterfazDAO {
+public class BdADocrechazo extends OperacionSQL implements InterfazDAO {
     
-    protected Integer idUnidad;
-    protected String coUnidad;
-    protected String dsUnidad;
+    protected Integer idDocrechazo;
+    protected Integer idDocumento;
+    protected String dsObservaciones;
     protected Date feAlta;
     protected Date feDesactivo;
     protected String usuariobd;
     protected Date tstbd;
 
-    public BdTUnidad() {
+    public BdADocrechazo() {
         // NADA
     }
 
     @Override
     public Object getClaseMapeada(HashMap<String,Object> bld) throws Exception {
-        recuperaValorCampo(this, "idUnidad", "ID_UNIDAD", bld);
-        recuperaValorCampo(this, "coUnidad", "CO_UNIDAD", bld);
-        recuperaValorCampo(this, "dsUnidad", "DS_UNIDAD", bld);
+        recuperaValorCampo(this, "idDocrechazo", "ID_DOCRECHAZO", bld);
+        recuperaValorCampo(this, "idDocumento", "ID_DOCUMENTO", bld);
+        recuperaValorCampo(this, "dsObservaciones", "DS_OBSERVACIONES", bld);
         recuperaValorCampo(this, "feAlta", "FE_ALTA", bld);
         recuperaValorCampo(this, "feDesactivo", "FE_DESACTIVO", bld);
         recuperaValorCampo(this, "usuariobd", "USUARIOBD", bld);
@@ -38,23 +38,23 @@ public class BdTUnidad extends OperacionSQL implements InterfazDAO {
     
     public String getSelectFiltro() {
         StringBuilder sb_sql = new StringBuilder("SELECT ");
-        sb_sql.append("ID_UNIDAD");
-        sb_sql.append(",CO_UNIDAD");
-        sb_sql.append(",DS_UNIDAD");
+        sb_sql.append("ID_DOCRECHAZO");
+        sb_sql.append(",ID_DOCUMENTO");
+        sb_sql.append(",DS_OBSERVACIONES");
         sb_sql.append(",FE_ALTA");
         sb_sql.append(",FE_DESACTIVO");
         sb_sql.append(",USUARIOBD");
         sb_sql.append(",TSTBD");
         
-        sb_sql.append(" FROM BD_T_UNIDAD WHERE 1=1 ");
-        if (idUnidad != null) {
-            sb_sql.append(" AND ID_UNIDAD = :ID_UNIDAD");
+        sb_sql.append(" FROM BD_A_DOCRECHAZO WHERE 1=1 ");
+        if (idDocrechazo != null) {
+            sb_sql.append(" AND ID_DOCRECHAZO = :ID_DOCRECHAZO");
         }
-        if (coUnidad != null) {
-            sb_sql.append(" AND UPPER(CO_UNIDAD) = UPPER(:CO_UNIDAD)");
+        if (idDocumento != null) {
+            sb_sql.append(" AND ID_DOCUMENTO = :ID_DOCUMENTO");
         }
-        if (dsUnidad != null) {
-            sb_sql.append(" AND UPPER(DS_UNIDAD) = UPPER(:DS_UNIDAD)");
+        if (dsObservaciones != null) {
+            sb_sql.append(" AND UPPER(DS_OBSERVACIONES) = UPPER(:DS_OBSERVACIONES)");
         }
         if (feAlta != null) {
             sb_sql.append(" AND (FE_ALTA <= :FE_ALTA)");
@@ -72,28 +72,28 @@ public class BdTUnidad extends OperacionSQL implements InterfazDAO {
         return sb_sql.toString();
     }
 
-    public Integer getIdUnidad() {
-        return idUnidad;
+    public Integer getIdDocrechazo() {
+        return idDocrechazo;
     }
 
-    public void setIdUnidad(Integer idUnidad) {
-        this.idUnidad = idUnidad;
+    public void setIdDocrechazo(Integer idDocrechazo) {
+        this.idDocrechazo = idDocrechazo;
     }
 
-    public String getCoUnidad() {
-        return coUnidad;
+    public Integer getIdDocumento() {
+        return idDocumento;
     }
 
-    public void setCoUnidad(String coUnidad) {
-        this.coUnidad = coUnidad;
+    public void setIdDocumento(Integer idDocumento) {
+        this.idDocumento = idDocumento;
     }
 
-    public String getDsUnidad() {
-        return dsUnidad;
+    public String getDsObservaciones() {
+        return dsObservaciones;
     }
 
-    public void setDsUnidad(String dsUnidad) {
-        this.dsUnidad = dsUnidad;
+    public void setDsObservaciones(String dsObservaciones) {
+        this.dsObservaciones = dsObservaciones;
     }
 
     public Date getFeAlta() {

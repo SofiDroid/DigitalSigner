@@ -12,15 +12,15 @@ import java.util.HashMap;
 public class BdTOpcionmenu extends OperacionSQL implements InterfazDAO {
     
     protected Integer idOpcionmenu;
-    private String coOpcionmenu;
-    private String dsOpcionmenu;
-    private String dsTitulo;
-    private String dsTooltip;
-    private String dsRuta;
-    private Date feAlta;
-    private Date feDesactivo;
-    private String usuariobd;
-    private Date tstbd;
+    protected String coOpcionmenu;
+    protected String dsOpcionmenu;
+    protected String dsTitulo;
+    protected String dsTooltip;
+    protected String dsRuta;
+    protected Date feAlta;
+    protected Date feDesactivo;
+    protected String usuariobd;
+    protected Date tstbd;
 
     public BdTOpcionmenu() {
         // NADA

@@ -12,19 +12,19 @@ import java.util.HashMap;
 public class BdTUsuario extends OperacionSQL implements InterfazDAO {
     
     protected Integer idUsuario;
-    private String coNIF;
-    private String coUsuario;
-    private String coPassword;
-    private String dsNombre;
-    private String dsApellido1;
-    private String dsApellido2;
-    private Integer enIntentos;
-    private Integer enIntentosmax;
-    private Boolean boAdmin;
-    private Date feAlta;
-    private Date feDesactivo;
-    private String usuariobd;
-    private Date tstbd;
+    protected String coNIF;
+    protected String coUsuario;
+    protected String coPassword;
+    protected String dsNombre;
+    protected String dsApellido1;
+    protected String dsApellido2;
+    protected Integer enIntentos;
+    protected Integer enIntentosmax;
+    protected Boolean boAdmin;
+    protected Date feAlta;
+    protected Date feDesactivo;
+    protected String usuariobd;
+    protected Date tstbd;
 
     public BdTUsuario() {
         // NADA

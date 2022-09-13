@@ -12,13 +12,13 @@ import java.util.HashMap;
 public class BdTTipousuario extends OperacionSQL implements InterfazDAO {
     
     protected Integer idTipousuario;
-    private String coTipousuario;
-    private String dsTipousuario;
-    private Integer idUnidad;
-    private Date feAlta;
-    private Date feDesactivo;
-    private String usuariobd;
-    private Date tstbd;
+    protected String coTipousuario;
+    protected String dsTipousuario;
+    protected Integer idUnidad;
+    protected Date feAlta;
+    protected Date feDesactivo;
+    protected String usuariobd;
+    protected Date tstbd;
 
     public BdTTipousuario() {
         // NADA

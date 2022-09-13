@@ -9,25 +9,29 @@ import java.util.HashMap;
  *
  * @author ihuegal
  */
-public class BdTUnidad extends OperacionSQL implements InterfazDAO {
+public class BdAHistdoc extends OperacionSQL implements InterfazDAO {
     
-    protected Integer idUnidad;
-    protected String coUnidad;
-    protected String dsUnidad;
+    protected Integer idHistdoc;
+    protected Integer idDocumento;
+    protected Integer idSituaciondoc;
+    protected byte[] blDocumento;
+    protected String dsRuta;
     protected Date feAlta;
     protected Date feDesactivo;
     protected String usuariobd;
     protected Date tstbd;
 
-    public BdTUnidad() {
+    public BdAHistdoc() {
         // NADA
     }
 
     @Override
     public Object getClaseMapeada(HashMap<String,Object> bld) throws Exception {
-        recuperaValorCampo(this, "idUnidad", "ID_UNIDAD", bld);
-        recuperaValorCampo(this, "coUnidad", "CO_UNIDAD", bld);
-        recuperaValorCampo(this, "dsUnidad", "DS_UNIDAD", bld);
+        recuperaValorCampo(this, "idHistdoc", "ID_HISTDOC", bld);
+        recuperaValorCampo(this, "idDocumento", "ID_DOCUMENTO", bld);
+        recuperaValorCampo(this, "idSituaciondoc", "ID_SITUACIONDOC", bld);
+        recuperaValorCampo(this, "blDocumento", "BL_DOCUMENTO", bld);
+        recuperaValorCampo(this, "dsRuta", "DS_RUTA", bld);
         recuperaValorCampo(this, "feAlta", "FE_ALTA", bld);
         recuperaValorCampo(this, "feDesactivo", "FE_DESACTIVO", bld);
         recuperaValorCampo(this, "usuariobd", "USUARIOBD", bld);
@@ -38,23 +42,28 @@ public class BdTUnidad extends OperacionSQL implements InterfazDAO {
     
     public String getSelectFiltro() {
         StringBuilder sb_sql = new StringBuilder("SELECT ");
-        sb_sql.append("ID_UNIDAD");
-        sb_sql.append(",CO_UNIDAD");
-        sb_sql.append(",DS_UNIDAD");
+        sb_sql.append("ID_HISTDOC");
+        sb_sql.append(",ID_DOCUMENTO");
+        sb_sql.append(",ID_SITUACIONDOC");
+        sb_sql.append(",BL_DOCUMENTO");
+        sb_sql.append(",DS_RUTA");
         sb_sql.append(",FE_ALTA");
         sb_sql.append(",FE_DESACTIVO");
         sb_sql.append(",USUARIOBD");
         sb_sql.append(",TSTBD");
         
-        sb_sql.append(" FROM BD_T_UNIDAD WHERE 1=1 ");
-        if (idUnidad != null) {
-            sb_sql.append(" AND ID_UNIDAD = :ID_UNIDAD");
+        sb_sql.append(" FROM BD_D_DOCUMENTO WHERE 1=1 ");
+        if (idHistdoc != null) {
+            sb_sql.append(" AND ID_HISTDOC = :ID_HISTDOC");
         }
-        if (coUnidad != null) {
-            sb_sql.append(" AND UPPER(CO_UNIDAD) = UPPER(:CO_UNIDAD)");
+        if (idDocumento != null) {
+            sb_sql.append(" AND ID_DOCUMENTO = :ID_DOCUMENTO");
         }
-        if (dsUnidad != null) {
-            sb_sql.append(" AND UPPER(DS_UNIDAD) = UPPER(:DS_UNIDAD)");
+        if (idSituaciondoc != null) {
+            sb_sql.append(" AND ID_SITUACIONDOC = UPPER(:ID_SITUACIONDOC)");
+        }
+        if (dsRuta != null) {
+            sb_sql.append(" AND UPPER(DS_RUTA) = UPPER(:DS_RUTA)");
         }
         if (feAlta != null) {
             sb_sql.append(" AND (FE_ALTA <= :FE_ALTA)");
@@ -72,28 +81,44 @@ public class BdTUnidad extends OperacionSQL implements InterfazDAO {
         return sb_sql.toString();
     }
 
-    public Integer getIdUnidad() {
-        return idUnidad;
+    public Integer getIdHistdoc() {
+        return idHistdoc;
     }
 
-    public void setIdUnidad(Integer idUnidad) {
-        this.idUnidad = idUnidad;
+    public void setIdHistdoc(Integer idHistdoc) {
+        this.idHistdoc = idHistdoc;
     }
 
-    public String getCoUnidad() {
-        return coUnidad;
+    public Integer getIdDocumento() {
+        return idDocumento;
     }
 
-    public void setCoUnidad(String coUnidad) {
-        this.coUnidad = coUnidad;
+    public void setIdDocumento(Integer idDocumento) {
+        this.idDocumento = idDocumento;
     }
 
-    public String getDsUnidad() {
-        return dsUnidad;
+    public Integer getIdSituaciondoc() {
+        return idSituaciondoc;
     }
 
-    public void setDsUnidad(String dsUnidad) {
-        this.dsUnidad = dsUnidad;
+    public void setIdSituaciondoc(Integer idSituaciondoc) {
+        this.idSituaciondoc = idSituaciondoc;
+    }
+
+    public byte[] getBlDocumento() {
+        return blDocumento;
+    }
+
+    public void setBlDocumento(byte[] blDocumento) {
+        this.blDocumento = blDocumento;
+    }
+
+    public String getDsRuta() {
+        return dsRuta;
+    }
+
+    public void setDsRuta(String dsRuta) {
+        this.dsRuta = dsRuta;
     }
 
     public Date getFeAlta() {

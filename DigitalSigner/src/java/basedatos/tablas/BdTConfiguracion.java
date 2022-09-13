@@ -12,12 +12,12 @@ import java.util.HashMap;
 public class BdTConfiguracion extends OperacionSQL implements InterfazDAO {
     
     protected Integer idConfiguracion;
-    private String coConfiguracion;
-    private String dsConfiguracion;
-    private Date feAlta;
-    private Date feDesactivo;
-    private String usuariobd;
-    private Date tstbd;
+    protected String coConfiguracion;
+    protected String dsConfiguracion;
+    protected Date feAlta;
+    protected Date feDesactivo;
+    protected String usuariobd;
+    protected Date tstbd;
 
     public BdTConfiguracion() {
         // NADA

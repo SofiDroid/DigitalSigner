@@ -9,27 +9,29 @@ import java.util.HashMap;
  *
  * @author ihuegal
  */
-public class BdTAutoridad extends OperacionSQL implements InterfazDAO {
+public class BdADocobs extends OperacionSQL implements InterfazDAO {
     
+    protected Integer idDocobs;
+    protected String dsObservaciones;
+    protected Integer idDocumento;
+    protected Integer idUsuario;
     protected Integer idAutoridad;
-    protected String coAutoridad;
-    protected String dsAutoridad;
-    protected Integer idUnidad;
     protected Date feAlta;
     protected Date feDesactivo;
     protected String usuariobd;
     protected Date tstbd;
 
-    public BdTAutoridad() {
+    public BdADocobs() {
         // NADA
     }
 
     @Override
     public Object getClaseMapeada(HashMap<String,Object> bld) throws Exception {
+        recuperaValorCampo(this, "idDocobs", "ID_DOCOBS", bld);
+        recuperaValorCampo(this, "dsObservaciones", "DS_OBSERVACIONES", bld);
+        recuperaValorCampo(this, "idDocumento", "ID_DOCUMENTO", bld);
+        recuperaValorCampo(this, "idUsuario", "ID_USUARIO", bld);
         recuperaValorCampo(this, "idAutoridad", "ID_AUTORIDAD", bld);
-        recuperaValorCampo(this, "coAutoridad", "CO_AUTORIDAD", bld);
-        recuperaValorCampo(this, "dsAutoridad", "DS_AUTORIDAD", bld);
-        recuperaValorCampo(this, "idUnidad", "ID_UNIDAD", bld);
         recuperaValorCampo(this, "feAlta", "FE_ALTA", bld);
         recuperaValorCampo(this, "feDesactivo", "FE_DESACTIVO", bld);
         recuperaValorCampo(this, "usuariobd", "USUARIOBD", bld);
@@ -40,27 +42,31 @@ public class BdTAutoridad extends OperacionSQL implements InterfazDAO {
     
     public String getSelectFiltro() {
         StringBuilder sb_sql = new StringBuilder("SELECT ");
-        sb_sql.append("ID_AUTORIDAD");
-        sb_sql.append(",CO_AUTORIDAD");
-        sb_sql.append(",DS_AUTORIDAD");
-        sb_sql.append(",ID_UNIDAD");
+        sb_sql.append("ID_DOCRECHAZO");
+        sb_sql.append(",DS_OBSERVACIONES");
+        sb_sql.append(",ID_DOCUMENTO");
+        sb_sql.append(",ID_USUARIO");
+        sb_sql.append(",ID_AUTORIDAD");
         sb_sql.append(",FE_ALTA");
         sb_sql.append(",FE_DESACTIVO");
         sb_sql.append(",USUARIOBD");
         sb_sql.append(",TSTBD");
         
-        sb_sql.append(" FROM BD_T_AUTORIDAD WHERE 1=1 ");
+        sb_sql.append(" FROM BD_A_DOCOBS WHERE 1=1 ");
+        if (idDocobs != null) {
+            sb_sql.append(" AND ID_DOCOBS = :ID_DOCOBS");
+        }
+        if (dsObservaciones != null) {
+            sb_sql.append(" AND UPPER(DS_OBSERVACIONES) = UPPER(:DS_OBSERVACIONES)");
+        }
+        if (idDocumento != null) {
+            sb_sql.append(" AND ID_DOCUMENTO = :ID_DOCUMENTO");
+        }
+        if (idUsuario != null) {
+            sb_sql.append(" AND ID_USUARIO = :ID_USUARIO");
+        }
         if (idAutoridad != null) {
             sb_sql.append(" AND ID_AUTORIDAD = :ID_AUTORIDAD");
-        }
-        if (coAutoridad != null) {
-            sb_sql.append(" AND UPPER(CO_AUTORIDAD) = UPPER(:CO_AUTORIDAD)");
-        }
-        if (dsAutoridad != null) {
-            sb_sql.append(" AND UPPER(DS_AUTORIDAD) = UPPER(:DS_AUTORIDAD)");
-        }
-        if (idUnidad != null) {
-            sb_sql.append(" AND ID_UNIDAD = :ID_UNIDAD");
         }
         if (feAlta != null) {
             sb_sql.append(" AND (FE_ALTA <= :FE_ALTA)");
@@ -78,36 +84,44 @@ public class BdTAutoridad extends OperacionSQL implements InterfazDAO {
         return sb_sql.toString();
     }
 
+    public Integer getIdDocobs() {
+        return idDocobs;
+    }
+
+    public void setIdDocobs(Integer idDocobs) {
+        this.idDocobs = idDocobs;
+    }
+
+    public String getDsObservaciones() {
+        return dsObservaciones;
+    }
+
+    public void setDsObservaciones(String dsObservaciones) {
+        this.dsObservaciones = dsObservaciones;
+    }
+
+    public Integer getIdDocumento() {
+        return idDocumento;
+    }
+
+    public void setIdDocumento(Integer idDocumento) {
+        this.idDocumento = idDocumento;
+    }
+
+    public Integer getIdUsuario() {
+        return idUsuario;
+    }
+
+    public void setIdUsuario(Integer idUsuario) {
+        this.idUsuario = idUsuario;
+    }
+
     public Integer getIdAutoridad() {
         return idAutoridad;
     }
 
     public void setIdAutoridad(Integer idAutoridad) {
         this.idAutoridad = idAutoridad;
-    }
-
-    public String getCoAutoridad() {
-        return coAutoridad;
-    }
-
-    public void setCoAutoridad(String coAutoridad) {
-        this.coAutoridad = coAutoridad;
-    }
-
-    public String getDsAutoridad() {
-        return dsAutoridad;
-    }
-
-    public void setDsAutoridad(String dsAutoridad) {
-        this.dsAutoridad = dsAutoridad;
-    }
-
-    public Integer getIdUnidad() {
-        return idUnidad;
-    }
-
-    public void setIdUnidad(Integer idUnidad) {
-        this.idUnidad = idUnidad;
     }
 
     public Date getFeAlta() {

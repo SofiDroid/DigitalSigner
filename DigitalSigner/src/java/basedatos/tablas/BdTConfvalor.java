@@ -13,12 +13,12 @@ public class BdTConfvalor extends OperacionSQL implements InterfazDAO {
     
     protected Integer idConfvalor;
     protected Integer idConfiguracion;
-    private String coConfvalor;
-    private String dsConfvalor;
-    private Date feAlta;
-    private Date feDesactivo;
-    private String usuariobd;
-    private Date tstbd;
+    protected String coConfvalor;
+    protected String dsConfvalor;
+    protected Date feAlta;
+    protected Date feDesactivo;
+    protected String usuariobd;
+    protected Date tstbd;
 
     public BdTConfvalor() {
         // NADA

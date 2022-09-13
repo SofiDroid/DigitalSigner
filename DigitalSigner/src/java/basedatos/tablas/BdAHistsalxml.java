@@ -9,25 +9,25 @@ import java.util.HashMap;
  *
  * @author ihuegal
  */
-public class BdTUnidad extends OperacionSQL implements InterfazDAO {
+public class BdAHistsalxml extends OperacionSQL implements InterfazDAO {
     
-    protected Integer idUnidad;
-    protected String coUnidad;
-    protected String dsUnidad;
+    protected Integer idHistsalxml;
+    protected Integer idSalidaxml;
+    protected Integer idSituacionxml;
     protected Date feAlta;
     protected Date feDesactivo;
     protected String usuariobd;
     protected Date tstbd;
 
-    public BdTUnidad() {
+    public BdAHistsalxml() {
         // NADA
     }
 
     @Override
     public Object getClaseMapeada(HashMap<String,Object> bld) throws Exception {
-        recuperaValorCampo(this, "idUnidad", "ID_UNIDAD", bld);
-        recuperaValorCampo(this, "coUnidad", "CO_UNIDAD", bld);
-        recuperaValorCampo(this, "dsUnidad", "DS_UNIDAD", bld);
+        recuperaValorCampo(this, "idHistsalxml", "ID_HISTSALXML", bld);
+        recuperaValorCampo(this, "idSalidaxml", "ID_SALIDAXML", bld);
+        recuperaValorCampo(this, "idSituacionxml", "ID_SITUACIONXML", bld);
         recuperaValorCampo(this, "feAlta", "FE_ALTA", bld);
         recuperaValorCampo(this, "feDesactivo", "FE_DESACTIVO", bld);
         recuperaValorCampo(this, "usuariobd", "USUARIOBD", bld);
@@ -38,23 +38,23 @@ public class BdTUnidad extends OperacionSQL implements InterfazDAO {
     
     public String getSelectFiltro() {
         StringBuilder sb_sql = new StringBuilder("SELECT ");
-        sb_sql.append("ID_UNIDAD");
-        sb_sql.append(",CO_UNIDAD");
-        sb_sql.append(",DS_UNIDAD");
+        sb_sql.append("ID_HISTSALXML");
+        sb_sql.append(",ID_SALIDAXML");
+        sb_sql.append(",ID_SITUACIONXML");
         sb_sql.append(",FE_ALTA");
         sb_sql.append(",FE_DESACTIVO");
         sb_sql.append(",USUARIOBD");
         sb_sql.append(",TSTBD");
         
-        sb_sql.append(" FROM BD_T_UNIDAD WHERE 1=1 ");
-        if (idUnidad != null) {
-            sb_sql.append(" AND ID_UNIDAD = :ID_UNIDAD");
+        sb_sql.append(" FROM BD_A_HISTSALXML WHERE 1=1 ");
+        if (idHistsalxml != null) {
+            sb_sql.append(" AND ID_HISTSALXML = :ID_HISTSALXML");
         }
-        if (coUnidad != null) {
-            sb_sql.append(" AND UPPER(CO_UNIDAD) = UPPER(:CO_UNIDAD)");
+        if (idSalidaxml != null) {
+            sb_sql.append(" AND ID_SALIDAXML = :ID_SALIDAXML");
         }
-        if (dsUnidad != null) {
-            sb_sql.append(" AND UPPER(DS_UNIDAD) = UPPER(:DS_UNIDAD)");
+        if (idSituacionxml != null) {
+            sb_sql.append(" AND ID_SITUACIONXML = :ID_SITUACIONXML");
         }
         if (feAlta != null) {
             sb_sql.append(" AND (FE_ALTA <= :FE_ALTA)");
@@ -72,28 +72,28 @@ public class BdTUnidad extends OperacionSQL implements InterfazDAO {
         return sb_sql.toString();
     }
 
-    public Integer getIdUnidad() {
-        return idUnidad;
+    public Integer getIdHistsalxml() {
+        return idHistsalxml;
     }
 
-    public void setIdUnidad(Integer idUnidad) {
-        this.idUnidad = idUnidad;
+    public void setIdHistsalxml(Integer idHistsalxml) {
+        this.idHistsalxml = idHistsalxml;
     }
 
-    public String getCoUnidad() {
-        return coUnidad;
+    public Integer getIdSalidaxml() {
+        return idSalidaxml;
     }
 
-    public void setCoUnidad(String coUnidad) {
-        this.coUnidad = coUnidad;
+    public void setIdSalidaxml(Integer idSalidaxml) {
+        this.idSalidaxml = idSalidaxml;
     }
 
-    public String getDsUnidad() {
-        return dsUnidad;
+    public Integer getIdSituacionxml() {
+        return idSituacionxml;
     }
 
-    public void setDsUnidad(String dsUnidad) {
-        this.dsUnidad = dsUnidad;
+    public void setIdSituacionxml(Integer idSituacionxml) {
+        this.idSituacionxml = idSituacionxml;
     }
 
     public Date getFeAlta() {

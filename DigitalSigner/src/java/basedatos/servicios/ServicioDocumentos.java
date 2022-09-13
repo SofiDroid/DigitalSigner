@@ -29,7 +29,11 @@ public class ServicioDocumentos implements Serializable {
     public List<BdDDocumento> recuperaDocumentos() {
         List<BdDDocumento> resultado = new ArrayList<>();
         for (int i = 0; i < 50; i++) {
-            resultado.add(new BdDDocumento(i, "DOC_" + i, "DOCUMENTO_" + i));
+            BdDDocumento doc = new BdDDocumento();
+            doc.setIdDocumento(i);
+            doc.setCoDocumento("DOC_" + i);
+            doc.setDsDocumento("DOCUMENTO_" + i);
+            resultado.add(doc);
         }
         return resultado;
     }
