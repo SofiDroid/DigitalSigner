@@ -41,4 +41,15 @@ public class StTUsuario extends StBase {
         }
         return null;
     }
+    
+    public BdTUsuario item(Integer idUsuario, EntityManager em) throws Exception {
+        BdTUsuario filtroBdTUsuario = new BdTUsuario();
+        filtroBdTUsuario.setIdUsuario(idUsuario);
+        
+        ArrayList<BdTUsuario> listaBdTUsuario = filtro(filtroBdTUsuario, em);
+        if (listaBdTUsuario != null && !listaBdTUsuario.isEmpty()) {
+            return listaBdTUsuario.get(0);
+        }
+        return null;
+    }
 }
