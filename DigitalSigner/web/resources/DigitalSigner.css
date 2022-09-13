@@ -178,3 +178,11 @@ body .ui-panelgrid .ui-panelgrid-cell{
     width:100%
 }
 
+body .ui-panelmenu h3.ui-panelmenu-header {
+    background-color: #213a68!important;
+    color: whitesmoke!important;
+}
+
+body .ui-panelmenu h3.ui-panelmenu-header.ui-state-hover {
+    background-color: #547cc4!important;
+}
