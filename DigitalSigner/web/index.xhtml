@@ -1,0 +1,77 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      lang="es" xml:lang="es">
+    <h:head>
+        <meta http-equiv="cache-control" content="max-age=0" />
+        <meta http-equiv="cache-control" content="no-cache" />
+        <meta http-equiv="expires" content="0" />
+        <meta http-equiv="pragma" content="no-cache" />
+
+        <title>Digital Signer</title>
+        <link href="/DigitalSigner/resources/DigitalSigner.css" rel="stylesheet" type="text/css"/>
+        <link href="/DigitalSigner/resources/flags.css" rel="stylesheet" type="text/css"/>
+    </h:head>
+    <h:body style="background-color: darkgray">
+        <h:form id="login">
+            <p:growl id="mensaje" showDetail="true" />
+            <div style="width:100%;text-align: right">
+            <p:outputLabel for="@next" value="#{msg['idioma']}: " style="width:auto;vertical-align: central" />
+            <h:panelGroup id="iconFlag">
+                <span class="flag flag-#{userData.pais.code}" style="width: 30px; height: 20px;margin-right: 5px"/>
+            </h:panelGroup>
+            <p:selectOneMenu id="cIdioma" value="#{userData.pais}" converter="#{conversorPais}"
+                             panelStyle="width:250px" p:effect="fade" var="cIdioma"
+                             filter="true" filterMatchMode="startsWith">
+                
+                <p:ajax listener="#{userData.onPaisChange}" event="itemSelect" immediate="true" update="@form" />
+
+                <f:selectItems value="#{userData.paises}" var="pais" itemLabel="#{pais.displayLanguage}" itemValue="#{pais}"/>
+                
+                <p:column style="width:10%">
+                    <span class="flag flag-#{cIdioma.code}" style="width: 30px; height: 20px"/>
+                </p:column>
+
+                <p:column>
+                    <f:facet name="header">
+                        <h:outputText value="#{msg['name']}"/>
+                    </f:facet>
+                    <h:outputText value="#{cIdioma.displayLanguage}"/>
+                </p:column>
+
+                <f:facet name="footer">
+                    <h:outputText value="#{userData.paises.size()} #{msg['paises']}"
+                                style="font-weight:bold;" styleClass="py-1 block"/>
+                </f:facet>
+                
+            </p:selectOneMenu>
+            </div>
+            
+            <p:card style="width: 25rem; margin-bottom: 2em;" class="centerScreen">
+                <f:facet name="title">
+                    #{msg['autenticacion']}
+                </f:facet>
+                <div class="grid">
+                    <div class="col flex align-items-center justify-content-center">
+                        <div class="ui-fluid">
+                            <div class="field">
+                                <p:outputLabel value="#{msg['usuario']}" for="@next" />
+                                <p:inputText id="username" type="text" style="font-size: 1rem" value="#{loginForm.usuario}" />
+                            </div>
+                            <div class="field">
+                                <p:outputLabel value="#{msg['password']}" for="@next" />
+                                <p:inputText id="password" type="password" style="font-size: 1rem" value="#{loginForm.password}" />
+                            </div>
+                            <p:commandButton value="#{msg['login']}" action="#{loginForm.login()}" update="mensaje" />
+                        </div>
+                    </div>
+                </div>
+            </p:card>
+
+        </h:form>
+    </h:body>
+</html>
+

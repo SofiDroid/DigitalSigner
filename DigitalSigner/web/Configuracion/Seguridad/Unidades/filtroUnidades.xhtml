@@ -1,0 +1,54 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:sd="http://xmlns.jcp.org/jsf/composite/sofidroid">
+
+    <ui:composition template="/main.xhtml">
+        <ui:define id="tmpPrincipal" name="tmpPrincipal">
+            <p:card styleClass="card">
+                <p:toolbar>
+                    <p:toolbarGroup align="left">
+                        <p:outputLabel value="Mantenimiento de Unidades" style="font-size: large; font-weight: bold" /> 
+                    </p:toolbarGroup>
+                    <p:toolbarGroup align="right">
+                        <p:commandButton id="btnLimpiar" icon="pi pi-filter-slash" styleClass="rounded-button ui-button-secondary" 
+                                         style="height: 2rem;width: 2rem;margin-left:0.3rem" action="#{filtroUnidades.limpiar}" title="(alt+L) Limpiar formulario"
+                                         update="fsFiltros,panelResultado,mensaje" accesskey="l" />
+
+                        <p:commandButton id="btnBuscar" icon="pi pi-search" styleClass="rounded-button ui-button-info" 
+                                         style="height: 2rem;width: 2rem;margin-left:0.3rem" action="#{filtroUnidades.buscar}" title="(alt+B) Buscar resultados"
+                                         update="panelResultado,mensaje" accesskey="b" />
+                    </p:toolbarGroup>
+                </p:toolbar>
+            </p:card>
+            <p:card styleClass="card">
+                <p:fieldset id="fsFiltros" legend="#{msg['filtros']}" toggleable="false" >
+                    <p:panelGrid columns="4"
+                     columnClasses="col-1,col-6,col-2,col-3"
+                     layout="grid"
+                     styleClass="ui-panelgrid-blank ui-fluid"
+                     style="border:0px none; background-color:transparent;">
+
+                        <p:outputLabel for="txtCodigoUnidad" value="#{msg['lbl_BdTUnidad_CoUnidad']}" />
+                        <sd:campoWebCodigo id="txtCodigoUnidad" beanClass="#{filtroUnidades.getcCoUnidad()}" />
+
+                        <p:outputLabel for="txtFeAlta" value="#{msg['lbl_BdTUnidad_FeAlta']}" />
+                        <sd:campoWebFechaRango id="txtFeAlta" beanClass="#{filtroUnidades.getcFeAlta()}" />
+
+                        <p:outputLabel for="txtDescripcionUnidad" value="#{msg['lbl_BdTUnidad_DsUnidad']}" />
+                        <sd:campoWebDescripcion id="txtDescripcionUnidad" beanClass="#{filtroUnidades.getcDsUnidad()}" />
+
+                        <p:outputLabel for="txtFeDesactivo" value="#{msg['lbl_BdTUnidad_FeDesactivo']}" />
+                        <sd:campoWebFechaRango id="txtFeDesactivo" beanClass="#{filtroUnidades.getcFeDesactivo()}" />
+
+                    </p:panelGrid>
+                </p:fieldset>
+            </p:card>
+            <p:card id="panelResultado" styleClass="card">
+                <sd:dataGrid id="tblResultados" dataSet="#{filtroUnidades.dsResultado}" height="calc(100vh - 20.5rem)" />
+            </p:card>
+        </ui:define>
+    </ui:composition>
+</html>

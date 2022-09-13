@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/main.xhtml">
+        <ui:define id="tmpPrincipal" name="tmpPrincipal">
+            <p:dataTable var="documento" value="#{filtroFirmaDocumentos.lstDocumentos}" scrollable="true" scrollHeight="100%" style="height: 100%" size="small">
+                <f:facet name="header">
+                    #{msg['resultados']}
+                </f:facet>
+                <p:column headerText="#{msg['Id']}" width="50px" sortBy="#{documento.idDocumento}" filterBy="#{documento.idDocumento}">
+                    <h:outputText value="#{documento.idDocumento}" />
+                </p:column>
+
+                <p:column headerText="#{msg['Codigo']}" width="100px" sortBy="#{documento.coDocumento}" filterBy="#{documento.coDocumento}">
+                    <h:outputText value="#{documento.coDocumento}" />
+                </p:column>
+
+                <p:column headerText="#{msg['Descripcion']}" sortBy="#{documento.dsDocumento}" filterBy="#{documento.dsDocumento}">
+                    <h:outputText value="#{documento.dsDocumento}" />
+                </p:column>
+            </p:dataTable>
+        </ui:define>
+    </ui:composition>
+    
+</html>
+

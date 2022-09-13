@@ -1,0 +1,85 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      lang="es" xml:lang="es">
+    <h:head>
+<!--        <meta http-equiv="cache-control" content="max-age=0" />
+        <meta http-equiv="cache-control" content="no-cache" />
+        <meta http-equiv="expires" content="0" />
+        <meta http-equiv="pragma" content="no-cache" />-->
+        <title>Digital Signer</title>
+        <link href="/DigitalSigner/resources/DigitalSigner.css" rel="stylesheet" type="text/css"/>
+        <link href="/DigitalSigner/resources/flags.css" rel="stylesheet" type="text/css"/>
+    </h:head>
+    <h:body style="margin:0px">
+        <h:form id="formulario" enctype="multipart/form-data" style="height: 100%">
+            <script>
+                PrimeFaces.locales ['es'] = {
+                    allDayText: "Todo el día",
+                    ampm: false,
+                    aria: {
+                        'calendar.BUTTON': 'Ver Calendario',
+                        'datatable.sort.ASC': 'activar order ascendente de la columna',
+                        'datatable.sort.DESC': 'activar order descendente de la columna',
+                        'datatable.sort.NONE': 'desactivar order de la columna',
+                        'overlaypanel.CLOSE': 'Cerrar',
+                        'paginator.PAGE': 'Página {0}'
+                    },
+                    closeText: 'Cerrar',
+                    currentText: 'Fecha actual',
+                    day: 'Día',
+                    dayNames: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+                    dayNamesMin: ['D', 'L', 'M', 'X ', 'J', 'V ', 'S'],
+                    dayNamesShort: ['Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab'],
+                    firstDay: 1,
+                    hourText: 'Hora',
+                    list: 'Resumen de citas',
+                    millisecondText: 'Milisegundos',
+                    minuteText: 'Minuto',
+                    month: 'Mes',
+                    monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+                    monthNamesShort: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+                    moreLinkText: 'Más...',
+                    nextText: 'Siguiente',
+                    noEventsText: 'No hay eventos para mostrar',
+                    prevText: 'Anterior',
+                    secondText: 'Segundo',
+                    showMonthAfterYear: false,
+                    timeOnlyTitle: 'Solo hora',
+                    timeText: 'Hora',
+                    week: 'Semana',
+                    weekHeader: 'Semana',
+                    year: 'Año',
+                    yearSuffix: ''
+                };
+            </script>
+            <p:growl id="mensaje" widgetVar="mensaje" showDetail="true" />
+            <p:card id="cardPrincipal" styleClass="pad0 ">
+                <p:splitter layout="vertical" style="background-image: linear-gradient(to right, rgb(0,106,150) 0%, rgb(217,217,217) 14%, rgb(197,224,180) 68%)">
+                    <p:splitterPanel size="5" minSize="5" 
+                                     style="background-color: transparent;min-height: 100px!important;max-height: 100px!important">
+                        <img src="resources/images/DigitalSigner_logo2.png" alt="Digital Signer Logo" style="height: 100px;padding:10px;"/>
+                    </p:splitterPanel>
+                    <p:splitterPanel size="95" minSize="95" style="min-height: calc(100vh - 125px)!important;max-height: calc(100vh - 125px)!important">
+                        <p:splitter style="background-color: transparent;">
+                            <p:splitterPanel size="15" style="background-color: whitesmoke;min-width: 250px!important;overflow-y: auto">
+                                <p:panelMenu id="mnuPrincipal" widgetVar="mnuPrincipal" model="#{menu.model}" style="width:100%" />
+                            </p:splitterPanel>
+                            <p:splitterPanel size="85" minSize="70">
+                                <div style="height: 100%;background-color: transparent;padding: 0.2rem">
+                                    <ui:insert id="tmpPrincipal" name="tmpPrincipal">
+                                        <p:clock />
+                                    </ui:insert>
+                                </div>
+                            </p:splitterPanel>
+                        </p:splitter>
+                    </p:splitterPanel>
+                </p:splitter>
+            </p:card>
+        </h:form>
+    </h:body>
+</html>
+

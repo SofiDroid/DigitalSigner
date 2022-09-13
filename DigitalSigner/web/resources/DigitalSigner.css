@@ -1,0 +1,180 @@
+/* 
+    Created on : 17 ago 2022, 12:05:51
+    Author     : ihuegal
+*/
+
+
+.ui-widget,
+.ui-widget .ui-widget {
+    font-size: 0.8rem !important;
+}
+
+#login .ui-widget,
+#login .ui-widget .ui-widget {
+    font-size: 1rem !important;
+}
+
+#login .field {
+    margin-bottom: 1rem;
+}
+
+#login .field>label {
+    display: inline-block;
+    margin-bottom: 0.5rem;
+}
+
+.ui-datatable-odd {
+    background-color: aliceblue!important;
+}
+
+.ui-datatable-even:hover,
+.ui-datatable-odd:hover {
+    background-color: lightskyblue!important;
+}
+
+body .ui-toolbar {
+    padding: 0.5rem!important;
+}
+
+body .ui-fieldset .ui-fieldset-legend {
+    padding: 0.5rem!important;
+}
+
+.pad0 .ui-card-content {
+    padding: 0px!important;
+}
+
+.pad0 .ui-card-body {
+    padding: 0.1rem!important;
+}
+
+.ui-fluid .ui-trigger-calendar .ui-datepicker-trigger.ui-button .ui-button-text {
+    padding: .17rem!important;
+}
+
+.card {
+    margin-bottom: 0.2rem!important;
+    padding: 0rem!important;
+}
+
+.block {
+    display:block!important;
+}
+
+.centerScreen {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
+.grid{
+    display:flex;
+    flex-wrap:wrap;
+    margin-right:-0.5rem;
+    margin-left:-0.5rem;
+    margin-top:-0.5rem;
+}
+
+.grid>.col,.grid>[class*=col]{
+    box-sizing:border-box
+}
+
+.align-items-center{
+    align-items:center !important
+}
+.justify-content-center{
+    justify-content:center !important
+}
+
+.flex{
+    display:flex !important
+}
+
+body .ui-inputfield{
+    padding: 0.2rem!important;
+}
+
+body .ui-panelgrid .ui-panelgrid-cell{
+    padding: 0.2rem!important;
+}
+
+.col{
+    flex-grow:1;
+    flex-basis:0;
+    padding:.2rem
+}
+
+.col-1{
+    flex:0 0 auto;
+    padding:.2rem;
+    width:8.33333333%
+}
+
+.col-2{
+    flex:0 0 auto;
+    padding:.2rem;
+    width:16.66666666%
+}
+
+.col-3 {
+    flex:0 0 auto;
+    padding:.2rem;
+    width:25%
+}
+
+.col-4{
+    flex:0 0 auto;
+    padding:.2rem;
+    width:33.33333333%
+}
+
+.col-5{
+    flex:0 0 auto;
+    padding:.2rem;
+    width:41.66666666%
+}
+
+.col-6{
+    flex:0 0 auto;
+    padding:.2rem;
+    width:50%
+}
+
+.col-7{
+    flex:0 0 auto;
+    padding:.2rem;
+    width:58.33333333%
+}
+
+.col-8{
+    flex:0 0 auto;
+    padding:.2rem;
+    width:66.66666666%
+}
+
+.col-9{
+    flex:0 0 auto;
+    padding:.2rem;
+    width:75%
+}
+
+.col-10{
+    flex:0 0 auto;
+    padding:.2rem;
+    width:83.33333333%
+}
+
+.col-11{
+    flex:0 0 auto;
+    padding:.2rem;
+    width:91.66666666%
+}
+
+.col-12{
+    flex:0 0 auto;
+    padding:.2rem;
+    width:100%
+}
+
