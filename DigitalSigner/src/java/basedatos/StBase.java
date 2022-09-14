@@ -32,4 +32,35 @@ public class StBase {
             }
         }
     }
+    
+    protected int executeNativeQueryParametros(String sql, HashMap<String, Object> parametros, EntityManager em) throws SQLException {
+        boolean conexionNueva = (em == null);
+        EntityManager entityManager = em;
+        try 
+        {   
+            if (conexionNueva) {
+                entityManager = AppInit.getEntityManager();
+                entityManager.getTransaction().begin();
+            }
+            
+            ExecuteQuery executeQuery = new ExecuteQuery();
+            return executeQuery.executeNativeQueryParametros(sql.trim(), parametros, entityManager);
+        } catch (SQLException e) {
+            if (entityManager != null && entityManager.getTransaction() != null && entityManager.getTransaction().isActive()) {
+                entityManager.getTransaction().rollback();
+            }
+            throw e;
+        } finally {
+            if (conexionNueva && entityManager != null) {
+                try {
+                    if (entityManager.getTransaction() != null && entityManager.getTransaction().isActive()) {
+                        entityManager.getTransaction().commit();
+                    }
+                }
+                finally {
+                    entityManager.close();
+                }
+            }
+        }
+    }
 }

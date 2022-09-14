@@ -1,5 +1,6 @@
 package utilidades;
 
+import init.AppInit;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -29,11 +30,6 @@ public class Formateos {
         }
     }
     
-    public enum BaseDatos {
-        SQLSERVER,
-        ORACLE;
-    }
-    
     public static String dateToString(Date fecha, TipoFecha tipo) {
 
         if (fecha == null) {
@@ -60,11 +56,11 @@ public class Formateos {
         return new SimpleDateFormat(tipo.getFormato()).parse(fecha);
     }
     
-    public static String dateToSql(Date fecha, BaseDatos tipoBD) {
-        if (null == tipoBD) {
+    public static String dateToSql(Date fecha) {
+        if (null == AppInit.TIPO_BASEDATOS) {
             return null;
         }
-        else return switch (tipoBD) {
+        else return switch (AppInit.TIPO_BASEDATOS) {
             case ORACLE -> "TO_DATE('" + dateToString(fecha, Formateos.TipoFecha.FECHA) + "','DD/MM/YYYY')";
             case SQLSERVER -> "CONVERT(DATETIME,'" + dateToString(fecha, Formateos.TipoFecha.FECHA) + "',103)";
             default -> null;

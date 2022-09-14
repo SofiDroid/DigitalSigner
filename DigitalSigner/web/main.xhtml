@@ -4,6 +4,7 @@
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:p="http://primefaces.org/ui"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:sd="http://xmlns.jcp.org/jsf/composite/sofidroid"
       lang="es" xml:lang="es">
     <h:head>
 <!--        <meta http-equiv="cache-control" content="max-age=0" />
@@ -60,8 +61,11 @@
             <p:card id="cardPrincipal" styleClass="pad0 ">
                 <p:splitter layout="vertical" style="background-image: linear-gradient(to right, rgb(0,106,150) 0%, rgb(217,217,217) 14%, rgb(197,224,180) 68%)">
                     <p:splitterPanel size="5" minSize="5" 
-                                     style="background-color: transparent;min-height: 100px!important;max-height: 100px!important">
-                        <img src="resources/images/DigitalSigner_logo2.png" alt="Digital Signer Logo" style="height: 100px;padding:10px;"/>
+                                     style="background-image: url('resources/images/DigitalSigner_logo2.png');background-repeat: no-repeat;background-size: auto 90px;background-position-y: center;min-height: 100px!important;max-height: 100px!important">
+                        <p:outputPanel style="text-align: right;padding: 10px;position: fixed;right:10px;top:65px">
+                            <p:outputLabel for="txtCoUsuario" value="#{msg['lblUsuarioBD']}: "/>
+                            <p:inputText id="txtCoUsuario" value="#{datosUsuario.bdTUsuario.coUsuario}" disabled="true" style="width: 70px;" />
+                        </p:outputPanel>
                     </p:splitterPanel>
                     <p:splitterPanel size="95" minSize="95" style="min-height: calc(100vh - 125px)!important;max-height: calc(100vh - 125px)!important">
                         <p:splitter style="background-color: transparent;">

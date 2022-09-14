@@ -32,4 +32,19 @@ public class ExecuteQuery {
             throw e;
         }
     }
+    
+    public int executeNativeQueryParametros(String sql, HashMap<String, Object> parametros, EntityManager entityManager) throws SQLException {
+        try {
+            Query sentencia = entityManager.createNativeQuery(sql);
+            if (parametros != null) {
+                for (Map.Entry<String, Object> item : parametros.entrySet()) {
+                    sentencia.setParameter((String) item.getKey(), item.getValue());
+                }
+            }
+            return sentencia.executeUpdate();
+
+        } catch (SQLException e) {
+            throw e;
+        }
+    }
 }

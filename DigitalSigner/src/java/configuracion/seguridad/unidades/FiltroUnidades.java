@@ -155,26 +155,26 @@ public class FiltroUnidades implements Serializable {
         if (cFeAlta.getValueIni() != null || cFeAlta.getValueFin() != null) {
             sql += " AND (";
             if (cFeAlta.getValueIni() != null) {
-                sql += "(FE_ALTA >= " + Formateos.dateToSql((Date)cFeAlta.getValueIni(), Formateos.BaseDatos.SQLSERVER) + ")";
+                sql += "(FE_ALTA >= " + Formateos.dateToSql((Date)cFeAlta.getValueIni()) + ")";
             }
             if (cFeAlta.getValueFin() != null) {
                 if (cFeAlta.getValueIni() != null) {
                     sql += " AND ";
                 }
-                sql += "(FE_ALTA <= " + Formateos.dateToSql((Date)cFeAlta.getValueFin(), Formateos.BaseDatos.SQLSERVER) + ")";
+                sql += "(FE_ALTA <= " + Formateos.dateToSql((Date)cFeAlta.getValueFin()) + ")";
             }
             sql += ")";
         }
         if (cFeDesactivo.getValueIni() != null || cFeDesactivo.getValueFin() != null) {
             sql += " AND (";
             if (cFeDesactivo.getValueIni() != null) {
-                sql += "(FE_DESACTIVO >= " + Formateos.dateToSql((Date)cFeDesactivo.getValueIni(), Formateos.BaseDatos.SQLSERVER) + ")";
+                sql += "(FE_DESACTIVO >= " + Formateos.dateToSql((Date)cFeDesactivo.getValueIni()) + ")";
             }
             if (cFeDesactivo.getValueFin() != null) {
                 if (cFeDesactivo.getValueIni() != null) {
                     sql += " AND ";
                 }
-                sql += "(FE_DESACTIVO <= " + Formateos.dateToSql((Date)cFeDesactivo.getValueFin(), Formateos.BaseDatos.SQLSERVER) + ")";
+                sql += "(FE_DESACTIVO <= " + Formateos.dateToSql((Date)cFeDesactivo.getValueFin()) + ")";
             }
             sql += ")";
         }
@@ -184,6 +184,13 @@ public class FiltroUnidades implements Serializable {
     
     public String verDetalle() {
         this.edicionUnidades = new EdicionUnidades(this.dsResultado.getSelectedRow().getColumnName("ID_UNIDAD").getValueInteger());
+        this.edicionUnidades.setPaginaRetorno("filtroUnidades");
+        
+        return "edicionUnidades";
+    }
+
+    public String nuevo() {
+        this.edicionUnidades = new EdicionUnidades(null);
         this.edicionUnidades.setPaginaRetorno("filtroUnidades");
         
         return "edicionUnidades";

@@ -9,7 +9,9 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
 import org.apache.log4j.Logger;
+import seguridad.usuarios.DatosUsuario;
 import utilidades.Mensajes;
+import utilidades.Session;
 
 /**
  *
@@ -42,6 +44,8 @@ public class LoginForm implements Serializable {
                 if (listaBdTUsuario.get(0).getCoPassword().equals(this.password))
                 {
                     //ACCESO CONCEDIDO
+                    Session.getDatosUsuario().setBdTUsuario(listaBdTUsuario.get(0));
+                    
                     //Redirecciono al formulario principal
                     return "main";
                 }

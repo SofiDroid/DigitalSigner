@@ -47,11 +47,16 @@ public class EdicionUnidades implements Serializable {
                 recuperarRegistro(idUnidad);
             }
             else {
-                this.modoFormulario = ModoFormulario.ALTA;
+                this.setModoFormulario(ModoFormulario.ALTA);
             }
         }
         catch (Exception ex) {
-            this.modoFormulario = ModoFormulario.CONSULTA;
+            try { 
+                this.setModoFormulario(ModoFormulario.CONSULTA);
+            }
+            catch(Exception na) {
+                //NADA 
+            }
             new Mensajes().showException(this.getClass(), ex);
         }
     }

@@ -3,10 +3,15 @@ package basedatos.servicios;
 import basedatos.Mapeador;
 import basedatos.StBase;
 import basedatos.tablas.BdTUnidad;
+import excepciones.RequiredFieldException;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import tomcat.persistence.EntityManager;
+import utilidades.Session;
+import utilidades.Validation;
 
 /**
  *
@@ -44,5 +49,74 @@ public class StTUnidad extends StBase {
             return listaBdTUnidad.get(0);
         }
         return null;
+    }
+    
+    public int alta(BdTUnidad newBdTUnidad, EntityManager em) throws RequiredFieldException, SQLException {
+
+        if (Validation.isNullOrEmpty(newBdTUnidad.getCoUnidad())) {
+            throw new RequiredFieldException("CO_UNIDAD");
+        }        
+        if (Validation.isNullOrEmpty(newBdTUnidad.getDsUnidad())) {
+            throw new RequiredFieldException("DS_UNIDAD");
+        }        
+        if (Validation.isNullOrEmpty(newBdTUnidad.getFeAlta())) {
+            throw new RequiredFieldException("FE_ALTA");
+        }        
+
+        newBdTUnidad.setUsuariobd(Session.getCoUsuario());
+
+        newBdTUnidad.setTstbd(new Date());
+
+        HashMap<String, Object> parametros = new HashMap<>();
+        parametros.put("ID_UNIDAD", newBdTUnidad.getIdUnidad());
+        parametros.put("CO_UNIDAD", newBdTUnidad.getCoUnidad());
+        parametros.put("DS_UNIDAD", newBdTUnidad.getDsUnidad());
+        parametros.put("FE_ALTA", newBdTUnidad.getFeAlta());
+        parametros.put("FE_DESACTIVO", newBdTUnidad.getFeDesactivo());
+        parametros.put("USUARIOBD", newBdTUnidad.getUsuariobd());
+        parametros.put("TSTBD", newBdTUnidad.getTstbd());
+
+        return executeNativeQueryParametros(newBdTUnidad.getInsert(), parametros, em);
+    }
+
+    public int actualiza(BdTUnidad bdTUnidad, EntityManager em) throws RequiredFieldException, SQLException {
+        
+        if (Validation.isNullOrEmpty(bdTUnidad.getIdUnidad())) {
+            throw new RequiredFieldException("ID_UNIDAD");
+        }        
+        if (Validation.isNullOrEmpty(bdTUnidad.getCoUnidad())) {
+            throw new RequiredFieldException("CO_UNIDAD");
+        }        
+        if (Validation.isNullOrEmpty(bdTUnidad.getDsUnidad())) {
+            throw new RequiredFieldException("DS_UNIDAD");
+        }        
+        if (Validation.isNullOrEmpty(bdTUnidad.getFeAlta())) {
+            throw new RequiredFieldException("FE_ALTA");
+        }
+
+        bdTUnidad.setUsuariobd(Session.getCoUsuario());
+
+        bdTUnidad.setTstbd(new Date());
+
+        HashMap<String, Object> parametros = new HashMap<>();
+        parametros.put("ID_UNIDAD", bdTUnidad.getIdUnidad());
+        parametros.put("CO_UNIDAD", bdTUnidad.getCoUnidad());
+        parametros.put("DS_UNIDAD", bdTUnidad.getDsUnidad());
+        parametros.put("FE_ALTA", bdTUnidad.getFeAlta());
+        parametros.put("FE_DESACTIVO", bdTUnidad.getFeDesactivo());
+        parametros.put("USUARIOBD", bdTUnidad.getUsuariobd());
+        parametros.put("TSTBD", bdTUnidad.getTstbd());
+
+        return executeNativeQueryParametros(bdTUnidad.getUpdate(), parametros, em);
+    }
+
+    public int baja(BdTUnidad bdTUnidad, EntityManager em) throws SQLException {
+        
+        HashMap<String, Object> parametros = new HashMap<>();
+
+        
+        parametros.put("ID_UNIDAD", bdTUnidad.getIdUnidad());
+
+        return executeNativeQueryParametros(bdTUnidad.getDelete(), parametros, em);
     }
 }

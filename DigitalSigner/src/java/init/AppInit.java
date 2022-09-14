@@ -6,6 +6,7 @@ import org.apache.log4j.Logger;
 import javax.sql.DataSource;
 import tomcat.persistence.ConnectionPool;
 import tomcat.persistence.EntityManager;
+import utilidades.BaseDatos;
 
 /**
  *
@@ -13,6 +14,8 @@ import tomcat.persistence.EntityManager;
  */
 
 public final class AppInit extends HttpServlet {
+    
+    public static final BaseDatos TIPO_BASEDATOS = BaseDatos.SQLSERVER; 
     
     private static final Logger LOG = Logger.getLogger(AppInit.class);
     
