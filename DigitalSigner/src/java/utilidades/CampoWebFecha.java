@@ -9,6 +9,7 @@ import java.util.Date;
 public class CampoWebFecha extends CampoWeb {
     public CampoWebFecha() {
         super(Tipo.Fecha);
+        super.setWidth("7rem");
     }
 
     @Override

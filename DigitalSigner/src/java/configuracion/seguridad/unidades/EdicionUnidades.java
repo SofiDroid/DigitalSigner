@@ -4,12 +4,15 @@ import basedatos.servicios.StTUnidad;
 import basedatos.tablas.BdTUnidad;
 import excepciones.FormModeException;
 import excepciones.RegistryNotFoundException;
+import excepciones.RequiredFieldException;
 import java.io.Serializable;
 import utilidades.CampoWebCodigo;
 import utilidades.CampoWebDescripcion;
 import utilidades.CampoWebFecha;
 import utilidades.Mensajes;
 import utilidades.ModoFormulario;
+import utilidades.Msg;
+import utilidades.Validation;
 
 /**
  *
@@ -38,9 +41,24 @@ public class EdicionUnidades implements Serializable {
     private void init(Integer idUnidad) {
         try {
             this.cCoUnidad = new CampoWebCodigo();
+            this.cCoUnidad.setLabel(Msg.getString("lbl_BdTUnidad_CoUnidad"));
+            this.cCoUnidad.setWidthLabel("100px");
+            this.cCoUnidad.setRequired(true);
+            
             this.cDsUnidad = new CampoWebDescripcion();
+            this.cDsUnidad.setLabel(Msg.getString("lbl_BdTUnidad_DsUnidad"));
+            this.cDsUnidad.setWidthLabel("100px");
+            this.cDsUnidad.setRequired(true);
+            
             this.cFeAlta = new CampoWebFecha();
+            this.cFeAlta.setLabel(Msg.getString("lbl_BdTUnidad_FeAlta"));
+            this.cFeAlta.setWidthLabel("100px");
+            this.cFeAlta.setRequired(true);
+            
             this.cFeDesactivo = new CampoWebFecha();
+            this.cFeDesactivo.setLabel(Msg.getString("lbl_BdTUnidad_FeDesactivo"));
+            this.cFeDesactivo.setWidthLabel("100px");
+            
             this.setModoFormulario(ModoFormulario.CONSULTA);
 
             if (idUnidad != null) {
@@ -63,6 +81,18 @@ public class EdicionUnidades implements Serializable {
 
     public void guardar() {
         try {
+            validarCampos();
+            
+            //ALTA
+            if (this.modoFormulario == ModoFormulario.ALTA) {
+                
+            }
+            
+            //ACTUALIZACION
+            if (this.modoFormulario == ModoFormulario.EDICION) {
+                
+            }
+            
             this.setModoFormulario(ModoFormulario.CONSULTA);
         }
         catch (Exception ex) {
@@ -111,6 +141,18 @@ public class EdicionUnidades implements Serializable {
         return null;
     }
 
+    private void validarCampos() throws RequiredFieldException {
+        if (Validation.isNullOrEmpty(this.cCoUnidad.getValue())) {
+            throw new RequiredFieldException(this.cCoUnidad.getLabel());
+        }
+        if (Validation.isNullOrEmpty(this.cDsUnidad.getValue())) {
+            throw new RequiredFieldException(this.cDsUnidad.getLabel());
+        }
+        if (Validation.isNullOrEmpty(this.cFeAlta.getValue())) {
+            throw new RequiredFieldException(this.cFeAlta.getLabel());
+        }
+    }
+    
     private void protegerCampos() throws Exception {
         switch (this.modoFormulario) {
             case CONSULTA -> {

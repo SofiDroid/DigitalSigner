@@ -61,13 +61,17 @@
                         <div class="ui-fluid">
                             <div class="field">
                                 <p:outputLabel value="#{msg['usuario']}" for="@next" />
-                                <p:inputText id="username" type="text" style="font-size: 1rem" value="#{loginForm.usuario}" rendered="true" />
+                                <p:inputText id="username" type="text" style="font-size: 1rem" value="#{loginForm.usuario}" required="true"
+                                             requiredMessage="Campo requerido" maxlength="50" label="#{msg['usuario']}" />
+                                <p:message for="username" display="icon"/>
                             </div>
                             <div class="field">
                                 <p:outputLabel value="#{msg['password']}" for="@next" />
-                                <p:inputText id="password" type="password" style="font-size: 1rem" value="#{loginForm.password}"  rendered="true" />
+                                <p:inputText id="password" type="password" style="font-size: 1rem" value="#{loginForm.password}" required="true"
+                                             requiredMessage="Campo requerido" maxlength="50" label="#{msg['password']}" />
+                                <p:message for="password" display="icon"/>
                             </div>
-                            <p:commandButton value="#{msg['login']}" action="#{loginForm.login()}" update="mensaje" />
+                            <p:commandButton value="#{msg['login']}" action="#{loginForm.login()}" update="mensaje"  />
                         </div>
                     </div>
                 </div>

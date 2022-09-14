@@ -28,44 +28,40 @@
 
                         <p:commandButton id="btnModificar" icon="pi pi-pencil" styleClass="rounded-button ui-button-primary" 
                                          style="height: 2rem;width: 2rem;margin-left:0.3rem" action="#{beanEdicion.modificar}" title="(alt+M) Modifcar"
-                                         update="@form" accesskey="m" 
+                                         update="@form" accesskey="m" immediate="true"
                                          rendered="#{beanEdicion.modoFormulario eq 'CONSULTA'}" />
 
                         <p:commandButton id="btnEliminar" icon="pi pi-trash" styleClass="rounded-button ui-button-danger" 
                                          style="height: 2rem;width: 2rem;margin-left:0.3rem" action="#{beanEdicion.eliminar}" title="(alt+E) Eliminar"
-                                         update="@form" accesskey="e" 
+                                         update="@form" accesskey="e" immediate="true"
                                          rendered="#{beanEdicion.modoFormulario eq 'CONSULTA'}">
                             <p:confirm header="#{msg['confirmacion']}" message="#{msg['confirmacion_borrado']}" icon="pi pi-info-circle"/>
                         </p:commandButton>
                         
                         <p:commandButton id="btnLimpiar" icon="pi pi-filter-slash" styleClass="rounded-button ui-button-secondary" 
                                          style="height: 2rem;width: 2rem;margin-left:0.3rem" action="#{beanEdicion.limpiar}" title="(alt+L) Limpiar formulario"
-                                         update="@form" accesskey="l" 
-                                         rendered="#{beanEdicion.modoFormulario eq 'EDICION' or beanEdicion.modoFormulario eq 'ALTA'}" />
+                                         update="@form" accesskey="l" immediate="true"
+                                         rendered="#{beanEdicion.modoFormulario eq 'EDICION'}" />
 
                         <p:commandButton id="btnVolver" icon="pi pi-undo" styleClass="rounded-button ui-button-warning" 
                                          style="height: 2rem;width: 2rem;margin-left:0.3rem" action="#{beanEdicion.volver}" title="(alt+V) Volver"
-                                         update="@form" accesskey="v" />
+                                         update="@form" accesskey="v" immediate="true" />
                     </p:toolbarGroup>
                 </p:toolbar>
             </p:card>
             <p:card styleClass="card">
-                <p:panelGrid columns="2"
-                     columnClasses="col-2,col-10"
+                <p:panelGrid columns="1"
+                     columnClasses="col-12"
                      layout="grid"
                      styleClass="ui-panelgrid-blank ui-fluid"
                      style="border:0px none;background-color:transparent;">
 
-                    <p:outputLabel for="txtCodigoUnidad" value="#{msg['lbl_BdTUnidad_CoUnidad']}" />
-                    <sd:campoWebCodigo id="txtCodigoUnidad" beanClass="#{beanEdicion.getcCoUnidad()}" />
+                    <sd:campoWebTexto id="txtCodigoUnidad" beanClass="#{beanEdicion.getcCoUnidad()}" />
 
-                    <p:outputLabel for="txtDescripcionUnidad" value="#{msg['lbl_BdTUnidad_DsUnidad']}" />
-                    <sd:campoWebDescripcion id="txtDescripcionUnidad" beanClass="#{beanEdicion.getcDsUnidad()}" />
+                    <sd:campoWebTexto id="txtDescripcionUnidad" beanClass="#{beanEdicion.getcDsUnidad()}" />
 
-                    <p:outputLabel for="txtFeAlta" value="#{msg['lbl_BdTUnidad_FeAlta']}" />
                     <sd:campoWebFecha id="txtFeAlta" beanClass="#{beanEdicion.getcFeAlta()}" />
 
-                    <p:outputLabel for="txtFeDesactivo" value="#{msg['lbl_BdTUnidad_FeDesactivo']}" />
                     <sd:campoWebFecha id="txtFeDesactivo" beanClass="#{beanEdicion.getcFeDesactivo()}" />
 
                 </p:panelGrid>

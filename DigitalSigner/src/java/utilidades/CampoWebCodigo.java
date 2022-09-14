@@ -7,6 +7,8 @@ package utilidades;
 public class CampoWebCodigo extends CampoWeb {
     public CampoWebCodigo() {
         super(Tipo.Codigo);
+        super.setWidth("6rem");
+        super.setMaxlength("50");
     }
     
     public void setValue(String value) {
@@ -16,5 +18,5 @@ public class CampoWebCodigo extends CampoWeb {
     @Override
     public String getValue() {
         return (String)super.getValue();
-    }
+    }   
 }

@@ -12,6 +12,7 @@ public class CampoWebFechaRango extends CampoWeb {
     
     public CampoWebFechaRango() {
         super(Tipo.FechaRango);
+        super.setWidth("7rem");
     }
 
     public Date getValueIni() {

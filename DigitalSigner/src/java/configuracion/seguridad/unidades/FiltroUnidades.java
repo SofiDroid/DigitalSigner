@@ -15,6 +15,7 @@ import utilidades.CampoWebDescripcion;
 import utilidades.CampoWebFechaRango;
 import utilidades.Formateos;
 import utilidades.Mensajes;
+import utilidades.Msg;
 
 /**
  *
@@ -36,9 +37,21 @@ public class FiltroUnidades implements Serializable {
     @PostConstruct
     public void init() {
         this.cCoUnidad = new CampoWebCodigo();
+        this.cCoUnidad.setLabel(Msg.getString("lbl_BdTUnidad_CoUnidad"));
+        this.cCoUnidad.setWidthLabel("70px");
+        
         this.cDsUnidad = new CampoWebDescripcion();
+        this.cDsUnidad.setLabel(Msg.getString("lbl_BdTUnidad_DsUnidad"));
+        this.cDsUnidad.setWidthLabel("70px");
+        
         this.cFeAlta = new CampoWebFechaRango();
+        this.cFeAlta.setLabel(Msg.getString("lbl_BdTUnidad_FeAlta"));
+        this.cFeAlta.setWidthLabel("100px");
+
         this.cFeDesactivo = new CampoWebFechaRango();
+        this.cFeDesactivo.setLabel(Msg.getString("lbl_BdTUnidad_FeDesactivo"));
+        this.cFeDesactivo.setWidthLabel("100px");
+        
         this.dsResultado = new DataSet();
     }
 
@@ -112,7 +125,7 @@ public class FiltroUnidades implements Serializable {
             sql = filtros(sql);
 
             this.dsResultado = new DataSet(sql);
-            
+
             // Establecer formato de salida
             RowCabecera cabecera = this.dsResultado.getCabecera();
             
@@ -183,15 +196,25 @@ public class FiltroUnidades implements Serializable {
     }
     
     public String verDetalle() {
-        this.edicionUnidades = new EdicionUnidades(this.dsResultado.getSelectedRow().getColumnName("ID_UNIDAD").getValueInteger());
-        this.edicionUnidades.setPaginaRetorno("filtroUnidades");
+        try {
+            this.edicionUnidades = new EdicionUnidades(this.dsResultado.getSelectedRow().getColumnName("ID_UNIDAD").getValueInteger());
+            this.edicionUnidades.setPaginaRetorno("filtroUnidades");
+        } catch (Exception ex) {
+            LOG.error(ex.getMessage(), ex);
+            new Mensajes().showError("Error al navegar al detalle", ex.getMessage());
+        }
         
         return "edicionUnidades";
     }
 
     public String nuevo() {
-        this.edicionUnidades = new EdicionUnidades(null);
-        this.edicionUnidades.setPaginaRetorno("filtroUnidades");
+        try {
+            this.edicionUnidades = new EdicionUnidades(null);
+            this.edicionUnidades.setPaginaRetorno("filtroUnidades");
+        } catch (Exception ex) {
+            LOG.error(ex.getMessage(), ex);
+            new Mensajes().showError("Error al navegar al detalle", ex.getMessage());
+        }
         
         return "edicionUnidades";
     }

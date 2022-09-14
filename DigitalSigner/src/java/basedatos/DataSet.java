@@ -1,5 +1,6 @@
 package basedatos;
 
+import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,6 +18,11 @@ public final class DataSet extends StBase {
     protected ArrayList<Row> rows = new ArrayList<>();
     protected HashMap<String, Object> parametros = new HashMap<>();
     protected Row selectedRow = null;
+    protected Method rowSelectMethod = null;
+    protected Object rowSelectClass = null;
+    protected String rowSelectUpdate = "@widgetVar(mensaje)";
+    protected String rowSelectColumnaID = null;
+
     
     public DataSet() {
         // NADA
@@ -56,7 +62,7 @@ public final class DataSet extends StBase {
     private void rellenaDatos(ArrayList<LinkedHashMap<String,Object>> lista) {
         int f = 0;
         for (LinkedHashMap<String,Object> itemRow : lista) {
-            Row fila = new Row();
+            Row fila = new Row(this);
             fila.index = f++;
             int c = 0;
             for (Map.Entry<String, Object> itemColumn : itemRow.entrySet()) {
@@ -121,5 +127,41 @@ public final class DataSet extends StBase {
 
     public void setSelectedRow(Row selectedRow) {
         this.selectedRow = selectedRow;
+    }
+
+    public Method getRowSelectMethod() {
+        return rowSelectMethod;
+    }
+
+    public void setRowSelectMethod(Method rowSelectMethod) {
+        this.rowSelectMethod = rowSelectMethod;
+    }
+
+    public Object getRowSelectClass() {
+        return rowSelectClass;
+    }
+
+    public void setRowSelectClass(Object rowSelectClass) {
+        this.rowSelectClass = rowSelectClass;
+    }
+
+    public String getRowSelectUpdate() {
+        return rowSelectUpdate;
+    }
+
+    public void setRowSelectUpdate(String rowSelectUpdate) {
+        this.rowSelectUpdate = rowSelectUpdate;
+    }
+    
+    public String onRowSelect() throws Exception {
+        return (String)this.rowSelectMethod.invoke(this.rowSelectClass);
+    }
+
+    public String getRowSelectColumnaID() {
+        return rowSelectColumnaID;
+    }
+
+    public void setRowSelectColumnaID(String rowSelectColumnaID) {
+        this.rowSelectColumnaID = rowSelectColumnaID;
     }
 }

@@ -11,10 +11,14 @@
 
     <!-- IMPLEMENTATION -->
     <cc:implementation>
-        <p:datePicker id="#{cc.attrs.id}" style="width: 7rem"
-                      showIcon="true" maxlength="10" showOnFocus="false"
-                      showButtonBar="true" monthNavigator="true" yearNavigator="true" 
-                      mask="true" locale="#{datosUsuario.pais.locale}" value="#{cc.attrs.beanClass.value}"
-                      disabled="#{cc.attrs.beanClass.protegido}" />
+        <p:panelGrid columns="2" columnClasses="colFit, colFit">
+            <p:outputLabel for="#{cc.attrs.id}" value="#{cc.attrs.beanClass.label}#{cc.attrs.beanClass.requiredChar}" escape="false" style="display: block;#{cc.attrs.beanClass.widthLabel}" />
+            <p:datePicker id="#{cc.attrs.id}" style="#{cc.attrs.beanClass.width}"
+                          showIcon="true" maxlength="10" showOnFocus="false"
+                          showButtonBar="true" monthNavigator="true" yearNavigator="true" 
+                          mask="true" locale="#{datosUsuario.pais.locale}" value="#{cc.attrs.beanClass.value}"
+                          disabled="#{cc.attrs.beanClass.protegido}"
+                          required="#{cc.attrs.beanClass.required}" label="#{cc.attrs.beanClass.label}" />
+        </p:panelGrid>
     </cc:implementation>
 </html>

@@ -7,6 +7,7 @@ package utilidades;
 public class CampoWebDescripcion extends CampoWeb {
     public CampoWebDescripcion() {
         super(Tipo.Descripcion);
+        super.setMaxlength("255");
     }
 
     public void setValue(String value) {

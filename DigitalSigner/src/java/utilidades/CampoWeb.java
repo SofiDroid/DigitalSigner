@@ -13,9 +13,14 @@ public class CampoWeb {
         FechaRango
     }
     
+    private String width = ""; 
+    private String widthLabel = ""; 
+    private String maxlength = "";
     private Tipo tipo = Tipo.Codigo;
     private Object value = null;
     private boolean protegido = false;
+    private boolean required = false;
+    private String label = "";
 
     public CampoWeb(Tipo tipo) {
         this.tipo = tipo;
@@ -43,5 +48,49 @@ public class CampoWeb {
 
     public void setProtegido(boolean protegido) {
         this.protegido = protegido;
+    }
+
+    public boolean isRequired() {
+        return required;
+    }
+
+    public void setRequired(boolean required) {
+        this.required = required;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    public String getWidth() {
+        return (width != null && !width.isBlank() ? "width: " + width + ";" : "");
+    }
+
+    public void setWidth(String width) {
+        this.width = width;
+    }
+
+    public String getWidthLabel() {
+        return (widthLabel != null && !widthLabel.isBlank() ? "width: " + widthLabel + ";" : "");
+    }
+
+    public void setWidthLabel(String widthLabel) {
+        this.widthLabel = widthLabel;
+    }
+
+    public String getMaxlength() {
+        return maxlength;
+    }
+
+    public void setMaxlength(String maxlength) {
+        this.maxlength = maxlength;
+    }
+
+    public String getRequiredChar() {
+        return (required ? " <span style='color: red'>*</span>" : "");
     }
 }

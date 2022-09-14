@@ -31,22 +31,18 @@
             </p:card>
             <p:card styleClass="card">
                 <p:fieldset id="fsFiltros" legend="#{msg['filtros']}" toggleable="false" >
-                    <p:panelGrid columns="4"
-                     columnClasses="col-1,col-6,col-2,col-3"
+                    <p:panelGrid columns="2"
+                     columnClasses="col-7,col-5"
                      layout="grid"
                      styleClass="ui-panelgrid-blank ui-fluid"
                      style="border:0px none; background-color:transparent;">
 
-                        <p:outputLabel for="txtCodigoUnidad" value="#{msg['lbl_BdTUnidad_CoUnidad']}" />
-                        <sd:campoWebCodigo id="txtCodigoUnidad" beanClass="#{filtroUnidades.getcCoUnidad()}" />
+                        <sd:campoWebTexto id="txtCodigoUnidad" beanClass="#{filtroUnidades.getcCoUnidad()}" />
 
-                        <p:outputLabel for="txtFeAlta" value="#{msg['lbl_BdTUnidad_FeAlta']}" />
                         <sd:campoWebFechaRango id="txtFeAlta" beanClass="#{filtroUnidades.getcFeAlta()}" />
 
-                        <p:outputLabel for="txtDescripcionUnidad" value="#{msg['lbl_BdTUnidad_DsUnidad']}" />
-                        <sd:campoWebDescripcion id="txtDescripcionUnidad" beanClass="#{filtroUnidades.getcDsUnidad()}" />
+                        <sd:campoWebTexto id="txtDescripcionUnidad" beanClass="#{filtroUnidades.getcDsUnidad()}" />
 
-                        <p:outputLabel for="txtFeDesactivo" value="#{msg['lbl_BdTUnidad_FeDesactivo']}" />
                         <sd:campoWebFechaRango id="txtFeDesactivo" beanClass="#{filtroUnidades.getcFeDesactivo()}" />
 
                     </p:panelGrid>

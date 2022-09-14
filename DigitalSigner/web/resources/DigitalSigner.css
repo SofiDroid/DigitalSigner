@@ -24,19 +24,25 @@
 }
 
 .ui-datatable-odd {
-    background-color: aliceblue!important;
+    background-color: #d4edff!important;
 }
 
 .ui-datatable-even:hover,
 .ui-datatable-odd:hover {
-    background-color: lightskyblue!important;
+    background-color: #a6cae3!important;
 }
 
 body .ui-toolbar {
     padding: 0.5rem!important;
+    background-color: #213a68!important;
+    color: whitesmoke;
 }
 
 body .ui-fieldset .ui-fieldset-legend {
+    padding: 0.5rem!important;
+}
+
+body .ui-fieldset {
     padding: 0.5rem!important;
 }
 
@@ -63,6 +69,14 @@ body .ui-fieldset .ui-fieldset-legend {
 
 .centerScreen {
     position: fixed;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
+.centerDiv {
+    position: relative;
     top: 50%;
     left: 50%;
     -webkit-transform: translate(-50%, -50%);
@@ -178,6 +192,84 @@ body .ui-panelgrid .ui-panelgrid-cell{
     width:100%
 }
 
+.colFija-1 {
+    flex:0 0 auto;
+    padding:.2rem;
+    width: 1rem;
+}
+
+.colFija-2 {
+    flex:0 0 auto;
+    padding:.2rem;
+    width: 2rem;
+}
+
+.colFija-3 {
+    flex:0 0 auto;
+    padding:.2rem;
+    width: 3rem;
+}
+
+.colFija-4 {
+    flex:0 0 auto;
+    padding:.2rem;
+    width: 4rem;
+}
+
+.colFija-5 {
+    flex:0 0 auto;
+    padding:.2rem;
+    width: 5rem;
+}
+
+.colFija-6 {
+    flex:0 0 auto;
+    padding:.2rem;
+    width: 6rem;
+}
+
+.colFija-7 {
+    flex:0 0 auto;
+    padding:.2rem;
+    width: 7rem;
+}
+
+.colFija-8 {
+    flex:0 0 auto;
+    padding:.2rem;
+    width: 8rem;
+}
+
+.colFija-9 {
+    flex:0 0 auto;
+    padding:.2rem;
+    width: 9rem;
+}
+
+.colFija-10 {
+    flex:0 0 auto;
+    padding:.2rem;
+    width: 10rem;
+}
+
+.colFija-11 {
+    flex:0 0 auto;
+    padding:.2rem;
+    width: 11rem;
+}
+
+.colFija-12 {
+    flex:0 0 auto;
+    padding:.2rem;
+    width: 12rem;
+}
+
+.colFit {
+    flex:0 0 auto;
+    padding:.2rem;
+    width: fit-content;
+}
+
 body .ui-panelmenu h3.ui-panelmenu-header {
     background-color: #213a68!important;
     color: whitesmoke!important;
@@ -185,4 +277,13 @@ body .ui-panelmenu h3.ui-panelmenu-header {
 
 body .ui-panelmenu h3.ui-panelmenu-header.ui-state-hover {
     background-color: #547cc4!important;
+}
+
+body .ui-datatable thead th {
+    background-color: #016a94!important;
+    color: whitesmoke!important;
+}
+
+body .ui-datatable thead th.ui-state-hover {
+    background-color: #59a4c2!important;
 }
