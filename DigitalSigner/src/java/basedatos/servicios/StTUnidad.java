@@ -4,7 +4,6 @@ import basedatos.Mapeador;
 import basedatos.StBase;
 import basedatos.tablas.BdTUnidad;
 import excepciones.RequiredFieldException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -51,7 +50,7 @@ public class StTUnidad extends StBase {
         return null;
     }
     
-    public int alta(BdTUnidad newBdTUnidad, EntityManager em) throws RequiredFieldException, SQLException {
+    public int alta(BdTUnidad newBdTUnidad, EntityManager em) throws Exception {
 
         if (Validation.isNullOrEmpty(newBdTUnidad.getCoUnidad())) {
             throw new RequiredFieldException("CO_UNIDAD");
@@ -79,7 +78,7 @@ public class StTUnidad extends StBase {
         return executeNativeQueryParametros(newBdTUnidad.getInsert(), parametros, em);
     }
 
-    public int actualiza(BdTUnidad bdTUnidad, EntityManager em) throws RequiredFieldException, SQLException {
+    public int actualiza(BdTUnidad bdTUnidad, EntityManager em) throws Exception {
         
         if (Validation.isNullOrEmpty(bdTUnidad.getIdUnidad())) {
             throw new RequiredFieldException("ID_UNIDAD");
@@ -110,7 +109,7 @@ public class StTUnidad extends StBase {
         return executeNativeQueryParametros(bdTUnidad.getUpdate(), parametros, em);
     }
 
-    public int baja(BdTUnidad bdTUnidad, EntityManager em) throws SQLException {
+    public int baja(BdTUnidad bdTUnidad, EntityManager em) throws  Exception {
         
         HashMap<String, Object> parametros = new HashMap<>();
 

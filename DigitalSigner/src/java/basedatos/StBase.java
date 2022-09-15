@@ -33,7 +33,7 @@ public class StBase {
         }
     }
     
-    protected int executeNativeQueryParametros(String sql, HashMap<String, Object> parametros, EntityManager em) throws SQLException {
+    protected int executeNativeQueryParametros(String sql, HashMap<String, Object> parametros, EntityManager em) throws Exception {
         boolean conexionNueva = (em == null);
         EntityManager entityManager = em;
         try 

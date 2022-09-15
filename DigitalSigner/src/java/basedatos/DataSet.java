@@ -23,23 +23,69 @@ public final class DataSet extends StBase {
     protected String rowSelectUpdate = "@widgetVar(mensaje)";
     protected String rowSelectColumnaID = null;
 
-    
     public DataSet() {
-        // NADA
+    
     }
     
-    public DataSet(String sql, HashMap<String, Object> parametros) throws SQLException {
+    public DataSet(String sql, HashMap<String, Object> parametros, String columnaID) throws SQLException {
         this.sql = sql;
         this.parametros = parametros;
+        this.rowSelectColumnaID = columnaID;
         recuperarDatos();
     }
     
-    public DataSet(String sql) throws SQLException {
+    public DataSet(String sql, String columnaID) throws SQLException {
         this.sql = sql;
+        this.rowSelectColumnaID = columnaID;
         recuperarDatos();
     }
 
-    public void recuperarDatos() throws SQLException {
+    public void actualizarFilaSeleccionada() throws SQLException {
+        String sqlItem = "SELECT * FROM (" + sql + ") DS_T1 WHERE " + this.getSelectedRow().getColumnaID().getName() + " = :" + this.getSelectedRow().getColumnaID().getName() + "_ID";
+        HashMap<String, Object> parametrosItem = (HashMap<String, Object>)parametros.clone();
+        parametrosItem.put(this.getSelectedRow().getColumnaID().getName() + "_ID", this.getSelectedRow().getColumnaID().getValue());
+        
+        ArrayList<LinkedHashMap<String,Object>> lista = executeNativeQueryListParametros(sqlItem, parametrosItem, null);
+        rellenarFila(lista.get(0), this.getSelectedRow(), false);
+    }
+    
+    public void eliminarFilaSeleccionada() {
+//        for (int i = this.rows.size()-1; i >= 0; i--) {
+//            if (this.rows.get(i).getColumnaID().getValue().equals(this.getSelectedRow().getColumnaID().getValue())) {
+//                this.rows.remove(i);
+//                this.selectedRow = null;
+//                break;
+//            }
+//        }
+        this.getRows().remove(this.getSelectedRow());
+    }
+    
+    public void insertarFilaNueva(Object idNuevaFila) throws SQLException {
+        if (this.sql != null)
+        {
+            String sqlItem = "SELECT * FROM (" + sql + ") DS_T1 WHERE " + this.rowSelectColumnaID + " = :" + this.rowSelectColumnaID + "_ID";
+            HashMap<String, Object> parametrosItem = (HashMap<String, Object>)parametros.clone();
+            parametrosItem.put(this.rowSelectColumnaID + "_ID", idNuevaFila);
+
+            ArrayList<LinkedHashMap<String,Object>> lista = executeNativeQueryListParametros(sqlItem, parametrosItem, null);
+            Row fila = new Row(this);
+            fila.index = this.getRowsCount();
+            rellenarFila(lista.get(0), fila, true);
+        }
+    }
+    
+    public void refrescarDatos() throws SQLException {
+        if (this.sql != null) {
+            ArrayList<LinkedHashMap<String,Object>> lista = executeNativeQueryListParametros(sql, parametros, null);
+            if (lista != null && !lista.isEmpty()) {
+                this.getRows().clear();
+                this.setSelectedRow(null);
+                rellenaDatos(lista);
+            }
+        }
+    }
+    
+    private void recuperarDatos() throws SQLException {
         ArrayList<LinkedHashMap<String,Object>> lista = executeNativeQueryListParametros(sql, parametros, null);
         if (lista != null && !lista.isEmpty()) {
             rellenaCabecera(lista);
@@ -64,8 +110,14 @@ public final class DataSet extends StBase {
         for (LinkedHashMap<String,Object> itemRow : lista) {
             Row fila = new Row(this);
             fila.index = f++;
-            int c = 0;
-            for (Map.Entry<String, Object> itemColumn : itemRow.entrySet()) {
+            rellenarFila(itemRow, fila, true);
+        }
+    }
+    
+    private void rellenarFila(LinkedHashMap<String,Object> itemRow, Row fila, boolean nuevaFila) {
+        int c = 0;
+        for (Map.Entry<String, Object> itemColumn : itemRow.entrySet()) {
+            if (nuevaFila) {
                 Column columna = new Column();
                 columna.setCabecera((ColumnCabecera)this.cabecera.getColumns().get(c));
                 columna.index = c++;
@@ -75,6 +127,11 @@ public final class DataSet extends StBase {
                 columna.tooltip = columna.valueString;
                 fila.getColumns().add(columna);
             }
+            else {
+                 fila.getColumnName(itemColumn.getKey()).setValue(itemColumn.getValue());
+            }
+        }
+        if (nuevaFila) {
             this.rows.add(fila);
         }
     }

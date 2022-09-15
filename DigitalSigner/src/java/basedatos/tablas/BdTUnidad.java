@@ -99,28 +99,45 @@ public class BdTUnidad extends OperacionSQL implements InterfazDAO {
             } else {
                 sb_sql.append(":ID_UNIDAD");
             }
-            sb_sql.append(",");
+            sb_sql.append(",").append("DECODE(:CO_UNIDAD, null, NULL, :CO_UNIDAD)");
+            sb_sql.append(",").append("DECODE(:DS_UNIDAD, null, NULL, :DS_UNIDAD)");
+            sb_sql.append(",").append("DECODE(:FE_ALTA, null, NULL, :FE_ALTA)");
+            sb_sql.append(",").append("DECODE(:FE_DESACTIVO, null, NULL, :FE_DESACTIVO)");
+            sb_sql.append(",").append("DECODE(:USUARIOBD, null, NULL, :USUARIOBD)");
+            sb_sql.append(",").append("DECODE(:TSTBD, null, NULL, :TSTBD)");
         }
-        
-        sb_sql.append("DECODE(:CO_UNIDAD, null, NULL, :CO_UNIDAD)");
-        sb_sql.append(",").append("DECODE(:DS_UNIDAD, null, NULL, :DS_UNIDAD)");
-        sb_sql.append(",").append("DECODE(:FE_ALTA, null, NULL, :FE_ALTA)");
-        sb_sql.append(",").append("DECODE(:FE_DESACTIVO, null, NULL, :FE_DESACTIVO)");
-        sb_sql.append(",").append("DECODE(:USUARIOBD, null, NULL, :USUARIOBD)");
-        sb_sql.append(",").append("DECODE(:TSTBD, null, NULL, :TSTBD)");
+        else {
+            sb_sql.append(":CO_UNIDAD");
+            sb_sql.append(",").append(":DS_UNIDAD");
+            sb_sql.append(",").append(":FE_ALTA");
+            sb_sql.append(",").append(":FE_DESACTIVO");
+            sb_sql.append(",").append(":USUARIOBD");
+            sb_sql.append(",").append(":TSTBD");
+        }
         sb_sql.append(")");
         return sb_sql.toString();
     }
 
     public String getUpdate()
     {
-        StringBuilder sb_sql = new StringBuilder("UPDATE BD_T_UNDIAD SET ");
-        sb_sql.append("CO_UNIDAD = ").append("DECODE(:CO_UNIDAD, null, NULL, :CO_UNIDAD)");
-        sb_sql.append(",DS_UNIDAD = ").append("DECODE(:DS_UNIDAD, null, NULL, :DS_UNIDAD)");
-        sb_sql.append(",FE_ALTA = ").append("DECODE(:FE_ALTA, null, NULL, :FE_ALTA)");
-        sb_sql.append(",FE_DESACTIVO = ").append("DECODE(:FE_DESACTIVO, null, NULL, :FE_DESACTIVO)");
-        sb_sql.append(",USUARIOBD = ").append("DECODE(:USUARIOBD, null, NULL, :USUARIOBD)");
-        sb_sql.append(",TSTBD = ").append("DECODE(:TSTBD, null, NULL, :TSTBD)"); 
+        StringBuilder sb_sql = new StringBuilder("UPDATE BD_T_UNIDAD SET ");
+        
+        if (AppInit.TIPO_BASEDATOS == BaseDatos.ORACLE) {
+            sb_sql.append("CO_UNIDAD = ").append("DECODE(:CO_UNIDAD, null, NULL, :CO_UNIDAD)");
+            sb_sql.append(",DS_UNIDAD = ").append("DECODE(:DS_UNIDAD, null, NULL, :DS_UNIDAD)");
+            sb_sql.append(",FE_ALTA = ").append("DECODE(:FE_ALTA, null, NULL, :FE_ALTA)");
+            sb_sql.append(",FE_DESACTIVO = ").append("DECODE(:FE_DESACTIVO, null, NULL, :FE_DESACTIVO)");
+            sb_sql.append(",USUARIOBD = ").append("DECODE(:USUARIOBD, null, NULL, :USUARIOBD)");
+            sb_sql.append(",TSTBD = ").append("DECODE(:TSTBD, null, NULL, :TSTBD)");
+        }
+        else {
+            sb_sql.append("CO_UNIDAD = :CO_UNIDAD");
+            sb_sql.append(",DS_UNIDAD = :DS_UNIDAD");
+            sb_sql.append(",FE_ALTA = :FE_ALTA");
+            sb_sql.append(",FE_DESACTIVO = :FE_DESACTIVO");
+            sb_sql.append(",USUARIOBD = :USUARIOBD");
+            sb_sql.append(",TSTBD = :TSTBD");
+        }
         sb_sql.append(" WHERE ");
         sb_sql.append("ID_UNIDAD = ").append(":ID_UNIDAD");
         

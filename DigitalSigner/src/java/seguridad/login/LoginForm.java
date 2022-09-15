@@ -9,7 +9,6 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
 import org.apache.log4j.Logger;
-import seguridad.usuarios.DatosUsuario;
 import utilidades.Mensajes;
 import utilidades.Session;
 
@@ -53,7 +52,7 @@ public class LoginForm implements Serializable {
 
             //ACCESO DENEGADO
             //MENSAJE
-            new Mensajes().showWarn("Acceso denegado", "Usuario o contraseña incorrectos");
+            Mensajes.showWarn("Acceso denegado", "Usuario o contraseña incorrectos");
             
             return null;
         } catch (Exception ex) {

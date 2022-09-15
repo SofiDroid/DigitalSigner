@@ -115,7 +115,7 @@ public class FiltroUnidades implements Serializable {
             this.dsResultado.clear();
         } catch (Exception ex) {
             LOG.error(ex.getMessage(), ex);
-            new Mensajes().showError("Error al buscar", ex.getMessage());
+            Mensajes.showError("Error al buscar", ex.getMessage());
         }
     }
     
@@ -124,7 +124,7 @@ public class FiltroUnidades implements Serializable {
             String sql = "SELECT ID_UNIDAD, CO_UNIDAD, DS_UNIDAD, FE_ALTA, FE_DESACTIVO FROM BD_T_UNIDAD WHERE 1 = 1";
             sql = filtros(sql);
 
-            this.dsResultado = new DataSet(sql);
+            this.dsResultado = new DataSet(sql, "ID_UNIDAD");
 
             // Establecer formato de salida
             RowCabecera cabecera = this.dsResultado.getCabecera();
@@ -154,7 +154,7 @@ public class FiltroUnidades implements Serializable {
             
         } catch (NoSuchMethodException | SecurityException | SQLException ex) {
             LOG.error(ex.getMessage(), ex);
-            new Mensajes().showError("Error al buscar", ex.getMessage());
+            Mensajes.showError("Error al buscar", ex.getMessage());
         }
     }
     
@@ -197,11 +197,11 @@ public class FiltroUnidades implements Serializable {
     
     public String verDetalle() {
         try {
-            this.edicionUnidades = new EdicionUnidades(this.dsResultado.getSelectedRow().getColumnName("ID_UNIDAD").getValueInteger());
+            this.edicionUnidades = new EdicionUnidades(this, this.dsResultado.getSelectedRow().getColumnName("ID_UNIDAD").getValueInteger());
             this.edicionUnidades.setPaginaRetorno("filtroUnidades");
         } catch (Exception ex) {
             LOG.error(ex.getMessage(), ex);
-            new Mensajes().showError("Error al navegar al detalle", ex.getMessage());
+            Mensajes.showError("Error al navegar al detalle", ex.getMessage());
         }
         
         return "edicionUnidades";
@@ -209,11 +209,11 @@ public class FiltroUnidades implements Serializable {
 
     public String nuevo() {
         try {
-            this.edicionUnidades = new EdicionUnidades(null);
+            this.edicionUnidades = new EdicionUnidades(this, null);
             this.edicionUnidades.setPaginaRetorno("filtroUnidades");
         } catch (Exception ex) {
             LOG.error(ex.getMessage(), ex);
-            new Mensajes().showError("Error al navegar al detalle", ex.getMessage());
+            Mensajes.showError("Error al navegar al detalle", ex.getMessage());
         }
         
         return "edicionUnidades";

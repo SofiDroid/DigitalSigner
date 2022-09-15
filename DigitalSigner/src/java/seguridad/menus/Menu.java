@@ -1,10 +1,8 @@
 package seguridad.menus;
 
 import java.io.Serializable;
-import java.util.ResourceBundle;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
-import javax.faces.context.FacesContext;
 import javax.inject.Named;
 import org.primefaces.model.menu.DefaultMenuItem;
 import org.primefaces.model.menu.DefaultMenuModel;
@@ -19,38 +17,35 @@ import utilidades.Msg;
 @Named
 @SessionScoped
 public class Menu implements Serializable {
-    
-    private static final long serialVersionUID = 1L;
-
     private MenuModel model;
     
     @PostConstruct
     public void init() {
-        Msg msg = new Msg();
-        
         model = new DefaultMenuModel();
 
         //Gestión de documentos
         DefaultSubMenu submenu = DefaultSubMenu.builder()
-                .label(msg.getString("mnuGestionDocumentos"))
+                .id("mnuGestionDocumentos")
+                .label(Msg.getString("mnuGestionDocumentos"))
                 .build();
 
         DefaultMenuItem item = DefaultMenuItem.builder()
-                .value(msg.getString("mnuFirmaDocumentos"))
+                .id("mnuFirmaDocumentos")
+                .value(Msg.getString("mnuFirmaDocumentos"))
                 /*.icon("pi pi-save")*/
                 .command("/GestionDocumentos/FirmaDocumentos/filtroFirmaDocumentos")
                 .build();
         submenu.getElements().add(item);
 
         item = DefaultMenuItem.builder()
-                .value(msg.getString("mnuConsultaDocumentos"))
+                .value(Msg.getString("mnuConsultaDocumentos"))
                 /*.icon("pi pi-save")*/
                 .command("/GestionDocumentos/FirmaDocumentos/filtroConsultaDocumentos")
                 .build();
         submenu.getElements().add(item);
 
         item = DefaultMenuItem.builder()
-                .value(msg.getString("mnuInformes"))
+                .value(Msg.getString("mnuInformes"))
                 /*.icon("pi pi-save")*/
                 .command("/GestionDocumentos/FirmaDocumentos/filtroInformes")
                 .build();
@@ -61,25 +56,25 @@ public class Menu implements Serializable {
         
         //Gestión de XML
         submenu = DefaultSubMenu.builder()
-                .label(msg.getString("mnuGestionXML"))
+                .label(Msg.getString("mnuGestionXML"))
                 .build();
 
         item = DefaultMenuItem.builder()
-                .value(msg.getString("mnuEntradas"))
+                .value(Msg.getString("mnuEntradas"))
                 /*.icon("pi pi-save")*/
                 .command("/GestionXML/Entradas/filtroEntradas")
                 .build();
         submenu.getElements().add(item);
 
         item = DefaultMenuItem.builder()
-                .value(msg.getString("mnuSalidas"))
+                .value(Msg.getString("mnuSalidas"))
                 /*.icon("pi pi-save")*/
                 .command("/GestionXML/Salidas/filtroSalidas")
                 .build();
         submenu.getElements().add(item);
 
         item = DefaultMenuItem.builder()
-                .value(msg.getString("mnuInformes"))
+                .value(Msg.getString("mnuInformes"))
                 /*.icon("pi pi-save")*/
                 .command("/GestionXML/Informes/filtroInformes")
                 .build();
@@ -90,37 +85,38 @@ public class Menu implements Serializable {
         
         //Configuración
         submenu = DefaultSubMenu.builder()
-                .label(msg.getString("mnuConfiguracion"))
+                .id("mnuConfiguracion")
+                .label(Msg.getString("mnuConfiguracion"))
                 .build();
 
         //Gestión
         DefaultSubMenu submenu2 = DefaultSubMenu.builder()
-                .label(msg.getString("mnuGestion"))
+                .label(Msg.getString("mnuGestion"))
                 .build();
         
         item = DefaultMenuItem.builder()
-                .value(msg.getString("mnuAutoridades"))
+                .value(Msg.getString("mnuAutoridades"))
                 /*.icon("pi pi-save")*/
                 .command("/Configuracion/Gestion/Autoridades/filtroAutoridades")
                 .build();
         submenu2.getElements().add(item);
         
         item = DefaultMenuItem.builder()
-                .value(msg.getString("mnuTiposDocumentos"))
+                .value(Msg.getString("mnuTiposDocumentos"))
                 /*.icon("pi pi-save")*/
                 .command("/Configuracion/Gestion/TiposDocumentos/filtroTiposDocumentos")
                 .build();
         submenu2.getElements().add(item);
         
         item = DefaultMenuItem.builder()
-                .value(msg.getString("mnuSituacionesDocumentos"))
+                .value(Msg.getString("mnuSituacionesDocumentos"))
                 /*.icon("pi pi-save")*/
                 .command("/Configuracion/Gestion/SituacionesDocumentos/filtroSituacionesDocumentos")
                 .build();
         submenu2.getElements().add(item);
         
         item = DefaultMenuItem.builder()
-                .value(msg.getString("mnuSituacionesXML"))
+                .value(Msg.getString("mnuSituacionesXML"))
                 /*.icon("pi pi-save")*/
                 .command("/Configuracion/Gestion/SituacionesXML/filtroSituacionesXML")
                 .build();
@@ -130,32 +126,34 @@ public class Menu implements Serializable {
         
         //Seguridad
         submenu2 = DefaultSubMenu.builder()
-                .label(msg.getString("mnuSeguridad"))
+                .id("mnuSeguridad")
+                .label(Msg.getString("mnuSeguridad"))
                 .build();
         
         item = DefaultMenuItem.builder()
-                .value(msg.getString("mnuUsuarios"))
+                .value(Msg.getString("mnuUsuarios"))
                 /*.icon("pi pi-save")*/
                 .command("/Configuracion/Seguridad/Usuarios/filtroUsuarios")
                 .build();
         submenu2.getElements().add(item);
         
         item = DefaultMenuItem.builder()
-                .value(msg.getString("mnuPerfiles"))
+                .value(Msg.getString("mnuPerfiles"))
                 /*.icon("pi pi-save")*/
                 .command("/Configuracion/Seguridad/Perfiles/filtroPerfiles")
                 .build();
         submenu2.getElements().add(item);
         
         item = DefaultMenuItem.builder()
-                .value(msg.getString("mnuUnidades"))
+                .id("mnuUnidades")
+                .value(Msg.getString("mnuUnidades"))
                 /*.icon("pi pi-save")*/
                 .command("/Configuracion/Seguridad/Unidades/filtroUnidades")
                 .build();
         submenu2.getElements().add(item);
         
         item = DefaultMenuItem.builder()
-                .value(msg.getString("mnuHistoricoAccesos"))
+                .value(Msg.getString("mnuHistoricoAccesos"))
                 /*.icon("pi pi-save")*/
                 .command("/Configuracion/Seguridad/HistoricoAccesos/filtroHistoricoAccesos")
                 .build();
@@ -165,25 +163,25 @@ public class Menu implements Serializable {
         
         //Sistema
         submenu2 = DefaultSubMenu.builder()
-                .label(msg.getString("mnuSistema"))
+                .label(Msg.getString("mnuSistema"))
                 .build();
         
         item = DefaultMenuItem.builder()
-                .value(msg.getString("mnuOpcionesMenu"))
+                .value(Msg.getString("mnuOpcionesMenu"))
                 /*.icon("pi pi-save")*/
                 .command("/Configuracion/Sistema/OpcionesMenu/filtroOpcionesMenu")
                 .build();
         submenu2.getElements().add(item);
         
         item = DefaultMenuItem.builder()
-                .value(msg.getString("mnuPermisos"))
+                .value(Msg.getString("mnuPermisos"))
                 /*.icon("pi pi-save")*/
                 .command("/Configuracion/Sistema/Permisos/filtroPermisos")
                 .build();
         submenu2.getElements().add(item);
         
         item = DefaultMenuItem.builder()
-                .value(msg.getString("mnuVariablesConfiguracion"))
+                .value(Msg.getString("mnuVariablesConfiguracion"))
                 /*.icon("pi pi-save")*/
                 .command("/Configuracion/Sistema/VariablesConfiguracion/fitroVariablesConfiguracion")
                 .build();
@@ -193,25 +191,25 @@ public class Menu implements Serializable {
         
         //Informes
         submenu2 = DefaultSubMenu.builder()
-                .label(msg.getString("mnuInformes"))
+                .label(Msg.getString("mnuInformes"))
                 .build();
         
         item = DefaultMenuItem.builder()
-                .value(msg.getString("mnuInformesGestion"))
+                .value(Msg.getString("mnuInformesGestion"))
                 /*.icon("pi pi-save")*/
                 .command("/Configuracion/Informes/InformesGestion/filtroInformesGestion")
                 .build();
         submenu2.getElements().add(item);
         
         item = DefaultMenuItem.builder()
-                .value(msg.getString("mnuInformesSeguridad"))
+                .value(Msg.getString("mnuInformesSeguridad"))
                 /*.icon("pi pi-save")*/
                 .command("/Configuracion/Informes/InformesSeguridad/filtroInformesSeguridad")
                 .build();
         submenu2.getElements().add(item);
         
         item = DefaultMenuItem.builder()
-                .value(msg.getString("mnuInformesSistema"))
+                .value(Msg.getString("mnuInformesSistema"))
                 /*.icon("pi pi-save")*/
                 .command("/Configuracion/Informes/InformesSistema/filtroInformesSistema")
                 .build();
@@ -224,5 +222,9 @@ public class Menu implements Serializable {
 
     public MenuModel getModel() {
         return model;
+    }
+
+    public void setModel(MenuModel model) {
+        this.model = model;
     }
 }

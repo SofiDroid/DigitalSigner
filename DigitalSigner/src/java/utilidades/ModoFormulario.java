@@ -7,5 +7,6 @@ package utilidades;
 public enum ModoFormulario {
     CONSULTA,
     ALTA,
-    EDICION
+    EDICION,
+    ELIMINADO
 }

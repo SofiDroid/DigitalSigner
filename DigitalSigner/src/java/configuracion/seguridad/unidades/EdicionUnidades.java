@@ -6,6 +6,8 @@ import excepciones.FormModeException;
 import excepciones.RegistryNotFoundException;
 import excepciones.RequiredFieldException;
 import java.io.Serializable;
+import javax.el.ELContext;
+import javax.faces.context.FacesContext;
 import utilidades.CampoWebCodigo;
 import utilidades.CampoWebDescripcion;
 import utilidades.CampoWebFecha;
@@ -19,6 +21,7 @@ import utilidades.Validation;
  * @author ihuegal
  */
 public class EdicionUnidades implements Serializable {
+    private Object parent = null;
     private String paginaRetorno = null;
     
     private CampoWebCodigo cCoUnidad = null;
@@ -30,16 +33,18 @@ public class EdicionUnidades implements Serializable {
 
     private ModoFormulario modoFormulario = ModoFormulario.CONSULTA;
     
-    public EdicionUnidades() {
-        init(null);
+    public EdicionUnidades(Object parent) {
+        init(parent, null);
     }
     
-    public EdicionUnidades(Integer idUnidad) {
-        init(idUnidad);
+    public EdicionUnidades(Object parent, Integer idUnidad) {
+        init(parent, idUnidad);
     }
     
-    private void init(Integer idUnidad) {
+    private void init(Object parent, Integer idUnidad) {
         try {
+            this.parent = parent;
+    
             this.cCoUnidad = new CampoWebCodigo();
             this.cCoUnidad.setLabel(Msg.getString("lbl_BdTUnidad_CoUnidad"));
             this.cCoUnidad.setWidthLabel("100px");
@@ -75,7 +80,7 @@ public class EdicionUnidades implements Serializable {
             catch(Exception na) {
                 //NADA 
             }
-            new Mensajes().showException(this.getClass(), ex);
+            Mensajes.showException(this.getClass(), ex);
         }
     }
 
@@ -85,18 +90,45 @@ public class EdicionUnidades implements Serializable {
             
             //ALTA
             if (this.modoFormulario == ModoFormulario.ALTA) {
+                this.bdTUnidad = new BdTUnidad();
+                this.bdTUnidad.setCoUnidad(this.cCoUnidad.getValue());
+                this.bdTUnidad.setDsUnidad(this.cDsUnidad.getValue());
+                this.bdTUnidad.setFeAlta(this.cFeAlta.getValue());
+                this.bdTUnidad.setFeDesactivo(this.cFeDesactivo.getValue());
                 
+                StTUnidad stTUnidad = new StTUnidad();
+                stTUnidad.alta(this.bdTUnidad, null);
+                
+                if (this.parent instanceof FiltroUnidades filtroUnidades) {
+                    filtroUnidades.getDsResultado().insertarFilaNueva(this.bdTUnidad.getIdUnidad());
+                }
+                
+                Mensajes.showInfo("Información", "Alta realizada correctamente!");
             }
             
             //ACTUALIZACION
             if (this.modoFormulario == ModoFormulario.EDICION) {
+                this.bdTUnidad.setCoUnidad(this.cCoUnidad.getValue());
+                this.bdTUnidad.setDsUnidad(this.cDsUnidad.getValue());
+                this.bdTUnidad.setFeAlta(this.cFeAlta.getValue());
+                this.bdTUnidad.setFeDesactivo(this.cFeDesactivo.getValue());
                 
+                StTUnidad stTUnidad = new StTUnidad();
+                stTUnidad.actualiza(this.bdTUnidad, null);
+                
+                if (this.parent instanceof FiltroUnidades filtroUnidades) {
+                    ELContext elContext = FacesContext.getCurrentInstance().getELContext();
+                    filtroUnidades = (FiltroUnidades)elContext.getELResolver().getValue(elContext, null, "filtroUnidades");
+                    filtroUnidades.getDsResultado().actualizarFilaSeleccionada();
+                }
+                
+                Mensajes.showInfo("Información", "Actualización realizada correctamente!");
             }
             
             this.setModoFormulario(ModoFormulario.CONSULTA);
         }
         catch (Exception ex) {
-            new Mensajes().showException(this.getClass(), ex);
+            Mensajes.showException(this.getClass(), ex);
         }
     }
     
@@ -105,16 +137,25 @@ public class EdicionUnidades implements Serializable {
             this.setModoFormulario(ModoFormulario.EDICION);
         }
         catch (Exception ex) {
-            new Mensajes().showException(this.getClass(), ex);
+            Mensajes.showException(this.getClass(), ex);
         }
     }
     
     public void eliminar() {
         try {
-            this.setModoFormulario(ModoFormulario.CONSULTA);
+            StTUnidad stTUnidad = new StTUnidad();
+            stTUnidad.baja(this.bdTUnidad, null);
+            
+            if (this.parent instanceof FiltroUnidades filtroUnidades) {
+                filtroUnidades.getDsResultado().eliminarFilaSeleccionada();
+            }
+
+            Mensajes.showInfo("Información", "Registro eliminado correctamente!");
+            
+            this.setModoFormulario(ModoFormulario.ELIMINADO);
         }
         catch (Exception ex) {
-            new Mensajes().showException(this.getClass(), ex);
+            Mensajes.showException(this.getClass(), ex);
         }
     }
     
@@ -136,7 +177,7 @@ public class EdicionUnidades implements Serializable {
             }
         }
         catch (Exception ex) {
-            new Mensajes().showException(this.getClass(), ex);
+            Mensajes.showException(this.getClass(), ex);
         }
         return null;
     }
@@ -155,7 +196,7 @@ public class EdicionUnidades implements Serializable {
     
     private void protegerCampos() throws Exception {
         switch (this.modoFormulario) {
-            case CONSULTA -> {
+            case CONSULTA, ELIMINADO -> {
                 this.cCoUnidad.setProtegido(true);
                 this.cDsUnidad.setProtegido(true);
                 this.cFeAlta.setProtegido(true);
@@ -238,5 +279,21 @@ public class EdicionUnidades implements Serializable {
     public void setModoFormulario(ModoFormulario modoFormulario) throws Exception {
         this.modoFormulario = modoFormulario;
         protegerCampos();
+    }
+
+    public Object getParent() {
+        return parent;
+    }
+
+    public void setParent(Object parent) {
+        this.parent = parent;
+    }
+
+    public BdTUnidad getBdTUnidad() {
+        return bdTUnidad;
+    }
+
+    public void setBdTUnidad(BdTUnidad bdTUnidad) {
+        this.bdTUnidad = bdTUnidad;
     }
 }

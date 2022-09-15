@@ -33,7 +33,7 @@ public class ExecuteQuery {
         }
     }
     
-    public int executeNativeQueryParametros(String sql, HashMap<String, Object> parametros, EntityManager entityManager) throws SQLException {
+    public int executeNativeQueryParametros(String sql, HashMap<String, Object> parametros, EntityManager entityManager) throws Exception {
         try {
             Query sentencia = entityManager.createNativeQuery(sql);
             if (parametros != null) {

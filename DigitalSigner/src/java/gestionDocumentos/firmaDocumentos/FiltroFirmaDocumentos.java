@@ -26,7 +26,7 @@ public class FiltroFirmaDocumentos implements Serializable {
             
         } catch (Exception ex) {
             LOG.error(ex.getMessage(), ex);
-            new Mensajes().showError("Error al buscar", ex.getMessage());
+            Mensajes.showError("Error al buscar", ex.getMessage());
         }
     }
     
@@ -37,7 +37,7 @@ public class FiltroFirmaDocumentos implements Serializable {
             filtros(null);
         } catch (Exception ex) {
             LOG.error(ex.getMessage(), ex);
-            new Mensajes().showError("Error al buscar", ex.getMessage());
+            Mensajes.showError("Error al buscar", ex.getMessage());
         }
     }
     
