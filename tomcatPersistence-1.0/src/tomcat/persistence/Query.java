@@ -9,12 +9,12 @@ import java.math.BigDecimal;
 import java.sql.CallableStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.sql.SQLException;
 import tomcat.persistence.exceptions.ExceptionMapper;
 
 /**
@@ -88,7 +88,7 @@ public class Query {
         catch (SQLException ex) {
             
             this.entityManager.getTransaction().setRollbackOnly();
-            throw new ExceptionMapper(sql, ex);
+            throw ExceptionMapper.mapear(sql, ex);
         }            
         return result;
     }
@@ -129,7 +129,7 @@ public class Query {
         }
         catch (SQLException ex) {
             this.entityManager.getTransaction().setRollbackOnly();
-            throw new ExceptionMapper(sql, ex);
+            throw ExceptionMapper.mapear(sql, ex);
         }            
         return result;
     }
@@ -144,7 +144,7 @@ public class Query {
      */
     public Object getSingleResult() throws SQLException {
         if (this.entityManager.getTransaction().getRollbackOnly()) {
-            throw new ExceptionMapper(sql, new SQLException("Connection is marked for rollback only."));
+            throw new SQLException("Connection is marked for rollback only.");
         }
 
         Object result = null;
@@ -172,7 +172,7 @@ public class Query {
         }
         catch (SQLException ex) {
             this.entityManager.getTransaction().setRollbackOnly();
-            throw new ExceptionMapper(sql, ex);
+            throw ExceptionMapper.mapear(sql, ex);
         } 
         return result;
     }
@@ -211,7 +211,7 @@ public class Query {
         }
         catch (SQLException ex) {
             this.entityManager.getTransaction().setRollbackOnly();
-            throw new ExceptionMapper(sql, ex);
+            throw ExceptionMapper.mapear(sql, ex);
         } 
         return result;
     }
@@ -226,7 +226,7 @@ public class Query {
      */
     public int executeUpdate() throws SQLException {
         if (this.entityManager.getTransaction().getRollbackOnly()) {
-            throw new ExceptionMapper(sql, new SQLException("Connection is marked for rollback only."));
+             throw new SQLException("Connection is marked for rollback only.");
         }
 
         this.parametrosPosicionados.clear();
@@ -238,8 +238,8 @@ public class Query {
         }
         catch (SQLException ex) {
             this.entityManager.getTransaction().setRollbackOnly();
-            throw new ExceptionMapper(sql, ex);
-        } 
+            throw ExceptionMapper.mapear(sql, ex);
+        }
     }
 
     /**
@@ -391,7 +391,7 @@ public class Query {
 
     private int obtenerPosFin(int posIni) {
         ArrayList<Integer> posFin = new ArrayList<>();
-        int temp = -1;
+        int temp;
         if ((temp = this.sql.indexOf(" ", posIni)) >= 0) posFin.add(temp);
         if ((temp = this.sql.indexOf(",", posIni)) >= 0) posFin.add(temp);
         if ((temp = this.sql.indexOf(")", posIni)) >= 0) posFin.add(temp);
@@ -406,14 +406,14 @@ public class Query {
         return posFin.stream().mapToInt(i -> i).min().getAsInt();
     }
     
-    private Object obtenerValorParametro(String nombreParametro) {
+    private Object obtenerValorParametro(String nombreParametro) throws SQLException {
         if (this.parametros != null) {
             for (Parametro itemParametro : this.parametros) {
                 if (itemParametro.nombreParametro.equals(nombreParametro))
                     return itemParametro.valor;
             }
         }
-        return null;
+        throw new SQLException("Parametro no encontrado: '" + nombreParametro + "'");
     }
     
     private void encontrarTextosFijos(int posIni) {
@@ -461,7 +461,7 @@ public class Query {
         listaPosicionTexto = listaTemp;
     }
     
-    private void encontrarParametros(int posIni) {
+    private void encontrarParametros(int posIni) throws SQLException {
         posIni = saltarTextoFijo(posIni,":");
         
         if (posIni == -1)
@@ -479,9 +479,9 @@ public class Query {
         posFin -= longitud;
         
         Object valorParametro = obtenerValorParametro(nombreParametro);
-        if (valorParametro != null) {
+//        if (valorParametro != null) {
             this.parametrosPosicionados.add(new Parametro(this.parametrosPosicionados.size()+1, nombreParametro, valorParametro));
-        }
+//        }
         
         if (posFin >= this.sql.length())
             return;
@@ -569,7 +569,7 @@ public class Query {
             }
             else
             {
-                throw new ExceptionMapper(sql, new SQLException("No se encuentra el tipo de datos para insertar: " + item.toString()));
+                throw new SQLException("No se encuentra el tipo de datos para insertar: " + item.toString());
             }
         }
     }

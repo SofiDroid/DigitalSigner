@@ -4,20 +4,19 @@
  */
 package tomcat.persistence.exceptions;
 
-import java.sql.SQLException;
-
 /**
  *
  * @author ihuegal
  */
-public class ExceptionMapper extends SQLException {
-    
-    public ExceptionMapper(String sqlQuery, SQLException ex) throws SQLException {
-        switch (ex.getSQLState()) {
-            case "2A000", "42000" -> throw new SQLGrammarException(sqlQuery, ex);
-            case "40002" -> throw new ConstraintViolationException(sqlQuery, ex);
-            default -> throw ex;
+public class ExceptionMapper {
+    public static java.sql.SQLException mapear(String sql, Throwable ex) throws java.sql.SQLException {
+        if (((java.sql.SQLException)ex).getSQLState() == null) {
+            throw new SQLUnknownException(sql, ex);
+        }
+        switch (((java.sql.SQLException)ex).getSQLState()) { 
+            case "2A000", "42000" -> throw new SQLGrammarException(sql, ex);
+            case "40002" -> throw  new ConstraintViolationException(sql, ex);
+            default -> throw new SQLUnknownException(sql, ex);
         }
     }
-    
 }

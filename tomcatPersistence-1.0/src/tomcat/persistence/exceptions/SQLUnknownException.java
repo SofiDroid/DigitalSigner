@@ -4,10 +4,10 @@ package tomcat.persistence.exceptions;
  *
  * @author ihuegal
  */
-public class SQLGrammarException extends java.sql.SQLException {
+public class SQLUnknownException extends java.sql.SQLException {
     private String SQL = null;
     
-    public SQLGrammarException(String sqlQuery, Throwable ex) {
+    public SQLUnknownException(String sqlQuery, Throwable ex) {
         super(ex);
         this.SQL = sqlQuery;
     }
