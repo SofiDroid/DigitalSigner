@@ -31,7 +31,8 @@
                 </p:toolbar>
             </p:card>
             <p:card styleClass="card">
-                <p:fieldset id="fsFiltros" legend="#{msg['filtros']}" toggleable="false" >
+                <p:fieldset id="fsFiltros" legend="#{msg['filtros']}" collapsed="#{!filtroUnidades.filtroVisible}" toggleable="true">
+                    <p:ajax event="toggle" listener="#{filtroUnidades.toggleFiltro}" update="panelResultado"/>
                     <p:panelGrid columns="2"
                      columnClasses="col-7,col-5"
                      layout="grid"
@@ -50,7 +51,7 @@
                 </p:fieldset>
             </p:card>
             <p:card id="panelResultado" styleClass="card">
-                <sd:dataGrid id="tblResultados" dataSet="#{filtroUnidades.dsResultado}" height="calc(100vh - 21rem)" />
+                <sd:dataGrid id="tblResultados" dataSet="#{filtroUnidades.dsResultado}" />
             </p:card>
         </ui:define>
     </ui:composition>

@@ -10,6 +10,8 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
 import org.apache.log4j.Logger;
+import org.primefaces.event.ToggleEvent;
+import org.primefaces.model.Visibility;
 import utilidades.CampoWebCodigo;
 import utilidades.CampoWebDescripcion;
 import utilidades.CampoWebFechaRango;
@@ -30,6 +32,7 @@ public class FiltroUnidades implements Serializable {
     private CampoWebDescripcion cDsUnidad= null;
     private CampoWebFechaRango cFeAlta = null;
     private CampoWebFechaRango cFeDesactivo = null;
+    private boolean filtroVisible = true;
     private DataSet dsResultado = null;
     
     private EdicionUnidades edicionUnidades = null; 
@@ -53,7 +56,21 @@ public class FiltroUnidades implements Serializable {
         this.cFeDesactivo.setWidthLabel("100px");
         
         this.dsResultado = new DataSet();
+        toggleFiltro(null);
     }
+    
+    public void toggleFiltro(ToggleEvent event) {
+        if (event != null) {
+            this.filtroVisible = (event.getVisibility() == Visibility.VISIBLE);
+        }
+        if (this.filtroVisible) {
+            this.dsResultado.setHeightFiltro("21.2rem");
+        }
+        else {
+            this.dsResultado.setHeightFiltro("16.5rem");
+        }
+    }
+    
 
     public CampoWebCodigo getcCoUnidad() {
         return cCoUnidad;
@@ -95,6 +112,14 @@ public class FiltroUnidades implements Serializable {
         this.dsResultado = dsResultado;
     }
 
+    public boolean isFiltroVisible() {
+        return filtroVisible;
+    }
+
+    public void setFiltroVisible(boolean filtroVisible) {
+        this.filtroVisible = filtroVisible;
+    }
+
     public EdicionUnidades getEdicionUnidades() {
         return edicionUnidades;
     }
@@ -125,6 +150,7 @@ public class FiltroUnidades implements Serializable {
             sql = filtros(sql);
 
             this.dsResultado = new DataSet(sql, "ID_UNIDAD");
+            toggleFiltro(null);
 
             if (this.getDsResultado().getRowsCount() > 0) {
                 // Establecer formato de salida

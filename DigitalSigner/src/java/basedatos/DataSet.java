@@ -22,6 +22,8 @@ public final class DataSet extends StBase {
     protected Object rowSelectClass = null;
     protected String rowSelectUpdate = "@widgetVar(mensaje)";
     protected String rowSelectColumnaID = null;
+    protected String heightFiltro = "20rem";
+    protected String height = "calc(100vh - " + heightFiltro + ")";
 
     public DataSet() {
     
@@ -220,5 +222,22 @@ public final class DataSet extends StBase {
 
     public void setRowSelectColumnaID(String rowSelectColumnaID) {
         this.rowSelectColumnaID = rowSelectColumnaID;
+    }
+
+    public String getHeightFiltro() {
+        return heightFiltro;
+    }
+
+    public void setHeightFiltro(String heightFiltro) {
+        this.heightFiltro = heightFiltro;
+        this.height = "calc(100vh - " + this.heightFiltro + ")";
+    }
+
+    public String getHeight() {
+        return height;
+    }
+
+    public void setHeight(String height) {
+        this.height = height;
     }
 }

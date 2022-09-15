@@ -8,13 +8,12 @@
     <!-- INTERFACE -->
     <cc:interface>
         <cc:attribute name = "dataSet" />
-        <cc:attribute name = "height" />
     </cc:interface>
 
     <!-- IMPLEMENTATION -->
     <cc:implementation>
         <p:dataTable id="#{cc.attrs.id}" widgetVar="#{cc.attrs.id}" var="itemRow" value="#{cc.attrs.dataSet.rows}" scrollable="true" scrollHeight="100%" 
-                     style="height: #{cc.attrs.height};width:100%;padding:0.2rem" size="small">
+                     style="height: #{cc.attrs.dataSet.height};width:100%;padding:0.2rem" size="small">
             <p:columns value="#{cc.attrs.dataSet.cabecera.columns}" columnIndexVar="indexCol" var="itemColumn"
                        headerText="#{itemColumn.title}" visible="#{itemColumn.visible}" width="#{itemColumn.width}"
                        sortable="true" sortBy="#{itemRow.getColumnName(itemColumn.name)[itemColumn.valueProperty]}">

@@ -1,31 +1,71 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:p="http://primefaces.org/ui"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-      xmlns:f="http://xmlns.jcp.org/jsf/core">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:sd="http://xmlns.jcp.org/jsf/composite/sofidroid">
 
     <ui:composition template="/main.xhtml">
         <ui:define id="tmpPrincipal" name="tmpPrincipal">
-            <p:dataTable var="documento" value="#{filtroFirmaDocumentos.lstDocumentos}" scrollable="true" scrollHeight="100%" style="height: 100%" size="small">
-                <f:facet name="header">
-                    #{msg['resultados']}
-                </f:facet>
-                <p:column headerText="#{msg['Id']}" width="50px" sortBy="#{documento.idDocumento}" filterBy="#{documento.idDocumento}">
-                    <h:outputText value="#{documento.idDocumento}" />
-                </p:column>
+            <p:focus context="filtroCard" />
+            <p:card id="filtroCard" styleClass="card">
+                <p:toolbar>
+                    <p:toolbarGroup align="left">
+                        <p:outputLabel value="Firma de documentos" style="font-size: large; font-weight: bold" /> 
+                    </p:toolbarGroup>
+                    <p:toolbarGroup align="right">
 
-                <p:column headerText="#{msg['Codigo']}" width="100px" sortBy="#{documento.coDocumento}" filterBy="#{documento.coDocumento}">
-                    <h:outputText value="#{documento.coDocumento}" />
-                </p:column>
+                        <p:commandButton id="btnBuscar" icon="pi pi-search" styleClass="rounded-button ui-button-info" 
+                                         style="height: 2rem;width: 2rem;margin-left:0.3rem" action="#{filtroFirmaDocumentos.buscar}" title="(alt+B) Buscar resultados"
+                                         update="panelResultado,mensaje" accesskey="b" />
 
-                <p:column headerText="#{msg['Descripcion']}" sortBy="#{documento.dsDocumento}" filterBy="#{documento.dsDocumento}">
-                    <h:outputText value="#{documento.dsDocumento}" />
-                </p:column>
-            </p:dataTable>
+                        <p:commandButton id="btnLimpiar" icon="pi pi-filter-slash" styleClass="rounded-button ui-button-secondary" 
+                                         style="height: 2rem;width: 2rem;margin-left:0.3rem" action="#{filtroFirmaDocumentos.limpiar}" title="(alt+L) Limpiar formulario"
+                                         update="fsFiltros,panelResultado,mensaje" accesskey="l" />
+
+                        <p:commandButton id="btnNuevo" icon="pi pi-plus-circle" styleClass="rounded-button ui-button-success" 
+                                         style="height: 2rem;width: 2rem;margin-left:0.3rem" action="#{filtroFirmaDocumentos.nuevo}" title="(alt+B) Buscar resultados"
+                                         update="panelResultado,mensaje" accesskey="b" />
+
+                    </p:toolbarGroup>
+                </p:toolbar>
+            </p:card>
+            <p:card styleClass="card">
+                <p:fieldset id="fsFiltros" legend="#{msg['filtros']}" collapsed="#{!filtroFirmaDocumentos.filtroVisible}" toggleable="true">
+                    <p:ajax event="toggle" listener="#{filtroFirmaDocumentos.toggleFiltro}" update="panelResultado"/>
+                    <p:panelGrid columns="2"
+                     columnClasses="col-6,col-6"
+                     layout="grid"
+                     styleClass="ui-panelgrid-blank ui-fluid"
+                     style="border:0px none; background-color:transparent;">
+
+                        <sd:campoWebTexto id="txtCodigo" beanClass="#{filtroFirmaDocumentos.getcCoDocumento()}" />
+
+                        <sd:campoWebFechaRango id="txtFeAlta" beanClass="#{filtroFirmaDocumentos.getcFeAlta()}" />
+
+                        <sd:campoWebTexto id="txtDescripcion" beanClass="#{filtroFirmaDocumentos.getcDsDocumento()}" />
+
+                        <sd:campoWebFechaRango id="txtFeDesactivo" beanClass="#{filtroFirmaDocumentos.getcFeDesactivo()}" />
+
+                        <sd:campoWebTexto id="txtTipoDocumento" beanClass="#{filtroFirmaDocumentos.getcTipodocumento()}" />
+                        
+                        <sd:campoWebTexto id="txtSituacionDoc" beanClass="#{filtroFirmaDocumentos.getcSituaciondoc()}" />
+                        
+                    </p:panelGrid>
+                    <p:panelGrid columns="1"
+                     columnClasses="col-12"
+                     layout="grid"
+                     styleClass="ui-panelgrid-blank ui-fluid"
+                     style="border:0px none; background-color:transparent;">
+
+                        <sd:campoWebTexto id="txtAutoridad" beanClass="#{filtroFirmaDocumentos.getcAutoridad()}" />
+                        
+                    </p:panelGrid>
+                </p:fieldset>
+            </p:card>
+            <p:card id="panelResultado" styleClass="card">
+                <sd:dataGrid id="tblResultados" dataSet="#{filtroFirmaDocumentos.dsResultado}" />
+            </p:card>
         </ui:define>
     </ui:composition>
-    
 </html>
-
