@@ -100,7 +100,7 @@ public class EdicionUnidades implements Serializable {
                 stTUnidad.alta(this.bdTUnidad, null);
                 
                 if (this.parent instanceof FiltroUnidades filtroUnidades) {
-                    filtroUnidades.getDsResultado().insertarFilaNueva(this.bdTUnidad.getIdUnidad());
+                    filtroUnidades.getDsResultado().refrescarDatos();
                 }
                 
                 Mensajes.showInfo("Información", "Alta realizada correctamente!");
