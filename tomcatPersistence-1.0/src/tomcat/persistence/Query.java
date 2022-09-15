@@ -15,6 +15,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
+import tomcat.persistence.exceptions.ExceptionMapper;
 
 /**
  *
@@ -87,7 +88,7 @@ public class Query {
         catch (SQLException ex) {
             
             this.entityManager.getTransaction().setRollbackOnly();
-            throw ExceptionMapper.mapeaExcepcion(sql, ex);
+            throw new ExceptionMapper(sql, ex);
         }            
         return result;
     }
@@ -128,7 +129,7 @@ public class Query {
         }
         catch (SQLException ex) {
             this.entityManager.getTransaction().setRollbackOnly();
-            throw ExceptionMapper.mapeaExcepcion(sql, ex);
+            throw new ExceptionMapper(sql, ex);
         }            
         return result;
     }
@@ -143,7 +144,7 @@ public class Query {
      */
     public Object getSingleResult() throws SQLException {
         if (this.entityManager.getTransaction().getRollbackOnly()) {
-            throw ExceptionMapper.mapeaExcepcion(sql, new SQLException("Connection is marked for rollback only."));
+            throw new ExceptionMapper(sql, new SQLException("Connection is marked for rollback only."));
         }
 
         Object result = null;
@@ -171,7 +172,7 @@ public class Query {
         }
         catch (SQLException ex) {
             this.entityManager.getTransaction().setRollbackOnly();
-            throw ExceptionMapper.mapeaExcepcion(sql, ex);
+            throw new ExceptionMapper(sql, ex);
         } 
         return result;
     }
@@ -210,7 +211,7 @@ public class Query {
         }
         catch (SQLException ex) {
             this.entityManager.getTransaction().setRollbackOnly();
-            throw ExceptionMapper.mapeaExcepcion(sql, ex);
+            throw new ExceptionMapper(sql, ex);
         } 
         return result;
     }
@@ -225,7 +226,7 @@ public class Query {
      */
     public int executeUpdate() throws SQLException {
         if (this.entityManager.getTransaction().getRollbackOnly()) {
-            throw ExceptionMapper.mapeaExcepcion(sql, new SQLException("Connection is marked for rollback only."));
+            throw new ExceptionMapper(sql, new SQLException("Connection is marked for rollback only."));
         }
 
         this.parametrosPosicionados.clear();
@@ -237,7 +238,7 @@ public class Query {
         }
         catch (SQLException ex) {
             this.entityManager.getTransaction().setRollbackOnly();
-            throw ExceptionMapper.mapeaExcepcion(sql, ex);
+            throw new ExceptionMapper(sql, ex);
         } 
     }
 
@@ -568,7 +569,7 @@ public class Query {
             }
             else
             {
-                throw ExceptionMapper.mapeaExcepcion(sql, new SQLException("No se encuentra el tipo de datos para insertar: " + item.toString()));
+                throw new ExceptionMapper(sql, new SQLException("No se encuentra el tipo de datos para insertar: " + item.toString()));
             }
         }
     }

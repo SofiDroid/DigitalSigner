@@ -32,7 +32,7 @@ public class EntityManager implements Closeable {
     public EntityManager(Connection conn)
     {
         this.conn = conn;
-    }  
+    }
     
     /**
      * Crea un objeto tomcat.persistence.Query similar al de

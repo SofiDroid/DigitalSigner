@@ -26,7 +26,7 @@ public class EntityTransaction {
      * 
      * @param conn - Conexion asociada al EntityManager
      */
-    EntityTransaction(Connection conn) {
+    public EntityTransaction(Connection conn) {
         this.conn = conn;
     }
         
@@ -64,8 +64,6 @@ public class EntityTransaction {
     /**
      * Deshace los cambios de la transaccion actual y la marca como 
      * finalizada.
-     * 
-     * @throws SQLException 
      */
     public void rollback() {
         try {
