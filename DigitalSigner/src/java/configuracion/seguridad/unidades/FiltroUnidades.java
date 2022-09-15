@@ -126,32 +126,33 @@ public class FiltroUnidades implements Serializable {
 
             this.dsResultado = new DataSet(sql, "ID_UNIDAD");
 
-            // Establecer formato de salida
-            RowCabecera cabecera = this.dsResultado.getCabecera();
-            
-            cabecera.getColumnName("ID_UNIDAD")
-                    .setVisible(false);
-            
-            cabecera.getColumnName("CO_UNIDAD")
-                    .setTitle("Código")
-                    .setWidth("6rem")
-                    .setTipo(ColumnBase.Tipo.LINK)
-                    .setClase(this)
-                    .setMethod(this.getClass().getMethod("verDetalle"))
-                    .setUpdate("formulario:panelResultado,formulario:mensaje");
-            
-            cabecera.getColumnName("DS_UNIDAD")
-                    .setTitle("Descripción")
-                    .setWidth("100%");
-            
-            cabecera.getColumnName("FE_ALTA")
-                    .setTitle("F. Alta")
-                    .setWidth("6rem");
-            
-            cabecera.getColumnName("FE_DESACTIVO")
-                    .setTitle("F. Desactivo")
-                    .setWidth("6rem");
-            
+            if (this.getDsResultado().getRowsCount() > 0) {
+                // Establecer formato de salida
+                RowCabecera cabecera = this.dsResultado.getCabecera();
+
+                cabecera.getColumnName("ID_UNIDAD")
+                        .setVisible(false);
+
+                cabecera.getColumnName("CO_UNIDAD")
+                        .setTitle("Código")
+                        .setWidth("6rem")
+                        .setTipo(ColumnBase.Tipo.LINK)
+                        .setClase(this)
+                        .setMethod(this.getClass().getMethod("verDetalle"))
+                        .setUpdate("formulario:panelResultado,formulario:mensaje");
+
+                cabecera.getColumnName("DS_UNIDAD")
+                        .setTitle("Descripción")
+                        .setWidth("100%");
+
+                cabecera.getColumnName("FE_ALTA")
+                        .setTitle("F. Alta")
+                        .setWidth("6rem");
+
+                cabecera.getColumnName("FE_DESACTIVO")
+                        .setTitle("F. Desactivo")
+                        .setWidth("6rem");
+            }
         } catch (NoSuchMethodException | SecurityException | SQLException ex) {
             LOG.error(ex.getMessage(), ex);
             Mensajes.showError("Error al buscar", ex.getMessage());

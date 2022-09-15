@@ -23,8 +23,22 @@
     margin-bottom: 0.5rem;
 }
 
+body .ui-card {
+    box-shadow: 4px 4px 2px -2px rgb(0 0 0 / 20%), 2px 2px 2px 0 rgb(0 0 0 / 14%), 2px 2px 6px 0 rgb(0 0 0 / 12%)!important;
+}
+
+body .ui-fieldset .ui-fieldset-legend {
+    background: #405e96!important;
+    color: whitesmoke!important;
+}
+
+body .ui-button {
+    background: #405e96;
+    border: 1px solid #213a68;
+}
+
 .ui-datatable-odd {
-    background-color: #d4edff!important;
+    background-color: #dee9ff!important;
 }
 
 .ui-datatable-even:hover,
@@ -59,7 +73,8 @@ body .ui-fieldset {
 }
 
 .card {
-    margin-bottom: 0.2rem!important;
+    margin-bottom: 0.4rem!important;
+    margin-right: 0.4rem!important;
     padding: 0rem!important;
 }
 
@@ -280,7 +295,7 @@ body .ui-panelmenu h3.ui-panelmenu-header.ui-state-hover {
 }
 
 body .ui-datatable thead th {
-    background-color: #016a94!important;
+    background-color: #405e96!important;
     color: whitesmoke!important;
 }
 
