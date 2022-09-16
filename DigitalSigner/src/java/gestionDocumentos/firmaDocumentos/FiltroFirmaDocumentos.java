@@ -3,6 +3,8 @@ package gestionDocumentos.firmaDocumentos;
 import basedatos.ColumnBase;
 import basedatos.DataSet;
 import basedatos.RowCabecera;
+import basedatos.servicios.StDDocumento;
+import basedatos.tablas.BdDDocumento;
 import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.Date;
@@ -282,5 +284,38 @@ public class FiltroFirmaDocumentos implements Serializable {
         }
         
         return null; //"edicionUnidades";
+    }
+
+    /**
+     * Retorna los certificados admitidos para firmar.
+     * 
+     * Ejemplo:
+     * 
+     * filters.1=issuer.rfc2254:(|(CN=*MINISDEF*)(CN=*DEFENSA*));keyusage.nonrepudiation:true;nonexpired:\n
+     * filters.2=issuer.rfc2254:(O=*POLICIA*);keyusage.nonrepudiation:true;nonexpired:\n
+     * filters.3=issuer.rfc2254:(O=*FNMT*);keyusage.nonrepudiation:true;nonexpired:\n
+     * 
+     * @return String
+     * 
+     */
+    public String getCertificadosAdmitidos() {
+        return "filters=keyusage.nonrepudiation:true;\\n";
+    }
+    
+    public String getHostServlets() {
+        return "http://localhost:92/firmaServlets/";
+    }
+    
+    public BdDDocumento getDocumentoByIndex(Integer idxFichero) throws Exception {
+        Integer idDocumento = this.dsResultado.getRows().get(idxFichero).getColumnName("ID_DOCUMENTO").getValueInteger();
+        return new StDDocumento().item(idDocumento, null);
+    }
+    
+    public String getListaDocumentosFirma() {
+        return "0";
+    }
+    
+    public String getTipoDocumentosFirma() {
+        return "0";
     }
 }

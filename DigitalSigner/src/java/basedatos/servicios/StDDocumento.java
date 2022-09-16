@@ -24,7 +24,6 @@ public class StDDocumento extends StBase {
         parametros.put("CO_DOCUMENTO", filtroBdDDocumento.getCoDocumento());
         parametros.put("DS_DOCUMENTO", filtroBdDDocumento.getDsDocumento());
         parametros.put("ID_TIPODOCUMENTO", filtroBdDDocumento.getIdTipodocumento());
-        parametros.put("BL_DOCUMENTO", filtroBdDDocumento.getBlDocumento());
         parametros.put("CO_FICHERO", filtroBdDDocumento.getCoFichero());
         parametros.put("CO_EXTENSION", filtroBdDDocumento.getCoExtension());
         parametros.put("ID_SITUACIONDOC", filtroBdDDocumento.getIdSituaciondoc());

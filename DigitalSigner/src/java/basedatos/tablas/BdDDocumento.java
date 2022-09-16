@@ -4,6 +4,7 @@ import basedatos.InterfazDAO;
 import basedatos.OperacionSQL;
 import java.util.Date;
 import java.util.HashMap;
+import utilidades.Ficheros;
 
 /**
  *
@@ -54,7 +55,6 @@ public class BdDDocumento extends OperacionSQL implements InterfazDAO {
         sb_sql.append(",CO_DOCUMENTO");
         sb_sql.append(",DS_DOCUMENTO");
         sb_sql.append(",ID_TIPODOCUMENTO");
-        sb_sql.append(",BL_DOCUMENTO");
         sb_sql.append(",CO_FICHERO");
         sb_sql.append(",CO_EXTENSION");
         sb_sql.append(",ID_SITUACIONDOC");
@@ -138,6 +138,9 @@ public class BdDDocumento extends OperacionSQL implements InterfazDAO {
     }
 
     public byte[] getBlDocumento() {
+        if (this.idDocumento != null && this.blDocumento == null) {
+            this.blDocumento = new Ficheros().recuperaDocumento(this.idDocumento); 
+        }
         return blDocumento;
     }
 

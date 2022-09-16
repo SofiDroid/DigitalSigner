@@ -5,7 +5,10 @@
 package utilidades;
 
 import basedatos.tablas.BdTUsuario;
+import gestionDocumentos.firmaDocumentos.FiltroFirmaDocumentos;
 import javax.el.ELContext;
+import javax.enterprise.context.SessionScoped;
+import javax.enterprise.inject.spi.CDI;
 import javax.faces.context.FacesContext;
 import seguridad.usuarios.DatosUsuario;
 
@@ -22,5 +25,9 @@ public class Session {
     public static String getCoUsuario() {
         BdTUsuario bdTUsuario = getDatosUsuario().getBdTUsuario();
         return (bdTUsuario != null ? bdTUsuario.getCoUsuario() : null);
+    }
+    
+    public static Object getNamedBean(String nombre) {
+        return CDI.current().getBeanManager().getContext(SessionScoped.class).get(CDI.current().getBeanManager().getBeans(nombre).iterator().next());
     }
 }

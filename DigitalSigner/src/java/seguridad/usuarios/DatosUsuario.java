@@ -11,6 +11,7 @@ import org.primefaces.event.SelectEvent;
 import basedatos.tablas.Pais;
 import basedatos.servicios.ServicioPaises;
 import basedatos.tablas.BdTUsuario;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  *
@@ -71,5 +72,22 @@ public class DatosUsuario implements Serializable {
 
     public void setBdTUsuario(BdTUsuario bdTUsuario) {
         this.bdTUsuario = bdTUsuario;
+    }
+    
+    public String getModoFirma() {
+        return "";
+    }
+    
+    public String getIpRemota() {
+        HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        String ipAddress = request.getHeader("X-FORWARDED-FOR");
+        if (ipAddress == null) {
+            ipAddress = request.getRemoteAddr();
+        }
+        return ipAddress;
+    }
+    
+    public String getIpExtranet() {
+        return "0.0.0.0";
     }
 }

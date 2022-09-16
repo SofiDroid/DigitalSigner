@@ -31,6 +31,38 @@
         <servlet-name>AppInit</servlet-name>
         <url-pattern>/AppInit</url-pattern>
     </servlet-mapping>
+    <servlet>
+        <servlet-name>entradaFicheroAutoFirma</servlet-name>
+        <servlet-class>servlets.firmaelectronica.EntradaFicheroAutoFirma</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>entradaFicheroAutoFirma</servlet-name>
+        <url-pattern>/entradaFicheroAutoFirma</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>bajadaFicheroFirma</servlet-name>
+        <servlet-class>servlets.firmaelectronica.BajadaFicheroFirma</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>bajadaFicheroFirma</servlet-name>
+        <url-pattern>/bajadaFicheroFirma</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>salidaFicheroAutoFirma</servlet-name>
+        <servlet-class>servlets.firmaelectronica.SalidaFicheroAutoFirma</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>salidaFicheroAutoFirma</servlet-name>
+        <url-pattern>/salidaFicheroAutoFirma</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>subidaFicheroFirmado</servlet-name>
+        <servlet-class>servlets.firmaelectronica.SubidaFicheroFirmado</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>subidaFicheroFirmado</servlet-name>
+        <url-pattern>/subidaFicheroFirmado</url-pattern>
+    </servlet-mapping>
     <session-config>
         <session-timeout>
             30

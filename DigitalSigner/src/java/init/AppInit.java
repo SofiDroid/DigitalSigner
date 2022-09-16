@@ -33,4 +33,8 @@ public final class AppInit extends HttpServlet {
     public static EntityManager getEntityManager() throws SQLException {
         return new EntityManager(dsDigitalSigner.getConnection());
     }
+    
+    public static String getRutaTempFicherosFirmados() {
+        return "";
+    }
 }
