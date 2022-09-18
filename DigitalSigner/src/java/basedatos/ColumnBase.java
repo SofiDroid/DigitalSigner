@@ -16,15 +16,17 @@ public class ColumnBase {
         CHECKBOX
     }
     
+    protected RowBase parent;
     protected String name = "";
     protected int index = 0;
     protected Tipo tipo = Tipo.TEXTO;
     protected Method method = null;
     protected Object clase = null;
     protected String update = "@widgetVar(mensaje)";
+    protected String tooltip = "";
     
-    public ColumnBase() {
-        // NADA        
+    public ColumnBase(RowBase parent) {
+        this.parent = parent;
     }
 
     public String getName() {
@@ -81,5 +83,14 @@ public class ColumnBase {
     
     public String ejecutarMetodo() throws Exception {
         return (String)this.method.invoke(this.clase);
+    }
+    
+    public String getTooltip() {
+        return tooltip;
+    }
+
+    public ColumnBase setTooltip(String tooltip) {
+        this.tooltip = tooltip;
+        return this;
     }
 }

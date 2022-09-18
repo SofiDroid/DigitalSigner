@@ -1,6 +1,10 @@
 package seguridad.login;
 
+import basedatos.servicios.StAUniusu;
+import basedatos.servicios.StTUnidad;
 import basedatos.servicios.StTUsuario;
+import basedatos.tablas.BdAUniusu;
+import basedatos.tablas.BdTUnidad;
 import basedatos.tablas.BdTUsuario;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -42,8 +46,27 @@ public class LoginForm implements Serializable {
             if (listaBdTUsuario != null && !listaBdTUsuario.isEmpty()) {
                 if (listaBdTUsuario.get(0).getCoPassword().equals(this.password))
                 {
-                    //ACCESO CONCEDIDO
+                    //ACCESO CONCEDIDO - Cargar datos del usuario en sesion.
                     Session.getDatosUsuario().setBdTUsuario(listaBdTUsuario.get(0));
+                    
+                    BdAUniusu filtroBdAUniusu = new BdAUniusu();
+                    filtroBdAUniusu.setIdUsuario(listaBdTUsuario.get(0).getIdUsuario());
+                    filtroBdAUniusu.setFeAlta(new Date());
+                    filtroBdAUniusu.setFeDesactivo(new Date());
+                    StAUniusu stAUniusu = new StAUniusu();
+                    ArrayList<BdAUniusu> listaBdAUniusu = stAUniusu.filtro(filtroBdAUniusu, null);
+                    for(BdAUniusu itemBdAUniusu : listaBdAUniusu) {
+                        BdTUnidad filtroBdTUnidad = new BdTUnidad();
+                        filtroBdTUnidad.setIdUnidad(itemBdAUniusu.getIdUnidad());
+                        filtroBdAUniusu.setFeAlta(new Date());
+                        filtroBdAUniusu.setFeDesactivo(new Date());
+                        StTUnidad stTUnidad = new StTUnidad();
+                        ArrayList<BdTUnidad> listaBdTUnidad = stTUnidad.filtro(filtroBdTUnidad, null);
+                        if (listaBdTUnidad != null && !listaBdTUnidad.isEmpty()) {
+                            Session.getDatosUsuario().getListaBdTUnidad().add(listaBdTUnidad.get(0));
+                        }
+                    }
+                    Session.getDatosUsuario().setBdTUnidad(Session.getDatosUsuario().getListaBdTUnidad().get(0));
                     
                     //Redirecciono al formulario principal
                     return "main";

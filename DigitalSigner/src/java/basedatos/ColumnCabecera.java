@@ -13,10 +13,10 @@ public class ColumnCabecera extends ColumnBase {
     protected String width = "100%";
     protected boolean visible = true;
     protected boolean filtro = false;
-    protected String tooltip = "tooltip";
+    protected String tooltipColumn = null;
     
-    public ColumnCabecera() {
-        // NADA        
+    public ColumnCabecera(RowCabecera parent) {
+        super(parent);
     }
 
     public String getTitle() {
@@ -70,12 +70,11 @@ public class ColumnCabecera extends ColumnBase {
         this.filtro = filtro;
     }
 
-    public String getTooltip() {
-        return tooltip;
+    public String getTooltipColumn() {
+        return tooltipColumn;
     }
 
-    public ColumnCabecera setTooltip(String tooltip) {
-        this.tooltip = tooltip;
-        return this;
+    public void setTooltipColumn(String tooltipColumn) {
+        this.tooltipColumn = tooltipColumn;
     }
 }

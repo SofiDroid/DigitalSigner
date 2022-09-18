@@ -66,4 +66,15 @@ public class Formateos {
             default -> null;
         };
     }
+    
+    public static String fechaActualSQL() {
+        if (AppInit.TIPO_BASEDATOS == BaseDatos.ORACLE) {
+            return "SYSDATE";
+        }
+        else if (AppInit.TIPO_BASEDATOS == BaseDatos.SQLSERVER) {
+            return "CONVERT (date, SYSDATETIME())";
+        }
+        
+        return null;
+    }
 }

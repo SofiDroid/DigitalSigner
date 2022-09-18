@@ -4,6 +4,7 @@ import basedatos.InterfazDAO;
 import basedatos.OperacionSQL;
 import java.util.Date;
 import java.util.HashMap;
+import oracle.jdbc.pool.OraclePooledConnection;
 
 /**
  *
@@ -81,6 +82,77 @@ public class BdAConfvaluni extends OperacionSQL implements InterfazDAO {
             sb_sql.append(" AND TSTBD = :TSTBD");
         }
 
+        return sb_sql.toString();
+    }
+
+    public String getSelectFiltroJerarquia() {
+        StringBuilder sb_sql = new StringBuilder("");
+        String jerarquia = """
+                           WITH CTE_UNIDADES 
+                           AS
+                           (
+                               SELECT
+                                   1 as LEVEL, UNI.*
+                               FROM
+                                   BD_T_UNIDAD UNI
+                               WHERE 
+                                   UNI.ID_UNIDAD = :ID_UNIDAD
+                           UNION ALL
+                               SELECT
+                                   LEVEL + 1 as LEVEL, UNI.*
+                               FROM 
+                                   BD_T_UNIDAD UNI
+                               INNER JOIN 
+                                   CTE_UNIDADES cte ON (UNI.ID_UNIDAD = cte.ID_UNIDADPADRE)
+                           )
+                           """;
+  
+        sb_sql.append(jerarquia);
+        sb_sql.append("SELECT ");
+        sb_sql.append("CONFVALUNI.ID_CONFVALUNI");
+        sb_sql.append(",CONFVALUNI.ID_UNIDAD");
+        sb_sql.append(",CONFVALUNI.ID_CONFIGURACION");
+        sb_sql.append(",CONFVALUNI.ID_CONFVALOR");
+        sb_sql.append(",CONFVALUNI.DS_VALORLIBRE");
+        sb_sql.append(",CONFVALUNI.FE_ALTA");
+        sb_sql.append(",CONFVALUNI.FE_DESACTIVO");
+        sb_sql.append(",CONFVALUNI.USUARIOBD");
+        sb_sql.append(",CONFVALUNI.TSTBD");
+
+        sb_sql.append(" FROM CTE_UNIDADES");
+        sb_sql.append(" INNER JOIN");
+        sb_sql.append(" BD_A_CONFVALUNI CONFVALUNI ON (CONFVALUNI.ID_UNIDAD = CTE_UNIDADES.ID_UNIDAD)");
+        
+        sb_sql.append(" WHERE 1=1 ");
+        if (idConfvaluni != null) {
+            sb_sql.append(" AND CONFVALUNI.ID_CONFVALUNI = :ID_CONFVALUNI");
+        }
+        if (idUnidad != null) {
+            sb_sql.append(" AND CONFVALUNI.ID_UNIDAD = :ID_UNIDAD");
+        }
+        if (idConfiguracion != null) {
+            sb_sql.append(" AND CONFVALUNI.ID_CONFIGURACION = :ID_CONFIGURACION");
+        }
+        if (idConfvalor != null) {
+            sb_sql.append(" AND CONFVALUNI.ID_CONFVALOR = :ID_CONFVALOR");
+        }
+        if (dsValorlibre != null) {
+            sb_sql.append(" AND UPPER(CONFVALUNI.DS_VALORLIBRE) = UPPER(:DS_VALORLIBRE)");
+        }
+        if (feAlta != null) {
+            sb_sql.append(" AND (CONFVALUNI.FE_ALTA <= :FE_ALTA)");
+        }
+        if (feDesactivo != null) {
+            sb_sql.append(" AND (CONFVALUNI.FE_DESACTIVO IS NULL OR FE_DESACTIVO >= :FE_DESACTIVO)");
+        }
+        if (usuariobd != null) {
+            sb_sql.append(" AND CONFVALUNI.USUARIOBD = :USUARIOBD");
+        }
+        if (tstbd != null) {
+            sb_sql.append(" AND CONFVALUNI.TSTBD = :TSTBD");
+        }
+        sb_sql.append(" ORDER BY CTE_UNIDADES.LEVEL ASC");
+        
         return sb_sql.toString();
     }
 

@@ -10,7 +10,9 @@ import javax.inject.Named;
 import org.primefaces.event.SelectEvent;
 import basedatos.tablas.Pais;
 import basedatos.servicios.ServicioPaises;
+import basedatos.tablas.BdTUnidad;
 import basedatos.tablas.BdTUsuario;
+import java.util.ArrayList;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -21,7 +23,10 @@ import javax.servlet.http.HttpServletRequest;
 @SessionScoped
 public class DatosUsuario implements Serializable {
     
+    private ArrayList<BdTUnidad> listaBdTUnidad = new ArrayList<>();
     private BdTUsuario bdTUsuario = null;
+    private BdTUnidad bdTUnidad = null;
+
     private Pais pais;
     private List<Pais> paises;
     
@@ -89,5 +94,21 @@ public class DatosUsuario implements Serializable {
     
     public String getIpExtranet() {
         return "0.0.0.0";
+    }
+
+    public BdTUnidad getBdTUnidad() {
+        return bdTUnidad;
+    }
+
+    public void setBdTUnidad(BdTUnidad bdTUnidad) {
+        this.bdTUnidad = bdTUnidad;
+    }
+
+    public ArrayList<BdTUnidad> getListaBdTUnidad() {
+        return listaBdTUnidad;
+    }
+
+    public void setListaBdTUnidad(ArrayList<BdTUnidad> listaBdTUnidad) {
+        this.listaBdTUnidad = listaBdTUnidad;
     }
 }

@@ -99,7 +99,7 @@ public final class DataSet extends StBase {
         int i = 0;
         LinkedHashMap<String,Object> itemRow = lista.get(0);
         for (Map.Entry<String, Object> itemColumn : itemRow.entrySet()) {
-            ColumnCabecera columnaCab = new ColumnCabecera();
+            ColumnCabecera columnaCab = new ColumnCabecera(this.cabecera);
             columnaCab.index = i++;
             columnaCab.name = itemColumn.getKey();
             columnaCab.title = itemColumn.getKey();
@@ -120,7 +120,7 @@ public final class DataSet extends StBase {
         int c = 0;
         for (Map.Entry<String, Object> itemColumn : itemRow.entrySet()) {
             if (nuevaFila) {
-                Column columna = new Column();
+                Column columna = new Column(fila);
                 columna.setCabecera((ColumnCabecera)this.cabecera.getColumns().get(c));
                 columna.index = c++;
                 columna.name = itemColumn.getKey();

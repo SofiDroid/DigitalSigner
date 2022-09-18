@@ -21,7 +21,7 @@
                     </p:toolbarGroup>
                     <p:toolbarGroup align="right">
 
-                        <p:commandButton id="btnFirmar" widgetVar="btnFirmar" icon="pi pi-user-edit" styleClass="/*rounded-button*/ ui-button-danger" value="Firmar"
+                        <p:commandButton id="btnFirmar" widgetVar="btnFirmar" icon="pi pi-user-edit" styleClass="rounded-button ui-button-danger"
                                          style="height: 2rem;width: 2rem;margin-left:0.3rem" title="(alt+F) Firmar"
                                          update="panelResultado,mensaje" accesskey="f" oncomplete="firmarDocumentos()" >
                             <p:confirm header="#{msg['confirmacion']}" message="#{msg['confirmacion_firma']}" icon="pi pi-info-circle"/>
@@ -81,7 +81,7 @@
             <p:dialog widgetVar="dlgProgreso" modal="true" draggable="false" closable="false" resizable="false" showHeader="false">
                 <p:progressBar id="progressBarClient" widgetVar="pbClient" style="width:300px;height:20px;margin-top: 40px;" />
             </p:dialog>
-            <p:log id="logFirma" widgetVar="logFirma" rendered="true" />
+            <p:log id="logFirma" widgetVar="logFirma" />
             <script>
                 //<![CDATA[
                 function startProgreso() {

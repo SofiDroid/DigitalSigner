@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.util.Date;
 import utilidades.Formateos;
 
-
 /**
  *
  * @author ihuegal
@@ -14,10 +13,9 @@ public class Column extends ColumnBase {
     protected ColumnCabecera cabecera;
     protected Object value = "";
     protected String valueString = "";
-    protected String tooltip = "";
     
-    public Column() {
-        // NADA        
+    public Column(Row parent) {
+        super(parent);
     }
 
     public Object getValue() {
@@ -96,11 +94,12 @@ public class Column extends ColumnBase {
         this.cabecera = cabecera;
     }
 
+    @Override
     public String getTooltip() {
-        return tooltip;
-    }
+        if (this.cabecera.tooltipColumn != null) {
+            return ((Row)this.parent).getColumnName(this.cabecera.tooltipColumn).getValueString();
+        }
 
-    public void setTooltip(String tooltip) {
-        this.tooltip = tooltip;
+        return tooltip;
     }
 }

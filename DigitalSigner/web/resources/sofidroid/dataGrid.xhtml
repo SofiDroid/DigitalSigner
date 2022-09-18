@@ -19,13 +19,13 @@
                        sortable="true" sortBy="#{itemRow.getColumnName(itemColumn.name)[itemColumn.valueProperty]}">
                 <p:column>
                     <p:outputPanel rendered="#{itemColumn.tipo eq 'TEXTO'}">
-                        <span title="#{itemRow.getColumnName(itemColumn.name)[itemColumn.tooltip]}">
+                        <span title="#{itemRow.getColumnName(itemColumn.name).tooltip}">
                             #{itemRow.getColumnName(itemColumn.name)[itemColumn.valueString]}
                         </span>
                     </p:outputPanel>
                     <p:outputPanel rendered="#{itemColumn.tipo eq 'LINK'}">
                         <p:commandLink id="btnLink"
-                                title="#{itemRow.getColumnName(itemColumn.name)[itemColumn.tooltip]}"
+                                title="#{itemRow.getColumnName(itemColumn.name).tooltip}"
                                 value="#{itemRow.getColumnName(itemColumn.name)[itemColumn.valueString]}"
                                 action="#{itemColumn.ejecutarMetodo}"
                                 update="#{itemColumn.update}">

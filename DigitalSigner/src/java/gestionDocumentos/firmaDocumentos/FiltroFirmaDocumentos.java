@@ -17,6 +17,7 @@ import org.primefaces.model.Visibility;
 import utilidades.CampoWebCodigo;
 import utilidades.CampoWebDescripcion;
 import utilidades.CampoWebFechaRango;
+import utilidades.Configuraciones;
 import utilidades.Formateos;
 import utilidades.Mensajes;
 import utilidades.Msg;
@@ -186,7 +187,48 @@ public class FiltroFirmaDocumentos implements Serializable {
     
     public void buscar() {
         try {
-            String sql = "SELECT ID_DOCUMENTO, CO_DOCUMENTO, DS_DOCUMENTO, FE_ALTA, FE_DESACTIVO FROM BD_D_DOCUMENTO WHERE 1 = 1";
+            String sql = """
+                         SELECT DISTINCT
+                             doc.ID_DOCUMENTO,
+                             doc.FE_ALTA,
+                             doc.CO_DOCUMENTO,
+                             doc.DS_DOCUMENTO,
+                             doc.CO_FICHERO,
+                             doc.CO_EXTENSION,
+                             tipodoc.ID_TIPODOCUMENTO,
+                             tipodoc.CO_TIPODOCUMENTO,
+                             tipodoc.DS_TIPODOCUMENTO,
+                             situaciondoc.ID_SITUACIONDOC,
+                             situaciondoc.CO_SITUACIONDOC,
+                             situaciondoc.DS_SITUACIONDOC,
+                             docfirma.EN_ORDEN,
+                             (SELECT count(*) FROM BD_A_DOCFIRMA aux WHERE aux.ID_DOCUMENTO = doc.ID_DOCUMENTO
+                                 AND (aux.FE_ALTA <= CONVERT (date, SYSDATETIME())) AND (aux.FE_DESACTIVO IS NULL OR docfirma.FE_DESACTIVO >= CONVERT (date, SYSDATETIME()))) as TOTAL_FIRMAS,
+                             docfirma.FE_FIRMA,
+                             aut.ID_AUTORIDAD,
+                             aut.CO_AUTORIDAD,
+                             aut.DS_AUTORIDAD,
+                             uni.ID_UNIDAD,
+                             uni.CO_UNIDAD,
+                             uni.DS_UNIDAD
+                         FROM
+                             BD_D_DOCUMENTO doc
+                         INNER JOIN
+                             BD_T_TIPODOCUMENTO tipodoc ON (tipodoc.ID_TIPODOCUMENTO = doc.ID_TIPODOCUMENTO)
+                         INNER JOIN
+                             BD_T_SITUACIONDOC situaciondoc ON (situaciondoc.ID_SITUACIONDOC = doc.ID_SITUACIONDOC)
+                         INNER JOIN
+                             BD_A_DOCFIRMA docfirma ON (docfirma.ID_DOCUMENTO = doc.ID_DOCUMENTO AND (docfirma.FE_ALTA <= CONVERT (date, SYSDATETIME())) AND (docfirma.FE_DESACTIVO IS NULL OR docfirma.FE_DESACTIVO >= CONVERT (date, SYSDATETIME())))
+                         INNER JOIN
+                             BD_T_AUTORIDAD aut ON (aut.ID_AUTORIDAD = docfirma.ID_AUTORIDAD AND (aut.FE_ALTA <= CONVERT (date, SYSDATETIME())) AND (aut.FE_DESACTIVO IS NULL OR aut.FE_DESACTIVO >= CONVERT (date, SYSDATETIME())))
+                         INNER JOIN
+                             BD_A_AUTUSU autusu ON (autusu.ID_AUTORIDAD = aut.ID_AUTORIDAD AND (autusu.FE_ALTA <= CONVERT (date, SYSDATETIME())) AND (autusu.FE_DESACTIVO IS NULL OR autusu.FE_DESACTIVO >= CONVERT (date, SYSDATETIME())))
+                         INNER JOIN
+                             BD_T_USUARIO usuario ON (usuario.ID_USUARIO = autusu.ID_USUARIO)
+                         INNER JOIN
+                             BD_T_UNIDAD uni ON (uni.ID_UNIDAD = aut.ID_UNIDAD)
+                         WHERE 1 = 1""";
+            
             sql = filtros(sql);
 
             this.dsResultado = new DataSet(sql, "ID_DOCUMENTO");
@@ -194,30 +236,7 @@ public class FiltroFirmaDocumentos implements Serializable {
 
             if (this.getDsResultado().getRowsCount() > 0) {
                 // Establecer formato de salida
-                RowCabecera cabecera = this.dsResultado.getCabecera();
-
-                cabecera.getColumnName("ID_DOCUMENTO")
-                        .setVisible(false);
-
-                cabecera.getColumnName("CO_DOCUMENTO")
-                        .setTitle("Código")
-                        .setWidth("6rem")
-                        .setTipo(ColumnBase.Tipo.LINK)
-                        .setClase(this)
-                        .setMethod(this.getClass().getMethod("verDetalle"))
-                        .setUpdate("formulario:panelResultado,formulario:mensaje");
-
-                cabecera.getColumnName("DS_DOCUMENTO")
-                        .setTitle("Descripción")
-                        .setWidth("100%");
-
-                cabecera.getColumnName("FE_ALTA")
-                        .setTitle("F. Alta")
-                        .setWidth("6rem");
-
-                cabecera.getColumnName("FE_DESACTIVO")
-                        .setTitle("F. Desactivo")
-                        .setWidth("6rem");
+                formateaResultado();
             }
         } catch (NoSuchMethodException | SecurityException | SQLException ex) {
             LOG.error(ex.getMessage(), ex);
@@ -227,34 +246,34 @@ public class FiltroFirmaDocumentos implements Serializable {
     
     private String filtros(String sql) {
         if (cCoDocumento.getValue() != null) {
-            sql += " AND UPPER(CO_DOCUMENTO) LIKE '%" + cCoDocumento.getValue().toUpperCase() + "%'";
+            sql += " AND UPPER(doc.CO_DOCUMENTO) LIKE '%" + cCoDocumento.getValue().toUpperCase() + "%'";
         }
         if (cDsDocumento.getValue() != null) {
-            sql += " AND UPPER(DS_DOCUMENTO) LIKE '%" + cDsDocumento.getValue().toUpperCase() + "%'";
+            sql += " AND UPPER(doc.DS_DOCUMENTO) LIKE '%" + cDsDocumento.getValue().toUpperCase() + "%'";
         }
         if (cFeAlta.getValueIni() != null || cFeAlta.getValueFin() != null) {
             sql += " AND (";
             if (cFeAlta.getValueIni() != null) {
-                sql += "(FE_ALTA >= " + Formateos.dateToSql((Date)cFeAlta.getValueIni()) + ")";
+                sql += "(doc.FE_ALTA >= " + Formateos.dateToSql((Date)cFeAlta.getValueIni()) + ")";
             }
             if (cFeAlta.getValueFin() != null) {
                 if (cFeAlta.getValueIni() != null) {
                     sql += " AND ";
                 }
-                sql += "(FE_ALTA <= " + Formateos.dateToSql((Date)cFeAlta.getValueFin()) + ")";
+                sql += "(doc.FE_ALTA <= " + Formateos.dateToSql((Date)cFeAlta.getValueFin()) + ")";
             }
             sql += ")";
         }
         if (cFeDesactivo.getValueIni() != null || cFeDesactivo.getValueFin() != null) {
             sql += " AND (";
             if (cFeDesactivo.getValueIni() != null) {
-                sql += "(FE_DESACTIVO >= " + Formateos.dateToSql((Date)cFeDesactivo.getValueIni()) + ")";
+                sql += "(doc.FE_DESACTIVO >= " + Formateos.dateToSql((Date)cFeDesactivo.getValueIni()) + ")";
             }
             if (cFeDesactivo.getValueFin() != null) {
                 if (cFeDesactivo.getValueIni() != null) {
                     sql += " AND ";
                 }
-                sql += "(FE_DESACTIVO <= " + Formateos.dateToSql((Date)cFeDesactivo.getValueFin()) + ")";
+                sql += "(doc.FE_DESACTIVO <= " + Formateos.dateToSql((Date)cFeDesactivo.getValueFin()) + ")";
             }
             sql += ")";
         }
@@ -299,11 +318,11 @@ public class FiltroFirmaDocumentos implements Serializable {
      * 
      */
     public String getCertificadosAdmitidos() {
-        return "filters=keyusage.nonrepudiation:true;\\n";
+        return new Configuraciones().recuperaConfiguracion("CERT-ADMITIDOS");
     }
     
     public String getHostServlets() {
-        return "http://localhost:92/firmaServlets/";
+        return new Configuraciones().recuperaConfiguracion("HOST-TRIFASE");
     }
     
     public BdDDocumento getDocumentoByIndex(Integer idxFichero) throws Exception {
@@ -317,5 +336,86 @@ public class FiltroFirmaDocumentos implements Serializable {
     
     public String getTipoDocumentosFirma() {
         return "0";
+    }
+
+    private void formateaResultado() throws NoSuchMethodException {
+
+                RowCabecera cabecera = this.dsResultado.getCabecera();
+
+                cabecera.getColumnName("ID_DOCUMENTO")
+                        .setVisible(false);
+
+                cabecera.getColumnName("FE_ALTA")
+                        .setTitle("F. Alta")
+                        .setWidth("10em");
+                
+                cabecera.getColumnName("CO_DOCUMENTO")
+                        .setTitle("Código")
+                        .setWidth("10em")
+                        .setTipo(ColumnBase.Tipo.LINK)
+                        .setClase(this)
+                        .setMethod(this.getClass().getMethod("verDetalle"))
+                        .setUpdate("formulario:panelResultado,formulario:mensaje");
+
+                cabecera.getColumnName("DS_DOCUMENTO")
+                        .setTitle("Descripción")
+                        .setWidth("100%");
+
+                cabecera.getColumnName("CO_FICHERO")
+                        .setVisible(false);
+
+                cabecera.getColumnName("CO_EXTENSION")
+                        .setVisible(false);
+
+                cabecera.getColumnName("ID_TIPODOCUMENTO")
+                        .setVisible(false);
+
+                cabecera.getColumnName("CO_TIPODOCUMENTO")
+                        .setTitle("Tipo")
+                        .setWidth("10em")
+                        .setTooltipColumn("DS_TIPODOCUMENTO");
+
+                cabecera.getColumnName("DS_TIPODOCUMENTO")
+                        .setVisible(false);
+
+                cabecera.getColumnName("ID_SITUACIONDOC")
+                        .setVisible(false);
+
+                cabecera.getColumnName("CO_SITUACIONDOC")
+                        .setTitle("Situación")
+                        .setWidth("10em")
+                        .setTooltipColumn("DS_SITUACIONDOC");
+
+                cabecera.getColumnName("DS_SITUACIONDOC")
+                        .setVisible(false);
+
+                cabecera.getColumnName("EN_ORDEN")
+                        .setVisible(false);
+
+                cabecera.getColumnName("TOTAL_FIRMAS")
+                        .setVisible(false);
+
+                cabecera.getColumnName("FE_FIRMA")
+                        .setVisible(false);
+
+                cabecera.getColumnName("ID_AUTORIDAD")
+                        .setVisible(false);
+
+                cabecera.getColumnName("CO_AUTORIDAD")
+                        .setTitle("Autoridad")
+                        .setWidth("20em")
+                        .setTooltipColumn("DS_AUTORIDAD");
+
+                cabecera.getColumnName("DS_AUTORIDAD")
+                        .setVisible(false);
+
+                cabecera.getColumnName("ID_UNIDAD")
+                        .setVisible(false);
+
+                cabecera.getColumnName("CO_UNIDAD")
+                        .setVisible(false);
+
+                cabecera.getColumnName("DS_UNIDAD")
+                        .setVisible(false);
     }
 }
