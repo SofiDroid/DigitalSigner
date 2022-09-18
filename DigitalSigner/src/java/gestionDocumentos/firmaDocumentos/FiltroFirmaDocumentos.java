@@ -2,6 +2,7 @@ package gestionDocumentos.firmaDocumentos;
 
 import basedatos.ColumnBase;
 import basedatos.DataSet;
+import basedatos.Row;
 import basedatos.RowCabecera;
 import basedatos.servicios.StDDocumento;
 import basedatos.tablas.BdDDocumento;
@@ -40,7 +41,7 @@ public class FiltroFirmaDocumentos implements Serializable {
     private CampoWebDescripcion cSituaciondoc = null;
     private boolean filtroVisible = true;
     private DataSet dsResultado = null;
-    
+    private String listaDocumentosFirma = "";
     //private EdicionDocumento edicionDocumento = null; 
     
     @PostConstruct
@@ -330,8 +331,21 @@ public class FiltroFirmaDocumentos implements Serializable {
         return new StDDocumento().item(idDocumento, null);
     }
     
+    public void prepararListaDocumentos() {
+        String listaDocumento = "";
+        if (this.dsResultado.getSelectedRows() != null && !this.dsResultado.getSelectedRows().isEmpty()) {
+            for (Row itemSelectedRow : this.dsResultado.getSelectedRows()) {
+                if (!listaDocumento.isBlank()) {
+                    listaDocumento += ";";
+                }
+                listaDocumento += itemSelectedRow.getIndex();
+            }
+        }
+        listaDocumentosFirma = listaDocumento;
+    }
+    
     public String getListaDocumentosFirma() {
-        return "0";
+        return listaDocumentosFirma;
     }
     
     public String getTipoDocumentosFirma() {
@@ -340,82 +354,84 @@ public class FiltroFirmaDocumentos implements Serializable {
 
     private void formateaResultado() throws NoSuchMethodException {
 
-                RowCabecera cabecera = this.dsResultado.getCabecera();
+        this.dsResultado.setSelectable(true);
 
-                cabecera.getColumnName("ID_DOCUMENTO")
-                        .setVisible(false);
+        RowCabecera cabecera = this.dsResultado.getCabecera();
 
-                cabecera.getColumnName("FE_ALTA")
-                        .setTitle("F. Alta")
-                        .setWidth("10em");
-                
-                cabecera.getColumnName("CO_DOCUMENTO")
-                        .setTitle("Código")
-                        .setWidth("10em")
-                        .setTipo(ColumnBase.Tipo.LINK)
-                        .setClase(this)
-                        .setMethod(this.getClass().getMethod("verDetalle"))
-                        .setUpdate("formulario:panelResultado,formulario:mensaje");
+        cabecera.getColumnName("ID_DOCUMENTO")
+                .setVisible(false);
 
-                cabecera.getColumnName("DS_DOCUMENTO")
-                        .setTitle("Descripción")
-                        .setWidth("100%");
+        cabecera.getColumnName("FE_ALTA")
+                .setTitle("F. Alta")
+                .setWidth("10em");
 
-                cabecera.getColumnName("CO_FICHERO")
-                        .setVisible(false);
+        cabecera.getColumnName("CO_DOCUMENTO")
+                .setTitle("Código")
+                .setWidth("10em")
+                .setTipo(ColumnBase.Tipo.LINK)
+                .setClase(this)
+                .setMethod(this.getClass().getMethod("verDetalle"))
+                .setUpdate("formulario:panelResultado,formulario:mensaje");
 
-                cabecera.getColumnName("CO_EXTENSION")
-                        .setVisible(false);
+        cabecera.getColumnName("DS_DOCUMENTO")
+                .setTitle("Descripción")
+                .setWidth("100%");
 
-                cabecera.getColumnName("ID_TIPODOCUMENTO")
-                        .setVisible(false);
+        cabecera.getColumnName("CO_FICHERO")
+                .setVisible(false);
 
-                cabecera.getColumnName("CO_TIPODOCUMENTO")
-                        .setTitle("Tipo")
-                        .setWidth("10em")
-                        .setTooltipColumn("DS_TIPODOCUMENTO");
+        cabecera.getColumnName("CO_EXTENSION")
+                .setVisible(false);
 
-                cabecera.getColumnName("DS_TIPODOCUMENTO")
-                        .setVisible(false);
+        cabecera.getColumnName("ID_TIPODOCUMENTO")
+                .setVisible(false);
 
-                cabecera.getColumnName("ID_SITUACIONDOC")
-                        .setVisible(false);
+        cabecera.getColumnName("CO_TIPODOCUMENTO")
+                .setTitle("Tipo")
+                .setWidth("10em")
+                .setTooltipColumn("DS_TIPODOCUMENTO");
 
-                cabecera.getColumnName("CO_SITUACIONDOC")
-                        .setTitle("Situación")
-                        .setWidth("10em")
-                        .setTooltipColumn("DS_SITUACIONDOC");
+        cabecera.getColumnName("DS_TIPODOCUMENTO")
+                .setVisible(false);
 
-                cabecera.getColumnName("DS_SITUACIONDOC")
-                        .setVisible(false);
+        cabecera.getColumnName("ID_SITUACIONDOC")
+                .setVisible(false);
 
-                cabecera.getColumnName("EN_ORDEN")
-                        .setVisible(false);
+        cabecera.getColumnName("CO_SITUACIONDOC")
+                .setTitle("Situación")
+                .setWidth("10em")
+                .setTooltipColumn("DS_SITUACIONDOC");
 
-                cabecera.getColumnName("TOTAL_FIRMAS")
-                        .setVisible(false);
+        cabecera.getColumnName("DS_SITUACIONDOC")
+                .setVisible(false);
 
-                cabecera.getColumnName("FE_FIRMA")
-                        .setVisible(false);
+        cabecera.getColumnName("EN_ORDEN")
+                .setVisible(false);
 
-                cabecera.getColumnName("ID_AUTORIDAD")
-                        .setVisible(false);
+        cabecera.getColumnName("TOTAL_FIRMAS")
+                .setVisible(false);
 
-                cabecera.getColumnName("CO_AUTORIDAD")
-                        .setTitle("Autoridad")
-                        .setWidth("20em")
-                        .setTooltipColumn("DS_AUTORIDAD");
+        cabecera.getColumnName("FE_FIRMA")
+                .setVisible(false);
 
-                cabecera.getColumnName("DS_AUTORIDAD")
-                        .setVisible(false);
+        cabecera.getColumnName("ID_AUTORIDAD")
+                .setVisible(false);
 
-                cabecera.getColumnName("ID_UNIDAD")
-                        .setVisible(false);
+        cabecera.getColumnName("CO_AUTORIDAD")
+                .setTitle("Autoridad")
+                .setWidth("20em")
+                .setTooltipColumn("DS_AUTORIDAD");
 
-                cabecera.getColumnName("CO_UNIDAD")
-                        .setVisible(false);
+        cabecera.getColumnName("DS_AUTORIDAD")
+                .setVisible(false);
 
-                cabecera.getColumnName("DS_UNIDAD")
-                        .setVisible(false);
+        cabecera.getColumnName("ID_UNIDAD")
+                .setVisible(false);
+
+        cabecera.getColumnName("CO_UNIDAD")
+                .setVisible(false);
+
+        cabecera.getColumnName("DS_UNIDAD")
+                .setVisible(false);
     }
 }

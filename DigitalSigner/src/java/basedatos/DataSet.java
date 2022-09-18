@@ -18,6 +18,8 @@ public final class DataSet extends StBase {
     protected ArrayList<Row> rows = new ArrayList<>();
     protected HashMap<String, Object> parametros = new HashMap<>();
     protected Row selectedRow = null;
+    protected ArrayList<Row> selectedRows = new ArrayList<>();
+    protected Boolean selectable = false;
     protected Method rowSelectMethod = null;
     protected Object rowSelectClass = null;
     protected String rowSelectUpdate = "@widgetVar(mensaje)";
@@ -239,5 +241,21 @@ public final class DataSet extends StBase {
 
     public void setHeight(String height) {
         this.height = height;
+    }
+
+    public ArrayList<Row> getSelectedRows() {
+        return selectedRows;
+    }
+
+    public void setSelectedRows(ArrayList<Row> selectedRows) {
+        this.selectedRows = selectedRows;
+    }
+
+    public Boolean getSelectable() {
+        return selectable;
+    }
+
+    public void setSelectable(Boolean selectable) {
+        this.selectable = selectable;
     }
 }

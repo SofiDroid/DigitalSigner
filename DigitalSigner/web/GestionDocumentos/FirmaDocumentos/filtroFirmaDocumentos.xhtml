@@ -23,7 +23,7 @@
 
                         <p:commandButton id="btnFirmar" widgetVar="btnFirmar" icon="pi pi-user-edit" styleClass="rounded-button ui-button-danger"
                                          style="height: 2rem;width: 2rem;margin-left:0.3rem" title="(alt+F) Firmar"
-                                         update="panelResultado,mensaje" accesskey="f" oncomplete="firmarDocumentos()" >
+                                         update="panelResultado,mensaje" accesskey="f" action="#{filtroFirmaDocumentos.prepararListaDocumentos}">
                             <p:confirm header="#{msg['confirmacion']}" message="#{msg['confirmacion_firma']}" icon="pi pi-info-circle"/>
                         </p:commandButton>
 
@@ -77,51 +77,57 @@
             </p:card>
             <p:card id="panelResultado" styleClass="card">
                 <sd:dataGrid id="tblResultados" dataSet="#{filtroFirmaDocumentos.dsResultado}" />
-            </p:card>
-            <p:dialog widgetVar="dlgProgreso" modal="true" draggable="false" closable="false" resizable="false" showHeader="false">
-                <p:progressBar id="progressBarClient" widgetVar="pbClient" style="width:300px;height:20px;margin-top: 40px;" />
-            </p:dialog>
-            <p:log id="logFirma" widgetVar="logFirma" />
-            <script>
-                //<![CDATA[
-                function startProgreso() {
-                    /*
-                    PF('btnFirmar').disable();
-
-                    window['progress'] = setInterval(function () {
-                        var pbClient = PF('pbClient'),
-                            oldValue = pbClient.getValue(),
-                            newValue = oldValue + 10;
-
-                        pbClient.setValue(pbClient.getValue() + 10);
-
-                        if (newValue === 100) {
-                            clearInterval(window['progress']);
-                        }
-
-
-                    }, 1000);
-                     */
-                }
-
-                function cancelProgreso() {
-                    //clearInterval(window['progress']);
-                    //PF('pbClient').setValue(0);
-                    //PF('btnFirmar').enable();
-                    //PF('dlgProgreso').hide();
-                }
-
-                //]]>
-            </script>
-            <script type="text/javascript">
-                var listaDocumentosFirma = "#{filtroFirmaDocumentos.listaDocumentosFirma}";
-                var tipoFirma = "#{filtroFirmaDocumentos.tipoDocumentosFirma}";
-                listaDocumentosFirma = listaDocumentosFirma.split(";");
-                tipoFirma = tipoFirma.split(";");
-            </script>
-            <script type="text/javascript">
+                <p:dialog id="dlgProgreso" widgetVar="dlgProgreso" modal="true" draggable="false" closable="false" resizable="false" showHeader="false">
+                    <i class="pi pi-spin pi-spinner" style="font-size: 1em;margin-right: 5px;margin-top: 20px" /><p:outputLabel id="pbLabel"  value="Iniciando AutoFirma..." style="padding-top: 20px"/>
+                    <p:progressBar id="progressBarClient" widgetVar="pbClient" style="width:300px;height:20px;margin-top: 5px;" />
+                </p:dialog>
+                <p:dialog id="dlgFirmaFinalizada" widgetVar="dlgFirmaFinalizada" modal="true" draggable="false" closable="true" resizable="false" showHeader="true" header="Firma" closeOnEscape="true">
+                    <span>Documentos firmados correctamente!</span>
+                </p:dialog>
+                <p:log id="logFirma" widgetVar="logFirma" rendered="true" />
+                <script type="text/javascript">
                     //<![CDATA[
+                    var pbClient = PF('pbClient');
 
+                    function startProgreso() {
+                        PF('btnFirmar').disable();
+                        PF('dlgProgreso').show();
+
+                        pbClient.setValue(0);
+                    }
+
+                    function refrescarProgreso(actual, total, textoLabel) {
+                        if (actual === 0 && total === 0) {
+                            document.getElementById('formulario:pbLabel').innerHTML = textoLabel;
+                        }
+                        else {
+                            var porcentaje = ((actual+1) * 100)/total;
+
+                            pbClient.setValue(porcentaje);
+                            document.getElementById('formulario:pbLabel').innerHTML = 'Firmando elemento ' + (actual+1) + ' de ' + total + '...(' + porcentaje + '%)';
+                        }
+                    }
+
+                    function cancelProgreso() {
+                        pbClient.setValue(0);
+
+                        PF('dlgProgreso').hide();
+                        PF('btnFirmar').enable();
+                    }
+
+                    function EndProgreso() {
+                        pbClient.setValue(0);
+
+                        PF('dlgProgreso').hide();
+                        PF('btnFirmar').enable();
+
+                        PF('dlgFirmaFinalizada').show();
+                    }
+
+                    //]]>
+                </script>
+                <script type="text/javascript">
+                    //<![CDATA[
                     var data = "";
                     var params = "";
                     var boUsarServlets = true;
@@ -152,17 +158,24 @@
                     var aplicacionFirmaIniciada = false;
                     var boReintentar = false;
 
+                    var listaDocumentosFirma = "#{filtroFirmaDocumentos.listaDocumentosFirma}";
+                    var tipoFirma = "#{filtroFirmaDocumentos.tipoDocumentosFirma}";
+                    listaDocumentosFirma = listaDocumentosFirma.split(";");
+                    tipoFirma = tipoFirma.split(";");
+                    alert(listaDocumentosFirma);
+
                     function firmarDocumentos()
                     {
                         try {
                             if (listaDocumentosFirma !== "")
                             {
                                 startProgreso();
-    
+
                                 numSeleccionados = (listaDocumentosFirma === undefined || listaDocumentosFirma === null ? 0 : listaDocumentosFirma.length);
-                                
+
+
                                 PrimeFaces.info('Iniciando aplicación de autoFirma...'); //LOG
-                                //setProgreso(0, "Iniciando aplicación de autoFirma...");
+                                refrescarProgreso(0,0,'Iniciando aplicación de autoFirma...');
                                 //refrescarEstado("");
 
                                 iniciarAplicacionAutoFirma(iniciarAutoFirmaOK, iniciarAutoFirmaERROR);
@@ -254,7 +267,7 @@
                     function iniciarAutoFirmaOK()
                     {
                         PrimeFaces.info('Iniciando la firma...');
-                        //setProgreso(0, "Iniciando la firma...");
+                        refrescarProgreso(0,0,'Iniciando la firma...');
                         //refrescarEstado("");
 
                         AutoScript.setStickySignatory(true);
@@ -268,7 +281,7 @@
                         if (boReintentar)
                         {
                             //Si estamos reintentando, voy a esperar un poco entre firma y firma
-                            //refrescarProgreso(elemento, numSeleccionados);
+                            refrescarProgreso(elemento, numSeleccionados);
                             //refrescarEstado(" (Reintentando)");
                             setTimeout(function ()
                             {
@@ -282,11 +295,13 @@
 
                     function firmarAux(elemento)
                     {
+
                         PrimeFaces.info('Elemento = ' + elemento);
                         PrimeFaces.info('listaDocumentosFirma.size() => ' + listaDocumentosFirma.length);
                         PrimeFaces.info('listaDocumentosFirma[elemento] = ' + listaDocumentosFirma[elemento]);
 
                         PrimeFaces.info('Descargando: ' + listaDocumentosFirma[elemento]);
+                        refrescarProgreso(0,0,'Descargando elemento: ' + listaDocumentosFirma[elemento]);
 
                         try
                         {
@@ -329,7 +344,7 @@
                                         {
                                             var respuesta = self.xmlHttpReq.responseText;
                                             PrimeFaces.error(respuesta);
-                                            endDownloadParaFirma(respuesta /*self.xmlHttpReq.responseText*/, listaDocumentosFirma[elemento], elemento);
+                                            endDownloadParaFirma(respuesta, listaDocumentosFirma[elemento], elemento);
                                         } else if (tipoFirma[elemento] === "1")
                                         {
                                             endDownloadParaContraFirma(self.xmlHttpReq.responseText, listaDocumentosFirma[elemento], elemento);
@@ -355,16 +370,15 @@
                     // Firma
                     function endDownloadParaFirma(str, elemento, i)
                     {
-                        //refrescarEstado(" (Firmando)");
-                        //refrescarProgreso(i, numSeleccionados);
+                        refrescarProgreso(i, numSeleccionados);
                         PrimeFaces.info('(Firmando)');
 
                         setTimeout(function ()
                         {
                             try
                             {
-                                toLog("Firmando: " + elemento);
-                                
+                                PrimeFaces.info("Firmando: " + elemento);
+
                                 if (str !== undefined && str !== null && str !== "")
                                 {
                                     configuraParams();
@@ -416,7 +430,7 @@
                         PrimeFaces.info('i = ' + i);
 
                         //refrescarEstado(" (Contra-Firmando)");
-                        //refrescarProgreso(i, numSeleccionados);
+                        refrescarProgreso(i, numSeleccionados);
                         PrimeFaces.info(' (Contra-Firmando)');
 
                         setTimeout(function ()
@@ -431,7 +445,7 @@
 
                                     if (boUsarServlets) {
                                         PrimeFaces.info('El hash del fichero ' + elemento + ' es: ' + str);
-                                        
+
                                         PrimeFaces.info('Tipo Contra-Firma: XAdEStri');
                                         PrimeFaces.info('llamando a AutoScript.counterSign(...)');
                                         AutoScript.counterSign(str, "SHA256withRSA", "XAdEStri", params, 
@@ -468,7 +482,7 @@
                                 posicion = 0;
                                 alertarError("Contra-Firma cancelada: " + AutoScript.getErrorMessage(), e);
                                 cancelProgreso();
-                                mandarRefrescarListado();
+                                //mandarRefrescarListado();
                             }
                         }, 10);
                     }
@@ -483,13 +497,12 @@
                         posicion = 0;
                         alertarError("Firma cancelada: " + mensaje, null);
                         cancelProgreso();
-                        mandarRefrescarListado();
+                        //mandarRefrescarListado();
                     }
 
                     function subeFirmado(docFirmado, elemento, i)
                     {
-                        //refrescarEstado(" (Subiendo)");
-                        //refrescarProgreso(i + 1, numSeleccionados);
+                        refrescarProgreso(i + 1, numSeleccionados);
                         PrimeFaces.info(' (Subiendo)');
 
                         setTimeout(function ()
@@ -542,7 +555,7 @@
                                             //Si la respuesta es de error, termino el proceso
                                             posicion = listaDocumentosFirma.length;
 
-                                            //setProgreso(100, "Error");
+                                            refrescarProgreso(0,0, "Error en respuesta de servlet de subida de fichero.");
                                             //refrescarEstado("");
                                         }
 
@@ -564,43 +577,21 @@
                     function rellamada()
                     {
                         posicion = posicion + 1;
-                        if (posicion < listaDocumentosFirma.length)
-                        {
+                        if (posicion < listaDocumentosFirma.length) {
                             firmar(posicion);
-                        } else
-                        {
+                        }
+                        else {
                             //setProgreso(100, "Terminado");
                             //refrescarEstado(" (actualizando)");
                             PrimeFaces.info(' (actualizando)');
-
-                            setTimeout(function ()
-                            {
-                                if (firmaIndividual)
-                                {
-                                    firmaFinalizadaIndividual();
-                                } else
-                                {
-                                    //Comprobar si hay reintentos (carga la variable boReintentar)
-                                    //y después llama a finalizarFirma()
-                                    comprobarSiHayReintentos();
-                                }
-                            }, 10);
+                            setTimeout(finalizarFirma, 10);
                         }
                     }
 
                     function finalizarFirma()
                     {
-                        //La función comprobarSiHayReintentos rellena la variable boReintentar
-                        if (boReintentar)
-                        {
-                            PrimeFaces.info('Reintentar firmas');
-                            firmarDocumentos();
-                        } else
-                        {
-                            //AutoScript.setStickySignatory(false);
-                            firmaFinalizada();
-                            PrimeFaces.info('Firma finalizada');
-                        }
+                        EndProgreso();
+                        PrimeFaces.info('Firma finalizada');
                     }
 
                     function iniciarAutoFirmaERROR(e)
@@ -609,7 +600,10 @@
 
                         if (errorAutofirma === true)
                         {
-                            alert("Error en el arranque de Autofirma. Compruebe que no se está bloqueando la aplicación y que la versión de java está correctamente instalada. Contacte con su CIS-POC");
+                            var errorMensaje = "Error en el arranque de Autofirma. Compruebe que no se está bloqueando la aplicación y que la versión de java está correctamente instalada.";
+                            PF('mensaje').renderMessage({"summary":"Error",
+                                                         "detail":errorMensaje,
+                                                         "severity":"error"});
                         }
                         alertarError("Error Firma 1", e);
                         cancelProgreso();
@@ -639,35 +633,6 @@
                             paramsInit = paramsInit + "serverUrl=" + urlServiciosIntermedios + "trifase/SignatureService\n";
                         }
                         params = paramsInit;
-                    }
-
-                    function alternarProgreso()
-                    {
-                        try
-                        {
-//                            if (SDElementoPorId("pop_progreso")) {
-//                                if (SDElementoPorId("pop_progreso").style.display === 'block') {
-//                                    SDElementoPorId("pop_progreso").style.display='none';
-//                                }
-//                                else {
-//                                    SDElementoPorId("pop_progreso").style.display='block';
-//                                }
-//                            }
-                        } catch (e)
-                        {
-                            //nada
-                        }
-                    }
-
-                    // No borrar este método, lo utiliza el applet para mostrar su log
-                    function showLog(newLog)
-                    {
-                        //NADA
-                    }
-
-                    function toLog(texto)
-                    {
-                        //SDElementoPorId("progreso").innerHTML = SDElementoPorId("progreso").innerHTML + "<div>" + texto + "</div>";
                     }
 
                     function bytesToString(bytes, si) {
@@ -706,15 +671,20 @@
                             } //Vacío
 
                             PrimeFaces.info(msg);
-                            alert(msg);
+                            PF('mensaje').renderMessage({"summary":"Error",
+                                                         "detail":msg,
+                                                         "severity":"error"});
                         } catch (e2)
                         {
                             PrimeFaces.info(msg + e2.toString());
-                            alert(msg + e2.toString());
+                            PF('mensaje').renderMessage({"summary":"Error",
+                                                         "detail":msg + e2.toString(),
+                                                         "severity":"error"});
                         }
                     }
                     //]]>
                 </script>
+            </p:card>
         </ui:define>
     </ui:composition>
 </html>
