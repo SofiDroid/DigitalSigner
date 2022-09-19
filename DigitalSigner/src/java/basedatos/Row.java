@@ -31,4 +31,8 @@ public class Row extends RowBase{
     public void setParent(DataSet parent) {
         this.parent = parent;
     }
+    
+    public Object getId() {
+        return this.getColumnName(this.parent.rowSelectColumnaID).getValue();
+    }
 }

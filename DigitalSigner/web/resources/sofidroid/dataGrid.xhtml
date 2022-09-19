@@ -14,8 +14,11 @@
     <cc:implementation>
         <p:dataTable id="#{cc.attrs.id}" widgetVar="#{cc.attrs.id}" var="itemRow" value="#{cc.attrs.dataSet.rows}" scrollable="true" scrollHeight="100%" 
                      style="height: #{cc.attrs.dataSet.height};width:100%;padding:0.2rem" size="small"
-                     selection="#{cc.attrs.dataSet.selectedRows}" rowKey="#{product.id}"
-                     paginator="true" rows="20" selectionPageOnly="false">
+                     selection="#{cc.attrs.dataSet.selectedRows}" rowKey="#{itemRow.id}"
+                     paginator="true" rows="20" selectionPageOnly="false"
+                     paginatorPosition="bottom"
+                     paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                     currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} registros">
             <p:column rendered="#{cc.attrs.dataSet.selectable}" selectionMode="multiple" style="width:16px;text-align:center"/>
             <p:columns value="#{cc.attrs.dataSet.cabecera.columns}" columnIndexVar="indexCol" var="itemColumn"
                        headerText="#{itemColumn.title}" visible="#{itemColumn.visible}" width="#{itemColumn.width}"

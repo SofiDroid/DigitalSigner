@@ -22,8 +22,8 @@
                     <p:toolbarGroup align="right">
 
                         <p:commandButton id="btnFirmar" widgetVar="btnFirmar" icon="pi pi-user-edit" styleClass="rounded-button ui-button-danger"
-                                         style="height: 2rem;width: 2rem;margin-left:0.3rem" title="(alt+F) Firmar"
-                                         update="panelResultado,mensaje" accesskey="f" action="#{filtroFirmaDocumentos.prepararListaDocumentos}">
+                                         style="height: 2rem;width: 2rem;margin-left:0.3rem" title="(alt+F) Firmar" action="#{filtroFirmaDocumentos.prepararListaDocumentos}"
+                                         update="panelResultado,mensaje" process="@this,tblResultados" accesskey="f" oncomplete="recuperarListaFromBackBean(xhr, status, args)">
                             <p:confirm header="#{msg['confirmacion']}" message="#{msg['confirmacion_firma']}" icon="pi pi-info-circle"/>
                         </p:commandButton>
 
@@ -84,7 +84,6 @@
                 <p:dialog id="dlgFirmaFinalizada" widgetVar="dlgFirmaFinalizada" modal="true" draggable="false" closable="true" resizable="false" showHeader="true" header="Firma" closeOnEscape="true">
                     <span>Documentos firmados correctamente!</span>
                 </p:dialog>
-                <p:log id="logFirma" widgetVar="logFirma" rendered="true" />
                 <script type="text/javascript">
                     //<![CDATA[
                     var pbClient = PF('pbClient');
@@ -101,7 +100,7 @@
                             document.getElementById('formulario:pbLabel').innerHTML = textoLabel;
                         }
                         else {
-                            var porcentaje = ((actual+1) * 100)/total;
+                            var porcentaje = Math.round(((actual+1) * 100)/total);
 
                             pbClient.setValue(porcentaje);
                             document.getElementById('formulario:pbLabel').innerHTML = 'Firmando elemento ' + (actual+1) + ' de ' + total + '...(' + porcentaje + '%)';
@@ -126,6 +125,25 @@
 
                     //]]>
                 </script>
+                <script>
+                        var listaDocumentosFirma;
+                        var tipoFirma;
+                        function recuperarListaFromBackBean(xhr, status, args) {
+                            listaDocumentosFirma = args.listaDocumentos;
+                            tipoFirma = args.listaTiposFirma;
+                            
+                            if (listaDocumentosFirma !== '') {
+                                listaDocumentosFirma = listaDocumentosFirma.split(";");
+                                tipoFirma = tipoFirma.split(";");
+
+                                firmarDocumentos();
+                            } else {
+                                PF('mensaje').renderMessage({"summary":"Información",
+                                                             "detail":"Debe seleccionar al menos un documento a firmar.",
+                                                             "severity":"warn"});
+                            }
+                        }
+                </script>
                 <script type="text/javascript">
                     //<![CDATA[
                     var data = "";
@@ -133,8 +151,8 @@
                     var boUsarServlets = true;
 
                     // URL de los servlets de subida y bajada del documento y el trifase
-                    //var urlServiciosIntermedios = "#{filtroFirmaDocumentos.getHostServlets()}";
-                    var urlServiciosIntermedios = "http://localhost:92/firmaServlets/";
+                    var urlServiciosIntermedios = "#{filtroFirmaDocumentos.getHostServlets()}";
+                    //var urlServiciosIntermedios = "http://localhost:92/firmaServlets/";
 
 
                     var paramsInit = "";
@@ -157,12 +175,6 @@
 
                     var aplicacionFirmaIniciada = false;
                     var boReintentar = false;
-
-                    var listaDocumentosFirma = "#{filtroFirmaDocumentos.listaDocumentosFirma}";
-                    var tipoFirma = "#{filtroFirmaDocumentos.tipoDocumentosFirma}";
-                    listaDocumentosFirma = listaDocumentosFirma.split(";");
-                    tipoFirma = tipoFirma.split(";");
-                    alert(listaDocumentosFirma);
 
                     function firmarDocumentos()
                     {
@@ -685,6 +697,7 @@
                     //]]>
                 </script>
             </p:card>
+            <p:log id="logFirma" widgetVar="logFirma" rendered="false" />
         </ui:define>
     </ui:composition>
 </html>

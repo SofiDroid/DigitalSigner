@@ -13,6 +13,7 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
 import org.apache.log4j.Logger;
+import org.primefaces.context.PrimeRequestContext;
 import org.primefaces.event.ToggleEvent;
 import org.primefaces.model.Visibility;
 import utilidades.CampoWebCodigo;
@@ -22,6 +23,7 @@ import utilidades.Configuraciones;
 import utilidades.Formateos;
 import utilidades.Mensajes;
 import utilidades.Msg;
+import utilidades.Session;
 
 /**
  *
@@ -41,7 +43,6 @@ public class FiltroFirmaDocumentos implements Serializable {
     private CampoWebDescripcion cSituaciondoc = null;
     private boolean filtroVisible = true;
     private DataSet dsResultado = null;
-    private String listaDocumentosFirma = "";
     //private EdicionDocumento edicionDocumento = null; 
     
     @PostConstruct
@@ -219,7 +220,7 @@ public class FiltroFirmaDocumentos implements Serializable {
                          INNER JOIN
                              BD_T_SITUACIONDOC situaciondoc ON (situaciondoc.ID_SITUACIONDOC = doc.ID_SITUACIONDOC)
                          INNER JOIN
-                             BD_A_DOCFIRMA docfirma ON (docfirma.ID_DOCUMENTO = doc.ID_DOCUMENTO AND (docfirma.FE_ALTA <= CONVERT (date, SYSDATETIME())) AND (docfirma.FE_DESACTIVO IS NULL OR docfirma.FE_DESACTIVO >= CONVERT (date, SYSDATETIME())))
+                             BD_A_DOCFIRMA docfirma ON (docfirma.ID_DOCUMENTO = doc.ID_DOCUMENTO AND docfirma.FE_FIRMA IS NULL AND (docfirma.FE_ALTA <= CONVERT (date, SYSDATETIME())) AND (docfirma.FE_DESACTIVO IS NULL OR docfirma.FE_DESACTIVO >= CONVERT (date, SYSDATETIME())))
                          INNER JOIN
                              BD_T_AUTORIDAD aut ON (aut.ID_AUTORIDAD = docfirma.ID_AUTORIDAD AND (aut.FE_ALTA <= CONVERT (date, SYSDATETIME())) AND (aut.FE_DESACTIVO IS NULL OR aut.FE_DESACTIVO >= CONVERT (date, SYSDATETIME())))
                          INNER JOIN
@@ -228,7 +229,9 @@ public class FiltroFirmaDocumentos implements Serializable {
                              BD_T_USUARIO usuario ON (usuario.ID_USUARIO = autusu.ID_USUARIO)
                          INNER JOIN
                              BD_T_UNIDAD uni ON (uni.ID_UNIDAD = aut.ID_UNIDAD)
-                         WHERE 1 = 1""";
+                         WHERE 1 = 1
+                         AND (SELECT COUNT(*) FROM BD_A_DOCFIRMA WHERE ID_DOCUMENTO = doc.ID_DOCUMENTO AND FE_FIRMA IS NULL AND EN_ORDEN < docfirma.EN_ORDEN) = 0
+                         """;
             
             sql = filtros(sql);
 
@@ -246,6 +249,9 @@ public class FiltroFirmaDocumentos implements Serializable {
     }
     
     private String filtros(String sql) {
+        
+        sql += " AND usuario.ID_USUARIO = " + Session.getDatosUsuario().getBdTUsuario().getIdUsuario();
+        
         if (cCoDocumento.getValue() != null) {
             sql += " AND UPPER(doc.CO_DOCUMENTO) LIKE '%" + cCoDocumento.getValue().toUpperCase() + "%'";
         }
@@ -333,29 +339,28 @@ public class FiltroFirmaDocumentos implements Serializable {
     
     public void prepararListaDocumentos() {
         String listaDocumento = "";
+        String listaTiposFirma = "";
         if (this.dsResultado.getSelectedRows() != null && !this.dsResultado.getSelectedRows().isEmpty()) {
             for (Row itemSelectedRow : this.dsResultado.getSelectedRows()) {
                 if (!listaDocumento.isBlank()) {
                     listaDocumento += ";";
+                    listaTiposFirma += ";";
                 }
                 listaDocumento += itemSelectedRow.getIndex();
+                listaTiposFirma += (itemSelectedRow.getColumnName("EN_ORDEN").getValueInteger() > 1 ? "1" : "0");
             }
         }
-        listaDocumentosFirma = listaDocumento;
+        
+        PrimeRequestContext requestContext = PrimeRequestContext.getCurrentInstance();
+        requestContext.getCallbackParams().put("listaDocumentos", listaDocumento);
+        requestContext.getCallbackParams().put("listaTiposFirma", listaTiposFirma);
     }
     
-    public String getListaDocumentosFirma() {
-        return listaDocumentosFirma;
-    }
-    
-    public String getTipoDocumentosFirma() {
-        return "0";
-    }
-
     private void formateaResultado() throws NoSuchMethodException {
 
         this.dsResultado.setSelectable(true);
-
+        this.dsResultado.setRowSelectColumnaID("ID_DOCUMENTO");
+        
         RowCabecera cabecera = this.dsResultado.getCabecera();
 
         cabecera.getColumnName("ID_DOCUMENTO")
