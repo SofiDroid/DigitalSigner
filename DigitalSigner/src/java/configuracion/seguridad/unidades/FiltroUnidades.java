@@ -18,6 +18,7 @@ import utilidades.CampoWebFechaRango;
 import utilidades.Formateos;
 import utilidades.Mensajes;
 import utilidades.Msg;
+import utilidades.Session;
 
 /**
  *
@@ -39,6 +40,8 @@ public class FiltroUnidades implements Serializable {
     
     @PostConstruct
     public void init() {
+        Session.limpiarOtrosBeans(this.getClass().getName());
+
         this.cCoUnidad = new CampoWebCodigo();
         this.cCoUnidad.setLabel(Msg.getString("lbl_BdTUnidad_CoUnidad"));
         this.cCoUnidad.setWidthLabel("70px");

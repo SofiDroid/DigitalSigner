@@ -47,6 +47,8 @@ public class FiltroFirmaDocumentos implements Serializable {
     
     @PostConstruct
     public void init() {
+        Session.limpiarOtrosBeans(this.getClass().getName());
+        
         this.cCoDocumento = new CampoWebCodigo();
         this.cCoDocumento.setLabel(Msg.getString("lbl_FiltroFirmaDocumentos_CoDocumento"));
         this.cCoDocumento.setWidthLabel("70px");
@@ -218,7 +220,7 @@ public class FiltroFirmaDocumentos implements Serializable {
                          INNER JOIN
                              BD_T_TIPODOCUMENTO tipodoc ON (tipodoc.ID_TIPODOCUMENTO = doc.ID_TIPODOCUMENTO)
                          INNER JOIN
-                             BD_T_SITUACIONDOC situaciondoc ON (situaciondoc.ID_SITUACIONDOC = doc.ID_SITUACIONDOC)
+                             BD_T_SITUACIONDOC situaciondoc ON (situaciondoc.ID_SITUACIONDOC = doc.ID_SITUACIONDOC AND situaciondoc.CO_SITUACIONDOC = 'PENDIENTE_FIRMA')
                          INNER JOIN
                              BD_A_DOCFIRMA docfirma ON (docfirma.ID_DOCUMENTO = doc.ID_DOCUMENTO AND docfirma.FE_FIRMA IS NULL AND (docfirma.FE_ALTA <= CONVERT (date, SYSDATETIME())) AND (docfirma.FE_DESACTIVO IS NULL OR docfirma.FE_DESACTIVO >= CONVERT (date, SYSDATETIME())))
                          INNER JOIN

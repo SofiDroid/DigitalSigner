@@ -1,5 +1,6 @@
 package servlets.firmaelectronica;
 
+import basedatos.servicios.StADocfirma;
 import basedatos.tablas.BdDDocumento;
 import gestionDocumentos.firmaDocumentos.FiltroFirmaDocumentos;
 import java.io.IOException;
@@ -116,6 +117,21 @@ public class SubidaFicheroFirmado extends HttpServlet
 //                        return;
 //                    }
 //
+                    
+                    // INICIO TRANSACCION
+                    
+                    //Actualizar la fecha de firma en BD_A_DOCFIRMA
+                    
+                    //Insertar el documento original (el del ID_DOCUMENTO) en BD_A_HISTDOC
+                    
+                    //Actualizar el documento en BD_D_DOCUMENTOS
+                    // BL_DOCUMENTO: con el firmado
+                    // CO_EXTENSION: "XSIG"
+                    // CO_FICHERO: el que habia reemplazando la extension a ".xsig"
+                    // ID_SITUACION: FIRMADO si no hay mas firmantes y PENDIENTE_FIRMA si hay mas firmantes
+
+                    // FIN TRANSACCION
+
 //                    if(logica.actualizarDocFirmando(doc, entrada, gestion.getIdTercero()) != Respuesta.OK)
 //                    {
 //                        if(doc.getERRORES() != null && doc.getERRORES().length() > 0)
