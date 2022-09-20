@@ -2,8 +2,10 @@ package basedatos.tablas;
 
 import basedatos.InterfazDAO;
 import basedatos.OperacionSQL;
+import init.AppInit;
 import java.util.Date;
 import java.util.HashMap;
+import utilidades.BaseDatos;
 
 /**
  *
@@ -114,6 +116,120 @@ public class BdTUsuario extends OperacionSQL implements InterfazDAO {
         return sb_sql.toString();
     }
     
+    public String getSecuencia()
+    {
+        return "SELECT SBD_T_USUARIO.NEXTVAL FROM DUAL";
+    }
+    
+    public String getInsert()
+    {
+        StringBuilder sb_sql = new StringBuilder("INSERT INTO BD_T_USUARIO (");
+        if (AppInit.TIPO_BASEDATOS == BaseDatos.ORACLE) {
+            sb_sql.append("ID_USUARIO,");
+        }
+        sb_sql.append("CO_NIF");
+        sb_sql.append(",CO_USUARIO");
+        sb_sql.append(",CO_PASSWORD");
+        sb_sql.append(",DS_NOMBRE");
+        sb_sql.append(",DS_APELLIDO1");
+        sb_sql.append(",DS_APELLIDO2");
+        sb_sql.append(",EN_INTENTOS");
+        sb_sql.append(",EN_INTENTOSMAX");
+        sb_sql.append(",BO_ADMIN");
+        sb_sql.append(",FE_ALTA");
+        sb_sql.append(",FE_DESACTIVO");
+        sb_sql.append(",USUARIOBD");
+        sb_sql.append(",TSTBD");
+        
+        sb_sql.append(") VALUES (");
+        if(AppInit.TIPO_BASEDATOS == BaseDatos.ORACLE) {
+            if (this.idUsuario == null) {
+                sb_sql.append(" SBD_T_USUARIO.NEXTVAL");
+            } else {
+                sb_sql.append(":ID_USUARIO");
+            }
+            sb_sql.append(",").append("DECODE(:CO_NIF, null, NULL, :CO_NIF)");
+            sb_sql.append(",").append("DECODE(:CO_USUARIO, null, NULL, :CO_USUARIO)");
+            sb_sql.append(",").append("DECODE(:CO_PASSWORD, null, NULL, :CO_PASSWORD)");
+            sb_sql.append(",").append("DECODE(:DS_NOMBRE, null, NULL, :DS_NOMBRE)");
+            sb_sql.append(",").append("DECODE(:DS_APELLIDO1, null, NULL, :DS_APELLIDO1)");
+            sb_sql.append(",").append("DECODE(:DS_APELLIDO2, null, NULL, :DS_APELLIDO2)");
+            sb_sql.append(",").append("DECODE(:EN_INTENTOS, null, NULL, :EN_INTENTOS)");
+            sb_sql.append(",").append("DECODE(:EN_INTENTOSMAX, null, NULL, :EN_INTENTOSMAX)");
+            sb_sql.append(",").append("DECODE(:BO_ADMIN, null, NULL, :BO_ADMIN)");
+            sb_sql.append(",").append("DECODE(:FE_ALTA, null, NULL, :FE_ALTA)");
+            sb_sql.append(",").append("DECODE(:FE_DESACTIVO, null, NULL, :FE_DESACTIVO)");
+            sb_sql.append(",").append("DECODE(:USUARIOBD, null, NULL, :USUARIOBD)");
+            sb_sql.append(",").append("DECODE(:TSTBD, null, NULL, :TSTBD)");
+        }
+        else {
+            sb_sql.append(":CO_NIF");
+            sb_sql.append(",").append(":CO_USUARIO");
+            sb_sql.append(",").append(":CO_PASSWORD");
+            sb_sql.append(",").append(":DS_NOMBRE");
+            sb_sql.append(",").append(":DS_APELLIDO1");
+            sb_sql.append(",").append(":DS_APELLIDO2");
+            sb_sql.append(",").append(":EN_INTENTOS");
+            sb_sql.append(",").append(":EN_INTENTOSMAX");
+            sb_sql.append(",").append(":BO_ADMIN");
+            sb_sql.append(",").append(":FE_ALTA");
+            sb_sql.append(",").append(":FE_DESACTIVO");
+            sb_sql.append(",").append(":USUARIOBD");
+            sb_sql.append(",").append(":TSTBD");
+        }
+        sb_sql.append(")");
+        return sb_sql.toString();
+    }
+
+    public String getUpdate()
+    {
+        StringBuilder sb_sql = new StringBuilder("UPDATE BD_T_USUARIO SET ");
+        
+        if (AppInit.TIPO_BASEDATOS == BaseDatos.ORACLE) {
+            sb_sql.append("CO_NIF = ").append("DECODE(:CO_NIF, null, NULL, :CO_NIF)");
+            sb_sql.append(",CO_USUARIO = ").append("DECODE(:CO_USUARIO, null, NULL, :CO_USUARIO)");
+            sb_sql.append(",CO_PASSWORD = ").append("DECODE(:CO_PASSWORD, null, NULL, :CO_PASSWORD)");
+            sb_sql.append(",DS_NOMBRE = ").append("DECODE(:DS_NOMBRE, null, NULL, :DS_NOMBRE)");
+            sb_sql.append(",DS_APELLIDO1 = ").append("DECODE(:DS_APELLIDO1, null, NULL, :DS_APELLIDO1)");
+            sb_sql.append(",DS_APELLIDO2 = ").append("DECODE(:DS_APELLIDO2, null, NULL, :DS_APELLIDO2)");
+            sb_sql.append(",EN_INTENTOS = ").append("DECODE(:EN_INTENTOS, null, NULL, :EN_INTENTOS)");
+            sb_sql.append(",EN_INTENTOSMAX = ").append("DECODE(:EN_INTENTOSMAX, null, NULL, :EN_INTENTOSMAX)");
+            sb_sql.append(",BO_ADMIN = ").append("DECODE(:BO_ADMIN, null, NULL, :BO_ADMIN)");
+            sb_sql.append(",FE_ALTA = ").append("DECODE(:FE_ALTA, null, NULL, :FE_ALTA)");
+            sb_sql.append(",FE_DESACTIVO = ").append("DECODE(:FE_DESACTIVO, null, NULL, :FE_DESACTIVO)");
+            sb_sql.append(",USUARIOBD = ").append("DECODE(:USUARIOBD, null, NULL, :USUARIOBD)");
+            sb_sql.append(",TSTBD = ").append("DECODE(:TSTBD, null, NULL, :TSTBD)");
+        }
+        else {
+            sb_sql.append("CO_NIF = :CO_NIF");
+            sb_sql.append(",CO_USUARIO = :CO_USUARIO");
+            sb_sql.append(",CO_PASSWORD = :CO_PASSWORD");
+            sb_sql.append(",DS_NOMBRE = :DS_NOMBRE");
+            sb_sql.append(",DS_APELLIDO1 = :DS_APELLIDO1");
+            sb_sql.append(",DS_APELLIDO2 = :DS_APELLIDO2");
+            sb_sql.append(",EN_INTENTOS = :EN_INTENTOS");
+            sb_sql.append(",EN_INTENTOSMAX = :EN_INTENTOSMAX");
+            sb_sql.append(",BO_ADMIN = :BO_ADMIN");
+            sb_sql.append(",FE_ALTA = :FE_ALTA");
+            sb_sql.append(",FE_DESACTIVO = :FE_DESACTIVO");
+            sb_sql.append(",USUARIOBD = :USUARIOBD");
+            sb_sql.append(",TSTBD = :TSTBD");
+        }
+        sb_sql.append(" WHERE ");
+        sb_sql.append("ID_USUARIO = ").append(":ID_USUARIO");
+        
+        return sb_sql.toString();
+    }
+
+    public String getDelete()
+    {
+        StringBuilder sb_sql = new StringBuilder("DELETE BD_T_USUARIO ");
+        sb_sql.append(" WHERE ");
+        sb_sql.append("ID_USUARIO = ").append(":ID_USUARIO");
+        
+        return sb_sql.toString();
+    }
+
     public Integer getIdUsuario() {
         return idUsuario;
     }

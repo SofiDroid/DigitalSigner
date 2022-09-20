@@ -2,8 +2,10 @@ package basedatos.tablas;
 
 import basedatos.InterfazDAO;
 import basedatos.OperacionSQL;
+import init.AppInit;
 import java.util.Date;
 import java.util.HashMap;
+import utilidades.BaseDatos;
 
 /**
  *
@@ -12,6 +14,7 @@ import java.util.HashMap;
 public class BdTOpcionmenu extends OperacionSQL implements InterfazDAO {
     
     protected Integer idOpcionmenu;
+    protected Integer enOrden;
     protected String coOpcionmenu;
     protected String dsOpcionmenu;
     protected String dsTitulo;
@@ -21,6 +24,7 @@ public class BdTOpcionmenu extends OperacionSQL implements InterfazDAO {
     protected Date feDesactivo;
     protected String usuariobd;
     protected Date tstbd;
+    protected Integer idOpcionmenupadre;
 
     public BdTOpcionmenu() {
         // NADA
@@ -29,6 +33,8 @@ public class BdTOpcionmenu extends OperacionSQL implements InterfazDAO {
     @Override
     public Object getClaseMapeada(HashMap<String,Object> bld) throws Exception {
         recuperaValorCampo(this, "idOpcionmenu", "ID_OPCIONMENU", bld);
+        recuperaValorCampo(this, "enOrden", "EN_ORDEN", bld);
+        recuperaValorCampo(this, "coOpcionmenu", "CO_OPCIONMENU", bld);
         recuperaValorCampo(this, "coOpcionmenu", "CO_OPCIONMENU", bld);
         recuperaValorCampo(this, "dsOpcionmenu", "DS_OPCIONMENU", bld);
         recuperaValorCampo(this, "dsTitulo", "DS_TITULO", bld);
@@ -38,6 +44,7 @@ public class BdTOpcionmenu extends OperacionSQL implements InterfazDAO {
         recuperaValorCampo(this, "feDesactivo", "FE_DESACTIVO", bld);
         recuperaValorCampo(this, "usuariobd", "USUARIOBD", bld);
         recuperaValorCampo(this, "tstbd", "TSTBD", bld);
+        recuperaValorCampo(this, "idOpcionmenupadre", "ID_OPCIONMENUPADRE", bld);
         
         return this; 
     }
@@ -45,6 +52,7 @@ public class BdTOpcionmenu extends OperacionSQL implements InterfazDAO {
     public String getSelectFiltro() {
         StringBuilder sb_sql = new StringBuilder("SELECT ");
         sb_sql.append("ID_OPCIONMENU");
+        sb_sql.append(",EN_ORDEN");
         sb_sql.append(",CO_OPCIONMENU");
         sb_sql.append(",DS_OPCIONMENU");
         sb_sql.append(",DS_TITULO");
@@ -54,10 +62,14 @@ public class BdTOpcionmenu extends OperacionSQL implements InterfazDAO {
         sb_sql.append(",FE_DESACTIVO");
         sb_sql.append(",USUARIOBD");
         sb_sql.append(",TSTBD");
+        sb_sql.append(",ID_OPCIONMENUPADRE");
         
         sb_sql.append(" FROM BD_T_OPCIONMENU WHERE 1=1 ");
         if (idOpcionmenu != null) {
             sb_sql.append(" AND ID_OPCIONMENU = :ID_OPCIONMENU");
+        }
+        if (enOrden != null) {
+            sb_sql.append(" AND EN_ORDEN = :EN_ORDEN");
         }
         if (coOpcionmenu != null) {
             sb_sql.append(" AND UPPER(CO_OPCIONMENU) = UPPER(:CO_OPCIONMENU)");
@@ -86,7 +98,114 @@ public class BdTOpcionmenu extends OperacionSQL implements InterfazDAO {
         if (tstbd != null) {
             sb_sql.append(" AND TSTBD = :TSTBD");
         }
+        if (idOpcionmenupadre != null) {
+            sb_sql.append(" AND ID_OPCIONMENUPADRE = :ID_OPCIONMENUPADRE");
+        }
 
+        return sb_sql.toString();
+    }
+
+    public String getSecuencia()
+    {
+        return "SELECT SBD_T_OPCIONMENU.NEXTVAL FROM DUAL";
+    }
+    
+    public String getInsert()
+    {
+        StringBuilder sb_sql = new StringBuilder("INSERT INTO BD_T_OPCIONMENU (");
+        if (AppInit.TIPO_BASEDATOS == BaseDatos.ORACLE) {
+            sb_sql.append("ID_OPCIONMENU,");
+        }
+        sb_sql.append("EN_ORDEN");
+        sb_sql.append(",CO_OPCIONMENU");
+        sb_sql.append(",DS_OPCIONMENU");
+        sb_sql.append(",DS_TITULO");
+        sb_sql.append(",DS_TOOLTIP");
+        sb_sql.append(",DS_RUTA");
+        sb_sql.append(",FE_ALTA");
+        sb_sql.append(",FE_DESACTIVO");
+        sb_sql.append(",USUARIOBD");
+        sb_sql.append(",TSTBD");
+        sb_sql.append(",ID_OPCIONMENUPADRE");
+        
+        sb_sql.append(") VALUES (");
+        if(AppInit.TIPO_BASEDATOS == BaseDatos.ORACLE) {
+            if (this.idOpcionmenu == null) {
+                sb_sql.append(" SBD_T_OPCIONMENU.NEXTVAL");
+            } else {
+                sb_sql.append(":ID_OPCIONMENU");
+            }
+            sb_sql.append(",").append("DECODE(:EN_ORDEN, null, NULL, :EN_ORDEN)");
+            sb_sql.append(",").append("DECODE(:CO_OPCIONMENU, null, NULL, :CO_OPCIONMENU)");
+            sb_sql.append(",").append("DECODE(:DS_OPCIONMENU, null, NULL, :DS_OPCIONMENU)");
+            sb_sql.append(",").append("DECODE(:DS_TITULO, null, NULL, :DS_TITULO)");
+            sb_sql.append(",").append("DECODE(:DS_TOOLTIP, null, NULL, :DS_TOOLTIP)");
+            sb_sql.append(",").append("DECODE(:DS_RUTA, null, NULL, :DS_RUTA)");
+            sb_sql.append(",").append("DECODE(:FE_ALTA, null, NULL, :FE_ALTA)");
+            sb_sql.append(",").append("DECODE(:FE_DESACTIVO, null, NULL, :FE_DESACTIVO)");
+            sb_sql.append(",").append("DECODE(:USUARIOBD, null, NULL, :USUARIOBD)");
+            sb_sql.append(",").append("DECODE(:TSTBD, null, NULL, :TSTBD)");
+            sb_sql.append(",").append("DECODE(:ID_OPCIONMENUPADRE, null, NULL, :ID_OPCIONMENUPADRE)");
+        }
+        else {
+            sb_sql.append(":EN_ORDEN");
+            sb_sql.append(",").append(":CO_OPCIONMENU");
+            sb_sql.append(",").append(":DS_OPCIONMENU");
+            sb_sql.append(",").append(":DS_TITULO");
+            sb_sql.append(",").append(":DS_TOOLTIP");
+            sb_sql.append(",").append(":DS_RUTA");
+            sb_sql.append(",").append(":FE_ALTA");
+            sb_sql.append(",").append(":FE_DESACTIVO");
+            sb_sql.append(",").append(":USUARIOBD");
+            sb_sql.append(",").append(":TSTBD");
+            sb_sql.append(",").append(":ID_OPCIONMENUPADRE");
+        }
+        sb_sql.append(")");
+        return sb_sql.toString();
+    }
+
+    public String getUpdate()
+    {
+        StringBuilder sb_sql = new StringBuilder("UPDATE BD_T_OPCIONMENU SET ");
+        
+        if (AppInit.TIPO_BASEDATOS == BaseDatos.ORACLE) {
+            sb_sql.append("EN_ORDEN = ").append("DECODE(:EN_ORDEN, null, NULL, :EN_ORDEN)");
+            sb_sql.append(",CO_OPCIONMENU = ").append("DECODE(:CO_OPCIONMENU, null, NULL, :CO_OPCIONMENU)");
+            sb_sql.append(",DS_OPCIONMENU = ").append("DECODE(:DS_OPCIONMENU, null, NULL, :DS_OPCIONMENU)");
+            sb_sql.append(",DS_TITULO = ").append("DECODE(:DS_TITULO, null, NULL, :DS_TITULO)");
+            sb_sql.append(",DS_TOOLTIP = ").append("DECODE(:DS_TOOLTIP, null, NULL, :DS_TOOLTIP)");
+            sb_sql.append(",DS_RUTA = ").append("DECODE(:DS_RUTA, null, NULL, :DS_RUTA)");
+            sb_sql.append(",FE_ALTA = ").append("DECODE(:FE_ALTA, null, NULL, :FE_ALTA)");
+            sb_sql.append(",FE_DESACTIVO = ").append("DECODE(:FE_DESACTIVO, null, NULL, :FE_DESACTIVO)");
+            sb_sql.append(",USUARIOBD = ").append("DECODE(:USUARIOBD, null, NULL, :USUARIOBD)");
+            sb_sql.append(",TSTBD = ").append("DECODE(:TSTBD, null, NULL, :TSTBD)");
+            sb_sql.append(",ID_OPCIONMENUPADRE = ").append("DECODE(:ID_OPCIONMENUPADRE, null, NULL, :ID_OPCIONMENUPADRE)");
+        }
+        else {
+            sb_sql.append("EN_ORDEN = :EN_ORDEN");
+            sb_sql.append(",CO_OPCIONMENU = :CO_OPCIONMENU");
+            sb_sql.append(",DS_OPCIONMENU = :DS_OPCIONMENU");
+            sb_sql.append(",DS_TITULO = :DS_TITULO");
+            sb_sql.append(",DS_TOOLTIP = :DS_TOOLTIP");
+            sb_sql.append(",DS_RUTA = :DS_RUTA");
+            sb_sql.append(",FE_ALTA = :FE_ALTA");
+            sb_sql.append(",FE_DESACTIVO = :FE_DESACTIVO");
+            sb_sql.append(",USUARIOBD = :USUARIOBD");
+            sb_sql.append(",TSTBD = :TSTBD");
+            sb_sql.append(",ID_OPCIONMENUPADRE = :ID_OPCIONMENUPADRE");
+        }
+        sb_sql.append(" WHERE ");
+        sb_sql.append("ID_OPCIONMENU = ").append(":ID_OPCIONMENU");
+        
+        return sb_sql.toString();
+    }
+
+    public String getDelete()
+    {
+        StringBuilder sb_sql = new StringBuilder("DELETE BD_T_OPCIONMENU ");
+        sb_sql.append(" WHERE ");
+        sb_sql.append("ID_OPCIONMENU = ").append(":ID_OPCIONMENU");
+        
         return sb_sql.toString();
     }
 

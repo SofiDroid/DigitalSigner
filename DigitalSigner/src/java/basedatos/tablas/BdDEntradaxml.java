@@ -2,8 +2,10 @@ package basedatos.tablas;
 
 import basedatos.InterfazDAO;
 import basedatos.OperacionSQL;
+import init.AppInit;
 import java.util.Date;
 import java.util.HashMap;
+import utilidades.BaseDatos;
 
 /**
  *
@@ -78,6 +80,95 @@ public class BdDEntradaxml extends OperacionSQL implements InterfazDAO {
             sb_sql.append(" AND TSTBD = :TSTBD");
         }
 
+        return sb_sql.toString();
+    }
+
+    public String getSecuencia()
+    {
+        return "SELECT SBD_D_ENTRADAXML.NEXTVAL FROM DUAL";
+    }
+    
+    public String getInsert()
+    {
+        StringBuilder sb_sql = new StringBuilder("INSERT INTO BD_D_ENTRADAXML (");
+        if (AppInit.TIPO_BASEDATOS == BaseDatos.ORACLE) {
+            sb_sql.append("ID_ENTRADAXML,");
+        }
+        sb_sql.append("BL_ENTRADAXML");
+        sb_sql.append(",ID_DOCUMENTO");
+        sb_sql.append(",ID_SITUACIONXML");
+        sb_sql.append(",DS_RUTA");
+        sb_sql.append(",FE_ALTA");
+        sb_sql.append(",FE_DESACTIVO");
+        sb_sql.append(",USUARIOBD");
+        sb_sql.append(",TSTBD");
+        
+        sb_sql.append(") VALUES (");
+        if(AppInit.TIPO_BASEDATOS == BaseDatos.ORACLE) {
+            if (this.idEntradaxml == null) {
+                sb_sql.append(" SBD_D_ENTRADAXML.NEXTVAL");
+            } else {
+                sb_sql.append(":ID_ENTRADAXML");
+            }
+            sb_sql.append(",").append("DECODE(:BL_ENTRADAXML, null, NULL, :BL_ENTRADAXML)");
+            sb_sql.append(",").append("DECODE(:ID_DOCUMENTO, null, NULL, :ID_DOCUMENTO)");
+            sb_sql.append(",").append("DECODE(:ID_SITUACIONXML, null, NULL, :ID_SITUACIONXML)");
+            sb_sql.append(",").append("DECODE(:DS_RUTA, null, NULL, :DS_RUTA)");
+            sb_sql.append(",").append("DECODE(:FE_ALTA, null, NULL, :FE_ALTA)");
+            sb_sql.append(",").append("DECODE(:FE_DESACTIVO, null, NULL, :FE_DESACTIVO)");
+            sb_sql.append(",").append("DECODE(:USUARIOBD, null, NULL, :USUARIOBD)");
+            sb_sql.append(",").append("DECODE(:TSTBD, null, NULL, :TSTBD)");
+        }
+        else {
+            sb_sql.append(":BL_ENTRADAXML");
+            sb_sql.append(",").append(":ID_DOCUMENTO");
+            sb_sql.append(",").append(":ID_SITUACIONXML");
+            sb_sql.append(",").append(":DS_RUTA");
+            sb_sql.append(",").append(":FE_ALTA");
+            sb_sql.append(",").append(":FE_DESACTIVO");
+            sb_sql.append(",").append(":USUARIOBD");
+            sb_sql.append(",").append(":TSTBD");
+        }
+        sb_sql.append(")");
+        return sb_sql.toString();
+    }
+
+    public String getUpdate()
+    {
+        StringBuilder sb_sql = new StringBuilder("UPDATE BD_D_ENTRADAXML SET ");
+        
+        if (AppInit.TIPO_BASEDATOS == BaseDatos.ORACLE) {
+            sb_sql.append("BL_ENTRADAXML = ").append("DECODE(:BL_ENTRADAXML, null, NULL, :BL_ENTRADAXML)");
+            sb_sql.append(",ID_DOCUMENTO = ").append("DECODE(:ID_DOCUMENTO, null, NULL, :ID_DOCUMENTO)");
+            sb_sql.append(",ID_SITUACIONXML = ").append("DECODE(:ID_SITUACIONXML, null, NULL, :ID_SITUACIONXML)");
+            sb_sql.append(",DS_RUTA = ").append("DECODE(:DS_RUTA, null, NULL, :DS_RUTA)");
+            sb_sql.append(",FE_ALTA = ").append("DECODE(:FE_ALTA, null, NULL, :FE_ALTA)");
+            sb_sql.append(",FE_DESACTIVO = ").append("DECODE(:FE_DESACTIVO, null, NULL, :FE_DESACTIVO)");
+            sb_sql.append(",USUARIOBD = ").append("DECODE(:USUARIOBD, null, NULL, :USUARIOBD)");
+            sb_sql.append(",TSTBD = ").append("DECODE(:TSTBD, null, NULL, :TSTBD)");
+        }
+        else {
+            sb_sql.append("BL_ENTRADAXML = :BL_ENTRADAXML");
+            sb_sql.append(",ID_DOCUMENTO = :ID_DOCUMENTO");
+            sb_sql.append(",ID_SITUACIONXML = :ID_SITUACIONXML");
+            sb_sql.append(",DS_RUTA = :DS_RUTA");
+            sb_sql.append(",FE_ALTA = :FE_ALTA");
+            sb_sql.append(",FE_DESACTIVO = :FE_DESACTIVO");
+            sb_sql.append(",USUARIOBD = :USUARIOBD");
+            sb_sql.append(",TSTBD = :TSTBD");
+        }
+        sb_sql.append(" WHERE ");
+        sb_sql.append("ID_ENTRADAXML = ").append(":ID_ENTRADAXML");
+        
+        return sb_sql.toString();
+    }
+
+    public String getDelete()
+    {
+        StringBuilder sb_sql = new StringBuilder("DELETE BD_D_ENTRADAXML ");
+        sb_sql.append(" WHERE ");
+        sb_sql.append("ID_ENTRADAXML = ").append(":ID_ENTRADAXML");
+        
         return sb_sql.toString();
     }
 
