@@ -20,6 +20,7 @@ public class BdTUnidad extends OperacionSQL implements InterfazDAO {
     protected Date feDesactivo;
     protected String usuariobd;
     protected Date tstbd;
+    protected Integer idUnidadpadre;
 
     public BdTUnidad() {
         // NADA
@@ -34,6 +35,7 @@ public class BdTUnidad extends OperacionSQL implements InterfazDAO {
         recuperaValorCampo(this, "feDesactivo", "FE_DESACTIVO", bld);
         recuperaValorCampo(this, "usuariobd", "USUARIOBD", bld);
         recuperaValorCampo(this, "tstbd", "TSTBD", bld);
+        recuperaValorCampo(this, "idUnidadpadre", "ID_UNIDADPADRE", bld);
         
         return this; 
     }
@@ -47,6 +49,7 @@ public class BdTUnidad extends OperacionSQL implements InterfazDAO {
         sb_sql.append(",FE_DESACTIVO");
         sb_sql.append(",USUARIOBD");
         sb_sql.append(",TSTBD");
+        sb_sql.append(",ID_UNIDADPADRE");
         
         sb_sql.append(" FROM BD_T_UNIDAD WHERE 1=1 ");
         if (idUnidad != null) {
@@ -70,6 +73,9 @@ public class BdTUnidad extends OperacionSQL implements InterfazDAO {
         if (tstbd != null) {
             sb_sql.append(" AND TSTBD = :TSTBD");
         }
+        if (idUnidadpadre != null) {
+            sb_sql.append(" AND ID_UNIDADPADRE = :ID_UNIDADPADRE");
+        }
 
         return sb_sql.toString();
     }
@@ -91,6 +97,7 @@ public class BdTUnidad extends OperacionSQL implements InterfazDAO {
         sb_sql.append(",FE_DESACTIVO");
         sb_sql.append(",USUARIOBD");
         sb_sql.append(",TSTBD");
+        sb_sql.append(",ID_UNIDADPADRE");
         
         sb_sql.append(") VALUES (");
         if(AppInit.TIPO_BASEDATOS == BaseDatos.ORACLE) {
@@ -105,6 +112,7 @@ public class BdTUnidad extends OperacionSQL implements InterfazDAO {
             sb_sql.append(",").append("DECODE(:FE_DESACTIVO, null, NULL, :FE_DESACTIVO)");
             sb_sql.append(",").append("DECODE(:USUARIOBD, null, NULL, :USUARIOBD)");
             sb_sql.append(",").append("DECODE(:TSTBD, null, NULL, :TSTBD)");
+            sb_sql.append(",").append("DECODE(:ID_UNIDADPADRE, null, NULL, :ID_UNIDADPADRE)");
         }
         else {
             sb_sql.append(":CO_UNIDAD");
@@ -113,6 +121,7 @@ public class BdTUnidad extends OperacionSQL implements InterfazDAO {
             sb_sql.append(",").append(":FE_DESACTIVO");
             sb_sql.append(",").append(":USUARIOBD");
             sb_sql.append(",").append(":TSTBD");
+            sb_sql.append(",").append(":ID_UNIDADPADRE");
         }
         sb_sql.append(")");
         return sb_sql.toString();
@@ -129,6 +138,7 @@ public class BdTUnidad extends OperacionSQL implements InterfazDAO {
             sb_sql.append(",FE_DESACTIVO = ").append("DECODE(:FE_DESACTIVO, null, NULL, :FE_DESACTIVO)");
             sb_sql.append(",USUARIOBD = ").append("DECODE(:USUARIOBD, null, NULL, :USUARIOBD)");
             sb_sql.append(",TSTBD = ").append("DECODE(:TSTBD, null, NULL, :TSTBD)");
+            sb_sql.append(",ID_UNIDADPADRE = ").append("DECODE(:ID_UNIDADPADRE, null, NULL, :ID_UNIDADPADRE)");
         }
         else {
             sb_sql.append("CO_UNIDAD = :CO_UNIDAD");
@@ -137,6 +147,7 @@ public class BdTUnidad extends OperacionSQL implements InterfazDAO {
             sb_sql.append(",FE_DESACTIVO = :FE_DESACTIVO");
             sb_sql.append(",USUARIOBD = :USUARIOBD");
             sb_sql.append(",TSTBD = :TSTBD");
+            sb_sql.append(",ID_UNIDADPADRE = :ID_UNIDADPADRE");
         }
         sb_sql.append(" WHERE ");
         sb_sql.append("ID_UNIDAD = ").append(":ID_UNIDAD");
@@ -207,5 +218,13 @@ public class BdTUnidad extends OperacionSQL implements InterfazDAO {
 
     public void setTstbd(Date tstbd) {
         this.tstbd = tstbd;
+    }
+
+    public Integer getIdUnidadpadre() {
+        return idUnidadpadre;
+    }
+
+    public void setIdUnidadpadre(Integer idUnidadpadre) {
+        this.idUnidadpadre = idUnidadpadre;
     }
 }

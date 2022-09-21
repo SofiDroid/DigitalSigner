@@ -2,11 +2,15 @@ package basedatos.servicios;
 
 import basedatos.Mapeador;
 import basedatos.StBase;
-import basedatos.tablas.BdAAutusu;
+import excepciones.RequiredFieldException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import tomcat.persistence.EntityManager;
+import utilidades.Session;
+import utilidades.Validation;
+import basedatos.tablas.BdAAutusu;
 
 /**
  *
@@ -27,6 +31,7 @@ public class StAAutusu extends StBase {
         parametros.put("USUARIOBD", filtroBdAAutusu.getUsuariobd());
         parametros.put("TSTBD", filtroBdAAutusu.getTstbd());
 
+
         ArrayList<LinkedHashMap<String,Object>> lista = executeNativeQueryListParametros(filtroBdAAutusu.getSelectFiltro(), parametros, em);
         if (lista != null && !lista.isEmpty()) {
             return Mapeador.mapea(lista, BdAAutusu.class);
@@ -38,6 +43,7 @@ public class StAAutusu extends StBase {
         BdAAutusu filtroBdAAutusu = new BdAAutusu();
         filtroBdAAutusu.setIdAutoridad(idAutoridad);
         filtroBdAAutusu.setIdUsuario(idUsuario);
+
         
         ArrayList<BdAAutusu> listaBdAAutusu = filtro(filtroBdAAutusu, em);
         if (listaBdAAutusu != null && !listaBdAAutusu.isEmpty()) {
@@ -45,4 +51,97 @@ public class StAAutusu extends StBase {
         }
         return null;
     }
+    
+    public int alta(BdAAutusu newBdAAutusu, EntityManager em) throws Exception {
+
+        if (Validation.isNullOrEmpty(newBdAAutusu.getIdAutoridad())) {
+            throw new RequiredFieldException("ID_AUTORIDAD");
+        }
+        if (Validation.isNullOrEmpty(newBdAAutusu.getIdUsuario())) {
+            throw new RequiredFieldException("ID_USUARIO");
+        }
+        if (Validation.isNullOrEmpty(newBdAAutusu.getFeAlta())) {
+            throw new RequiredFieldException("FE_ALTA");
+        }
+        if (Validation.isNullOrEmpty(newBdAAutusu.getUsuariobd())) {
+            throw new RequiredFieldException("USUARIOBD");
+        }
+        if (Validation.isNullOrEmpty(newBdAAutusu.getTstbd())) {
+            throw new RequiredFieldException("TSTBD");
+        }
+   
+
+        newBdAAutusu.setUsuariobd(Session.getCoUsuario());
+
+        newBdAAutusu.setTstbd(new Date());
+
+        HashMap<String, Object> parametros = new HashMap<>();
+        parametros.put("ID_AUTORIDAD", newBdAAutusu.getIdAutoridad());
+        parametros.put("ID_USUARIO", newBdAAutusu.getIdUsuario());
+        parametros.put("FE_ALTA", newBdAAutusu.getFeAlta());
+        parametros.put("FE_DESACTIVO", newBdAAutusu.getFeDesactivo());
+        parametros.put("USUARIOBD", newBdAAutusu.getUsuariobd());
+        parametros.put("TSTBD", newBdAAutusu.getTstbd());
+
+
+        return executeNativeQueryParametros(newBdAAutusu.getInsert(), parametros, em);
+    }
+
+    public int actualiza(BdAAutusu upBdAAutusu, EntityManager em) throws Exception {
+        
+        if (Validation.isNullOrEmpty(upBdAAutusu.getIdAutoridad())) {
+            throw new RequiredFieldException("ID_AUTORIDAD");
+        }
+        if (Validation.isNullOrEmpty(upBdAAutusu.getIdUsuario())) {
+            throw new RequiredFieldException("ID_USUARIO");
+        }
+        if (Validation.isNullOrEmpty(upBdAAutusu.getFeAlta())) {
+            throw new RequiredFieldException("FE_ALTA");
+        }
+        if (Validation.isNullOrEmpty(upBdAAutusu.getUsuariobd())) {
+            throw new RequiredFieldException("USUARIOBD");
+        }
+        if (Validation.isNullOrEmpty(upBdAAutusu.getTstbd())) {
+            throw new RequiredFieldException("TSTBD");
+        }
+
+
+        upBdAAutusu.setUsuariobd(Session.getCoUsuario());
+
+        upBdAAutusu.setTstbd(new Date());
+
+        HashMap<String, Object> parametros = new HashMap<>();
+        parametros.put("ID_AUTORIDAD", upBdAAutusu.getIdAutoridad());
+        parametros.put("ID_USUARIO", upBdAAutusu.getIdUsuario());
+        parametros.put("FE_ALTA", upBdAAutusu.getFeAlta());
+        parametros.put("FE_DESACTIVO", upBdAAutusu.getFeDesactivo());
+        parametros.put("USUARIOBD", upBdAAutusu.getUsuariobd());
+        parametros.put("TSTBD", upBdAAutusu.getTstbd());
+
+
+        return executeNativeQueryParametros(upBdAAutusu.getUpdate(), parametros, em);
+    }
+
+    public int baja(BdAAutusu delBdAAutusu, EntityManager em) throws  Exception {
+
+        if (Validation.isNullOrEmpty(delBdAAutusu.getIdAutoridad())) {
+            throw new RequiredFieldException("ID_AUTORIDAD");
+        }
+        if (Validation.isNullOrEmpty(delBdAAutusu.getIdUsuario())) {
+            throw new RequiredFieldException("ID_USUARIO");
+        }
+        
+
+        HashMap<String, Object> parametros = new HashMap<>();
+        parametros.put("ID_AUTORIDAD", delBdAAutusu.getIdAutoridad());
+        parametros.put("ID_USUARIO", delBdAAutusu.getIdUsuario());
+        parametros.put("FE_ALTA", delBdAAutusu.getFeAlta());
+        parametros.put("FE_DESACTIVO", delBdAAutusu.getFeDesactivo());
+        parametros.put("USUARIOBD", delBdAAutusu.getUsuariobd());
+        parametros.put("TSTBD", delBdAAutusu.getTstbd());
+
+
+        return executeNativeQueryParametros(delBdAAutusu.getDelete(), parametros, em);
+    }
 }
+

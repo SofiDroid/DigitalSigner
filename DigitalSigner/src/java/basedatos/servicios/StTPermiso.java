@@ -2,11 +2,15 @@ package basedatos.servicios;
 
 import basedatos.Mapeador;
 import basedatos.StBase;
-import basedatos.tablas.BdTPermiso;
+import excepciones.RequiredFieldException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import tomcat.persistence.EntityManager;
+import utilidades.Session;
+import utilidades.Validation;
+import basedatos.tablas.BdTPermiso;
 
 /**
  *
@@ -28,6 +32,7 @@ public class StTPermiso extends StBase {
         parametros.put("USUARIOBD", filtroBdTPermiso.getUsuariobd());
         parametros.put("TSTBD", filtroBdTPermiso.getTstbd());
 
+
         ArrayList<LinkedHashMap<String,Object>> lista = executeNativeQueryListParametros(filtroBdTPermiso.getSelectFiltro(), parametros, em);
         if (lista != null && !lista.isEmpty()) {
             return Mapeador.mapea(lista, BdTPermiso.class);
@@ -38,6 +43,7 @@ public class StTPermiso extends StBase {
     public BdTPermiso item(Integer idPermiso, EntityManager em) throws Exception {
         BdTPermiso filtroBdTPermiso = new BdTPermiso();
         filtroBdTPermiso.setIdPermiso(idPermiso);
+
         
         ArrayList<BdTPermiso> listaBdTPermiso = filtro(filtroBdTPermiso, em);
         if (listaBdTPermiso != null && !listaBdTPermiso.isEmpty()) {
@@ -45,4 +51,103 @@ public class StTPermiso extends StBase {
         }
         return null;
     }
+    
+    public int alta(BdTPermiso newBdTPermiso, EntityManager em) throws Exception {
+
+        if (Validation.isNullOrEmpty(newBdTPermiso.getIdPermiso())) {
+            throw new RequiredFieldException("ID_PERMISO");
+        }
+        if (Validation.isNullOrEmpty(newBdTPermiso.getCoPermiso())) {
+            throw new RequiredFieldException("CO_PERMISO");
+        }
+        if (Validation.isNullOrEmpty(newBdTPermiso.getDsPermiso())) {
+            throw new RequiredFieldException("DS_PERMISO");
+        }
+        if (Validation.isNullOrEmpty(newBdTPermiso.getFeAlta())) {
+            throw new RequiredFieldException("FE_ALTA");
+        }
+        if (Validation.isNullOrEmpty(newBdTPermiso.getUsuariobd())) {
+            throw new RequiredFieldException("USUARIOBD");
+        }
+        if (Validation.isNullOrEmpty(newBdTPermiso.getTstbd())) {
+            throw new RequiredFieldException("TSTBD");
+        }
+   
+
+        newBdTPermiso.setUsuariobd(Session.getCoUsuario());
+
+        newBdTPermiso.setTstbd(new Date());
+
+        HashMap<String, Object> parametros = new HashMap<>();
+        parametros.put("ID_PERMISO", newBdTPermiso.getIdPermiso());
+        parametros.put("CO_PERMISO", newBdTPermiso.getCoPermiso());
+        parametros.put("DS_PERMISO", newBdTPermiso.getDsPermiso());
+        parametros.put("FE_ALTA", newBdTPermiso.getFeAlta());
+        parametros.put("FE_DESACTIVO", newBdTPermiso.getFeDesactivo());
+        parametros.put("USUARIOBD", newBdTPermiso.getUsuariobd());
+        parametros.put("TSTBD", newBdTPermiso.getTstbd());
+
+
+        return executeNativeQueryParametros(newBdTPermiso.getInsert(), parametros, em);
+    }
+
+    public int actualiza(BdTPermiso upBdTPermiso, EntityManager em) throws Exception {
+        
+        if (Validation.isNullOrEmpty(upBdTPermiso.getIdPermiso())) {
+            throw new RequiredFieldException("ID_PERMISO");
+        }
+        if (Validation.isNullOrEmpty(upBdTPermiso.getCoPermiso())) {
+            throw new RequiredFieldException("CO_PERMISO");
+        }
+        if (Validation.isNullOrEmpty(upBdTPermiso.getDsPermiso())) {
+            throw new RequiredFieldException("DS_PERMISO");
+        }
+        if (Validation.isNullOrEmpty(upBdTPermiso.getFeAlta())) {
+            throw new RequiredFieldException("FE_ALTA");
+        }
+        if (Validation.isNullOrEmpty(upBdTPermiso.getUsuariobd())) {
+            throw new RequiredFieldException("USUARIOBD");
+        }
+        if (Validation.isNullOrEmpty(upBdTPermiso.getTstbd())) {
+            throw new RequiredFieldException("TSTBD");
+        }
+
+
+        upBdTPermiso.setUsuariobd(Session.getCoUsuario());
+
+        upBdTPermiso.setTstbd(new Date());
+
+        HashMap<String, Object> parametros = new HashMap<>();
+        parametros.put("ID_PERMISO", upBdTPermiso.getIdPermiso());
+        parametros.put("CO_PERMISO", upBdTPermiso.getCoPermiso());
+        parametros.put("DS_PERMISO", upBdTPermiso.getDsPermiso());
+        parametros.put("FE_ALTA", upBdTPermiso.getFeAlta());
+        parametros.put("FE_DESACTIVO", upBdTPermiso.getFeDesactivo());
+        parametros.put("USUARIOBD", upBdTPermiso.getUsuariobd());
+        parametros.put("TSTBD", upBdTPermiso.getTstbd());
+
+
+        return executeNativeQueryParametros(upBdTPermiso.getUpdate(), parametros, em);
+    }
+
+    public int baja(BdTPermiso delBdTPermiso, EntityManager em) throws  Exception {
+
+        if (Validation.isNullOrEmpty(delBdTPermiso.getIdPermiso())) {
+            throw new RequiredFieldException("ID_PERMISO");
+        }
+        
+
+        HashMap<String, Object> parametros = new HashMap<>();
+        parametros.put("ID_PERMISO", delBdTPermiso.getIdPermiso());
+        parametros.put("CO_PERMISO", delBdTPermiso.getCoPermiso());
+        parametros.put("DS_PERMISO", delBdTPermiso.getDsPermiso());
+        parametros.put("FE_ALTA", delBdTPermiso.getFeAlta());
+        parametros.put("FE_DESACTIVO", delBdTPermiso.getFeDesactivo());
+        parametros.put("USUARIOBD", delBdTPermiso.getUsuariobd());
+        parametros.put("TSTBD", delBdTPermiso.getTstbd());
+
+
+        return executeNativeQueryParametros(delBdTPermiso.getDelete(), parametros, em);
+    }
 }
+

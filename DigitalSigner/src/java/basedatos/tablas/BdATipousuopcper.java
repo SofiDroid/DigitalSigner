@@ -74,11 +74,6 @@ public class BdATipousuopcper extends OperacionSQL implements InterfazDAO {
         return sb_sql.toString();
     }
 
-    public String getSecuencia()
-    {
-        return "SELECT SBD_T_TIPODOCUMENTO.NEXTVAL FROM DUAL";
-    }
-    
     public String getInsert()
     {
         StringBuilder sb_sql = new StringBuilder("INSERT INTO BD_A_TIPOUSUOPCPER (");

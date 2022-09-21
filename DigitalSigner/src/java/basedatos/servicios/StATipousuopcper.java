@@ -2,11 +2,15 @@ package basedatos.servicios;
 
 import basedatos.Mapeador;
 import basedatos.StBase;
-import basedatos.tablas.BdATipousuopcper;
+import excepciones.RequiredFieldException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import tomcat.persistence.EntityManager;
+import utilidades.Session;
+import utilidades.Validation;
+import basedatos.tablas.BdATipousuopcper;
 
 /**
  *
@@ -28,6 +32,7 @@ public class StATipousuopcper extends StBase {
         parametros.put("USUARIOBD", filtroBdATipousuopcper.getUsuariobd());
         parametros.put("TSTBD", filtroBdATipousuopcper.getTstbd());
 
+
         ArrayList<LinkedHashMap<String,Object>> lista = executeNativeQueryListParametros(filtroBdATipousuopcper.getSelectFiltro(), parametros, em);
         if (lista != null && !lista.isEmpty()) {
             return Mapeador.mapea(lista, BdATipousuopcper.class);
@@ -35,10 +40,12 @@ public class StATipousuopcper extends StBase {
         return null;
     }
     
-    public BdATipousuopcper item(Integer idTipousuario, Integer idOpcionmenu, EntityManager em) throws Exception {
+    public BdATipousuopcper item(Integer idTipousuario, Integer idOpcionmenu, Integer idPermiso, EntityManager em) throws Exception {
         BdATipousuopcper filtroBdATipousuopcper = new BdATipousuopcper();
         filtroBdATipousuopcper.setIdTipousuario(idTipousuario);
         filtroBdATipousuopcper.setIdOpcionmenu(idOpcionmenu);
+        filtroBdATipousuopcper.setIdPermiso(idPermiso);
+
         
         ArrayList<BdATipousuopcper> listaBdATipousuopcper = filtro(filtroBdATipousuopcper, em);
         if (listaBdATipousuopcper != null && !listaBdATipousuopcper.isEmpty()) {
@@ -46,4 +53,109 @@ public class StATipousuopcper extends StBase {
         }
         return null;
     }
+    
+    public int alta(BdATipousuopcper newBdATipousuopcper, EntityManager em) throws Exception {
+
+        if (Validation.isNullOrEmpty(newBdATipousuopcper.getIdTipousuario())) {
+            throw new RequiredFieldException("ID_TIPOUSUARIO");
+        }
+        if (Validation.isNullOrEmpty(newBdATipousuopcper.getIdOpcionmenu())) {
+            throw new RequiredFieldException("ID_OPCIONMENU");
+        }
+        if (Validation.isNullOrEmpty(newBdATipousuopcper.getIdPermiso())) {
+            throw new RequiredFieldException("ID_PERMISO");
+        }
+        if (Validation.isNullOrEmpty(newBdATipousuopcper.getFeAlta())) {
+            throw new RequiredFieldException("FE_ALTA");
+        }
+        if (Validation.isNullOrEmpty(newBdATipousuopcper.getUsuariobd())) {
+            throw new RequiredFieldException("USUARIOBD");
+        }
+        if (Validation.isNullOrEmpty(newBdATipousuopcper.getTstbd())) {
+            throw new RequiredFieldException("TSTBD");
+        }
+   
+
+        newBdATipousuopcper.setUsuariobd(Session.getCoUsuario());
+
+        newBdATipousuopcper.setTstbd(new Date());
+
+        HashMap<String, Object> parametros = new HashMap<>();
+        parametros.put("ID_TIPOUSUARIO", newBdATipousuopcper.getIdTipousuario());
+        parametros.put("ID_OPCIONMENU", newBdATipousuopcper.getIdOpcionmenu());
+        parametros.put("ID_PERMISO", newBdATipousuopcper.getIdPermiso());
+        parametros.put("FE_ALTA", newBdATipousuopcper.getFeAlta());
+        parametros.put("FE_DESACTIVO", newBdATipousuopcper.getFeDesactivo());
+        parametros.put("USUARIOBD", newBdATipousuopcper.getUsuariobd());
+        parametros.put("TSTBD", newBdATipousuopcper.getTstbd());
+
+
+        return executeNativeQueryParametros(newBdATipousuopcper.getInsert(), parametros, em);
+    }
+
+    public int actualiza(BdATipousuopcper upBdATipousuopcper, EntityManager em) throws Exception {
+        
+        if (Validation.isNullOrEmpty(upBdATipousuopcper.getIdTipousuario())) {
+            throw new RequiredFieldException("ID_TIPOUSUARIO");
+        }
+        if (Validation.isNullOrEmpty(upBdATipousuopcper.getIdOpcionmenu())) {
+            throw new RequiredFieldException("ID_OPCIONMENU");
+        }
+        if (Validation.isNullOrEmpty(upBdATipousuopcper.getIdPermiso())) {
+            throw new RequiredFieldException("ID_PERMISO");
+        }
+        if (Validation.isNullOrEmpty(upBdATipousuopcper.getFeAlta())) {
+            throw new RequiredFieldException("FE_ALTA");
+        }
+        if (Validation.isNullOrEmpty(upBdATipousuopcper.getUsuariobd())) {
+            throw new RequiredFieldException("USUARIOBD");
+        }
+        if (Validation.isNullOrEmpty(upBdATipousuopcper.getTstbd())) {
+            throw new RequiredFieldException("TSTBD");
+        }
+
+
+        upBdATipousuopcper.setUsuariobd(Session.getCoUsuario());
+
+        upBdATipousuopcper.setTstbd(new Date());
+
+        HashMap<String, Object> parametros = new HashMap<>();
+        parametros.put("ID_TIPOUSUARIO", upBdATipousuopcper.getIdTipousuario());
+        parametros.put("ID_OPCIONMENU", upBdATipousuopcper.getIdOpcionmenu());
+        parametros.put("ID_PERMISO", upBdATipousuopcper.getIdPermiso());
+        parametros.put("FE_ALTA", upBdATipousuopcper.getFeAlta());
+        parametros.put("FE_DESACTIVO", upBdATipousuopcper.getFeDesactivo());
+        parametros.put("USUARIOBD", upBdATipousuopcper.getUsuariobd());
+        parametros.put("TSTBD", upBdATipousuopcper.getTstbd());
+
+
+        return executeNativeQueryParametros(upBdATipousuopcper.getUpdate(), parametros, em);
+    }
+
+    public int baja(BdATipousuopcper delBdATipousuopcper, EntityManager em) throws  Exception {
+
+        if (Validation.isNullOrEmpty(delBdATipousuopcper.getIdTipousuario())) {
+            throw new RequiredFieldException("ID_TIPOUSUARIO");
+        }
+        if (Validation.isNullOrEmpty(delBdATipousuopcper.getIdOpcionmenu())) {
+            throw new RequiredFieldException("ID_OPCIONMENU");
+        }
+        if (Validation.isNullOrEmpty(delBdATipousuopcper.getIdPermiso())) {
+            throw new RequiredFieldException("ID_PERMISO");
+        }
+        
+
+        HashMap<String, Object> parametros = new HashMap<>();
+        parametros.put("ID_TIPOUSUARIO", delBdATipousuopcper.getIdTipousuario());
+        parametros.put("ID_OPCIONMENU", delBdATipousuopcper.getIdOpcionmenu());
+        parametros.put("ID_PERMISO", delBdATipousuopcper.getIdPermiso());
+        parametros.put("FE_ALTA", delBdATipousuopcper.getFeAlta());
+        parametros.put("FE_DESACTIVO", delBdATipousuopcper.getFeDesactivo());
+        parametros.put("USUARIOBD", delBdATipousuopcper.getUsuariobd());
+        parametros.put("TSTBD", delBdATipousuopcper.getTstbd());
+
+
+        return executeNativeQueryParametros(delBdATipousuopcper.getDelete(), parametros, em);
+    }
 }
+

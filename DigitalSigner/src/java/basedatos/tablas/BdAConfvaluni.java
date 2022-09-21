@@ -2,9 +2,10 @@ package basedatos.tablas;
 
 import basedatos.InterfazDAO;
 import basedatos.OperacionSQL;
+import init.AppInit;
 import java.util.Date;
 import java.util.HashMap;
-import oracle.jdbc.pool.OraclePooledConnection;
+import utilidades.BaseDatos;
 
 /**
  *
@@ -152,6 +153,95 @@ public class BdAConfvaluni extends OperacionSQL implements InterfazDAO {
             sb_sql.append(" AND CONFVALUNI.TSTBD = :TSTBD");
         }
         sb_sql.append(" ORDER BY CTE_UNIDADES.LEVEL ASC");
+        
+        return sb_sql.toString();
+    }
+
+    public String getSecuencia()
+    {
+        return "SELECT SBD_A_CONFVALUNI.NEXTVAL FROM DUAL";
+    }
+    
+    public String getInsert()
+    {
+        StringBuilder sb_sql = new StringBuilder("INSERT INTO BD_A_CONFVALUNI (");
+        if (AppInit.TIPO_BASEDATOS == BaseDatos.ORACLE) {
+            sb_sql.append("ID_CONFVALUNI,");
+        }
+        sb_sql.append("ID_UNIDAD");
+        sb_sql.append(",ID_CONFIGURACION");
+        sb_sql.append(",ID_CONFVALOR");
+        sb_sql.append(",DS_VALORLIBRE");
+        sb_sql.append(",FE_ALTA");
+        sb_sql.append(",FE_DESACTIVO");
+        sb_sql.append(",USUARIOBD");
+        sb_sql.append(",TSTBD");
+        
+        sb_sql.append(") VALUES (");
+        if(AppInit.TIPO_BASEDATOS == BaseDatos.ORACLE) {
+            if (this.idConfvaluni == null) {
+                sb_sql.append(" SBD_A_CONFVALUNI.NEXTVAL");
+            } else {
+                sb_sql.append(":ID_CONFVALUNI");
+            }
+            sb_sql.append(",").append("DECODE(:ID_UNIDAD, null, NULL, :ID_UNIDAD)");
+            sb_sql.append(",").append("DECODE(:ID_CONFIGURACION, null, NULL, :ID_CONFIGURACION)");
+            sb_sql.append(",").append("DECODE(:ID_CONFVALOR, null, NULL, :ID_CONFVALOR)");
+            sb_sql.append(",").append("DECODE(:DS_VALORLIBRE, null, NULL, :DS_VALORLIBRE)");
+            sb_sql.append(",").append("DECODE(:FE_ALTA, null, NULL, :FE_ALTA)");
+            sb_sql.append(",").append("DECODE(:FE_DESACTIVO, null, NULL, :FE_DESACTIVO)");
+            sb_sql.append(",").append("DECODE(:USUARIOBD, null, NULL, :USUARIOBD)");
+            sb_sql.append(",").append("DECODE(:TSTBD, null, NULL, :TSTBD)");
+        }
+        else {
+            sb_sql.append(":ID_UNIDAD");
+            sb_sql.append(",").append(":ID_CONFIGURACION");
+            sb_sql.append(",").append(":ID_CONFVALOR");
+            sb_sql.append(",").append(":DS_VALORLIBRE");
+            sb_sql.append(",").append(":FE_ALTA");
+            sb_sql.append(",").append(":FE_DESACTIVO");
+            sb_sql.append(",").append(":USUARIOBD");
+            sb_sql.append(",").append(":TSTBD");
+        }
+        sb_sql.append(")");
+        return sb_sql.toString();
+    }
+
+    public String getUpdate()
+    {
+        StringBuilder sb_sql = new StringBuilder("UPDATE BD_A_CONFVALUNI SET ");
+        
+        if (AppInit.TIPO_BASEDATOS == BaseDatos.ORACLE) {
+            sb_sql.append("ID_UNIDAD = ").append("DECODE(:ID_UNIDAD, null, NULL, :ID_UNIDAD)");
+            sb_sql.append(",ID_CONFIGURACION = ").append("DECODE(:ID_CONFIGURACION, null, NULL, :ID_CONFIGURACION)");
+            sb_sql.append(",ID_CONFVALOR = ").append("DECODE(:ID_CONFVALOR, null, NULL, :ID_CONFVALOR)");
+            sb_sql.append(",DS_VALORLIBRE = ").append("DECODE(:DS_VALORLIBRE, null, NULL, :DS_VALORLIBRE)");
+            sb_sql.append(",FE_ALTA = ").append("DECODE(:FE_ALTA, null, NULL, :FE_ALTA)");
+            sb_sql.append(",FE_DESACTIVO = ").append("DECODE(:FE_DESACTIVO, null, NULL, :FE_DESACTIVO)");
+            sb_sql.append(",USUARIOBD = ").append("DECODE(:USUARIOBD, null, NULL, :USUARIOBD)");
+            sb_sql.append(",TSTBD = ").append("DECODE(:TSTBD, null, NULL, :TSTBD)");
+        }
+        else {
+            sb_sql.append("ID_UNIDAD = :ID_UNIDAD");
+            sb_sql.append(",ID_CONFIGURACION = :ID_CONFIGURACION");
+            sb_sql.append(",ID_CONFVALOR = :ID_CONFVALOR");
+            sb_sql.append(",DS_VALORLIBRE = :DS_VALORLIBRE");
+            sb_sql.append(",FE_ALTA = :FE_ALTA");
+            sb_sql.append(",FE_DESACTIVO = :FE_DESACTIVO");
+            sb_sql.append(",USUARIOBD = :USUARIOBD");
+            sb_sql.append(",TSTBD = :TSTBD");
+        }
+        sb_sql.append(" WHERE ");
+        sb_sql.append("ID_CONFVALUNI = ").append(":ID_CONFVALUNI");
+        
+        return sb_sql.toString();
+    }
+
+    public String getDelete()
+    {
+        StringBuilder sb_sql = new StringBuilder("DELETE BD_A_CONFVALUNI ");
+        sb_sql.append(" WHERE ");
+        sb_sql.append("ID_CONFVALUNI = ").append(":ID_CONFVALUNI");
         
         return sb_sql.toString();
     }

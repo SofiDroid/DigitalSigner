@@ -2,11 +2,15 @@ package basedatos.servicios;
 
 import basedatos.Mapeador;
 import basedatos.StBase;
-import basedatos.tablas.BdDSalidaxml;
+import excepciones.RequiredFieldException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import tomcat.persistence.EntityManager;
+import utilidades.Session;
+import utilidades.Validation;
+import basedatos.tablas.BdDSalidaxml;
 
 /**
  *
@@ -30,6 +34,7 @@ public class StDSalidaxml extends StBase {
         parametros.put("USUARIOBD", filtroBdDSalidaxml.getUsuariobd());
         parametros.put("TSTBD", filtroBdDSalidaxml.getTstbd());
 
+
         ArrayList<LinkedHashMap<String,Object>> lista = executeNativeQueryListParametros(filtroBdDSalidaxml.getSelectFiltro(), parametros, em);
         if (lista != null && !lista.isEmpty()) {
             return Mapeador.mapea(lista, BdDSalidaxml.class);
@@ -40,6 +45,7 @@ public class StDSalidaxml extends StBase {
     public BdDSalidaxml item(Integer idSalidaxml, EntityManager em) throws Exception {
         BdDSalidaxml filtroBdDSalidaxml = new BdDSalidaxml();
         filtroBdDSalidaxml.setIdSalidaxml(idSalidaxml);
+
         
         ArrayList<BdDSalidaxml> listaBdDSalidaxml = filtro(filtroBdDSalidaxml, em);
         if (listaBdDSalidaxml != null && !listaBdDSalidaxml.isEmpty()) {
@@ -47,4 +53,109 @@ public class StDSalidaxml extends StBase {
         }
         return null;
     }
+    
+    public int alta(BdDSalidaxml newBdDSalidaxml, EntityManager em) throws Exception {
+
+        if (Validation.isNullOrEmpty(newBdDSalidaxml.getIdSalidaxml())) {
+            throw new RequiredFieldException("ID_SALIDAXML");
+        }
+        if (Validation.isNullOrEmpty(newBdDSalidaxml.getBlSalidaxml())) {
+            throw new RequiredFieldException("BL_SALIDAXML");
+        }
+        if (Validation.isNullOrEmpty(newBdDSalidaxml.getIdSituacionxml())) {
+            throw new RequiredFieldException("ID_SITUACIONXML");
+        }
+        if (Validation.isNullOrEmpty(newBdDSalidaxml.getFeAlta())) {
+            throw new RequiredFieldException("FE_ALTA");
+        }
+        if (Validation.isNullOrEmpty(newBdDSalidaxml.getUsuariobd())) {
+            throw new RequiredFieldException("USUARIOBD");
+        }
+        if (Validation.isNullOrEmpty(newBdDSalidaxml.getTstbd())) {
+            throw new RequiredFieldException("TSTBD");
+        }
+   
+
+        newBdDSalidaxml.setUsuariobd(Session.getCoUsuario());
+
+        newBdDSalidaxml.setTstbd(new Date());
+
+        HashMap<String, Object> parametros = new HashMap<>();
+        parametros.put("ID_SALIDAXML", newBdDSalidaxml.getIdSalidaxml());
+        parametros.put("BL_SALIDAXML", newBdDSalidaxml.getBlSalidaxml());
+        parametros.put("ID_DOCUMENTO", newBdDSalidaxml.getIdDocumento());
+        parametros.put("ID_SITUACIONXML", newBdDSalidaxml.getIdSituacionxml());
+        parametros.put("DS_RUTA", newBdDSalidaxml.getDsRuta());
+        parametros.put("FE_ALTA", newBdDSalidaxml.getFeAlta());
+        parametros.put("FE_DESACTIVO", newBdDSalidaxml.getFeDesactivo());
+        parametros.put("USUARIOBD", newBdDSalidaxml.getUsuariobd());
+        parametros.put("TSTBD", newBdDSalidaxml.getTstbd());
+
+
+        return executeNativeQueryParametros(newBdDSalidaxml.getInsert(), parametros, em);
+    }
+
+    public int actualiza(BdDSalidaxml upBdDSalidaxml, EntityManager em) throws Exception {
+        
+        if (Validation.isNullOrEmpty(upBdDSalidaxml.getIdSalidaxml())) {
+            throw new RequiredFieldException("ID_SALIDAXML");
+        }
+        if (Validation.isNullOrEmpty(upBdDSalidaxml.getBlSalidaxml())) {
+            throw new RequiredFieldException("BL_SALIDAXML");
+        }
+        if (Validation.isNullOrEmpty(upBdDSalidaxml.getIdSituacionxml())) {
+            throw new RequiredFieldException("ID_SITUACIONXML");
+        }
+        if (Validation.isNullOrEmpty(upBdDSalidaxml.getFeAlta())) {
+            throw new RequiredFieldException("FE_ALTA");
+        }
+        if (Validation.isNullOrEmpty(upBdDSalidaxml.getUsuariobd())) {
+            throw new RequiredFieldException("USUARIOBD");
+        }
+        if (Validation.isNullOrEmpty(upBdDSalidaxml.getTstbd())) {
+            throw new RequiredFieldException("TSTBD");
+        }
+
+
+        upBdDSalidaxml.setUsuariobd(Session.getCoUsuario());
+
+        upBdDSalidaxml.setTstbd(new Date());
+
+        HashMap<String, Object> parametros = new HashMap<>();
+        parametros.put("ID_SALIDAXML", upBdDSalidaxml.getIdSalidaxml());
+        parametros.put("BL_SALIDAXML", upBdDSalidaxml.getBlSalidaxml());
+        parametros.put("ID_DOCUMENTO", upBdDSalidaxml.getIdDocumento());
+        parametros.put("ID_SITUACIONXML", upBdDSalidaxml.getIdSituacionxml());
+        parametros.put("DS_RUTA", upBdDSalidaxml.getDsRuta());
+        parametros.put("FE_ALTA", upBdDSalidaxml.getFeAlta());
+        parametros.put("FE_DESACTIVO", upBdDSalidaxml.getFeDesactivo());
+        parametros.put("USUARIOBD", upBdDSalidaxml.getUsuariobd());
+        parametros.put("TSTBD", upBdDSalidaxml.getTstbd());
+
+
+        return executeNativeQueryParametros(upBdDSalidaxml.getUpdate(), parametros, em);
+    }
+
+    public int baja(BdDSalidaxml delBdDSalidaxml, EntityManager em) throws  Exception {
+
+        if (Validation.isNullOrEmpty(delBdDSalidaxml.getIdSalidaxml())) {
+            throw new RequiredFieldException("ID_SALIDAXML");
+        }
+        
+
+        HashMap<String, Object> parametros = new HashMap<>();
+        parametros.put("ID_SALIDAXML", delBdDSalidaxml.getIdSalidaxml());
+        parametros.put("BL_SALIDAXML", delBdDSalidaxml.getBlSalidaxml());
+        parametros.put("ID_DOCUMENTO", delBdDSalidaxml.getIdDocumento());
+        parametros.put("ID_SITUACIONXML", delBdDSalidaxml.getIdSituacionxml());
+        parametros.put("DS_RUTA", delBdDSalidaxml.getDsRuta());
+        parametros.put("FE_ALTA", delBdDSalidaxml.getFeAlta());
+        parametros.put("FE_DESACTIVO", delBdDSalidaxml.getFeDesactivo());
+        parametros.put("USUARIOBD", delBdDSalidaxml.getUsuariobd());
+        parametros.put("TSTBD", delBdDSalidaxml.getTstbd());
+
+
+        return executeNativeQueryParametros(delBdDSalidaxml.getDelete(), parametros, em);
+    }
 }
+

@@ -288,4 +288,20 @@ public class BdTOpcionmenu extends OperacionSQL implements InterfazDAO {
     public void setTstbd(Date tstbd) {
         this.tstbd = tstbd;
     }
+
+    public Integer getEnOrden() {
+        return enOrden;
+    }
+
+    public void setEnOrden(Integer enOrden) {
+        this.enOrden = enOrden;
+    }
+
+    public Integer getIdOpcionmenupadre() {
+        return idOpcionmenupadre;
+    }
+
+    public void setIdOpcionmenupadre(Integer idOpcionmenupadre) {
+        this.idOpcionmenupadre = idOpcionmenupadre;
+    }
 }
