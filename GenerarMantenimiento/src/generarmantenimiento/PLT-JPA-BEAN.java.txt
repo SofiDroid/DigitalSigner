@@ -1,0 +1,134 @@
+package #PAQUETE#;
+
+import java.io.Serializable;
+import sidae.sql.OperacionSQL;
+#IMPORTS#
+/**
+ * Mapeo de campos de la tabla #NOMBRE_TABLA#
+ * 
+ * @author #AUTOR#
+ */
+public class #NOMBRE_CLASE# extends OperacionSQL implements Serializable
+{
+    #ATRIBUTOS_CLASE#
+    
+    /**
+     * Constructor
+     */
+    public #NOMBRE_CLASE#()
+    {
+
+    }
+
+    /**
+     * Constructor por mapeo de campos
+     *
+     * @param bld Array con los valores
+     * @param tipo Tipo de mapeo a realizar
+     */
+    public #NOMBRE_CLASE#(Object[] bld, int tipo)
+    {
+        int i = 0;
+        if (tipo == 0)
+        {
+            #MAPEO_ATRIBUTOS#
+        }
+    }
+
+    /**
+     * Constructor con id (para obtener un elemento elemento)
+     * @param id identificador (pk de la tabla)
+     */
+    public #NOMBRE_CLASE#(Integer id)
+    {
+        #IDENTIFICADOR_TABLA#=id;
+    }
+
+    /**
+     * Devuelve un objeto #NOMBRE_CLASE# mapeado
+     *
+     * @param bld Array con los valores
+     * @param object Tipo de mapeo a realizar
+     * @return Objeto #NOMBRE_CLASE#
+     */
+    @Override
+    public Object getClaseMapeada(Object[] bld, Object object)
+    {
+        return new #NOMBRE_CLASE#(bld,(Integer)object);
+    }
+
+    /** Devuelve una representación en texto del objeto */
+    @Override
+    public String toString()
+    {
+        return "#NOMBRE_CLASE#(" + #ATRIBUTOS_IDENTIFICADORES# + ")";
+    }
+
+    /**
+     * Obtiene la consulta necesaria para filtrar
+     * @return Consulta de la select filtrando por los valores del elemento
+     */
+    public  String getSelectFiltro()
+    {     
+        StringBuilder sb = new StringBuilder("Select ");
+        #SQL_CAMPOS#
+        sb.append(" FROM #NOMBRE_TABLA# WHERE 1=1 ");
+        #RESTRICCIONES_FILTRO#
+        return sb.toString();
+    }
+
+    /**
+     * Obtiene la consulta necesaria para obtener el siguiente valor de la secuencia de la tabla #NOMBRE_TABLA#
+     * @return Consulta de la secuencia
+     */
+    @Override
+    public String getSecuencia()
+    {
+        return "select S#NOMBRE_TABLA#.NEXTVAL secuencia from dual";
+    }
+    
+    /**
+     * Obtiene la consulta necesaria para insertar un registro en la tabla #NOMBRE_TABLA# con los valores del objeto
+     * @return Consulta insert
+     */
+    @Override
+    public String getInsert()
+    {
+        StringBuilder sb = new StringBuilder("INSERT INTO #NOMBRE_TABLA# (");
+        #SQL_INSERT_CAMPOS#
+        sb.append(") VALUES (");
+        #SQL_INSERT_ATRIBUTOS#
+        sb.append(")");
+        return sb.toString();
+    }
+
+    /**
+     * Obtiene la consulta necesaria para actualizar un registro en la tabla #NOMBRE_TABLA# con los valores del objeto
+     * @return consulta update
+     */
+    @Override
+    public String getUpdate()
+    {
+        StringBuilder sb = new StringBuilder("UPDATE #NOMBRE_TABLA# SET ");
+        #SQL_UPDATE_ATRIBUTOS# 
+        #WHERE_IDENTIFICADORES#
+        return sb.toString();
+    }
+
+    /**
+     * Obtiene la consulta necesaria para borrar un registro en la tabla #NOMBRE_TABLA# con los valores del objeto
+     * @return consulta delete
+     */
+    @Override
+    public String getDelete()
+    {
+        StringBuilder sb = new StringBuilder("DELETE #NOMBRE_TABLA# ");
+        #WHERE_IDENTIFICADORES#
+        return sb.toString();
+    }
+    
+    //<editor-fold defaultstate="collapsed" desc="Gettes/Setters">
+
+    #CAMPOS_GET_SET#//</editor-fold>
+    
+}

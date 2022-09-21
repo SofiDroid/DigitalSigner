@@ -1,0 +1,85 @@
+package basedatos.servicios;
+
+import basedatos.Mapeador;
+import basedatos.StBase;
+import excepciones.RequiredFieldException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import tomcat.persistence.EntityManager;
+import utilidades.Session;
+import utilidades.Validation;
+import basedatos.tablas.#NOMBRE_CLASE_OBJETO#;
+
+/**
+ *
+ * @author ihuegal
+ */
+public class #NOMBRE_CLASE# extends StBase {
+    
+    public #NOMBRE_CLASE#() {
+        //NADA
+    }
+    
+    public ArrayList<#NOMBRE_CLASE_OBJETO#> filtro(#NOMBRE_CLASE_OBJETO# filtro#NOMBRE_CLASE_OBJETO#, EntityManager em) throws Exception {
+        HashMap<String, Object> parametros = new HashMap<>();
+#PARAMETROS_FILTRO#
+
+        ArrayList<LinkedHashMap<String,Object>> lista = executeNativeQueryListParametros(filtro#NOMBRE_CLASE_OBJETO#.getSelectFiltro(), parametros, em);
+        if (lista != null && !lista.isEmpty()) {
+            return Mapeador.mapea(lista, #NOMBRE_CLASE_OBJETO#.class);
+        }
+        return null;
+    }
+    
+    public #NOMBRE_CLASE_OBJETO# item(#PARAMETROS_CLAVE_ITEM#, EntityManager em) throws Exception {
+        #NOMBRE_CLASE_OBJETO# filtro#NOMBRE_CLASE_OBJETO# = new #NOMBRE_CLASE_OBJETO#();
+#PARAMETROS_ITEM#
+        
+        ArrayList<#NOMBRE_CLASE_OBJETO#> lista#NOMBRE_CLASE_OBJETO# = filtro(filtro#NOMBRE_CLASE_OBJETO#, em);
+        if (lista#NOMBRE_CLASE_OBJETO# != null && !lista#NOMBRE_CLASE_OBJETO#.isEmpty()) {
+            return lista#NOMBRE_CLASE_OBJETO#.get(0);
+        }
+        return null;
+    }
+    
+    public int alta(#NOMBRE_CLASE_OBJETO# new#NOMBRE_CLASE_OBJETO#, EntityManager em) throws Exception {
+
+#RESTRICCIONES_ALTA#   
+
+        new#NOMBRE_CLASE_OBJETO#.setUsuariobd(Session.getCoUsuario());
+
+        new#NOMBRE_CLASE_OBJETO#.setTstbd(new Date());
+
+        HashMap<String, Object> parametros = new HashMap<>();
+#PARAMETROS_ALTA#
+
+        return executeNativeQueryParametros(new#NOMBRE_CLASE_OBJETO#.getInsert(), parametros, em);
+    }
+
+    public int actualiza(#NOMBRE_CLASE_OBJETO# up#NOMBRE_CLASE_OBJETO#, EntityManager em) throws Exception {
+        
+#RESTRICCIONES_ACTUALIZA#
+
+        up#NOMBRE_CLASE_OBJETO#.setUsuariobd(Session.getCoUsuario());
+
+        up#NOMBRE_CLASE_OBJETO#.setTstbd(new Date());
+
+        HashMap<String, Object> parametros = new HashMap<>();
+#PARAMETROS_ACTUALIZA#
+
+        return executeNativeQueryParametros(up#NOMBRE_CLASE_OBJETO#.getUpdate(), parametros, em);
+    }
+
+    public int baja(#NOMBRE_CLASE_OBJETO# del#NOMBRE_CLASE_OBJETO#, EntityManager em) throws  Exception {
+
+#RESTRICCIONES_BAJA#        
+
+        HashMap<String, Object> parametros = new HashMap<>();
+#PARAMETROS_DELETE#
+
+        return executeNativeQueryParametros(del#NOMBRE_CLASE_OBJETO#.getDelete(), parametros, em);
+    }
+}
+
