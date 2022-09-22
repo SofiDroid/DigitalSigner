@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:cc="http://xmlns.jcp.org/jsf/composite"
+      xmlns:p="http://primefaces.org/ui">
+
+    <!-- INTERFACE -->
+    <cc:interface>
+        <cc:attribute name = "beanClass" />
+    </cc:interface>
+
+    <!-- IMPLEMENTATION -->
+    <cc:implementation>
+        <p:panelGrid columns="3" columnClasses="colFit, col-12, colFit">
+            <p:outputLabel for="#{cc.attrs.id}" value="#{cc.attrs.beanClass.label}#{cc.attrs.beanClass.requiredChar}" escape="false" style="display: block;#{cc.attrs.beanClass.widthLabel}"/>
+            <p:autoComplete id="#{cc.attrs.id}" cache="true" cacheTimeout="30000" value="#{cc.attrs.beanClass.value}"
+                                completeMethod="#{cc.attrs.beanClass.completeText}" scrollHeight="250" 
+                                queryDelay="#{cc.attrs.beanClass.queryDelay}" emptyMessage="#{cc.attrs.beanClass.emptyMessage}"
+                                maxResults="#{cc.attrs.beanClass.maxResults}" moreText="#{cc.attrs.beanClass.moreText}"
+                                style="#{cc.attrs.beanClass.width}" maxlength="#{cc.attrs.beanClass.maxlength}"
+                                var="item" itemLabel="#{item.getColumnName(cc.attrs.beanClass.columnaLabel).getValueString()}" 
+                                itemValue="#{item.getColumnaID().getValueString()}" disabled="#{cc.attrs.beanClass.protegido}"
+                                required="#{cc.attrs.beanClass.required}" forceSelection="true" />
+            <p:commandButton id="#{cc.attrs.id}_btnLupa" type="button" icon="pi pi-search" />
+        </p:panelGrid>
+        <p:overlayPanel for="#{cc.attrs.id}_btnLupa" dynamic="true" style="width:600px" widgetVar="#{cc.attrs.id}_tabla">
+            <p:dataTable var="item" value="#{cc.attrs.beanClass.buscar}" rows="5" paginator="true" selectionMode="single"
+                selection="#{cc.attrs.beanClass.dataSet.selectedRows}" rowKey="#{item.getColumnaID().getValueString()}">
+                <p:ajax event="rowSelect" listener="#{cc.attrs.beanClass.onRowSelect}" update="#{cc.attrs.beanClass.update}" oncomplete="PF('#{cc.attrs.id}_tabla').hide()"/>
+
+                <p:columns value="#{cc.attrs.beanClass.dataSet.cabecera.columns}" columnIndexVar="indexCol" var="itemColumn"
+                       headerText="#{itemColumn.title}" visible="#{itemColumn.visible}" width="#{itemColumn.width}"
+                       sortable="true" sortBy="#{itemRow.getColumnName(itemColumn.name)[itemColumn.valueProperty]}">
+                    <p:column>
+                        <span title="#{itemRow.getColumnName(itemColumn.name).tooltip}">
+                            #{itemRow.getColumnName(itemColumn.name)[itemColumn.valueString]}
+                        </span>
+                    </p:column>
+                </p:columns>
+            </p:dataTable>
+        </p:overlayPanel>
+    </cc:implementation>
+</html>

@@ -10,7 +10,8 @@ public class CampoWeb {
         Codigo,
         Descripcion,
         Fecha,
-        FechaRango
+        FechaRango,
+        Lupa
     }
     
     private String width = ""; 

@@ -19,6 +19,7 @@ import org.primefaces.model.Visibility;
 import utilidades.CampoWebCodigo;
 import utilidades.CampoWebDescripcion;
 import utilidades.CampoWebFechaRango;
+import utilidades.CampoWebLupa;
 import utilidades.Configuraciones;
 import utilidades.Formateos;
 import utilidades.Mensajes;
@@ -38,9 +39,9 @@ public class FiltroFirmaDocumentos implements Serializable {
     private CampoWebDescripcion cDsDocumento = null;
     private CampoWebFechaRango cFeAlta = null;
     private CampoWebFechaRango cFeDesactivo = null;
-    private CampoWebDescripcion cAutoridad = null;
-    private CampoWebDescripcion cTipodocumento = null;
-    private CampoWebDescripcion cSituaciondoc = null;
+    private CampoWebLupa cTipodocumento = null;
+    private CampoWebLupa cSituaciondoc = null;
+    private CampoWebLupa cAutoridad = null;
     private boolean filtroVisible = true;
     private DataSet dsResultado = null;
     //private EdicionDocumento edicionDocumento = null; 
@@ -65,17 +66,44 @@ public class FiltroFirmaDocumentos implements Serializable {
         this.cFeDesactivo.setLabel(Msg.getString("lbl_FiltroFirmaDocumentos_FeDesactivo"));
         this.cFeDesactivo.setWidthLabel("100px");
 
-        this.cAutoridad = new CampoWebDescripcion();
-        this.cAutoridad.setLabel(Msg.getString("lbl_FiltroFirmaDocumentos_Autoridad"));
-        this.cAutoridad.setWidthLabel("70px");
-        
-        this.cTipodocumento = new CampoWebDescripcion();
+        this.cTipodocumento = new CampoWebLupa();
         this.cTipodocumento.setLabel(Msg.getString("lbl_FiltroFirmaDocumentos_TipoDocumento"));
         this.cTipodocumento.setWidthLabel("70px");
+        String sql = "SELECT ID_TIPODOCUMENTO, CO_TIPODOCUMENTO + ' - ' + DS_TIPODOCUMENTO as TEXTO FROM BD_T_TIPODOCUMENTO";
+        this.cTipodocumento.setConsulta(sql);
+        this.cTipodocumento.setColumnaID("ID_TIPODOCUMENTO");
+        this.cTipodocumento.setColumnaLabel("TEXTO");
         
-        this.cSituaciondoc = new CampoWebDescripcion();
+        this.cSituaciondoc = new CampoWebLupa();
         this.cSituaciondoc.setLabel(Msg.getString("lbl_FiltroFirmaDocumentos_SituacionDoc"));
         this.cSituaciondoc.setWidthLabel("100px");
+        sql = "SELECT ID_SITUACIONDOC, CO_SITUACIONDOC + ' - ' + DS_SITUACIONDOC as TEXTO FROM BD_T_SITUACIONDOC";
+        this.cSituaciondoc.setConsulta(sql);
+        this.cSituaciondoc.setColumnaID("ID_SITUACIONDOC");
+        this.cSituaciondoc.setColumnaLabel("TEXTO");
+        
+        this.cAutoridad = new CampoWebLupa();
+        this.cAutoridad.setLabel(Msg.getString("lbl_FiltroFirmaDocumentos_Autoridad"));
+        this.cAutoridad.setWidthLabel("70px");
+        sql = """
+              SELECT 
+                  aut.ID_AUTORIDAD, 
+                  aut.CO_AUTORIDAD + ' - ' + aut.DS_AUTORIDAD as TEXTO
+              FROM
+                  BD_T_AUTORIDAD aut
+              INNER JOIN
+                  BD_A_AUTUSU autusu ON (autusu.ID_AUTORIDAD = aut.ID_AUTORIDAD AND (autusu.FE_ALTA <= CONVERT (date, SYSDATETIME())) AND (autusu.FE_DESACTIVO IS NULL OR autusu.FE_DESACTIVO >= CONVERT (date, SYSDATETIME())))
+              INNER JOIN
+                  BD_T_USUARIO usuario ON (usuario.ID_USUARIO = autusu.ID_USUARIO)
+              INNER JOIN
+                  BD_T_UNIDAD uni ON (uni.ID_UNIDAD = aut.ID_UNIDAD)
+              WHERE
+                  (aut.FE_ALTA <= CONVERT (date, SYSDATETIME())) 
+              AND (aut.FE_DESACTIVO IS NULL OR aut.FE_DESACTIVO >= CONVERT (date, SYSDATETIME()))
+              AND usuario.ID_USUARIO = """ + Session.getDatosUsuario().getBdTUsuario().getIdUsuario();
+        this.cAutoridad.setConsulta(sql);
+        this.cAutoridad.setColumnaID("ID_AUTORIDAD");
+        this.cAutoridad.setColumnaLabel("TEXTO");
         
         this.dsResultado = new DataSet();
         toggleFiltro(null);
@@ -125,28 +153,28 @@ public class FiltroFirmaDocumentos implements Serializable {
         this.cFeDesactivo = cFeDesactivo;
     }
 
-    public CampoWebDescripcion getcAutoridad() {
-        return cAutoridad;
-    }
-
-    public void setcAutoridad(CampoWebDescripcion cAutoridad) {
-        this.cAutoridad = cAutoridad;
-    }
-
-    public CampoWebDescripcion getcTipodocumento() {
+    public CampoWebLupa getcTipodocumento() {
         return cTipodocumento;
     }
 
-    public void setcTipodocumento(CampoWebDescripcion cTipodocumento) {
+    public void setcTipodocumento(CampoWebLupa cTipodocumento) {
         this.cTipodocumento = cTipodocumento;
     }
 
-    public CampoWebDescripcion getcSituaciondoc() {
+    public CampoWebLupa getcSituaciondoc() {
         return cSituaciondoc;
     }
 
-    public void setcSituaciondoc(CampoWebDescripcion cSituaciondoc) {
+    public void setcSituaciondoc(CampoWebLupa cSituaciondoc) {
         this.cSituaciondoc = cSituaciondoc;
+    }
+
+    public CampoWebLupa getcAutoridad() {
+        return cAutoridad;
+    }
+
+    public void setcAutoridad(CampoWebLupa cAutoridad) {
+        this.cAutoridad = cAutoridad;
     }
 
     public DataSet getDsResultado() {
@@ -181,6 +209,9 @@ public class FiltroFirmaDocumentos implements Serializable {
             cFeAlta.setValueFin(null);
             cFeDesactivo.setValueIni(null);
             cFeDesactivo.setValueFin(null);
+            cTipodocumento.setValue(null);
+            cSituaciondoc.setValue(null);
+            cAutoridad.setValue(null);
             
             this.dsResultado.clear();
         } catch (Exception ex) {
@@ -285,6 +316,15 @@ public class FiltroFirmaDocumentos implements Serializable {
                 sql += "(doc.FE_DESACTIVO <= " + Formateos.dateToSql((Date)cFeDesactivo.getValueFin()) + ")";
             }
             sql += ")";
+        }
+        if (cTipodocumento.getValue() != null) {
+            sql += " AND tipodoc.ID_TIPODOCUMENTO = " + cTipodocumento.getValue();
+        }
+        if (cSituaciondoc.getValue() != null) {
+            sql += " AND situaciondoc.ID_SITUACIONDOC = " + cSituaciondoc.getValue();
+        }
+        if (cAutoridad.getValue() != null) {
+            sql += " AND aut.ID_AUTORIDAD = " + cAutoridad.getValue();
         }
         
         return sql;
