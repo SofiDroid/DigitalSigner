@@ -25,7 +25,7 @@ public final class DataSet extends StBase {
     protected Object rowSelectClass = null;
     protected String rowSelectUpdate = "@widgetVar(mensaje)";
     protected String rowSelectColumnaID = null;
-    protected String heightFiltro = "26rem";
+    protected String heightFiltro = "27.8rem";
     protected String height = "calc(100vh - " + heightFiltro + ")";
     protected StreamedContent media;
 
