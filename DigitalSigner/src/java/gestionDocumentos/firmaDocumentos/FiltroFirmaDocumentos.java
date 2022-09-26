@@ -69,18 +69,18 @@ public class FiltroFirmaDocumentos implements Serializable {
         this.cTipodocumento = new CampoWebLupa();
         this.cTipodocumento.setLabel(Msg.getString("lbl_FiltroFirmaDocumentos_TipoDocumento"));
         this.cTipodocumento.setWidthLabel("70px");
-        String sql = "SELECT ID_TIPODOCUMENTO, CO_TIPODOCUMENTO + ' - ' + DS_TIPODOCUMENTO as TEXTO FROM BD_T_TIPODOCUMENTO";
+        String sql = "SELECT ID_TIPODOCUMENTO, CO_TIPODOCUMENTO + ' - ' + DS_TIPODOCUMENTO as Tipo FROM BD_T_TIPODOCUMENTO";
         this.cTipodocumento.setConsulta(sql);
         this.cTipodocumento.setColumnaID("ID_TIPODOCUMENTO");
-        this.cTipodocumento.setColumnaLabel("TEXTO");
+        this.cTipodocumento.setColumnaLabel("Tipo");
         
         this.cSituaciondoc = new CampoWebLupa();
         this.cSituaciondoc.setLabel(Msg.getString("lbl_FiltroFirmaDocumentos_SituacionDoc"));
         this.cSituaciondoc.setWidthLabel("100px");
-        sql = "SELECT ID_SITUACIONDOC, CO_SITUACIONDOC + ' - ' + DS_SITUACIONDOC as TEXTO FROM BD_T_SITUACIONDOC";
+        sql = "SELECT ID_SITUACIONDOC, CO_SITUACIONDOC + ' - ' + DS_SITUACIONDOC as Situación FROM BD_T_SITUACIONDOC";
         this.cSituaciondoc.setConsulta(sql);
         this.cSituaciondoc.setColumnaID("ID_SITUACIONDOC");
-        this.cSituaciondoc.setColumnaLabel("TEXTO");
+        this.cSituaciondoc.setColumnaLabel("Situación");
         
         this.cAutoridad = new CampoWebLupa();
         this.cAutoridad.setLabel(Msg.getString("lbl_FiltroFirmaDocumentos_Autoridad"));
@@ -88,7 +88,7 @@ public class FiltroFirmaDocumentos implements Serializable {
         sql = """
               SELECT 
                   aut.ID_AUTORIDAD, 
-                  aut.CO_AUTORIDAD + ' - ' + aut.DS_AUTORIDAD as TEXTO
+                  aut.CO_AUTORIDAD + ' - ' + aut.DS_AUTORIDAD as Autoridad
               FROM
                   BD_T_AUTORIDAD aut
               INNER JOIN
@@ -103,7 +103,7 @@ public class FiltroFirmaDocumentos implements Serializable {
               AND usuario.ID_USUARIO = """ + Session.getDatosUsuario().getBdTUsuario().getIdUsuario();
         this.cAutoridad.setConsulta(sql);
         this.cAutoridad.setColumnaID("ID_AUTORIDAD");
-        this.cAutoridad.setColumnaLabel("TEXTO");
+        this.cAutoridad.setColumnaLabel("Autoridad");
         
         this.dsResultado = new DataSet();
         toggleFiltro(null);

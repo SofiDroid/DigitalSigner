@@ -41,6 +41,10 @@ body .ui-button {
     border: 1px solid #213a68;
 }
 
+body .button-inline.ui-button.ui-button-icon-only .ui-button-text {
+    padding: .3em!important;
+}
+
 .ui-datatable-odd {
     background-color: #dee9ff!important;
 }

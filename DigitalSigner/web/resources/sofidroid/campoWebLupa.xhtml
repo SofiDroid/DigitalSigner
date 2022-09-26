@@ -26,11 +26,11 @@
                 <p:ajax event="itemSelect" listener="#{cc.attrs.beanClass.onRowSelect}" />
             </p:autoComplete>
             <p:commandButton id="#{cc.attrs.id}_btnLupa" action="#{cc.attrs.beanClass.buscar}" immediate="true"
-                             icon="pi pi-search" />
+                             icon="pi pi-search" styleClass="button-inline" />
         </p:panelGrid>
         <p:overlayPanel for="#{cc.attrs.id}_btnLupa" dynamic="true" style="width:600px" widgetVar="#{cc.attrs.id}_tabla">
             <p:dataTable var="itemRow" value="#{cc.attrs.beanClass.dataSet.rows}" rows="5" paginator="true" 
-                    paginatorPosition="bottom"
+                         paginatorPosition="bottom" size="small"
                     paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                     currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} registros"
                     selectionMode="single" selection="#{cc.attrs.beanClass.dataSet.selectedRow}" rowKey="#{itemRow.index}">
