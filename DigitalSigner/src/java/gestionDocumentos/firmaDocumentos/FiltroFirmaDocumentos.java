@@ -236,6 +236,7 @@ public class FiltroFirmaDocumentos implements Serializable {
                              situaciondoc.ID_SITUACIONDOC,
                              situaciondoc.CO_SITUACIONDOC,
                              situaciondoc.DS_SITUACIONDOC,
+                             docfirma.ID_DOCFIRMA,
                              docfirma.EN_ORDEN,
                              (SELECT count(*) FROM BD_A_DOCFIRMA aux WHERE aux.ID_DOCUMENTO = doc.ID_DOCUMENTO
                                  AND (aux.FE_ALTA <= CONVERT (date, SYSDATETIME())) AND (aux.FE_DESACTIVO IS NULL OR docfirma.FE_DESACTIVO >= CONVERT (date, SYSDATETIME()))) as TOTAL_FIRMAS,
@@ -352,7 +353,7 @@ public class FiltroFirmaDocumentos implements Serializable {
             Mensajes.showError("Error al navegar al detalle", ex.getMessage());
         }
         
-        return null; //"edicionUnidades";
+        return null;
     }
 
     public String nuevo() {
@@ -465,6 +466,9 @@ public class FiltroFirmaDocumentos implements Serializable {
         cabecera.getColumnName("DS_SITUACIONDOC")
                 .setVisible(false);
 
+        cabecera.getColumnName("ID_DOCFIRMA")
+                .setVisible(false);
+
         cabecera.getColumnName("EN_ORDEN")
                 .setVisible(false);
 
@@ -479,7 +483,7 @@ public class FiltroFirmaDocumentos implements Serializable {
 
         cabecera.getColumnName("CO_AUTORIDAD")
                 .setTitle("Autoridad")
-                .setWidth("20em")
+                .setWidth("10em")
                 .setTooltipColumn("DS_AUTORIDAD");
 
         cabecera.getColumnName("DS_AUTORIDAD")
@@ -496,8 +500,8 @@ public class FiltroFirmaDocumentos implements Serializable {
         
         this.dsResultado.newColumn("btnDocumento");
         cabecera.getColumnName("btnDocumento")
-                .setTitle("")
-                .setWidth("3em")
+                .setTitle("Ver Documento")
+                .setWidth("10em")
                 .setTipo(ColumnBase.Tipo.MEDIA)
                 .setClase(this)
                 .setMethod(this.getClass().getMethod("verDocumento"))

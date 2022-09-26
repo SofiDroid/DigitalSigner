@@ -24,8 +24,13 @@ import seguridad.usuarios.DatosUsuario;
  */
 public class Session {
     public static DatosUsuario getDatosUsuario() {
-        ELContext elContext = FacesContext.getCurrentInstance().getELContext();
-        return (DatosUsuario)elContext.getELResolver().getValue(elContext, null, "datosUsuario");
+        if (FacesContext.getCurrentInstance() == null) {
+            return (DatosUsuario)CDI.current().getBeanManager().getContext(SessionScoped.class).get(CDI.current().getBeanManager().getBeans("datosUsuario").iterator().next());
+        }
+        else {
+            ELContext elContext = FacesContext.getCurrentInstance().getELContext();
+            return (DatosUsuario)elContext.getELResolver().getValue(elContext, null, "datosUsuario");
+        }
     }
     
     public static String getCoUsuario() {

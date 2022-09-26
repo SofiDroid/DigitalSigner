@@ -1,12 +1,21 @@
 package servlets.firmaelectronica;
 
 import basedatos.servicios.StADocfirma;
+import basedatos.servicios.StAHistdoc;
+import basedatos.servicios.StDDocumento;
+import basedatos.servicios.StTSituaciondoc;
+import basedatos.tablas.BdADocfirma;
+import basedatos.tablas.BdAHistdoc;
 import basedatos.tablas.BdDDocumento;
+import basedatos.tablas.BdTSituaciondoc;
 import gestionDocumentos.firmaDocumentos.FiltroFirmaDocumentos;
+import init.AppInit;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Date;
 import javax.faces.FacesException;
 import javax.faces.FactoryFinder;
 import javax.faces.context.FacesContextFactory;
@@ -19,6 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.apache.tomcat.util.codec.binary.Base64;
 import seguridad.usuarios.DatosUsuario;
+import tomcat.persistence.EntityManager;
 import utilidades.Session;
 
 /**
@@ -31,7 +41,7 @@ public class SubidaFicheroFirmado extends HttpServlet
 
     private FacesContextFactory m_facesContextFactory;
     private Lifecycle m_lifecycle;
-        
+    
     @Override
     public void init() throws ServletException {
         super.init();
@@ -119,17 +129,64 @@ public class SubidaFicheroFirmado extends HttpServlet
 //
                     
                     // INICIO TRANSACCION
-                    
-                    //Actualizar la fecha de firma en BD_A_DOCFIRMA
-                    
-                    //Insertar el documento original (el del ID_DOCUMENTO) en BD_A_HISTDOC
-                    
-                    //Actualizar el documento en BD_D_DOCUMENTOS
-                    // BL_DOCUMENTO: con el firmado
-                    // CO_EXTENSION: "XSIG"
-                    // CO_FICHERO: el que habia reemplazando la extension a ".xsig"
-                    // ID_SITUACION: FIRMADO si no hay mas firmantes y PENDIENTE_FIRMA si hay mas firmantes
+                    try (EntityManager entityManager = AppInit.getEntityManager()) {
+                        entityManager.getTransaction().begin();
+                        try {
+                            //Actualizar la fecha de firma en BD_A_DOCFIRMA
+                            StADocfirma stADocfirma = new StADocfirma();
+                            Integer idDocfirma = filtroFirmaDocumentos.getDsResultado().getRows().get(idxFichero).getColumnName("ID_DOCFIRMA").getValueInteger();
+                            BdADocfirma bdADocfirma = stADocfirma.item(idDocfirma, entityManager);
+                            bdADocfirma.setFeFirma(new Date());
+                            stADocfirma.actualiza(bdADocfirma, entityManager);
+                            
+                            //Insertar el documento original (el del ID_DOCUMENTO) en BD_A_HISTDOC
+                            StAHistdoc stAHistdoc = new StAHistdoc();
+                            BdAHistdoc bdAHistdoc = new BdAHistdoc();
+                            bdAHistdoc.setIdDocumento(bdDDocumento.getIdDocumento());
+                            bdAHistdoc.setIdSituaciondoc(bdDDocumento.getIdSituaciondoc());
+                            bdAHistdoc.setFeAlta(new Date());
+                            bdAHistdoc.setFeDesactivo(null);
+                            bdAHistdoc.setDsRuta(null);
+                            bdAHistdoc.setBlDocumento(bdDDocumento.getBlDocumento());
+                            stAHistdoc.alta(bdAHistdoc, entityManager);
 
+                            //Actualizar el documento en BD_D_DOCUMENTOS
+                            StDDocumento stDDocumento = new StDDocumento();
+                            bdDDocumento.setBlDocumento(binDocumentoFirmado); // BL_DOCUMENTO: con el firmado
+                            bdDDocumento.setCoExtension("XSIG"); // CO_EXTENSION: "XSIG"
+                            bdDDocumento.setCoFichero(bdDDocumento.getCoFichero() + ".xsig"); // CO_FICHERO: el que habia reemplazando la extension a ".xsig"
+                            
+                            //Mirar si es el ultimo firmante
+                            BdADocfirma filtroBdADocfirma = new BdADocfirma();
+                            filtroBdADocfirma.setIdDocumento(bdDDocumento.getIdDocumento());
+                            ArrayList<BdADocfirma> firmasDocumento = stADocfirma.filtro(filtroBdADocfirma, entityManager);
+                            boolean existenFirmasPendientes = false;
+                            for (BdADocfirma itemBdADocfirma : firmasDocumento) {
+                                if (itemBdADocfirma.getFeFirma() != null) {
+                                    existenFirmasPendientes = true;
+                                }
+                            }
+                            
+                            // ID_SITUACION: FIRMADO si no hay mas firmantes y PENDIENTE_FIRMA si hay mas firmantes
+                            StTSituaciondoc stTSituaciondoc = new StTSituaciondoc();
+                            BdTSituaciondoc filtroBdTSituaciondoc = new BdTSituaciondoc();
+                            if (existenFirmasPendientes) {
+                                filtroBdTSituaciondoc.setCoSituaciondoc("PENDIENTE_FIRMA");
+                            }
+                            else {
+                                filtroBdTSituaciondoc.setCoSituaciondoc("FIRMADO");                                
+                            }
+                            Integer idSituaciondoc = stTSituaciondoc.filtro(filtroBdTSituaciondoc, entityManager).get(0).getIdSituaciondoc();
+                            bdDDocumento.setIdSituaciondoc(idSituaciondoc);
+                            stDDocumento.actualiza(bdDDocumento, entityManager);
+                            
+                            entityManager.getTransaction().commit();
+                        }
+                        catch (Exception ex) {
+                            entityManager.getTransaction().rollback();
+                            throw ex;
+                        }
+                    }
                     // FIN TRANSACCION
 
 //                    if(logica.actualizarDocFirmando(doc, entrada, gestion.getIdTercero()) != Respuesta.OK)
@@ -149,7 +206,7 @@ public class SubidaFicheroFirmado extends HttpServlet
 //                            gestion.getListaErroresProcesoFirma().add(doc.getDESCRIPCION());
 //                        }
 //                    }
-                    Files.write(Paths.get("C:\\GIT\\DigitalSigner\\Documentos", "documentoFirmadoSockets.xsig"), binDocumentoFirmado);
+                    //Files.write(Paths.get("C:\\GIT\\DigitalSigner\\Documentos", "documentoFirmadoSockets.xsig"), binDocumentoFirmado);
                 }
                 catch(IOException | NumberFormatException ex)
                 {

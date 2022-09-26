@@ -11,6 +11,8 @@ import tomcat.persistence.EntityManager;
 import utilidades.Session;
 import utilidades.Validation;
 import basedatos.tablas.BdAHistdoc;
+import init.AppInit;
+import utilidades.BaseDatos;
 
 /**
  *
@@ -56,8 +58,10 @@ public class StAHistdoc extends StBase {
     
     public int alta(BdAHistdoc newBdAHistdoc, EntityManager em) throws Exception {
 
-        if (Validation.isNullOrEmpty(newBdAHistdoc.getIdHistdoc())) {
-            throw new RequiredFieldException("ID_HISTDOC");
+        if (AppInit.TIPO_BASEDATOS == BaseDatos.ORACLE) {
+            if (Validation.isNullOrEmpty(newBdAHistdoc.getIdHistdoc())) {
+                throw new RequiredFieldException("ID_HISTDOC");
+            }
         }
         if (Validation.isNullOrEmpty(newBdAHistdoc.getIdDocumento())) {
             throw new RequiredFieldException("ID_DOCUMENTO");
@@ -67,14 +71,7 @@ public class StAHistdoc extends StBase {
         }
         if (Validation.isNullOrEmpty(newBdAHistdoc.getFeAlta())) {
             throw new RequiredFieldException("FE_ALTA");
-        }
-        if (Validation.isNullOrEmpty(newBdAHistdoc.getUsuariobd())) {
-            throw new RequiredFieldException("USUARIOBD");
-        }
-        if (Validation.isNullOrEmpty(newBdAHistdoc.getTstbd())) {
-            throw new RequiredFieldException("TSTBD");
-        }
-   
+        }   
 
         newBdAHistdoc.setUsuariobd(Session.getCoUsuario());
 

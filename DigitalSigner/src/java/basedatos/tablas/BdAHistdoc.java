@@ -120,8 +120,7 @@ public class BdAHistdoc extends OperacionSQL implements InterfazDAO {
             sb_sql.append(",").append("DECODE(:TSTBD, null, NULL, :TSTBD)");
         }
         else {
-            sb_sql.append(":ID_SALIDAXML");
-            sb_sql.append(",").append(":ID_DOCUMENTO");
+            sb_sql.append(":ID_DOCUMENTO");
             sb_sql.append(",").append(":ID_SITUACIONDOC");
             sb_sql.append(",").append(":BL_DOCUMENTO");
             sb_sql.append(",").append(":DS_RUTA");
