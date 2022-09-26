@@ -5,14 +5,9 @@
 package utilidades;
 
 import basedatos.tablas.BdTUsuario;
-import java.util.Set;
 import javax.el.ELContext;
 import javax.enterprise.context.SessionScoped;
-import javax.enterprise.context.spi.AlterableContext;
-import javax.enterprise.inject.Any;
-import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.CDI;
-import javax.enterprise.util.AnnotationLiteral;
 import javax.faces.context.FacesContext;
 import seguridad.usuarios.DatosUsuario;
 
@@ -33,6 +28,14 @@ public class Session {
     
     public static Object getNamedBean(String nombre) {
         return CDI.current().getBeanManager().getContext(SessionScoped.class).get(CDI.current().getBeanManager().getBeans(nombre).iterator().next());
+    }
+    
+    public static void grabarAtributo(String name, Object value) {
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(name, value);
+    }
+    
+    public static Object recuperarAtributo(String name) {
+        return FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get(name);
     }
     
     public static void limpiarOtrosBeans(String beanEnUso) {

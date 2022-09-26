@@ -6,15 +6,19 @@ import basedatos.Row;
 import basedatos.RowCabecera;
 import basedatos.servicios.StDDocumento;
 import basedatos.tablas.BdDDocumento;
+import java.io.ByteArrayInputStream;
 import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.Date;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
+import javax.faces.context.FacesContext;
 import javax.inject.Named;
 import org.apache.log4j.Logger;
 import org.primefaces.context.PrimeRequestContext;
 import org.primefaces.event.ToggleEvent;
+import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.StreamedContent;
 import org.primefaces.model.Visibility;
 import utilidades.CampoWebCodigo;
 import utilidades.CampoWebDescripcion;
@@ -342,6 +346,19 @@ public class FiltroFirmaDocumentos implements Serializable {
         return null; //"edicionUnidades";
     }
 
+    public String verDocumento() {
+        try {
+            Integer idDocumento = this.dsResultado.getSelectedRow().getColumnaID().getValueInteger();
+            BdDDocumento bdDDocumento = new StDDocumento().item(idDocumento, null);
+            Session.grabarAtributo("reportBytes", bdDDocumento.getBlDocumento());
+        } catch (Exception ex) {
+            LOG.error(ex.getMessage(), ex);
+            Mensajes.showError("Error al navegar al detalle", ex.getMessage());
+        }
+        
+        return null; //"edicionUnidades";
+    }
+
     public String nuevo() {
         try {
             //this.edicionUnidades = new EdicionUnidades(this, null);
@@ -480,5 +497,14 @@ public class FiltroFirmaDocumentos implements Serializable {
 
         cabecera.getColumnName("DS_UNIDAD")
                 .setVisible(false);
+        
+        this.dsResultado.newColumn("btnDocumento");
+        cabecera.getColumnName("btnDocumento")
+                .setTitle("")
+                .setWidth("3em")
+                .setTipo(ColumnBase.Tipo.MEDIA)
+                .setClase(this)
+                .setMethod(this.getClass().getMethod("verDocumento"))
+                .setUpdate("formulario:panelResultado,formulario:mensaje");
     }
 }

@@ -13,7 +13,8 @@ public class ColumnBase {
         LINK,
         BOTON,
         IMAGEN,
-        CHECKBOX
+        CHECKBOX,
+        MEDIA
     }
     
     protected RowBase parent;

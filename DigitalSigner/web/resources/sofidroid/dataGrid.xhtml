@@ -38,8 +38,24 @@
                             <f:setPropertyActionListener target="#{cc.attrs.dataSet.selectedRow}" value="#{itemRow}" />
                         </p:commandLink>
                     </p:outputPanel>
+                    <p:outputPanel rendered="#{itemColumn.tipo eq 'MEDIA'}">
+                        <p:commandButton                                 title="#{itemRow.getColumnName(itemColumn.name).tooltip}"
+                                value="#{itemRow.getColumnName(itemColumn.name)[itemColumn.valueString]}"
+                                action="#{itemColumn.ejecutarMetodo}"
+                                update="@widgetVar(#{cc.attrs.id}_visorMedia),#{itemColumn.update}" oncomplete="PF('#{cc.attrs.id}_visorMedia').show()"
+                                icon="pi pi-file-pdf" styleClass="button-inline">
+                            <f:setPropertyActionListener target="#{cc.attrs.dataSet.selectedRow}" value="#{itemRow}" />
+                        </p:commandButton>
+                    </p:outputPanel>
                 </p:column>
             </p:columns>
         </p:dataTable>
+        <p:dialog id="#{cc.attrs.id}_visorMedia" widgetVar="#{cc.attrs.id}_visorMedia"
+                  modal="true" width="70%" height="500px" header="Visor de documentos" >
+            <p:media value="/documento.pdf" height="480px" player="pdf" cache="false"
+                     width="100%">
+                Your browser can't display pdf.
+            </p:media>
+        </p:dialog>
     </cc:implementation>
 </html>

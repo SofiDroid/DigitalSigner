@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import org.primefaces.model.StreamedContent;
 
 /**
  *
@@ -26,6 +27,7 @@ public final class DataSet extends StBase {
     protected String rowSelectColumnaID = null;
     protected String heightFiltro = "26rem";
     protected String height = "calc(100vh - " + heightFiltro + ")";
+    protected StreamedContent media;
 
     public DataSet() {
     
@@ -257,5 +259,35 @@ public final class DataSet extends StBase {
 
     public void setSelectable(Boolean selectable) {
         this.selectable = selectable;
+    }
+
+    public StreamedContent getMedia() {
+        return media;
+    }
+
+    public void setMedia(StreamedContent media) {
+        this.media = media;
+    }
+    
+    public DataSet newColumn(String columnName) {
+        ColumnCabecera itemColCab = new ColumnCabecera(this.getCabecera());
+        itemColCab.index = this.cabecera.columns.size();
+        itemColCab.name = columnName;
+        itemColCab.title = columnName;
+        this.getCabecera().getColumns().add(itemColCab);
+
+        for(Row itemRow : this.getRows()) {
+            Column itemCol = new Column(itemRow);
+            itemCol.setCabecera(itemColCab);
+            itemCol.index = itemRow.columns.size();
+            itemCol.name = columnName;
+            itemCol.value = null;
+            itemCol.valueString = null;
+            itemCol.tooltip = columnName;
+            
+            itemRow.getColumns().add(itemCol);
+        }
+
+        return this;
     }
 }
