@@ -2,7 +2,8 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:cc="http://xmlns.jcp.org/jsf/composite"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <!-- INTERFACE -->
     <cc:interface>
@@ -13,23 +14,30 @@
     <cc:implementation>
         <p:panelGrid columns="3" columnClasses="colFit, col-12, colFit">
             <p:outputLabel for="#{cc.attrs.id}" value="#{cc.attrs.beanClass.label}#{cc.attrs.beanClass.requiredChar}" escape="false" style="display: block;#{cc.attrs.beanClass.widthLabel}"/>
-            <p:autoComplete id="#{cc.attrs.id}" cache="true" cacheTimeout="30000" value="#{cc.attrs.beanClass.value}"
+            <p:autoComplete id="#{cc.attrs.id}" widgetVar="#{cc.attrs.id}" cache="true" cacheTimeout="30000" 
                                 completeMethod="#{cc.attrs.beanClass.completeText}" scrollHeight="250" 
                                 queryDelay="#{cc.attrs.beanClass.queryDelay}" emptyMessage="#{cc.attrs.beanClass.emptyMessage}"
                                 maxResults="#{cc.attrs.beanClass.maxResults}" moreText="#{cc.attrs.beanClass.moreText}"
                                 style="#{cc.attrs.beanClass.width}" maxlength="#{cc.attrs.beanClass.maxlength}"
+                                value="#{cc.attrs.beanClass.dataSet.selectedRow}" binding="#{cc.attrs.beanClass.ctrAutocomplete}"
                                 var="item" itemLabel="#{item.getColumnName(cc.attrs.beanClass.columnaLabel).getValueString()}" 
-                                itemValue="#{item.getColumnaID().getValueString()}" disabled="#{cc.attrs.beanClass.protegido}"
-                                required="#{cc.attrs.beanClass.required}" forceSelection="true" />
-            <p:commandButton id="#{cc.attrs.id}_btnLupa" type="button" icon="pi pi-search" />
+                                itemValue="#{item}" disabled="#{cc.attrs.beanClass.protegido}" converter="rowConverter"
+                                required="#{cc.attrs.beanClass.required}" forceSelection="true">
+                <p:ajax event="itemSelect" listener="#{cc.attrs.beanClass.onRowSelect}" />
+            </p:autoComplete>
+            <p:commandButton id="#{cc.attrs.id}_btnLupa" action="#{cc.attrs.beanClass.buscar}" immediate="true"
+                             icon="pi pi-search" />
         </p:panelGrid>
         <p:overlayPanel for="#{cc.attrs.id}_btnLupa" dynamic="true" style="width:600px" widgetVar="#{cc.attrs.id}_tabla">
-            <p:dataTable var="item" value="#{cc.attrs.beanClass.buscar}" rows="5" paginator="true" selectionMode="single"
-                selection="#{cc.attrs.beanClass.dataSet.selectedRows}" rowKey="#{item.getColumnaID().getValueString()}">
-                <p:ajax event="rowSelect" listener="#{cc.attrs.beanClass.onRowSelect}" update="#{cc.attrs.beanClass.update}" oncomplete="PF('#{cc.attrs.id}_tabla').hide()"/>
+            <p:dataTable var="itemRow" value="#{cc.attrs.beanClass.dataSet.rows}" rows="5" paginator="true" 
+                    paginatorPosition="bottom"
+                    paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                    currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} registros"
+                    selectionMode="single" selection="#{cc.attrs.beanClass.dataSet.selectedRow}" rowKey="#{itemRow.index}">
+                <p:ajax event="rowSelect" listener="#{cc.attrs.beanClass.onRowSelect}" update="@widgetVar(#{cc.attrs.id}),#{cc.attrs.beanClass.update}" oncomplete="PF('#{cc.attrs.id}_tabla').hide()"/>
 
                 <p:columns value="#{cc.attrs.beanClass.dataSet.cabecera.columns}" columnIndexVar="indexCol" var="itemColumn"
-                       headerText="#{itemColumn.title}" visible="#{itemColumn.visible}" width="#{itemColumn.width}"
+                       visible="#{itemColumn.visible}" width="#{itemColumn.width}" headerText="#{itemColumn.title}"
                        sortable="true" sortBy="#{itemRow.getColumnName(itemColumn.name)[itemColumn.valueProperty]}">
                     <p:column>
                         <span title="#{itemRow.getColumnName(itemColumn.name).tooltip}">

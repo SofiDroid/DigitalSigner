@@ -5,6 +5,7 @@ import basedatos.Row;
 import java.sql.SQLException;
 import java.util.List;
 import org.apache.log4j.Logger;
+import org.primefaces.component.autocomplete.AutoComplete;
 import org.primefaces.event.SelectEvent;
 
 /**
@@ -12,6 +13,7 @@ import org.primefaces.event.SelectEvent;
  * @author ihuegal
  */
 public class CampoWebLupa extends CampoWeb {
+    private AutoComplete ctrAutocomplete;
     private DataSet dataSet;
     private String columnaLabel;
     private Integer queryDelay;
@@ -29,6 +31,7 @@ public class CampoWebLupa extends CampoWeb {
         this.emptyMessage = "No se encontraron resultados";
         this.maxResults = 5;
         this.moreText = "mas resultados disponibles";
+        this.dataSet = new DataSet();
     }
     
     public DataSet getDataSet() {
@@ -59,19 +62,25 @@ public class CampoWebLupa extends CampoWeb {
         return null;
     }
     
-    public List<Row> buscar() {
+    public void buscar() {
         try {
             this.dataSet = new DataSet(consulta, columnaID);
-            return this.dataSet.getRows();
+            this.getDataSet().getCabecera().getColumnName(columnaID).setVisible(false);
         } catch (SQLException ex) {
             Logger.getLogger(CampoWebLupa.class).error(ex.getMessage(), ex);
             Mensajes.showError("Error al recuperar lupa " + this.getLabel(), ex.getMessage());
         }
-        return null;
     }
     
     public void onRowSelect(SelectEvent<Row> event) {
-        this.setValue(event.getObject().getColumnaID().getValueString());
+        //this.setValue(this.dataSet.getSelectedRow().getColumnaID().getValueString());
+        if (event.getObject().getParent() == null) {
+            this.dataSet.setSelectedRow(this.dataSet.getRows().get(event.getObject().getIndex()));
+            this.setValue(this.dataSet.getSelectedRow().getColumnaID().getValueString());
+        }
+        else {
+            this.setValue(this.dataSet.getSelectedRow().getColumnaID().getValueString());
+        }
     }
 
     public Integer getQueryDelay() {
@@ -120,6 +129,9 @@ public class CampoWebLupa extends CampoWeb {
 
     public void setColumnaID(String columnaID) {
         this.columnaID = columnaID;
+        if (this.dataSet != null) {
+            this.dataSet.setRowSelectColumnaID(columnaID);
+        }
     }
 
     public String getUpdate() {
@@ -128,5 +140,13 @@ public class CampoWebLupa extends CampoWeb {
 
     public void setUpdate(String update) {
         this.update = update;
+    }        
+
+    public AutoComplete getCtrAutocomplete() {
+        return ctrAutocomplete;
+    }
+
+    public void setCtrAutocomplete(AutoComplete ctrAutocomplete) {
+        this.ctrAutocomplete = ctrAutocomplete;
     }
 }

@@ -39,4 +39,9 @@ public class RowBase {
         }
         return null;
     }
+
+    @Override
+    public String toString() {
+        return "" + index;
+    }
 }
