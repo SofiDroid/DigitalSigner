@@ -28,6 +28,7 @@
             <p:column rendered="#{cc.attrs.dataSet.selectable}" selectionMode="multiple" style="width:16px;text-align:center"/>
             <p:columns value="#{cc.attrs.dataSet.cabecera.columns}" columnIndexVar="indexCol" var="itemColumn"
                        headerText="#{itemColumn.title}" visible="#{itemColumn.visible}" width="#{itemColumn.width}"
+                       style="text-align: #{itemColumn.align}"
                        sortable="true" sortBy="#{itemRow.getColumnName(itemColumn.name)[itemColumn.valueProperty]}">
                 <p:column>
                     <p:outputPanel rendered="#{itemColumn.tipo eq 'TEXTO'}">

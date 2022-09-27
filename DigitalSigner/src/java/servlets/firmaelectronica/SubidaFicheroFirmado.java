@@ -12,22 +12,13 @@ import gestionDocumentos.firmaDocumentos.FiltroFirmaDocumentos;
 import init.AppInit;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
-import javax.faces.FacesException;
-import javax.faces.FactoryFinder;
-import javax.faces.context.FacesContextFactory;
-import javax.faces.lifecycle.Lifecycle;
-import javax.faces.lifecycle.LifecycleFactory;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.apache.tomcat.util.codec.binary.Base64;
-import seguridad.usuarios.DatosUsuario;
 import tomcat.persistence.EntityManager;
 import utilidades.Session;
 
@@ -38,21 +29,6 @@ import utilidades.Session;
 public class SubidaFicheroFirmado extends HttpServlet
 {
     private final Logger LOG = Logger.getLogger(SubidaFicheroFirmado.class);
-
-    private FacesContextFactory m_facesContextFactory;
-    private Lifecycle m_lifecycle;
-    
-    @Override
-    public void init() throws ServletException {
-        super.init();
-        try {
-            LifecycleFactory lifecycleFactory = (LifecycleFactory) FactoryFinder.getFactory(FactoryFinder.LIFECYCLE_FACTORY);
-            m_facesContextFactory = (FacesContextFactory) FactoryFinder.getFactory(FactoryFinder.FACES_CONTEXT_FACTORY);
-            m_lifecycle = lifecycleFactory.getLifecycle(LifecycleFactory.DEFAULT_LIFECYCLE);
-        } catch (FacesException e) {
-            System.out.println(e);
-        }
-    }
     
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
     {
@@ -65,10 +41,10 @@ public class SubidaFicheroFirmado extends HttpServlet
                 
                 //Obtener la gestión, donde están los datos de los documentos firmados
                 FiltroFirmaDocumentos filtroFirmaDocumentos = (FiltroFirmaDocumentos) Session.getNamedBean("filtroFirmaDocumentos");
-                DatosUsuario datosUsuario = (DatosUsuario)Session.getNamedBean("datosUsuario");
+                //DatosUsuario datosUsuario = (DatosUsuario)Session.getNamedBean("datosUsuario");
                 if(filtroFirmaDocumentos == null) { return; } //Error falta la Gestion
                 
-                BdDDocumento bdDDocumento = null;
+                BdDDocumento bdDDocumento;
 
                 try 
                 {
@@ -107,26 +83,11 @@ public class SubidaFicheroFirmado extends HttpServlet
                         return;   //Error faltan los datos
                     }
                     
-//                    LogicaPortaFirmas logica = new LogicaPortaFirmas();
-//                    int respValidar = logica.validarNIF(doc, entrada, gestion.getNif(), gestion.getDatosLogon().getStr_usuario(), gestion.getBoAutoridadEspecial());
-//
-//                    if(respValidar == Respuesta.WARN_INFO
-//                            && !gestion.getBoFirmaIndividual()
-//                            && gestion.isBoUsuarioConReintentos())
-//                    {
-//                        //Caso reintentable, acumulo el documento para después y no da error
-//                        gestion.acumularReintento(doc);
-//                        return;
-//                    }
-//                    
-//                    if(respValidar != Respuesta.OK)
-//                    {
-//                        gestion.getListaErroresProcesoFirma().add(doc.getDESCRIPCION() + " - " + doc.getERRORES());
-//                        gestion.getListaErroresProcesoFirma().add("Proceso abortado");
-//                        response.sendError(500);
-//                        return;
-//                    }
-//
+                    // INICIO VALIDAR NIF Y FIRMA
+                    //
+                    //
+                    //
+                    // FIN VALIDAR NIF Y FIRMA
                     
                     // INICIO TRANSACCION
                     try (EntityManager entityManager = AppInit.getEntityManager()) {
@@ -188,25 +149,6 @@ public class SubidaFicheroFirmado extends HttpServlet
                         }
                     }
                     // FIN TRANSACCION
-
-//                    if(logica.actualizarDocFirmando(doc, entrada, gestion.getIdTercero()) != Respuesta.OK)
-//                    {
-//                        if(doc.getERRORES() != null && doc.getERRORES().length() > 0)
-//                        {
-//                            String descr = doc.getDESCRIPCION();
-//                            if(descr == null)
-//                                descr = "";
-//                            final int nChar = 60;
-//                            String msgError = (descr.length() > nChar ? (descr.substring(0, nChar) + "...") : descr)
-//                                    + " - " + doc.getERRORES();
-//                            gestion.getListaErroresProcesoFirma().add(msgError);
-//                        }
-//                        else
-//                        {
-//                            gestion.getListaErroresProcesoFirma().add(doc.getDESCRIPCION());
-//                        }
-//                    }
-                    //Files.write(Paths.get("C:\\GIT\\DigitalSigner\\Documentos", "documentoFirmadoSockets.xsig"), binDocumentoFirmado);
                 }
                 catch(IOException | NumberFormatException ex)
                 {

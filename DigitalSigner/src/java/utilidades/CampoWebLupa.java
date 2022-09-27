@@ -7,6 +7,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.primefaces.component.autocomplete.AutoComplete;
 import org.primefaces.event.SelectEvent;
+import org.primefaces.event.UnselectEvent;
 
 /**
  *
@@ -81,6 +82,10 @@ public class CampoWebLupa extends CampoWeb {
         else {
             this.setValue(this.dataSet.getSelectedRow().getColumnaID().getValueString());
         }
+    }
+
+    public void onClear() {
+            this.setValue(null);
     }
 
     public Integer getQueryDelay() {

@@ -40,14 +40,14 @@ public class Menu implements Serializable {
         item = DefaultMenuItem.builder()
                 .value(Msg.getString("mnuConsultaDocumentos"))
                 /*.icon("pi pi-save")*/
-                .command("/GestionDocumentos/FirmaDocumentos/filtroConsultaDocumentos")
+                .command("/GestionDocumentos/ConsultaDocumentos/filtroConsultaDocumentos")
                 .build();
         submenu.getElements().add(item);
 
         item = DefaultMenuItem.builder()
                 .value(Msg.getString("mnuInformes"))
                 /*.icon("pi pi-save")*/
-                .command("/GestionDocumentos/FirmaDocumentos/filtroInformes")
+                .command("/GestionDocumentos/Informes/filtroInformes")
                 .build();
         submenu.getElements().add(item);
 

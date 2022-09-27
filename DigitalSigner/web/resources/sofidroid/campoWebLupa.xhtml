@@ -24,6 +24,7 @@
                                 itemValue="#{item}" disabled="#{cc.attrs.beanClass.protegido}" converter="rowConverter"
                                 required="#{cc.attrs.beanClass.required}" forceSelection="true">
                 <p:ajax event="itemSelect" listener="#{cc.attrs.beanClass.onRowSelect}" />
+                <p:ajax event="clear" listener="#{cc.attrs.beanClass.onClear}" />
             </p:autoComplete>
             <p:commandButton id="#{cc.attrs.id}_btnLupa" action="#{cc.attrs.beanClass.buscar}" immediate="true"
                              icon="pi pi-search" styleClass="button-inline" />

@@ -8,7 +8,6 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.ConverterException;
 import javax.faces.convert.FacesConverter;
 import javax.inject.Named;
-import org.primefaces.component.autocomplete.AutoComplete;
 
 /**
  *
