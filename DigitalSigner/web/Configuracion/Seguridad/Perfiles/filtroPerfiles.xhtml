@@ -1,13 +1,58 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:sd="http://xmlns.jcp.org/jsf/composite/sofidroid">
 
     <ui:composition template="/main.xhtml">
         <ui:define id="tmpPrincipal" name="tmpPrincipal">
-            
+            <p:focus context="filtroCard" />
+            <p:card id="filtroCard" styleClass="card">
+                <p:toolbar>
+                    <p:toolbarGroup align="left">
+                        <p:outputLabel value="Mantenimiento de Perfiles" style="font-size: large; font-weight: bold" /> 
+                    </p:toolbarGroup>
+                    <p:toolbarGroup align="right">
+
+                        <p:commandButton id="btnBuscar" icon="pi pi-search" styleClass="rounded-button ui-button-info" 
+                                         style="height: 2rem;width: 2rem;margin-left:0.3rem" action="#{filtroPerfiles.buscar}" title="(alt+B) Buscar resultados"
+                                         update="panelResultado,mensaje" accesskey="b" />
+
+                        <p:commandButton id="btnLimpiar" icon="pi pi-filter-slash" styleClass="rounded-button ui-button-secondary" 
+                                         style="height: 2rem;width: 2rem;margin-left:0.3rem" action="#{filtroPerfiles.limpiar}" title="(alt+L) Limpiar formulario"
+                                         update="fsFiltros,panelResultado,mensaje" accesskey="l" />
+
+                        <p:commandButton id="btnNuevo" icon="pi pi-plus-circle" styleClass="rounded-button ui-button-success" 
+                                         style="height: 2rem;width: 2rem;margin-left:0.3rem" action="#{filtroPerfiles.nuevo}" title="(alt+B) Buscar resultados"
+                                         update="panelResultado,mensaje" accesskey="b" />
+
+                    </p:toolbarGroup>
+                </p:toolbar>
+            </p:card>
+            <p:card styleClass="card">
+                <p:fieldset id="fsFiltros" legend="#{msg['filtros']}" collapsed="#{!filtroPerfiles.filtroVisible}" toggleable="true">
+                    <p:ajax event="toggle" listener="#{filtroPerfiles.toggleFiltro}" update="panelResultado"/>
+                    <p:panelGrid columns="2"
+                     columnClasses="col-7,col-5"
+                     layout="grid"
+                     styleClass="ui-panelgrid-blank ui-fluid"
+                     style="border:0px none; background-color:transparent;">
+
+                        <sd:campoWebTexto id="txtCodigoTipousuario" beanClass="#{filtroPerfiles.getcCoTipousuario()}" />
+
+                        <sd:campoWebFechaRango id="txtFeAlta" beanClass="#{filtroPerfiles.getcFeAlta()}" />
+
+                        <sd:campoWebTexto id="txtDescripcionTipousuario" beanClass="#{filtroPerfiles.getcDsTipousuario()}" />
+
+                        <sd:campoWebFechaRango id="txtFeDesactivo" beanClass="#{filtroPerfiles.getcFeDesactivo()}" />
+
+                    </p:panelGrid>
+                </p:fieldset>
+            </p:card>
+            <p:card id="panelResultado" styleClass="card">
+                <sd:dataGrid id="tblResultados" dataSet="#{filtroPerfiles.dsResultado}" />
+            </p:card>
         </ui:define>
     </ui:composition>
-    
 </html>
-

@@ -1,4 +1,4 @@
-package configuracion.seguridad.unidades;
+package configuracion.seguridad.perfiles;
 
 import basedatos.ColumnBase;
 import basedatos.DataSet;
@@ -15,7 +15,6 @@ import org.primefaces.model.Visibility;
 import utilidades.CampoWebCodigo;
 import utilidades.CampoWebDescripcion;
 import utilidades.CampoWebFechaRango;
-import utilidades.CampoWebLupa;
 import utilidades.Formateos;
 import utilidades.Mensajes;
 import utilidades.Msg;
@@ -27,46 +26,37 @@ import utilidades.Session;
  */
 @Named
 @SessionScoped
-public class FiltroUnidades implements Serializable {
-    private final Logger LOG = Logger.getLogger(FiltroUnidades.class);
+public class FiltroPerfiles implements Serializable {
+    private final Logger LOG = Logger.getLogger(FiltroPerfiles.class);
     
-    private CampoWebCodigo cCoUnidad = null;
-    private CampoWebDescripcion cDsUnidad= null;
+    private CampoWebCodigo cCoTipousuario = null;
+    private CampoWebDescripcion cDsTipousuario = null;
     private CampoWebFechaRango cFeAlta = null;
     private CampoWebFechaRango cFeDesactivo = null;
-    private CampoWebLupa cUnidadPadre = null;
     private boolean filtroVisible = true;
     private DataSet dsResultado = null;
     
-    private EdicionUnidades edicionUnidades = null; 
+    private EdicionPerfiles edicionPerfiles = null; 
     
     @PostConstruct
     public void init() {
         Session.limpiarOtrosBeans(this.getClass().getName());
 
-        this.cCoUnidad = new CampoWebCodigo();
-        this.cCoUnidad.setLabel(Msg.getString("lbl_FiltroUnidades_CoUnidad"));
-        this.cCoUnidad.setWidthLabel("100px");
+        this.cCoTipousuario = new CampoWebCodigo();
+        this.cCoTipousuario.setLabel(Msg.getString("lbl_FiltroPerfiles_CoTipousuario"));
+        this.cCoTipousuario.setWidthLabel("70px");
         
-        this.cDsUnidad = new CampoWebDescripcion();
-        this.cDsUnidad.setLabel(Msg.getString("lbl_FiltroUnidades_DsUnidad"));
-        this.cDsUnidad.setWidthLabel("100px");
+        this.cDsTipousuario = new CampoWebDescripcion();
+        this.cDsTipousuario.setLabel(Msg.getString("lbl_FiltroPerfiles_DsTipousuario"));
+        this.cDsTipousuario.setWidthLabel("70px");
         
         this.cFeAlta = new CampoWebFechaRango();
-        this.cFeAlta.setLabel(Msg.getString("lbl_FiltroUnidades_FeAlta"));
+        this.cFeAlta.setLabel(Msg.getString("lbl_FiltroPerfiles_FeAlta"));
         this.cFeAlta.setWidthLabel("100px");
 
         this.cFeDesactivo = new CampoWebFechaRango();
-        this.cFeDesactivo.setLabel(Msg.getString("lbl_FiltroUnidades_FeDesactivo"));
+        this.cFeDesactivo.setLabel(Msg.getString("lbl_FiltroPerfiles_FeDesactivo"));
         this.cFeDesactivo.setWidthLabel("100px");
-        
-        this.cUnidadPadre = new CampoWebLupa();
-        this.cUnidadPadre.setLabel(Msg.getString("lbl_FiltroUnidades_UnidadPadre"));
-        this.cUnidadPadre.setWidthLabel("100px");
-        String sql = "SELECT ID_UNIDAD, CO_UNIDAD + ' - ' + DS_UNIDAD as Unidad FROM BD_T_UNIDAD";
-        this.cUnidadPadre.setConsulta(sql);
-        this.cUnidadPadre.setColumnaID("ID_UNIDAD");
-        this.cUnidadPadre.setColumnaLabel("Unidad");
         
         this.dsResultado = new DataSet();
         toggleFiltro(null);
@@ -77,7 +67,7 @@ public class FiltroUnidades implements Serializable {
             this.filtroVisible = (event.getVisibility() == Visibility.VISIBLE);
         }
         if (this.filtroVisible) {
-            this.dsResultado.setHeightFiltro("23.5rem");
+            this.dsResultado.setHeightFiltro("21.2rem");
         }
         else {
             this.dsResultado.setHeightFiltro("16.5rem");
@@ -85,20 +75,20 @@ public class FiltroUnidades implements Serializable {
     }
     
 
-    public CampoWebCodigo getcCoUnidad() {
-        return cCoUnidad;
+    public CampoWebCodigo getcCoTipousuario() {
+        return cCoTipousuario;
     }
 
-    public void setcCoUnidad(CampoWebCodigo cCoUnidad) {
-        this.cCoUnidad = cCoUnidad;
+    public void setcCoTipousuario(CampoWebCodigo cCoTipousuario) {
+        this.cCoTipousuario = cCoTipousuario;
     }
 
-    public CampoWebDescripcion getcDsUnidad() {
-        return cDsUnidad;
+    public CampoWebDescripcion getcDsTipousuario() {
+        return cDsTipousuario;
     }
 
-    public void setcDsUnidad(CampoWebDescripcion cDsUnidad) {
-        this.cDsUnidad = cDsUnidad;
+    public void setcDsTipousuario(CampoWebDescripcion cDsTipousuario) {
+        this.cDsTipousuario = cDsTipousuario;
     }
 
     public CampoWebFechaRango getcFeAlta() {
@@ -117,14 +107,6 @@ public class FiltroUnidades implements Serializable {
         this.cFeDesactivo = cFeDesactivo;
     }
 
-    public CampoWebLupa getcUnidadPadre() {
-        return cUnidadPadre;
-    }
-
-    public void setcUnidadPadre(CampoWebLupa cUnidadPadre) {
-        this.cUnidadPadre = cUnidadPadre;
-    }
-
     public DataSet getDsResultado() {
         return dsResultado;
     }
@@ -141,23 +123,22 @@ public class FiltroUnidades implements Serializable {
         this.filtroVisible = filtroVisible;
     }
 
-    public EdicionUnidades getEdicionUnidades() {
-        return edicionUnidades;
+    public EdicionPerfiles getEdicionPerfiles() {
+        return edicionPerfiles;
     }
 
-    public void setEdicionUnidades(EdicionUnidades edicionUnidades) {
-        this.edicionUnidades = edicionUnidades;
+    public void setEdicionPerfiles(EdicionPerfiles edicionPerfiles) {
+        this.edicionPerfiles = edicionPerfiles;
     }
     
     public void limpiar() {
         try {
-            cCoUnidad.setValue(null);
-            cDsUnidad.setValue(null);
+            cCoTipousuario.setValue(null);
+            cDsTipousuario.setValue(null);
             cFeAlta.setValueIni(null);
             cFeAlta.setValueFin(null);
             cFeDesactivo.setValueIni(null);
             cFeDesactivo.setValueFin(null);
-            cUnidadPadre.setValue(null);
             
             this.dsResultado.clear();
         } catch (Exception ex) {
@@ -168,20 +149,20 @@ public class FiltroUnidades implements Serializable {
     
     public void buscar() {
         try {
-            String sql = "SELECT ID_UNIDAD, CO_UNIDAD, DS_UNIDAD, FE_ALTA, FE_DESACTIVO FROM BD_T_UNIDAD WHERE 1 = 1";
+            String sql = "SELECT ID_TIPOUSUARIO, CO_TIPOUSUARIO, DS_TIPOUSUARIO, FE_ALTA, FE_DESACTIVO FROM BD_T_TIPOUSUARIO WHERE 1 = 1";
             sql = filtros(sql);
 
-            this.dsResultado = new DataSet(sql, "ID_UNIDAD");
+            this.dsResultado = new DataSet(sql, "ID_TIPOUSUARIO");
             toggleFiltro(null);
 
             if (this.getDsResultado().getRowsCount() > 0) {
                 // Establecer formato de salida
                 RowCabecera cabecera = this.dsResultado.getCabecera();
 
-                cabecera.getColumnName("ID_UNIDAD")
+                cabecera.getColumnName("ID_TIPOUSUARIO")
                         .setVisible(false);
 
-                cabecera.getColumnName("CO_UNIDAD")
+                cabecera.getColumnName("CO_TIPOUSUARIO")
                         .setTitle("Código")
                         .setWidth("6rem")
                         .setTipo(ColumnBase.Tipo.LINK)
@@ -189,7 +170,7 @@ public class FiltroUnidades implements Serializable {
                         .setMethod(this.getClass().getMethod("verDetalle"))
                         .setUpdate("formulario:panelResultado,formulario:mensaje");
 
-                cabecera.getColumnName("DS_UNIDAD")
+                cabecera.getColumnName("DS_TIPOUSUARIO")
                         .setTitle("Descripción")
                         .setWidth("100%");
 
@@ -208,11 +189,11 @@ public class FiltroUnidades implements Serializable {
     }
     
     private String filtros(String sql) {
-        if (cCoUnidad.getValue() != null) {
-            sql += " AND UPPER(CO_UNIDAD) LIKE '%" + cCoUnidad.getValue().toUpperCase() + "%'";
+        if (cCoTipousuario.getValue() != null) {
+            sql += " AND UPPER(CO_TIPOUSUARIO) LIKE '%" + cCoTipousuario.getValue().toUpperCase() + "%'";
         }
-        if (cDsUnidad.getValue() != null) {
-            sql += " AND UPPER(DS_UNIDAD) LIKE '%" + cDsUnidad.getValue().toUpperCase() + "%'";
+        if (cDsTipousuario.getValue() != null) {
+            sql += " AND UPPER(DS_TIPOUSUARIO) LIKE '%" + cDsTipousuario.getValue().toUpperCase() + "%'";
         }
         if (cFeAlta.getValueIni() != null || cFeAlta.getValueFin() != null) {
             sql += " AND (";
@@ -240,19 +221,16 @@ public class FiltroUnidades implements Serializable {
             }
             sql += ")";
         }
-        if (cUnidadPadre.getValue() != null) {
-            sql += " AND ID_UNIDADPADRE = " + cUnidadPadre.getValue();
-        }
         
         return sql;
     }
     
     public String verDetalle() {
         try {
-            this.edicionUnidades = new EdicionUnidades(this, this.dsResultado.getSelectedRow().getColumnName("ID_UNIDAD").getValueInteger());
-            this.edicionUnidades.setPaginaRetorno("filtroUnidades");
-    
-            return "edicionUnidades";
+            this.edicionPerfiles = new EdicionPerfiles(this, this.dsResultado.getSelectedRow().getColumnName("ID_TIPOUSUARIO").getValueInteger());
+            this.edicionPerfiles.setPaginaRetorno("filtroPerfiles");
+
+            return "edicionPerfiles";
         } catch (Exception ex) {
             LOG.error(ex.getMessage(), ex);
             Mensajes.showError("Error al navegar al detalle", ex.getMessage());
@@ -263,9 +241,9 @@ public class FiltroUnidades implements Serializable {
 
     public String nuevo() {
         try {
-            this.edicionUnidades = new EdicionUnidades(this, null);
-            this.edicionUnidades.setPaginaRetorno("filtroUnidades");
-            
+            this.edicionPerfiles = new EdicionPerfiles(this, null);
+            this.edicionPerfiles.setPaginaRetorno("filtroPerfiles");
+
             return "edicionPerfiles";
         } catch (Exception ex) {
             LOG.error(ex.getMessage(), ex);

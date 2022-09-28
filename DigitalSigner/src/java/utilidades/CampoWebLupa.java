@@ -7,14 +7,12 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.primefaces.component.autocomplete.AutoComplete;
 import org.primefaces.event.SelectEvent;
-import org.primefaces.event.UnselectEvent;
 
 /**
  *
  * @author ihuegal
  */
 public class CampoWebLupa extends CampoWeb {
-    private AutoComplete ctrAutocomplete;
     private DataSet dataSet;
     private String columnaLabel;
     private Integer queryDelay;
@@ -74,16 +72,32 @@ public class CampoWebLupa extends CampoWeb {
     }
     
     public void onRowSelect(SelectEvent<Row> event) {
-        //this.setValue(this.dataSet.getSelectedRow().getColumnaID().getValueString());
         if (event.getObject().getParent() == null) {
             this.dataSet.setSelectedRow(this.dataSet.getRows().get(event.getObject().getIndex()));
-            this.setValue(this.dataSet.getSelectedRow().getColumnaID().getValueString());
         }
-        else {
-            this.setValue(this.dataSet.getSelectedRow().getColumnaID().getValueString());
-        }
+        this.setValue(this.dataSet.getSelectedRow().getColumnaID().getValueString());
     }
 
+    public void setValueId(Integer idValue) {
+        Row itemRow = recuperaPorValue(idValue);
+        this.dataSet.setSelectedRow(itemRow);
+        this.setValue(this.dataSet.getSelectedRow().getColumnaID().getValueString());
+    }
+    
+    public Row recuperaPorValue(Integer idValue) {
+        try {
+            String sql = "SELECT * FROM (" + this.consulta + ") TDS WHERE UPPER(TDS." + this.columnaID + ") = UPPER('" + idValue + "')";
+            this.dataSet = new DataSet(sql, columnaID);
+            if (this.dataSet.getRowsCount() > 0) {
+                return this.dataSet.getRows().get(0);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(CampoWebLupa.class).error(ex.getMessage(), ex);
+            Mensajes.showError("Error al recuperar lupa " + this.getLabel(), ex.getMessage());
+        }
+        return null;
+    }
+    
     public void onClear() {
             this.setValue(null);
     }
@@ -145,13 +159,5 @@ public class CampoWebLupa extends CampoWeb {
 
     public void setUpdate(String update) {
         this.update = update;
-    }        
-
-    public AutoComplete getCtrAutocomplete() {
-        return ctrAutocomplete;
-    }
-
-    public void setCtrAutocomplete(AutoComplete ctrAutocomplete) {
-        this.ctrAutocomplete = ctrAutocomplete;
     }
 }

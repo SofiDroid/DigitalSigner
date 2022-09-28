@@ -48,6 +48,15 @@
                         <sd:campoWebFechaRango id="txtFeDesactivo" beanClass="#{filtroUnidades.getcFeDesactivo()}" />
 
                     </p:panelGrid>
+                    <p:panelGrid columns="1"
+                     columnClasses="col-12"
+                     layout="grid"
+                     styleClass="ui-panelgrid-blank ui-fluid"
+                     style="border:0px none; background-color:transparent;">
+
+                        <sd:campoWebLupa id="txtUnidadPadre" beanClass="#{filtroUnidades.getcUnidadPadre()}" />
+                        
+                    </p:panelGrid>
                 </p:fieldset>
             </p:card>
             <p:card id="panelResultado" styleClass="card">

@@ -8,8 +8,8 @@
 
     <ui:composition template="/main.xhtml">
         <ui:define id="tmpPrincipal" name="tmpPrincipal">
-            <c:if test="#{filtroUnidades.edicionUnidades ne null}">
-                <c:set var="beanEdicion" value="#{filtroUnidades.edicionUnidades}"/>
+            <c:if test="#{filtroPerfiles.edicionPerfiles ne null}">
+                <c:set var="beanEdicion" value="#{filtroPerfiles.edicionPerfiles}"/>
             </c:if>
             <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" width="350">
                 <p:commandButton value="#{msg['No']}" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
@@ -18,7 +18,7 @@
             <p:card styleClass="card">
                 <p:toolbar>
                     <p:toolbarGroup align="left">
-                        <p:outputLabel value="Mantenimiento de Unidades - Detalle" style="font-size: large; font-weight: bold" /> 
+                        <p:outputLabel value="Mantenimiento de Perfiles - Detalle" style="font-size: large; font-weight: bold" /> 
                     </p:toolbarGroup>
                     <p:toolbarGroup align="right">
                         <p:commandButton id="btnGuardar" icon="pi pi-save" styleClass="rounded-button ui-button-success" 
@@ -57,15 +57,13 @@
                      styleClass="ui-panelgrid-blank ui-fluid"
                      style="border:0px none;background-color:transparent;">
 
-                    <sd:campoWebTexto id="txtCodigoUnidad" beanClass="#{beanEdicion.getcCoUnidad()}" />
+                    <sd:campoWebTexto id="txtCodigoTipousuario" beanClass="#{beanEdicion.getcCoTipousuario()}" />
 
-                    <sd:campoWebTexto id="txtDescripcionUnidad" beanClass="#{beanEdicion.getcDsUnidad()}" />
+                    <sd:campoWebTexto id="txtDescripcionTipousuario" beanClass="#{beanEdicion.getcDsTipousuario()}" />
 
                     <sd:campoWebFecha id="txtFeAlta" beanClass="#{beanEdicion.getcFeAlta()}" />
 
                     <sd:campoWebFecha id="txtFeDesactivo" beanClass="#{beanEdicion.getcFeDesactivo()}" />
-
-                    <sd:campoWebLupa id="txtUnidadPadre" beanClass="#{beanEdicion.getcUnidadPadre()}" />
 
                 </p:panelGrid>
             </p:card>

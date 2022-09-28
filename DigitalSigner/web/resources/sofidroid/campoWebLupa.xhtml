@@ -2,8 +2,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:cc="http://xmlns.jcp.org/jsf/composite"
-      xmlns:p="http://primefaces.org/ui"
-      xmlns:f="http://xmlns.jcp.org/jsf/core">
+      xmlns:p="http://primefaces.org/ui">
 
     <!-- INTERFACE -->
     <cc:interface>
@@ -19,7 +18,7 @@
                                 queryDelay="#{cc.attrs.beanClass.queryDelay}" emptyMessage="#{cc.attrs.beanClass.emptyMessage}"
                                 maxResults="#{cc.attrs.beanClass.maxResults}" moreText="#{cc.attrs.beanClass.moreText}"
                                 style="#{cc.attrs.beanClass.width}" maxlength="#{cc.attrs.beanClass.maxlength}"
-                                value="#{cc.attrs.beanClass.dataSet.selectedRow}" binding="#{cc.attrs.beanClass.ctrAutocomplete}"
+                                value="#{cc.attrs.beanClass.dataSet.selectedRow}"
                                 var="item" itemLabel="#{item.getColumnName(cc.attrs.beanClass.columnaLabel).getValueString()}" 
                                 itemValue="#{item}" disabled="#{cc.attrs.beanClass.protegido}" converter="rowConverter"
                                 required="#{cc.attrs.beanClass.required}" forceSelection="true">
@@ -27,7 +26,7 @@
                 <p:ajax event="clear" listener="#{cc.attrs.beanClass.onClear}" />
             </p:autoComplete>
             <p:commandButton id="#{cc.attrs.id}_btnLupa" action="#{cc.attrs.beanClass.buscar}" immediate="true"
-                             icon="pi pi-search" styleClass="button-inline" />
+                             icon="pi pi-search" styleClass="button-inline" disabled="#{cc.attrs.beanClass.protegido}" />
         </p:panelGrid>
         <p:overlayPanel for="#{cc.attrs.id}_btnLupa" dynamic="true" style="width:600px" widgetVar="#{cc.attrs.id}_tabla">
             <p:dataTable var="itemRow" value="#{cc.attrs.beanClass.dataSet.rows}" rows="5" paginator="true" 
