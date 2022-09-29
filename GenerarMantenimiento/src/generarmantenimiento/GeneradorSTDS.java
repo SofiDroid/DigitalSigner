@@ -129,29 +129,30 @@ public class GeneradorSTDS extends GeneradorBase {
         
         for (InfoColumna columna : listaColumnas)
         {
-            if (columna.NULLABLE.equalsIgnoreCase("NO")) {
+            if (columna.NULLABLE.equalsIgnoreCase("NO") && !(columna.COLUMN_NAME.equalsIgnoreCase("USUARIOBD") || columna.COLUMN_NAME.equalsIgnoreCase("TSTBD"))) {
                 /*
                 if (Validation.isNullOrEmpty(newBdTUnidad.getCoUnidad())) {
                     throw new RequiredFieldException("CO_UNIDAD");
                 } 
                 */
-                if (columna.esPrimary) {
+                boolean validarBD = columna.esPrimary;
+                if (validarBD) {
                     sb.append(ESPACIOS2)
                             .append("if(AppInit.TIPO_BASEDATOS == BaseDatos.ORACLE) {\n");
                 }
-                sb.append((columna.esPrimary ? ESPACIOS3 : ESPACIOS2))
+                sb.append((validarBD ? ESPACIOS3 : ESPACIOS2))
                         .append("if (Validation.isNullOrEmpty(new")
                         .append(transformarNombreObjeto(columna.TABLE_NAME, true))
                         .append(".get")
                         .append(transformarNombrePrimeraMayusculas(columna.classColumnName))
                         .append("())) {\n")
-                        .append((columna.esPrimary ? ESPACIOS4 : ESPACIOS3))
+                        .append((validarBD ? ESPACIOS4 : ESPACIOS3))
                         .append("throw new RequiredFieldException(\"")
                         .append(columna.COLUMN_NAME)
                         .append("\");\n")
-                        .append((columna.esPrimary ? ESPACIOS3 : ESPACIOS2))
+                        .append((validarBD ? ESPACIOS3 : ESPACIOS2))
                         .append("}\n");
-                if (columna.esPrimary) {
+                if (validarBD) {
                     sb.append(ESPACIOS2)
                             .append("}\n");
                 }
@@ -188,7 +189,7 @@ public class GeneradorSTDS extends GeneradorBase {
         
         for (InfoColumna columna : listaColumnas)
         {
-            if (columna.NULLABLE.equalsIgnoreCase("NO")) {
+            if (columna.NULLABLE.equalsIgnoreCase("NO") && !(columna.COLUMN_NAME.equalsIgnoreCase("USUARIOBD")  || columna.COLUMN_NAME.equalsIgnoreCase("TSTBD"))) {
                 /*
                 if (Validation.isNullOrEmpty(upBdTUnidad.getIdUnidad())) {
                     throw new RequiredFieldException("ID_UNIDAD");
@@ -267,18 +268,20 @@ public class GeneradorSTDS extends GeneradorBase {
         StringBuilder sb = new StringBuilder();
         
         for (InfoColumna columna : listaColumnas)
-        {            
-            /*
-            parametros.put("ID_UNIDAD", delBdTUnidad.getIdUnidad());
-            */
-            sb.append(ESPACIOS2)
-                    .append("parametros.put(\"")
-                    .append(columna.COLUMN_NAME)
-                    .append("\", del")
-                    .append(transformarNombreObjeto(columna.TABLE_NAME, true))
-                    .append(".get")
-                    .append(transformarNombrePrimeraMayusculas(columna.classColumnName))
-                    .append("());\n");
+        {     
+            if (columna.esPrimary) {
+                /*
+                parametros.put("ID_UNIDAD", delBdTUnidad.getIdUnidad());
+                */
+                sb.append(ESPACIOS2)
+                        .append("parametros.put(\"")
+                        .append(columna.COLUMN_NAME)
+                        .append("\", del")
+                        .append(transformarNombreObjeto(columna.TABLE_NAME, true))
+                        .append(".get")
+                        .append(transformarNombrePrimeraMayusculas(columna.classColumnName))
+                        .append("());\n");
+            }
         }
         
         return sb.toString();

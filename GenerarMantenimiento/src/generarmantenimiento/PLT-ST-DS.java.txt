@@ -10,6 +10,8 @@ import java.util.LinkedHashMap;
 import tomcat.persistence.EntityManager;
 import utilidades.Session;
 import utilidades.Validation;
+import init.AppInit;
+import utilidades.BaseDatos;
 import basedatos.tablas.#NOMBRE_CLASE_OBJETO#;
 
 /**
