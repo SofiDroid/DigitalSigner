@@ -10,9 +10,9 @@ import java.util.LinkedHashMap;
 import tomcat.persistence.EntityManager;
 import utilidades.Session;
 import utilidades.Validation;
-import basedatos.tablas.BdADocobs;
 import init.AppInit;
 import utilidades.BaseDatos;
+import basedatos.tablas.BdADocobs;
 
 /**
  *
@@ -69,12 +69,6 @@ public class StADocobs extends StBase {
         if (Validation.isNullOrEmpty(newBdADocobs.getFeAlta())) {
             throw new RequiredFieldException("FE_ALTA");
         }
-        if (Validation.isNullOrEmpty(newBdADocobs.getUsuariobd())) {
-            throw new RequiredFieldException("USUARIOBD");
-        }
-        if (Validation.isNullOrEmpty(newBdADocobs.getTstbd())) {
-            throw new RequiredFieldException("TSTBD");
-        }
    
 
         newBdADocobs.setUsuariobd(Session.getCoUsuario());
@@ -107,12 +101,6 @@ public class StADocobs extends StBase {
         if (Validation.isNullOrEmpty(upBdADocobs.getFeAlta())) {
             throw new RequiredFieldException("FE_ALTA");
         }
-        if (Validation.isNullOrEmpty(upBdADocobs.getUsuariobd())) {
-            throw new RequiredFieldException("USUARIOBD");
-        }
-        if (Validation.isNullOrEmpty(upBdADocobs.getTstbd())) {
-            throw new RequiredFieldException("TSTBD");
-        }
 
 
         upBdADocobs.setUsuariobd(Session.getCoUsuario());
@@ -143,14 +131,6 @@ public class StADocobs extends StBase {
 
         HashMap<String, Object> parametros = new HashMap<>();
         parametros.put("ID_DOCOBS", delBdADocobs.getIdDocobs());
-        parametros.put("DS_OBSERVACIONES", delBdADocobs.getDsObservaciones());
-        parametros.put("ID_DOCUMENTO", delBdADocobs.getIdDocumento());
-        parametros.put("ID_USUARIO", delBdADocobs.getIdUsuario());
-        parametros.put("ID_AUTORIDAD", delBdADocobs.getIdAutoridad());
-        parametros.put("FE_ALTA", delBdADocobs.getFeAlta());
-        parametros.put("FE_DESACTIVO", delBdADocobs.getFeDesactivo());
-        parametros.put("USUARIOBD", delBdADocobs.getUsuariobd());
-        parametros.put("TSTBD", delBdADocobs.getTstbd());
 
 
         return executeNativeQueryParametros(delBdADocobs.getDelete(), parametros, em);

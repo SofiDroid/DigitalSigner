@@ -10,9 +10,9 @@ import java.util.LinkedHashMap;
 import tomcat.persistence.EntityManager;
 import utilidades.Session;
 import utilidades.Validation;
-import basedatos.tablas.BdTTipousuario;
 import init.AppInit;
 import utilidades.BaseDatos;
+import basedatos.tablas.BdTTipousuario;
 
 /**
  *
@@ -71,12 +71,6 @@ public class StTTipousuario extends StBase {
         if (Validation.isNullOrEmpty(newBdTTipousuario.getFeAlta())) {
             throw new RequiredFieldException("FE_ALTA");
         }
-        if (Validation.isNullOrEmpty(newBdTTipousuario.getUsuariobd())) {
-            throw new RequiredFieldException("USUARIOBD");
-        }
-        if (Validation.isNullOrEmpty(newBdTTipousuario.getTstbd())) {
-            throw new RequiredFieldException("TSTBD");
-        }
    
 
         newBdTTipousuario.setUsuariobd(Session.getCoUsuario());
@@ -111,12 +105,6 @@ public class StTTipousuario extends StBase {
         if (Validation.isNullOrEmpty(upBdTTipousuario.getFeAlta())) {
             throw new RequiredFieldException("FE_ALTA");
         }
-        if (Validation.isNullOrEmpty(upBdTTipousuario.getUsuariobd())) {
-            throw new RequiredFieldException("USUARIOBD");
-        }
-        if (Validation.isNullOrEmpty(upBdTTipousuario.getTstbd())) {
-            throw new RequiredFieldException("TSTBD");
-        }
 
 
         upBdTTipousuario.setUsuariobd(Session.getCoUsuario());
@@ -146,13 +134,6 @@ public class StTTipousuario extends StBase {
 
         HashMap<String, Object> parametros = new HashMap<>();
         parametros.put("ID_TIPOUSUARIO", delBdTTipousuario.getIdTipousuario());
-        parametros.put("CO_TIPOUSUARIO", delBdTTipousuario.getCoTipousuario());
-        parametros.put("DS_TIPOUSUARIO", delBdTTipousuario.getDsTipousuario());
-        parametros.put("ID_UNIDAD", delBdTTipousuario.getIdUnidad());
-        parametros.put("FE_ALTA", delBdTTipousuario.getFeAlta());
-        parametros.put("FE_DESACTIVO", delBdTTipousuario.getFeDesactivo());
-        parametros.put("USUARIOBD", delBdTTipousuario.getUsuariobd());
-        parametros.put("TSTBD", delBdTTipousuario.getTstbd());
 
 
         return executeNativeQueryParametros(delBdTTipousuario.getDelete(), parametros, em);

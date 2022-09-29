@@ -10,9 +10,9 @@ import java.util.LinkedHashMap;
 import tomcat.persistence.EntityManager;
 import utilidades.Session;
 import utilidades.Validation;
-import basedatos.tablas.BdTOpcionmenu;
 import init.AppInit;
 import utilidades.BaseDatos;
+import basedatos.tablas.BdTOpcionmenu;
 
 /**
  *
@@ -78,12 +78,6 @@ public class StTOpcionmenu extends StBase {
         if (Validation.isNullOrEmpty(newBdTOpcionmenu.getFeAlta())) {
             throw new RequiredFieldException("FE_ALTA");
         }
-        if (Validation.isNullOrEmpty(newBdTOpcionmenu.getUsuariobd())) {
-            throw new RequiredFieldException("USUARIOBD");
-        }
-        if (Validation.isNullOrEmpty(newBdTOpcionmenu.getTstbd())) {
-            throw new RequiredFieldException("TSTBD");
-        }
    
 
         newBdTOpcionmenu.setUsuariobd(Session.getCoUsuario());
@@ -125,12 +119,6 @@ public class StTOpcionmenu extends StBase {
         if (Validation.isNullOrEmpty(upBdTOpcionmenu.getFeAlta())) {
             throw new RequiredFieldException("FE_ALTA");
         }
-        if (Validation.isNullOrEmpty(upBdTOpcionmenu.getUsuariobd())) {
-            throw new RequiredFieldException("USUARIOBD");
-        }
-        if (Validation.isNullOrEmpty(upBdTOpcionmenu.getTstbd())) {
-            throw new RequiredFieldException("TSTBD");
-        }
 
 
         upBdTOpcionmenu.setUsuariobd(Session.getCoUsuario());
@@ -164,17 +152,6 @@ public class StTOpcionmenu extends StBase {
 
         HashMap<String, Object> parametros = new HashMap<>();
         parametros.put("ID_OPCIONMENU", delBdTOpcionmenu.getIdOpcionmenu());
-        parametros.put("EN_ORDEN", delBdTOpcionmenu.getEnOrden());
-        parametros.put("CO_OPCIONMENU", delBdTOpcionmenu.getCoOpcionmenu());
-        parametros.put("DS_OPCIONMENU", delBdTOpcionmenu.getDsOpcionmenu());
-        parametros.put("DS_TITULO", delBdTOpcionmenu.getDsTitulo());
-        parametros.put("DS_TOOLTIP", delBdTOpcionmenu.getDsTooltip());
-        parametros.put("DS_RUTA", delBdTOpcionmenu.getDsRuta());
-        parametros.put("FE_ALTA", delBdTOpcionmenu.getFeAlta());
-        parametros.put("FE_DESACTIVO", delBdTOpcionmenu.getFeDesactivo());
-        parametros.put("USUARIOBD", delBdTOpcionmenu.getUsuariobd());
-        parametros.put("TSTBD", delBdTOpcionmenu.getTstbd());
-        parametros.put("ID_OPCIONMENUPADRE", delBdTOpcionmenu.getIdOpcionmenupadre());
 
 
         return executeNativeQueryParametros(delBdTOpcionmenu.getDelete(), parametros, em);

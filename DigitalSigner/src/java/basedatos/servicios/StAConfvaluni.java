@@ -10,9 +10,9 @@ import java.util.LinkedHashMap;
 import tomcat.persistence.EntityManager;
 import utilidades.Session;
 import utilidades.Validation;
-import basedatos.tablas.BdAConfvaluni;
 import init.AppInit;
 import utilidades.BaseDatos;
+import basedatos.tablas.BdAConfvaluni;
 
 /**
  *
@@ -72,12 +72,6 @@ public class StAConfvaluni extends StBase {
         if (Validation.isNullOrEmpty(newBdAConfvaluni.getFeAlta())) {
             throw new RequiredFieldException("FE_ALTA");
         }
-        if (Validation.isNullOrEmpty(newBdAConfvaluni.getUsuariobd())) {
-            throw new RequiredFieldException("USUARIOBD");
-        }
-        if (Validation.isNullOrEmpty(newBdAConfvaluni.getTstbd())) {
-            throw new RequiredFieldException("TSTBD");
-        }
    
 
         newBdAConfvaluni.setUsuariobd(Session.getCoUsuario());
@@ -113,12 +107,6 @@ public class StAConfvaluni extends StBase {
         if (Validation.isNullOrEmpty(upBdAConfvaluni.getFeAlta())) {
             throw new RequiredFieldException("FE_ALTA");
         }
-        if (Validation.isNullOrEmpty(upBdAConfvaluni.getUsuariobd())) {
-            throw new RequiredFieldException("USUARIOBD");
-        }
-        if (Validation.isNullOrEmpty(upBdAConfvaluni.getTstbd())) {
-            throw new RequiredFieldException("TSTBD");
-        }
 
 
         upBdAConfvaluni.setUsuariobd(Session.getCoUsuario());
@@ -149,14 +137,6 @@ public class StAConfvaluni extends StBase {
 
         HashMap<String, Object> parametros = new HashMap<>();
         parametros.put("ID_CONFVALUNI", delBdAConfvaluni.getIdConfvaluni());
-        parametros.put("ID_UNIDAD", delBdAConfvaluni.getIdUnidad());
-        parametros.put("ID_CONFIGURACION", delBdAConfvaluni.getIdConfiguracion());
-        parametros.put("ID_CONFVALOR", delBdAConfvaluni.getIdConfvalor());
-        parametros.put("DS_VALORLIBRE", delBdAConfvaluni.getDsValorlibre());
-        parametros.put("FE_ALTA", delBdAConfvaluni.getFeAlta());
-        parametros.put("FE_DESACTIVO", delBdAConfvaluni.getFeDesactivo());
-        parametros.put("USUARIOBD", delBdAConfvaluni.getUsuariobd());
-        parametros.put("TSTBD", delBdAConfvaluni.getTstbd());
 
 
         return executeNativeQueryParametros(delBdAConfvaluni.getDelete(), parametros, em);

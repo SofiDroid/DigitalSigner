@@ -10,9 +10,9 @@ import java.util.LinkedHashMap;
 import tomcat.persistence.EntityManager;
 import utilidades.Session;
 import utilidades.Validation;
-import basedatos.tablas.BdDDocumento;
 import init.AppInit;
 import utilidades.BaseDatos;
+import basedatos.tablas.BdDDocumento;
 
 /**
  *
@@ -88,12 +88,6 @@ public class StDDocumento extends StBase {
         if (Validation.isNullOrEmpty(newBdDDocumento.getFeAlta())) {
             throw new RequiredFieldException("FE_ALTA");
         }
-        if (Validation.isNullOrEmpty(newBdDDocumento.getUsuariobd())) {
-            throw new RequiredFieldException("USUARIOBD");
-        }
-        if (Validation.isNullOrEmpty(newBdDDocumento.getTstbd())) {
-            throw new RequiredFieldException("TSTBD");
-        }
    
 
         newBdDDocumento.setUsuariobd(Session.getCoUsuario());
@@ -145,12 +139,6 @@ public class StDDocumento extends StBase {
         if (Validation.isNullOrEmpty(upBdDDocumento.getFeAlta())) {
             throw new RequiredFieldException("FE_ALTA");
         }
-        if (Validation.isNullOrEmpty(upBdDDocumento.getUsuariobd())) {
-            throw new RequiredFieldException("USUARIOBD");
-        }
-        if (Validation.isNullOrEmpty(upBdDDocumento.getTstbd())) {
-            throw new RequiredFieldException("TSTBD");
-        }
 
 
         upBdDDocumento.setUsuariobd(Session.getCoUsuario());
@@ -185,18 +173,6 @@ public class StDDocumento extends StBase {
 
         HashMap<String, Object> parametros = new HashMap<>();
         parametros.put("ID_DOCUMENTO", delBdDDocumento.getIdDocumento());
-        parametros.put("CO_DOCUMENTO", delBdDDocumento.getCoDocumento());
-        parametros.put("DS_DOCUMENTO", delBdDDocumento.getDsDocumento());
-        parametros.put("ID_TIPODOCUMENTO", delBdDDocumento.getIdTipodocumento());
-        parametros.put("BL_DOCUMENTO", delBdDDocumento.getBlDocumento());
-        parametros.put("CO_FICHERO", delBdDDocumento.getCoFichero());
-        parametros.put("CO_EXTENSION", delBdDDocumento.getCoExtension());
-        parametros.put("ID_SITUACIONDOC", delBdDDocumento.getIdSituaciondoc());
-        parametros.put("DS_RUTA", delBdDDocumento.getDsRuta());
-        parametros.put("FE_ALTA", delBdDDocumento.getFeAlta());
-        parametros.put("FE_DESACTIVO", delBdDDocumento.getFeDesactivo());
-        parametros.put("USUARIOBD", delBdDDocumento.getUsuariobd());
-        parametros.put("TSTBD", delBdDDocumento.getTstbd());
 
 
         return executeNativeQueryParametros(delBdDDocumento.getDelete(), parametros, em);

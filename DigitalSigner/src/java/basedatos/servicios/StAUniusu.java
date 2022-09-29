@@ -10,9 +10,9 @@ import java.util.LinkedHashMap;
 import tomcat.persistence.EntityManager;
 import utilidades.Session;
 import utilidades.Validation;
-import basedatos.tablas.BdAUniusu;
 import init.AppInit;
 import utilidades.BaseDatos;
+import basedatos.tablas.BdAUniusu;
 
 /**
  *
@@ -69,12 +69,6 @@ public class StAUniusu extends StBase {
         if (Validation.isNullOrEmpty(newBdAUniusu.getFeAlta())) {
             throw new RequiredFieldException("FE_ALTA");
         }
-        if (Validation.isNullOrEmpty(newBdAUniusu.getUsuariobd())) {
-            throw new RequiredFieldException("USUARIOBD");
-        }
-        if (Validation.isNullOrEmpty(newBdAUniusu.getTstbd())) {
-            throw new RequiredFieldException("TSTBD");
-        }
    
 
         newBdAUniusu.setUsuariobd(Session.getCoUsuario());
@@ -103,12 +97,6 @@ public class StAUniusu extends StBase {
         }
         if (Validation.isNullOrEmpty(upBdAUniusu.getFeAlta())) {
             throw new RequiredFieldException("FE_ALTA");
-        }
-        if (Validation.isNullOrEmpty(upBdAUniusu.getUsuariobd())) {
-            throw new RequiredFieldException("USUARIOBD");
-        }
-        if (Validation.isNullOrEmpty(upBdAUniusu.getTstbd())) {
-            throw new RequiredFieldException("TSTBD");
         }
 
 
@@ -141,10 +129,6 @@ public class StAUniusu extends StBase {
         HashMap<String, Object> parametros = new HashMap<>();
         parametros.put("ID_UNIDAD", delBdAUniusu.getIdUnidad());
         parametros.put("ID_USUARIO", delBdAUniusu.getIdUsuario());
-        parametros.put("FE_ALTA", delBdAUniusu.getFeAlta());
-        parametros.put("FE_DESACTIVO", delBdAUniusu.getFeDesactivo());
-        parametros.put("USUARIOBD", delBdAUniusu.getUsuariobd());
-        parametros.put("TSTBD", delBdAUniusu.getTstbd());
 
 
         return executeNativeQueryParametros(delBdAUniusu.getDelete(), parametros, em);

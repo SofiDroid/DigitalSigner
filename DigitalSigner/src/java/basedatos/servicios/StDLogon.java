@@ -10,9 +10,9 @@ import java.util.LinkedHashMap;
 import tomcat.persistence.EntityManager;
 import utilidades.Session;
 import utilidades.Validation;
-import basedatos.tablas.BdDLogon;
 import init.AppInit;
 import utilidades.BaseDatos;
+import basedatos.tablas.BdDLogon;
 
 /**
  *
@@ -70,12 +70,6 @@ public class StDLogon extends StBase {
         if (Validation.isNullOrEmpty(newBdDLogon.getFeAlta())) {
             throw new RequiredFieldException("FE_ALTA");
         }
-        if (Validation.isNullOrEmpty(newBdDLogon.getUsuariobd())) {
-            throw new RequiredFieldException("USUARIOBD");
-        }
-        if (Validation.isNullOrEmpty(newBdDLogon.getTstbd())) {
-            throw new RequiredFieldException("TSTBD");
-        }
    
 
         newBdDLogon.setUsuariobd(Session.getCoUsuario());
@@ -109,12 +103,6 @@ public class StDLogon extends StBase {
         if (Validation.isNullOrEmpty(upBdDLogon.getFeAlta())) {
             throw new RequiredFieldException("FE_ALTA");
         }
-        if (Validation.isNullOrEmpty(upBdDLogon.getUsuariobd())) {
-            throw new RequiredFieldException("USUARIOBD");
-        }
-        if (Validation.isNullOrEmpty(upBdDLogon.getTstbd())) {
-            throw new RequiredFieldException("TSTBD");
-        }
 
 
         upBdDLogon.setUsuariobd(Session.getCoUsuario());
@@ -146,15 +134,6 @@ public class StDLogon extends StBase {
 
         HashMap<String, Object> parametros = new HashMap<>();
         parametros.put("ID_LOGON", delBdDLogon.getIdLogon());
-        parametros.put("ID_USUARIO", delBdDLogon.getIdUsuario());
-        parametros.put("DS_IP", delBdDLogon.getDsIp());
-        parametros.put("DS_TOKEN", delBdDLogon.getDsToken());
-        parametros.put("BO_ERROR", delBdDLogon.getBoError());
-        parametros.put("DS_LLAMADA", delBdDLogon.getDsLlamada());
-        parametros.put("FE_ALTA", delBdDLogon.getFeAlta());
-        parametros.put("FE_DESACTIVO", delBdDLogon.getFeDesactivo());
-        parametros.put("USUARIOBD", delBdDLogon.getUsuariobd());
-        parametros.put("TSTBD", delBdDLogon.getTstbd());
 
 
         return executeNativeQueryParametros(delBdDLogon.getDelete(), parametros, em);

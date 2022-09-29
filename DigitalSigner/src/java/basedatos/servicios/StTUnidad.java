@@ -10,9 +10,9 @@ import java.util.LinkedHashMap;
 import tomcat.persistence.EntityManager;
 import utilidades.Session;
 import utilidades.Validation;
-import basedatos.tablas.BdTUnidad;
 import init.AppInit;
 import utilidades.BaseDatos;
+import basedatos.tablas.BdTUnidad;
 
 /**
  *
@@ -71,12 +71,6 @@ public class StTUnidad extends StBase {
         if (Validation.isNullOrEmpty(newBdTUnidad.getFeAlta())) {
             throw new RequiredFieldException("FE_ALTA");
         }
-        if (Validation.isNullOrEmpty(newBdTUnidad.getUsuariobd())) {
-            throw new RequiredFieldException("USUARIOBD");
-        }
-        if (Validation.isNullOrEmpty(newBdTUnidad.getTstbd())) {
-            throw new RequiredFieldException("TSTBD");
-        }
    
 
         newBdTUnidad.setUsuariobd(Session.getCoUsuario());
@@ -111,12 +105,6 @@ public class StTUnidad extends StBase {
         if (Validation.isNullOrEmpty(upBdTUnidad.getFeAlta())) {
             throw new RequiredFieldException("FE_ALTA");
         }
-        if (Validation.isNullOrEmpty(upBdTUnidad.getUsuariobd())) {
-            throw new RequiredFieldException("USUARIOBD");
-        }
-        if (Validation.isNullOrEmpty(upBdTUnidad.getTstbd())) {
-            throw new RequiredFieldException("TSTBD");
-        }
 
 
         upBdTUnidad.setUsuariobd(Session.getCoUsuario());
@@ -146,13 +134,6 @@ public class StTUnidad extends StBase {
 
         HashMap<String, Object> parametros = new HashMap<>();
         parametros.put("ID_UNIDAD", delBdTUnidad.getIdUnidad());
-        parametros.put("CO_UNIDAD", delBdTUnidad.getCoUnidad());
-        parametros.put("DS_UNIDAD", delBdTUnidad.getDsUnidad());
-        parametros.put("FE_ALTA", delBdTUnidad.getFeAlta());
-        parametros.put("FE_DESACTIVO", delBdTUnidad.getFeDesactivo());
-        parametros.put("USUARIOBD", delBdTUnidad.getUsuariobd());
-        parametros.put("TSTBD", delBdTUnidad.getTstbd());
-        parametros.put("ID_UNIDADPADRE", delBdTUnidad.getIdUnidadpadre());
 
 
         return executeNativeQueryParametros(delBdTUnidad.getDelete(), parametros, em);

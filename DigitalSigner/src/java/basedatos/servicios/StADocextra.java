@@ -10,9 +10,9 @@ import java.util.LinkedHashMap;
 import tomcat.persistence.EntityManager;
 import utilidades.Session;
 import utilidades.Validation;
-import basedatos.tablas.BdADocextra;
 import init.AppInit;
 import utilidades.BaseDatos;
+import basedatos.tablas.BdADocextra;
 
 /**
  *
@@ -76,12 +76,6 @@ public class StADocextra extends StBase {
         if (Validation.isNullOrEmpty(newBdADocextra.getFeAlta())) {
             throw new RequiredFieldException("FE_ALTA");
         }
-        if (Validation.isNullOrEmpty(newBdADocextra.getUsuariobd())) {
-            throw new RequiredFieldException("USUARIOBD");
-        }
-        if (Validation.isNullOrEmpty(newBdADocextra.getTstbd())) {
-            throw new RequiredFieldException("TSTBD");
-        }
    
 
         newBdADocextra.setUsuariobd(Session.getCoUsuario());
@@ -121,12 +115,6 @@ public class StADocextra extends StBase {
         if (Validation.isNullOrEmpty(upBdADocextra.getFeAlta())) {
             throw new RequiredFieldException("FE_ALTA");
         }
-        if (Validation.isNullOrEmpty(upBdADocextra.getUsuariobd())) {
-            throw new RequiredFieldException("USUARIOBD");
-        }
-        if (Validation.isNullOrEmpty(upBdADocextra.getTstbd())) {
-            throw new RequiredFieldException("TSTBD");
-        }
 
 
         upBdADocextra.setUsuariobd(Session.getCoUsuario());
@@ -158,15 +146,6 @@ public class StADocextra extends StBase {
 
         HashMap<String, Object> parametros = new HashMap<>();
         parametros.put("ID_DOCEXTRA", delBdADocextra.getIdDocextra());
-        parametros.put("ID_DOCUMENTO", delBdADocextra.getIdDocumento());
-        parametros.put("CO_FICHERO", delBdADocextra.getCoFichero());
-        parametros.put("CO_EXTENSION", delBdADocextra.getCoExtension());
-        parametros.put("BL_FICHERO", delBdADocextra.getBlFichero());
-        parametros.put("DS_RUTA", delBdADocextra.getDsRuta());
-        parametros.put("FE_ALTA", delBdADocextra.getFeAlta());
-        parametros.put("FE_DESACTIVO", delBdADocextra.getFeDesactivo());
-        parametros.put("USUARIOBD", delBdADocextra.getUsuariobd());
-        parametros.put("TSTBD", delBdADocextra.getTstbd());
 
 
         return executeNativeQueryParametros(delBdADocextra.getDelete(), parametros, em);

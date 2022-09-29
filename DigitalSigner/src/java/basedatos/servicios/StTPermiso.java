@@ -10,9 +10,9 @@ import java.util.LinkedHashMap;
 import tomcat.persistence.EntityManager;
 import utilidades.Session;
 import utilidades.Validation;
-import basedatos.tablas.BdTPermiso;
 import init.AppInit;
 import utilidades.BaseDatos;
+import basedatos.tablas.BdTPermiso;
 
 /**
  *
@@ -70,12 +70,6 @@ public class StTPermiso extends StBase {
         if (Validation.isNullOrEmpty(newBdTPermiso.getFeAlta())) {
             throw new RequiredFieldException("FE_ALTA");
         }
-        if (Validation.isNullOrEmpty(newBdTPermiso.getUsuariobd())) {
-            throw new RequiredFieldException("USUARIOBD");
-        }
-        if (Validation.isNullOrEmpty(newBdTPermiso.getTstbd())) {
-            throw new RequiredFieldException("TSTBD");
-        }
    
 
         newBdTPermiso.setUsuariobd(Session.getCoUsuario());
@@ -109,12 +103,6 @@ public class StTPermiso extends StBase {
         if (Validation.isNullOrEmpty(upBdTPermiso.getFeAlta())) {
             throw new RequiredFieldException("FE_ALTA");
         }
-        if (Validation.isNullOrEmpty(upBdTPermiso.getUsuariobd())) {
-            throw new RequiredFieldException("USUARIOBD");
-        }
-        if (Validation.isNullOrEmpty(upBdTPermiso.getTstbd())) {
-            throw new RequiredFieldException("TSTBD");
-        }
 
 
         upBdTPermiso.setUsuariobd(Session.getCoUsuario());
@@ -143,12 +131,6 @@ public class StTPermiso extends StBase {
 
         HashMap<String, Object> parametros = new HashMap<>();
         parametros.put("ID_PERMISO", delBdTPermiso.getIdPermiso());
-        parametros.put("CO_PERMISO", delBdTPermiso.getCoPermiso());
-        parametros.put("DS_PERMISO", delBdTPermiso.getDsPermiso());
-        parametros.put("FE_ALTA", delBdTPermiso.getFeAlta());
-        parametros.put("FE_DESACTIVO", delBdTPermiso.getFeDesactivo());
-        parametros.put("USUARIOBD", delBdTPermiso.getUsuariobd());
-        parametros.put("TSTBD", delBdTPermiso.getTstbd());
 
 
         return executeNativeQueryParametros(delBdTPermiso.getDelete(), parametros, em);

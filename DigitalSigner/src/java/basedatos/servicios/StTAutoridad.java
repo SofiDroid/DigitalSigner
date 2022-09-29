@@ -10,9 +10,9 @@ import java.util.LinkedHashMap;
 import tomcat.persistence.EntityManager;
 import utilidades.Session;
 import utilidades.Validation;
-import basedatos.tablas.BdTAutoridad;
 import init.AppInit;
 import utilidades.BaseDatos;
+import basedatos.tablas.BdTAutoridad;
 
 /**
  *
@@ -71,12 +71,6 @@ public class StTAutoridad extends StBase {
         if (Validation.isNullOrEmpty(newBdTAutoridad.getFeAlta())) {
             throw new RequiredFieldException("FE_ALTA");
         }
-        if (Validation.isNullOrEmpty(newBdTAutoridad.getUsuariobd())) {
-            throw new RequiredFieldException("USUARIOBD");
-        }
-        if (Validation.isNullOrEmpty(newBdTAutoridad.getTstbd())) {
-            throw new RequiredFieldException("TSTBD");
-        }
    
 
         newBdTAutoridad.setUsuariobd(Session.getCoUsuario());
@@ -111,12 +105,6 @@ public class StTAutoridad extends StBase {
         if (Validation.isNullOrEmpty(upBdTAutoridad.getFeAlta())) {
             throw new RequiredFieldException("FE_ALTA");
         }
-        if (Validation.isNullOrEmpty(upBdTAutoridad.getUsuariobd())) {
-            throw new RequiredFieldException("USUARIOBD");
-        }
-        if (Validation.isNullOrEmpty(upBdTAutoridad.getTstbd())) {
-            throw new RequiredFieldException("TSTBD");
-        }
 
 
         upBdTAutoridad.setUsuariobd(Session.getCoUsuario());
@@ -146,13 +134,6 @@ public class StTAutoridad extends StBase {
 
         HashMap<String, Object> parametros = new HashMap<>();
         parametros.put("ID_AUTORIDAD", delBdTAutoridad.getIdAutoridad());
-        parametros.put("CO_AUTORIDAD", delBdTAutoridad.getCoAutoridad());
-        parametros.put("DS_AUTORIDAD", delBdTAutoridad.getDsAutoridad());
-        parametros.put("ID_UNIDAD", delBdTAutoridad.getIdUnidad());
-        parametros.put("FE_ALTA", delBdTAutoridad.getFeAlta());
-        parametros.put("FE_DESACTIVO", delBdTAutoridad.getFeDesactivo());
-        parametros.put("USUARIOBD", delBdTAutoridad.getUsuariobd());
-        parametros.put("TSTBD", delBdTAutoridad.getTstbd());
 
 
         return executeNativeQueryParametros(delBdTAutoridad.getDelete(), parametros, em);

@@ -10,9 +10,9 @@ import java.util.LinkedHashMap;
 import tomcat.persistence.EntityManager;
 import utilidades.Session;
 import utilidades.Validation;
-import basedatos.tablas.BdDSalidaxml;
 import init.AppInit;
 import utilidades.BaseDatos;
+import basedatos.tablas.BdDSalidaxml;
 
 /**
  *
@@ -72,12 +72,6 @@ public class StDSalidaxml extends StBase {
         if (Validation.isNullOrEmpty(newBdDSalidaxml.getFeAlta())) {
             throw new RequiredFieldException("FE_ALTA");
         }
-        if (Validation.isNullOrEmpty(newBdDSalidaxml.getUsuariobd())) {
-            throw new RequiredFieldException("USUARIOBD");
-        }
-        if (Validation.isNullOrEmpty(newBdDSalidaxml.getTstbd())) {
-            throw new RequiredFieldException("TSTBD");
-        }
    
 
         newBdDSalidaxml.setUsuariobd(Session.getCoUsuario());
@@ -113,12 +107,6 @@ public class StDSalidaxml extends StBase {
         if (Validation.isNullOrEmpty(upBdDSalidaxml.getFeAlta())) {
             throw new RequiredFieldException("FE_ALTA");
         }
-        if (Validation.isNullOrEmpty(upBdDSalidaxml.getUsuariobd())) {
-            throw new RequiredFieldException("USUARIOBD");
-        }
-        if (Validation.isNullOrEmpty(upBdDSalidaxml.getTstbd())) {
-            throw new RequiredFieldException("TSTBD");
-        }
 
 
         upBdDSalidaxml.setUsuariobd(Session.getCoUsuario());
@@ -149,14 +137,6 @@ public class StDSalidaxml extends StBase {
 
         HashMap<String, Object> parametros = new HashMap<>();
         parametros.put("ID_SALIDAXML", delBdDSalidaxml.getIdSalidaxml());
-        parametros.put("BL_SALIDAXML", delBdDSalidaxml.getBlSalidaxml());
-        parametros.put("ID_DOCUMENTO", delBdDSalidaxml.getIdDocumento());
-        parametros.put("ID_SITUACIONXML", delBdDSalidaxml.getIdSituacionxml());
-        parametros.put("DS_RUTA", delBdDSalidaxml.getDsRuta());
-        parametros.put("FE_ALTA", delBdDSalidaxml.getFeAlta());
-        parametros.put("FE_DESACTIVO", delBdDSalidaxml.getFeDesactivo());
-        parametros.put("USUARIOBD", delBdDSalidaxml.getUsuariobd());
-        parametros.put("TSTBD", delBdDSalidaxml.getTstbd());
 
 
         return executeNativeQueryParametros(delBdDSalidaxml.getDelete(), parametros, em);

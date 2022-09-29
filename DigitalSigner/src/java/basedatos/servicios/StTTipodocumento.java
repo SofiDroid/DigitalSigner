@@ -10,9 +10,9 @@ import java.util.LinkedHashMap;
 import tomcat.persistence.EntityManager;
 import utilidades.Session;
 import utilidades.Validation;
-import basedatos.tablas.BdTTipodocumento;
 import init.AppInit;
 import utilidades.BaseDatos;
+import basedatos.tablas.BdTTipodocumento;
 
 /**
  *
@@ -70,12 +70,6 @@ public class StTTipodocumento extends StBase {
         if (Validation.isNullOrEmpty(newBdTTipodocumento.getFeAlta())) {
             throw new RequiredFieldException("FE_ALTA");
         }
-        if (Validation.isNullOrEmpty(newBdTTipodocumento.getUsuariobd())) {
-            throw new RequiredFieldException("USUARIOBD");
-        }
-        if (Validation.isNullOrEmpty(newBdTTipodocumento.getTstbd())) {
-            throw new RequiredFieldException("TSTBD");
-        }
    
 
         newBdTTipodocumento.setUsuariobd(Session.getCoUsuario());
@@ -109,12 +103,6 @@ public class StTTipodocumento extends StBase {
         if (Validation.isNullOrEmpty(upBdTTipodocumento.getFeAlta())) {
             throw new RequiredFieldException("FE_ALTA");
         }
-        if (Validation.isNullOrEmpty(upBdTTipodocumento.getUsuariobd())) {
-            throw new RequiredFieldException("USUARIOBD");
-        }
-        if (Validation.isNullOrEmpty(upBdTTipodocumento.getTstbd())) {
-            throw new RequiredFieldException("TSTBD");
-        }
 
 
         upBdTTipodocumento.setUsuariobd(Session.getCoUsuario());
@@ -143,12 +131,6 @@ public class StTTipodocumento extends StBase {
 
         HashMap<String, Object> parametros = new HashMap<>();
         parametros.put("ID_TIPODOCUMENTO", delBdTTipodocumento.getIdTipodocumento());
-        parametros.put("CO_TIPODOCUMENTO", delBdTTipodocumento.getCoTipodocumento());
-        parametros.put("DS_TIPODOCUMENTO", delBdTTipodocumento.getDsTipodocumento());
-        parametros.put("FE_ALTA", delBdTTipodocumento.getFeAlta());
-        parametros.put("FE_DESACTIVO", delBdTTipodocumento.getFeDesactivo());
-        parametros.put("USUARIOBD", delBdTTipodocumento.getUsuariobd());
-        parametros.put("TSTBD", delBdTTipodocumento.getTstbd());
 
 
         return executeNativeQueryParametros(delBdTTipodocumento.getDelete(), parametros, em);

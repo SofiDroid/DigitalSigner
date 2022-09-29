@@ -10,9 +10,9 @@ import java.util.LinkedHashMap;
 import tomcat.persistence.EntityManager;
 import utilidades.Session;
 import utilidades.Validation;
-import basedatos.tablas.BdAHistsalxml;
 import init.AppInit;
 import utilidades.BaseDatos;
+import basedatos.tablas.BdAHistsalxml;
 
 /**
  *
@@ -70,12 +70,6 @@ public class StAHistsalxml extends StBase {
         if (Validation.isNullOrEmpty(newBdAHistsalxml.getFeAlta())) {
             throw new RequiredFieldException("FE_ALTA");
         }
-        if (Validation.isNullOrEmpty(newBdAHistsalxml.getUsuariobd())) {
-            throw new RequiredFieldException("USUARIOBD");
-        }
-        if (Validation.isNullOrEmpty(newBdAHistsalxml.getTstbd())) {
-            throw new RequiredFieldException("TSTBD");
-        }
    
 
         newBdAHistsalxml.setUsuariobd(Session.getCoUsuario());
@@ -109,12 +103,6 @@ public class StAHistsalxml extends StBase {
         if (Validation.isNullOrEmpty(upBdAHistsalxml.getFeAlta())) {
             throw new RequiredFieldException("FE_ALTA");
         }
-        if (Validation.isNullOrEmpty(upBdAHistsalxml.getUsuariobd())) {
-            throw new RequiredFieldException("USUARIOBD");
-        }
-        if (Validation.isNullOrEmpty(upBdAHistsalxml.getTstbd())) {
-            throw new RequiredFieldException("TSTBD");
-        }
 
 
         upBdAHistsalxml.setUsuariobd(Session.getCoUsuario());
@@ -143,12 +131,6 @@ public class StAHistsalxml extends StBase {
 
         HashMap<String, Object> parametros = new HashMap<>();
         parametros.put("ID_HISTSALXML", delBdAHistsalxml.getIdHistsalxml());
-        parametros.put("ID_SALIDAXML", delBdAHistsalxml.getIdSalidaxml());
-        parametros.put("ID_SITUACIONXML", delBdAHistsalxml.getIdSituacionxml());
-        parametros.put("FE_ALTA", delBdAHistsalxml.getFeAlta());
-        parametros.put("FE_DESACTIVO", delBdAHistsalxml.getFeDesactivo());
-        parametros.put("USUARIOBD", delBdAHistsalxml.getUsuariobd());
-        parametros.put("TSTBD", delBdAHistsalxml.getTstbd());
 
 
         return executeNativeQueryParametros(delBdAHistsalxml.getDelete(), parametros, em);

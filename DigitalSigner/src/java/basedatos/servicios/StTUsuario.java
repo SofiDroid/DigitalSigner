@@ -10,9 +10,9 @@ import java.util.LinkedHashMap;
 import tomcat.persistence.EntityManager;
 import utilidades.Session;
 import utilidades.Validation;
-import basedatos.tablas.BdTUsuario;
 import init.AppInit;
 import utilidades.BaseDatos;
+import basedatos.tablas.BdTUsuario;
 
 /**
  *
@@ -95,12 +95,6 @@ public class StTUsuario extends StBase {
         if (Validation.isNullOrEmpty(newBdTUsuario.getFeAlta())) {
             throw new RequiredFieldException("FE_ALTA");
         }
-        if (Validation.isNullOrEmpty(newBdTUsuario.getUsuariobd())) {
-            throw new RequiredFieldException("USUARIOBD");
-        }
-        if (Validation.isNullOrEmpty(newBdTUsuario.getTstbd())) {
-            throw new RequiredFieldException("TSTBD");
-        }
    
 
         newBdTUsuario.setUsuariobd(Session.getCoUsuario());
@@ -159,12 +153,6 @@ public class StTUsuario extends StBase {
         if (Validation.isNullOrEmpty(upBdTUsuario.getFeAlta())) {
             throw new RequiredFieldException("FE_ALTA");
         }
-        if (Validation.isNullOrEmpty(upBdTUsuario.getUsuariobd())) {
-            throw new RequiredFieldException("USUARIOBD");
-        }
-        if (Validation.isNullOrEmpty(upBdTUsuario.getTstbd())) {
-            throw new RequiredFieldException("TSTBD");
-        }
 
 
         upBdTUsuario.setUsuariobd(Session.getCoUsuario());
@@ -200,19 +188,6 @@ public class StTUsuario extends StBase {
 
         HashMap<String, Object> parametros = new HashMap<>();
         parametros.put("ID_USUARIO", delBdTUsuario.getIdUsuario());
-        parametros.put("CO_NIF", delBdTUsuario.getCoNIF());
-        parametros.put("CO_USUARIO", delBdTUsuario.getCoUsuario());
-        parametros.put("CO_PASSWORD", delBdTUsuario.getCoPassword());
-        parametros.put("DS_NOMBRE", delBdTUsuario.getDsNombre());
-        parametros.put("DS_APELLIDO1", delBdTUsuario.getDsApellido1());
-        parametros.put("DS_APELLIDO2", delBdTUsuario.getDsApellido2());
-        parametros.put("EN_INTENTOS", delBdTUsuario.getEnIntentos());
-        parametros.put("EN_INTENTOSMAX", delBdTUsuario.getEnIntentosmax());
-        parametros.put("BO_ADMIN", delBdTUsuario.getBoAdmin());
-        parametros.put("FE_ALTA", delBdTUsuario.getFeAlta());
-        parametros.put("FE_DESACTIVO", delBdTUsuario.getFeDesactivo());
-        parametros.put("USUARIOBD", delBdTUsuario.getUsuariobd());
-        parametros.put("TSTBD", delBdTUsuario.getTstbd());
 
 
         return executeNativeQueryParametros(delBdTUsuario.getDelete(), parametros, em);

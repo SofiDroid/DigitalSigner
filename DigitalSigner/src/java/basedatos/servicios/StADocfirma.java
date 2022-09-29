@@ -10,9 +10,9 @@ import java.util.LinkedHashMap;
 import tomcat.persistence.EntityManager;
 import utilidades.Session;
 import utilidades.Validation;
-import basedatos.tablas.BdADocfirma;
 import init.AppInit;
 import utilidades.BaseDatos;
+import basedatos.tablas.BdADocfirma;
 
 /**
  *
@@ -83,12 +83,6 @@ public class StADocfirma extends StBase {
         if (Validation.isNullOrEmpty(newBdADocfirma.getFeAlta())) {
             throw new RequiredFieldException("FE_ALTA");
         }
-        if (Validation.isNullOrEmpty(newBdADocfirma.getUsuariobd())) {
-            throw new RequiredFieldException("USUARIOBD");
-        }
-        if (Validation.isNullOrEmpty(newBdADocfirma.getTstbd())) {
-            throw new RequiredFieldException("TSTBD");
-        }
    
 
         newBdADocfirma.setUsuariobd(Session.getCoUsuario());
@@ -135,12 +129,6 @@ public class StADocfirma extends StBase {
         if (Validation.isNullOrEmpty(upBdADocfirma.getFeAlta())) {
             throw new RequiredFieldException("FE_ALTA");
         }
-        if (Validation.isNullOrEmpty(upBdADocfirma.getUsuariobd())) {
-            throw new RequiredFieldException("USUARIOBD");
-        }
-        if (Validation.isNullOrEmpty(upBdADocfirma.getTstbd())) {
-            throw new RequiredFieldException("TSTBD");
-        }
 
 
         upBdADocfirma.setUsuariobd(Session.getCoUsuario());
@@ -173,16 +161,6 @@ public class StADocfirma extends StBase {
 
         HashMap<String, Object> parametros = new HashMap<>();
         parametros.put("ID_DOCFIRMA", delBdADocfirma.getIdDocfirma());
-        parametros.put("ID_DOCUMENTO", delBdADocfirma.getIdDocumento());
-        parametros.put("ID_AUTORIDAD", delBdADocfirma.getIdAutoridad());
-        parametros.put("EN_ORDEN", delBdADocfirma.getEnOrden());
-        parametros.put("DS_FIRMAPOSX", delBdADocfirma.getDsFirmaposx());
-        parametros.put("DS_FIRMAPOSY", delBdADocfirma.getDsFirmaposy());
-        parametros.put("FE_FIRMA", delBdADocfirma.getFeFirma());
-        parametros.put("FE_ALTA", delBdADocfirma.getFeAlta());
-        parametros.put("FE_DESACTIVO", delBdADocfirma.getFeDesactivo());
-        parametros.put("USUARIOBD", delBdADocfirma.getUsuariobd());
-        parametros.put("TSTBD", delBdADocfirma.getTstbd());
 
 
         return executeNativeQueryParametros(delBdADocfirma.getDelete(), parametros, em);

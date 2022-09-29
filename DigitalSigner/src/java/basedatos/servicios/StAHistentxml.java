@@ -10,9 +10,9 @@ import java.util.LinkedHashMap;
 import tomcat.persistence.EntityManager;
 import utilidades.Session;
 import utilidades.Validation;
-import basedatos.tablas.BdAHistentxml;
 import init.AppInit;
 import utilidades.BaseDatos;
+import basedatos.tablas.BdAHistentxml;
 
 /**
  *
@@ -70,12 +70,6 @@ public class StAHistentxml extends StBase {
         if (Validation.isNullOrEmpty(newBdAHistentxml.getFeAlta())) {
             throw new RequiredFieldException("FE_ALTA");
         }
-        if (Validation.isNullOrEmpty(newBdAHistentxml.getUsuariobd())) {
-            throw new RequiredFieldException("USUARIOBD");
-        }
-        if (Validation.isNullOrEmpty(newBdAHistentxml.getTstbd())) {
-            throw new RequiredFieldException("TSTBD");
-        }
    
 
         newBdAHistentxml.setUsuariobd(Session.getCoUsuario());
@@ -109,12 +103,6 @@ public class StAHistentxml extends StBase {
         if (Validation.isNullOrEmpty(upBdAHistentxml.getFeAlta())) {
             throw new RequiredFieldException("FE_ALTA");
         }
-        if (Validation.isNullOrEmpty(upBdAHistentxml.getUsuariobd())) {
-            throw new RequiredFieldException("USUARIOBD");
-        }
-        if (Validation.isNullOrEmpty(upBdAHistentxml.getTstbd())) {
-            throw new RequiredFieldException("TSTBD");
-        }
 
 
         upBdAHistentxml.setUsuariobd(Session.getCoUsuario());
@@ -143,12 +131,6 @@ public class StAHistentxml extends StBase {
 
         HashMap<String, Object> parametros = new HashMap<>();
         parametros.put("ID_HISTENTXML", delBdAHistentxml.getIdHistentxml());
-        parametros.put("ID_ENTRADAXML", delBdAHistentxml.getIdEntradaxml());
-        parametros.put("ID_SITUACIONXML", delBdAHistentxml.getIdSituacionxml());
-        parametros.put("FE_ALTA", delBdAHistentxml.getFeAlta());
-        parametros.put("FE_DESACTIVO", delBdAHistentxml.getFeDesactivo());
-        parametros.put("USUARIOBD", delBdAHistentxml.getUsuariobd());
-        parametros.put("TSTBD", delBdAHistentxml.getTstbd());
 
 
         return executeNativeQueryParametros(delBdAHistentxml.getDelete(), parametros, em);

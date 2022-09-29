@@ -10,9 +10,9 @@ import java.util.LinkedHashMap;
 import tomcat.persistence.EntityManager;
 import utilidades.Session;
 import utilidades.Validation;
-import basedatos.tablas.BdTConfvalor;
 import init.AppInit;
 import utilidades.BaseDatos;
+import basedatos.tablas.BdTConfvalor;
 
 /**
  *
@@ -74,12 +74,6 @@ public class StTConfvalor extends StBase {
         if (Validation.isNullOrEmpty(newBdTConfvalor.getFeAlta())) {
             throw new RequiredFieldException("FE_ALTA");
         }
-        if (Validation.isNullOrEmpty(newBdTConfvalor.getUsuariobd())) {
-            throw new RequiredFieldException("USUARIOBD");
-        }
-        if (Validation.isNullOrEmpty(newBdTConfvalor.getTstbd())) {
-            throw new RequiredFieldException("TSTBD");
-        }
    
 
         newBdTConfvalor.setUsuariobd(Session.getCoUsuario());
@@ -117,12 +111,6 @@ public class StTConfvalor extends StBase {
         if (Validation.isNullOrEmpty(upBdTConfvalor.getFeAlta())) {
             throw new RequiredFieldException("FE_ALTA");
         }
-        if (Validation.isNullOrEmpty(upBdTConfvalor.getUsuariobd())) {
-            throw new RequiredFieldException("USUARIOBD");
-        }
-        if (Validation.isNullOrEmpty(upBdTConfvalor.getTstbd())) {
-            throw new RequiredFieldException("TSTBD");
-        }
 
 
         upBdTConfvalor.setUsuariobd(Session.getCoUsuario());
@@ -152,13 +140,6 @@ public class StTConfvalor extends StBase {
 
         HashMap<String, Object> parametros = new HashMap<>();
         parametros.put("ID_CONFVALOR", delBdTConfvalor.getIdConfvalor());
-        parametros.put("ID_CONFIGURACION", delBdTConfvalor.getIdConfiguracion());
-        parametros.put("CO_CONFVALOR", delBdTConfvalor.getCoConfvalor());
-        parametros.put("DS_CONFVALOR", delBdTConfvalor.getDsConfvalor());
-        parametros.put("FE_ALTA", delBdTConfvalor.getFeAlta());
-        parametros.put("FE_DESACTIVO", delBdTConfvalor.getFeDesactivo());
-        parametros.put("USUARIOBD", delBdTConfvalor.getUsuariobd());
-        parametros.put("TSTBD", delBdTConfvalor.getTstbd());
 
 
         return executeNativeQueryParametros(delBdTConfvalor.getDelete(), parametros, em);

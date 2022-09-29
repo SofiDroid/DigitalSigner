@@ -10,9 +10,9 @@ import java.util.LinkedHashMap;
 import tomcat.persistence.EntityManager;
 import utilidades.Session;
 import utilidades.Validation;
-import basedatos.tablas.BdATokenusuario;
 import init.AppInit;
 import utilidades.BaseDatos;
+import basedatos.tablas.BdATokenusuario;
 
 /**
  *
@@ -70,12 +70,6 @@ public class StATokenusuario extends StBase {
         if (Validation.isNullOrEmpty(newBdATokenusuario.getFeAlta())) {
             throw new RequiredFieldException("FE_ALTA");
         }
-        if (Validation.isNullOrEmpty(newBdATokenusuario.getUsuariobd())) {
-            throw new RequiredFieldException("USUARIOBD");
-        }
-        if (Validation.isNullOrEmpty(newBdATokenusuario.getTstbd())) {
-            throw new RequiredFieldException("TSTBD");
-        }
    
 
         newBdATokenusuario.setUsuariobd(Session.getCoUsuario());
@@ -109,12 +103,6 @@ public class StATokenusuario extends StBase {
         if (Validation.isNullOrEmpty(upBdATokenusuario.getFeAlta())) {
             throw new RequiredFieldException("FE_ALTA");
         }
-        if (Validation.isNullOrEmpty(upBdATokenusuario.getUsuariobd())) {
-            throw new RequiredFieldException("USUARIOBD");
-        }
-        if (Validation.isNullOrEmpty(upBdATokenusuario.getTstbd())) {
-            throw new RequiredFieldException("TSTBD");
-        }
 
 
         upBdATokenusuario.setUsuariobd(Session.getCoUsuario());
@@ -143,12 +131,6 @@ public class StATokenusuario extends StBase {
 
         HashMap<String, Object> parametros = new HashMap<>();
         parametros.put("ID_TOKENUSUARIO", delBdATokenusuario.getIdTokenusuario());
-        parametros.put("ID_USUARIO", delBdATokenusuario.getIdUsuario());
-        parametros.put("DS_TOKEN", delBdATokenusuario.getDsToken());
-        parametros.put("FE_ALTA", delBdATokenusuario.getFeAlta());
-        parametros.put("FE_DESACTIVO", delBdATokenusuario.getFeDesactivo());
-        parametros.put("USUARIOBD", delBdATokenusuario.getUsuariobd());
-        parametros.put("TSTBD", delBdATokenusuario.getTstbd());
 
 
         return executeNativeQueryParametros(delBdATokenusuario.getDelete(), parametros, em);

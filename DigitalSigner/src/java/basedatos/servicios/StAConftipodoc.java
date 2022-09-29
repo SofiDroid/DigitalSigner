@@ -10,9 +10,9 @@ import java.util.LinkedHashMap;
 import tomcat.persistence.EntityManager;
 import utilidades.Session;
 import utilidades.Validation;
-import basedatos.tablas.BdAConftipodoc;
 import init.AppInit;
 import utilidades.BaseDatos;
+import basedatos.tablas.BdAConftipodoc;
 
 /**
  *
@@ -82,12 +82,6 @@ public class StAConftipodoc extends StBase {
         if (Validation.isNullOrEmpty(newBdAConftipodoc.getFeAlta())) {
             throw new RequiredFieldException("FE_ALTA");
         }
-        if (Validation.isNullOrEmpty(newBdAConftipodoc.getUsuariobd())) {
-            throw new RequiredFieldException("USUARIOBD");
-        }
-        if (Validation.isNullOrEmpty(newBdAConftipodoc.getTstbd())) {
-            throw new RequiredFieldException("TSTBD");
-        }
    
 
         newBdAConftipodoc.setUsuariobd(Session.getCoUsuario());
@@ -133,12 +127,6 @@ public class StAConftipodoc extends StBase {
         if (Validation.isNullOrEmpty(upBdAConftipodoc.getFeAlta())) {
             throw new RequiredFieldException("FE_ALTA");
         }
-        if (Validation.isNullOrEmpty(upBdAConftipodoc.getUsuariobd())) {
-            throw new RequiredFieldException("USUARIOBD");
-        }
-        if (Validation.isNullOrEmpty(upBdAConftipodoc.getTstbd())) {
-            throw new RequiredFieldException("TSTBD");
-        }
 
 
         upBdAConftipodoc.setUsuariobd(Session.getCoUsuario());
@@ -170,15 +158,6 @@ public class StAConftipodoc extends StBase {
 
         HashMap<String, Object> parametros = new HashMap<>();
         parametros.put("ID_CONFTIPODOC", delBdAConftipodoc.getIdConftipodoc());
-        parametros.put("ID_TIPODOCUMENTO", delBdAConftipodoc.getIdTipodocumento());
-        parametros.put("ID_AUTORIDAD", delBdAConftipodoc.getIdAutoridad());
-        parametros.put("EN_ORDEN", delBdAConftipodoc.getEnOrden());
-        parametros.put("DS_FIRMAPOSX", delBdAConftipodoc.getDsFirmaposx());
-        parametros.put("DS_FIRMAPOSY", delBdAConftipodoc.getDsFirmaposy());
-        parametros.put("FE_ALTA", delBdAConftipodoc.getFeAlta());
-        parametros.put("FE_DESACTIVO", delBdAConftipodoc.getFeDesactivo());
-        parametros.put("USUARIOBD", delBdAConftipodoc.getUsuariobd());
-        parametros.put("TSTBD", delBdAConftipodoc.getTstbd());
 
 
         return executeNativeQueryParametros(delBdAConftipodoc.getDelete(), parametros, em);

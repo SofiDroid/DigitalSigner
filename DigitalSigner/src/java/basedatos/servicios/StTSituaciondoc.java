@@ -10,9 +10,9 @@ import java.util.LinkedHashMap;
 import tomcat.persistence.EntityManager;
 import utilidades.Session;
 import utilidades.Validation;
-import basedatos.tablas.BdTSituaciondoc;
 import init.AppInit;
 import utilidades.BaseDatos;
+import basedatos.tablas.BdTSituaciondoc;
 
 /**
  *
@@ -70,12 +70,6 @@ public class StTSituaciondoc extends StBase {
         if (Validation.isNullOrEmpty(newBdTSituaciondoc.getFeAlta())) {
             throw new RequiredFieldException("FE_ALTA");
         }
-        if (Validation.isNullOrEmpty(newBdTSituaciondoc.getUsuariobd())) {
-            throw new RequiredFieldException("USUARIOBD");
-        }
-        if (Validation.isNullOrEmpty(newBdTSituaciondoc.getTstbd())) {
-            throw new RequiredFieldException("TSTBD");
-        }
    
 
         newBdTSituaciondoc.setUsuariobd(Session.getCoUsuario());
@@ -109,12 +103,6 @@ public class StTSituaciondoc extends StBase {
         if (Validation.isNullOrEmpty(upBdTSituaciondoc.getFeAlta())) {
             throw new RequiredFieldException("FE_ALTA");
         }
-        if (Validation.isNullOrEmpty(upBdTSituaciondoc.getUsuariobd())) {
-            throw new RequiredFieldException("USUARIOBD");
-        }
-        if (Validation.isNullOrEmpty(upBdTSituaciondoc.getTstbd())) {
-            throw new RequiredFieldException("TSTBD");
-        }
 
 
         upBdTSituaciondoc.setUsuariobd(Session.getCoUsuario());
@@ -143,12 +131,6 @@ public class StTSituaciondoc extends StBase {
 
         HashMap<String, Object> parametros = new HashMap<>();
         parametros.put("ID_SITUACIONDOC", delBdTSituaciondoc.getIdSituaciondoc());
-        parametros.put("CO_SITUACIONDOC", delBdTSituaciondoc.getCoSituaciondoc());
-        parametros.put("DS_SITUACIONDOC", delBdTSituaciondoc.getDsSituaciondoc());
-        parametros.put("FE_ALTA", delBdTSituaciondoc.getFeAlta());
-        parametros.put("FE_DESACTIVO", delBdTSituaciondoc.getFeDesactivo());
-        parametros.put("USUARIOBD", delBdTSituaciondoc.getUsuariobd());
-        parametros.put("TSTBD", delBdTSituaciondoc.getTstbd());
 
 
         return executeNativeQueryParametros(delBdTSituaciondoc.getDelete(), parametros, em);

@@ -10,9 +10,9 @@ import java.util.LinkedHashMap;
 import tomcat.persistence.EntityManager;
 import utilidades.Session;
 import utilidades.Validation;
-import basedatos.tablas.BdATipousuopcper;
 import init.AppInit;
 import utilidades.BaseDatos;
+import basedatos.tablas.BdATipousuopcper;
 
 /**
  *
@@ -76,12 +76,6 @@ public class StATipousuopcper extends StBase {
         if (Validation.isNullOrEmpty(newBdATipousuopcper.getFeAlta())) {
             throw new RequiredFieldException("FE_ALTA");
         }
-        if (Validation.isNullOrEmpty(newBdATipousuopcper.getUsuariobd())) {
-            throw new RequiredFieldException("USUARIOBD");
-        }
-        if (Validation.isNullOrEmpty(newBdATipousuopcper.getTstbd())) {
-            throw new RequiredFieldException("TSTBD");
-        }
    
 
         newBdATipousuopcper.setUsuariobd(Session.getCoUsuario());
@@ -114,12 +108,6 @@ public class StATipousuopcper extends StBase {
         }
         if (Validation.isNullOrEmpty(upBdATipousuopcper.getFeAlta())) {
             throw new RequiredFieldException("FE_ALTA");
-        }
-        if (Validation.isNullOrEmpty(upBdATipousuopcper.getUsuariobd())) {
-            throw new RequiredFieldException("USUARIOBD");
-        }
-        if (Validation.isNullOrEmpty(upBdATipousuopcper.getTstbd())) {
-            throw new RequiredFieldException("TSTBD");
         }
 
 
@@ -157,10 +145,6 @@ public class StATipousuopcper extends StBase {
         parametros.put("ID_TIPOUSUARIO", delBdATipousuopcper.getIdTipousuario());
         parametros.put("ID_OPCIONMENU", delBdATipousuopcper.getIdOpcionmenu());
         parametros.put("ID_PERMISO", delBdATipousuopcper.getIdPermiso());
-        parametros.put("FE_ALTA", delBdATipousuopcper.getFeAlta());
-        parametros.put("FE_DESACTIVO", delBdATipousuopcper.getFeDesactivo());
-        parametros.put("USUARIOBD", delBdATipousuopcper.getUsuariobd());
-        parametros.put("TSTBD", delBdATipousuopcper.getTstbd());
 
 
         return executeNativeQueryParametros(delBdATipousuopcper.getDelete(), parametros, em);

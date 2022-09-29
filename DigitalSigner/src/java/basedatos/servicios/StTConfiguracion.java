@@ -10,9 +10,9 @@ import java.util.LinkedHashMap;
 import tomcat.persistence.EntityManager;
 import utilidades.Session;
 import utilidades.Validation;
-import basedatos.tablas.BdTConfiguracion;
 import init.AppInit;
 import utilidades.BaseDatos;
+import basedatos.tablas.BdTConfiguracion;
 
 /**
  *
@@ -70,12 +70,6 @@ public class StTConfiguracion extends StBase {
         if (Validation.isNullOrEmpty(newBdTConfiguracion.getFeAlta())) {
             throw new RequiredFieldException("FE_ALTA");
         }
-        if (Validation.isNullOrEmpty(newBdTConfiguracion.getUsuariobd())) {
-            throw new RequiredFieldException("USUARIOBD");
-        }
-        if (Validation.isNullOrEmpty(newBdTConfiguracion.getTstbd())) {
-            throw new RequiredFieldException("TSTBD");
-        }
    
 
         newBdTConfiguracion.setUsuariobd(Session.getCoUsuario());
@@ -109,12 +103,6 @@ public class StTConfiguracion extends StBase {
         if (Validation.isNullOrEmpty(upBdTConfiguracion.getFeAlta())) {
             throw new RequiredFieldException("FE_ALTA");
         }
-        if (Validation.isNullOrEmpty(upBdTConfiguracion.getUsuariobd())) {
-            throw new RequiredFieldException("USUARIOBD");
-        }
-        if (Validation.isNullOrEmpty(upBdTConfiguracion.getTstbd())) {
-            throw new RequiredFieldException("TSTBD");
-        }
 
 
         upBdTConfiguracion.setUsuariobd(Session.getCoUsuario());
@@ -143,12 +131,6 @@ public class StTConfiguracion extends StBase {
 
         HashMap<String, Object> parametros = new HashMap<>();
         parametros.put("ID_CONFIGURACION", delBdTConfiguracion.getIdConfiguracion());
-        parametros.put("CO_CONFIGURACION", delBdTConfiguracion.getCoConfiguracion());
-        parametros.put("DS_CONFIGURACION", delBdTConfiguracion.getDsConfiguracion());
-        parametros.put("FE_ALTA", delBdTConfiguracion.getFeAlta());
-        parametros.put("FE_DESACTIVO", delBdTConfiguracion.getFeDesactivo());
-        parametros.put("USUARIOBD", delBdTConfiguracion.getUsuariobd());
-        parametros.put("TSTBD", delBdTConfiguracion.getTstbd());
 
 
         return executeNativeQueryParametros(delBdTConfiguracion.getDelete(), parametros, em);
