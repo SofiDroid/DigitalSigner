@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import org.primefaces.model.StreamedContent;
 
@@ -27,7 +28,6 @@ public final class DataSet extends StBase {
     protected String rowSelectColumnaID = null;
     protected String heightFiltro = "27.8rem";
     protected String height = "calc(100vh - " + heightFiltro + ")";
-    protected StreamedContent media;
 
     public DataSet() {
     
@@ -261,14 +261,6 @@ public final class DataSet extends StBase {
         this.selectable = selectable;
     }
 
-    public StreamedContent getMedia() {
-        return media;
-    }
-
-    public void setMedia(StreamedContent media) {
-        this.media = media;
-    }
-    
     public DataSet newColumn(String columnName) {
         ColumnCabecera itemColCab = new ColumnCabecera(this.getCabecera());
         itemColCab.index = this.cabecera.columns.size();

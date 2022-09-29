@@ -240,8 +240,8 @@ public class FiltroUnidades implements Serializable {
             }
             sql += ")";
         }
-        if (cUnidadPadre.getValue() != null) {
-            sql += " AND ID_UNIDADPADRE = " + cUnidadPadre.getValue();
+        if (cUnidadPadre.getId() != null) {
+            sql += " AND ID_UNIDADPADRE = " + cUnidadPadre.getId();
         }
         
         return sql;

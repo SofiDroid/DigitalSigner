@@ -317,14 +317,14 @@ public class FiltroConsultaDocumentos implements Serializable {
             }
             sql += ")";
         }
-        if (cTipodocumento.getValue() != null) {
-            sql += " AND tipodoc.ID_TIPODOCUMENTO = " + cTipodocumento.getValue();
+        if (cTipodocumento.getId() != null) {
+            sql += " AND tipodoc.ID_TIPODOCUMENTO = " + cTipodocumento.getId();
         }
-        if (cSituaciondoc.getValue() != null) {
-            sql += " AND situaciondoc.ID_SITUACIONDOC = " + cSituaciondoc.getValue();
+        if (cSituaciondoc.getId() != null) {
+            sql += " AND situaciondoc.ID_SITUACIONDOC = " + cSituaciondoc.getId();
         }
-        if (cAutoridad.getValue() != null) {
-            sql += " AND aut.ID_AUTORIDAD = " + cAutoridad.getValue();
+        if (cAutoridad.getId() != null) {
+            sql += " AND aut.ID_AUTORIDAD = " + cAutoridad.getId();
         }
         
         return sql;

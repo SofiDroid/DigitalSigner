@@ -18,11 +18,11 @@
                                 queryDelay="#{cc.attrs.beanClass.queryDelay}" emptyMessage="#{cc.attrs.beanClass.emptyMessage}"
                                 maxResults="#{cc.attrs.beanClass.maxResults}" moreText="#{cc.attrs.beanClass.moreText}"
                                 style="#{cc.attrs.beanClass.width}" maxlength="#{cc.attrs.beanClass.maxlength}"
-                                value="#{cc.attrs.beanClass.dataSet.selectedRow}"
-                                var="item" itemLabel="#{item.getColumnName(cc.attrs.beanClass.columnaLabel).getValueString()}" 
+                                value="#{cc.attrs.beanClass.value}"
+                                var="item" itemLabel="#{item.label}" 
                                 itemValue="#{item}" disabled="#{cc.attrs.beanClass.protegido}" converter="rowConverter"
                                 required="#{cc.attrs.beanClass.required}" forceSelection="true">
-                <p:ajax event="itemSelect" listener="#{cc.attrs.beanClass.onRowSelect}" />
+                <p:ajax event="itemSelect" listener="#{cc.attrs.beanClass.onItemSelect}" />
                 <p:ajax event="clear" listener="#{cc.attrs.beanClass.onClear}" />
             </p:autoComplete>
             <p:commandButton id="#{cc.attrs.id}_btnLupa" action="#{cc.attrs.beanClass.buscar}" immediate="true"

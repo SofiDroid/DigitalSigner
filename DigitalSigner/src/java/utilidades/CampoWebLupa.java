@@ -1,11 +1,12 @@
 package utilidades;
 
+import basedatos.AutocompleteItem;
 import basedatos.DataSet;
 import basedatos.Row;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Logger;
-import org.primefaces.component.autocomplete.AutoComplete;
 import org.primefaces.event.SelectEvent;
 
 /**
@@ -22,6 +23,7 @@ public class CampoWebLupa extends CampoWeb {
     private String consulta;
     private String columnaID;
     private String update;
+    private AutocompleteItem selectedItem;
     
     public CampoWebLupa() {
         super(Tipo.Lupa);
@@ -30,6 +32,7 @@ public class CampoWebLupa extends CampoWeb {
         this.emptyMessage = "No se encontraron resultados";
         this.maxResults = 5;
         this.moreText = "mas resultados disponibles";
+        this.selectedItem = null;
         this.dataSet = new DataSet();
     }
     
@@ -49,11 +52,11 @@ public class CampoWebLupa extends CampoWeb {
         this.columnaLabel = columnaLabel;
     }
     
-    public List<Row> completeText(String filterText) {
+    public List<AutocompleteItem> completeText(String filterText) {
         try {
             String sql = "SELECT * FROM (" + this.consulta + ") TDS WHERE UPPER(TDS." + this.columnaLabel + ") LIKE UPPER('%" + filterText + "%')";
             this.dataSet = new DataSet(sql, columnaID);
-            return this.dataSet.getRows();
+            return getListaAutocomplete();
         } catch (SQLException ex) {
             Logger.getLogger(CampoWebLupa.class).error(ex.getMessage(), ex);
             Mensajes.showError("Error al recuperar lupa " + this.getLabel(), ex.getMessage());
@@ -72,16 +75,59 @@ public class CampoWebLupa extends CampoWeb {
     }
     
     public void onRowSelect(SelectEvent<Row> event) {
-        if (event.getObject().getParent() == null) {
-            this.dataSet.setSelectedRow(this.dataSet.getRows().get(event.getObject().getIndex()));
+        if (event.getObject() != null) {
+            Row itemRow = event.getObject();
+            this.setValue(new AutocompleteItem(itemRow.getColumnName(this.columnaID).getValueInteger(), itemRow.getColumnName(this.columnaLabel).getValueString()));
         }
-        this.setValue(this.dataSet.getSelectedRow().getColumnaID().getValueString());
+        else {
+            this.setValue(null);
+        }
     }
 
-    public void setValueId(Integer idValue) {
+    public void onItemSelect(SelectEvent<AutocompleteItem> event) {
+        this.setValue(event.getObject());
+    }
+
+    public void setId(Integer idValue) {
         Row itemRow = recuperaPorValue(idValue);
-        this.dataSet.setSelectedRow(itemRow);
-        this.setValue(this.dataSet.getSelectedRow().getColumnaID().getValueString());
+        this.selectedItem = new AutocompleteItem(itemRow.getColumnName(this.columnaID).getValueInteger(), itemRow.getColumnName(this.columnaLabel).getValueString());
+    }
+    
+    public Integer getId() {
+        if (this.selectedItem != null) {
+            return this.selectedItem.getId();
+        }
+        return null;
+    }
+    
+    @Override
+    public AutocompleteItem getValue() {
+        return this.selectedItem;
+    }
+    
+    @Override
+    @Deprecated(forRemoval = true)
+    public void setValue(Object item) {
+        if (item instanceof AutocompleteItem autocompleteItem) {
+            this.selectedItem = autocompleteItem;
+        }
+        else {
+            this.selectedItem = null;
+        }
+    }
+    
+    public void setValue(AutocompleteItem item) {
+        this.selectedItem = item;
+    }
+    
+    public List<AutocompleteItem> getListaAutocomplete() {
+        ArrayList<AutocompleteItem> resultado = new ArrayList<>();
+        if (this.dataSet.getRows() != null) {
+            for(Row itemRow : this.dataSet.getRows()) {
+                resultado.add(new AutocompleteItem(itemRow.getColumnName(this.columnaID).getValueInteger(), itemRow.getColumnName(this.columnaLabel).getValueString()));
+            }
+        }
+        return resultado;
     }
     
     public Row recuperaPorValue(Integer idValue) {

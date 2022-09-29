@@ -109,7 +109,7 @@ public class EdicionUnidades implements Serializable {
                 this.bdTUnidad.setDsUnidad(this.cDsUnidad.getValue());
                 this.bdTUnidad.setFeAlta(this.cFeAlta.getValue());
                 this.bdTUnidad.setFeDesactivo(this.cFeDesactivo.getValue());
-                this.bdTUnidad.setIdUnidadpadre((this.cUnidadPadre.getValue() != null ? Integer.valueOf(this.cUnidadPadre.getValue().toString()) : null));
+                this.bdTUnidad.setIdUnidadpadre(this.cUnidadPadre.getId());
                 
                 StTUnidad stTUnidad = new StTUnidad();
                 stTUnidad.alta(this.bdTUnidad, null);
@@ -127,7 +127,7 @@ public class EdicionUnidades implements Serializable {
                 this.bdTUnidad.setDsUnidad(this.cDsUnidad.getValue());
                 this.bdTUnidad.setFeAlta(this.cFeAlta.getValue());
                 this.bdTUnidad.setFeDesactivo(this.cFeDesactivo.getValue());
-                this.bdTUnidad.setIdUnidadpadre((this.cUnidadPadre.getValue() != null ? Integer.valueOf(this.cUnidadPadre.getValue().toString()) : null));
+                this.bdTUnidad.setIdUnidadpadre(this.cUnidadPadre.getId());
                 
                 StTUnidad stTUnidad = new StTUnidad();
                 stTUnidad.actualiza(this.bdTUnidad, null);
@@ -189,7 +189,7 @@ public class EdicionUnidades implements Serializable {
         this.cDsUnidad.setValue(null);
         this.cFeAlta.setValue(null);
         this.cFeDesactivo.setValue(null);
-        this.cUnidadPadre.setValueId(null);
+        this.cUnidadPadre.setId(null);
     }
     
     public String volver() {
@@ -259,7 +259,7 @@ public class EdicionUnidades implements Serializable {
         cDsUnidad.setValue(this.bdTUnidad.getDsUnidad());
         cFeAlta.setValue(this.bdTUnidad.getFeAlta());
         cFeDesactivo.setValue(this.bdTUnidad.getFeDesactivo());
-        cUnidadPadre.setValueId(this.bdTUnidad.getIdUnidadpadre());
+        cUnidadPadre.setId(this.bdTUnidad.getIdUnidadpadre());
     }
     
     public CampoWebCodigo getcCoUnidad() {
