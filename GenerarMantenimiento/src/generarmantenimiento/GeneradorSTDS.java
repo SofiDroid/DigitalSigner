@@ -135,18 +135,26 @@ public class GeneradorSTDS extends GeneradorBase {
                     throw new RequiredFieldException("CO_UNIDAD");
                 } 
                 */
-                sb.append(ESPACIOS2)
+                if (columna.esPrimary) {
+                    sb.append(ESPACIOS2)
+                            .append("if(AppInit.TIPO_BASEDATOS == BaseDatos.ORACLE) {\n");
+                }
+                sb.append((columna.esPrimary ? ESPACIOS3 : ESPACIOS2))
                         .append("if (Validation.isNullOrEmpty(new")
                         .append(transformarNombreObjeto(columna.TABLE_NAME, true))
                         .append(".get")
                         .append(transformarNombrePrimeraMayusculas(columna.classColumnName))
                         .append("())) {\n")
-                        .append(ESPACIOS3)
+                        .append((columna.esPrimary ? ESPACIOS4 : ESPACIOS3))
                         .append("throw new RequiredFieldException(\"")
                         .append(columna.COLUMN_NAME)
                         .append("\");\n")
-                        .append(ESPACIOS2)
+                        .append((columna.esPrimary ? ESPACIOS3 : ESPACIOS2))
                         .append("}\n");
+                if (columna.esPrimary) {
+                    sb.append(ESPACIOS2)
+                            .append("}\n");
+                }
             }
         }
         
