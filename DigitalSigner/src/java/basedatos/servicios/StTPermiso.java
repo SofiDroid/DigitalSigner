@@ -11,6 +11,8 @@ import tomcat.persistence.EntityManager;
 import utilidades.Session;
 import utilidades.Validation;
 import basedatos.tablas.BdTPermiso;
+import init.AppInit;
+import utilidades.BaseDatos;
 
 /**
  *
@@ -54,8 +56,10 @@ public class StTPermiso extends StBase {
     
     public int alta(BdTPermiso newBdTPermiso, EntityManager em) throws Exception {
 
-        if (Validation.isNullOrEmpty(newBdTPermiso.getIdPermiso())) {
-            throw new RequiredFieldException("ID_PERMISO");
+        if(AppInit.TIPO_BASEDATOS == BaseDatos.ORACLE) {
+            if (Validation.isNullOrEmpty(newBdTPermiso.getIdPermiso())) {
+                throw new RequiredFieldException("ID_PERMISO");
+            }
         }
         if (Validation.isNullOrEmpty(newBdTPermiso.getCoPermiso())) {
             throw new RequiredFieldException("CO_PERMISO");

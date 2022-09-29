@@ -11,6 +11,8 @@ import tomcat.persistence.EntityManager;
 import utilidades.Session;
 import utilidades.Validation;
 import basedatos.tablas.BdATokenusuario;
+import init.AppInit;
+import utilidades.BaseDatos;
 
 /**
  *
@@ -54,8 +56,10 @@ public class StATokenusuario extends StBase {
     
     public int alta(BdATokenusuario newBdATokenusuario, EntityManager em) throws Exception {
 
-        if (Validation.isNullOrEmpty(newBdATokenusuario.getIdTokenusuario())) {
-            throw new RequiredFieldException("ID_TOKENUSUARIO");
+        if(AppInit.TIPO_BASEDATOS == BaseDatos.ORACLE) {
+            if (Validation.isNullOrEmpty(newBdATokenusuario.getIdTokenusuario())) {
+                throw new RequiredFieldException("ID_TOKENUSUARIO");
+            }
         }
         if (Validation.isNullOrEmpty(newBdATokenusuario.getIdUsuario())) {
             throw new RequiredFieldException("ID_USUARIO");

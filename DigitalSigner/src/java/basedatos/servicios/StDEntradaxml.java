@@ -11,6 +11,8 @@ import tomcat.persistence.EntityManager;
 import utilidades.Session;
 import utilidades.Validation;
 import basedatos.tablas.BdDEntradaxml;
+import init.AppInit;
+import utilidades.BaseDatos;
 
 /**
  *
@@ -56,8 +58,10 @@ public class StDEntradaxml extends StBase {
     
     public int alta(BdDEntradaxml newBdDEntradaxml, EntityManager em) throws Exception {
 
-        if (Validation.isNullOrEmpty(newBdDEntradaxml.getIdEntradaxml())) {
-            throw new RequiredFieldException("ID_ENTRADAXML");
+        if(AppInit.TIPO_BASEDATOS == BaseDatos.ORACLE) {
+            if (Validation.isNullOrEmpty(newBdDEntradaxml.getIdEntradaxml())) {
+                throw new RequiredFieldException("ID_ENTRADAXML");
+            }
         }
         if (Validation.isNullOrEmpty(newBdDEntradaxml.getBlEntradaxml())) {
             throw new RequiredFieldException("BL_ENTRADAXML");

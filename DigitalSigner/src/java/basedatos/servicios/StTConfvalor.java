@@ -11,6 +11,8 @@ import tomcat.persistence.EntityManager;
 import utilidades.Session;
 import utilidades.Validation;
 import basedatos.tablas.BdTConfvalor;
+import init.AppInit;
+import utilidades.BaseDatos;
 
 /**
  *
@@ -55,8 +57,10 @@ public class StTConfvalor extends StBase {
     
     public int alta(BdTConfvalor newBdTConfvalor, EntityManager em) throws Exception {
 
-        if (Validation.isNullOrEmpty(newBdTConfvalor.getIdConfvalor())) {
-            throw new RequiredFieldException("ID_CONFVALOR");
+        if(AppInit.TIPO_BASEDATOS == BaseDatos.ORACLE) {
+            if (Validation.isNullOrEmpty(newBdTConfvalor.getIdConfvalor())) {
+                throw new RequiredFieldException("ID_CONFVALOR");
+            }
         }
         if (Validation.isNullOrEmpty(newBdTConfvalor.getIdConfiguracion())) {
             throw new RequiredFieldException("ID_CONFIGURACION");

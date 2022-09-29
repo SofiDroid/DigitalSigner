@@ -11,6 +11,8 @@ import tomcat.persistence.EntityManager;
 import utilidades.Session;
 import utilidades.Validation;
 import basedatos.tablas.BdADocextra;
+import init.AppInit;
+import utilidades.BaseDatos;
 
 /**
  *
@@ -57,8 +59,10 @@ public class StADocextra extends StBase {
     
     public int alta(BdADocextra newBdADocextra, EntityManager em) throws Exception {
 
-        if (Validation.isNullOrEmpty(newBdADocextra.getIdDocextra())) {
-            throw new RequiredFieldException("ID_DOCEXTRA");
+        if(AppInit.TIPO_BASEDATOS == BaseDatos.ORACLE) {
+            if (Validation.isNullOrEmpty(newBdADocextra.getIdDocextra())) {
+                throw new RequiredFieldException("ID_DOCEXTRA");
+            }
         }
         if (Validation.isNullOrEmpty(newBdADocextra.getIdDocumento())) {
             throw new RequiredFieldException("ID_DOCUMENTO");

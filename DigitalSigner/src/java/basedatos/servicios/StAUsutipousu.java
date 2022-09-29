@@ -11,6 +11,8 @@ import tomcat.persistence.EntityManager;
 import utilidades.Session;
 import utilidades.Validation;
 import basedatos.tablas.BdAUsutipousu;
+import init.AppInit;
+import utilidades.BaseDatos;
 
 /**
  *
@@ -54,11 +56,15 @@ public class StAUsutipousu extends StBase {
     
     public int alta(BdAUsutipousu newBdAUsutipousu, EntityManager em) throws Exception {
 
-        if (Validation.isNullOrEmpty(newBdAUsutipousu.getIdUsuario())) {
-            throw new RequiredFieldException("ID_USUARIO");
+        if(AppInit.TIPO_BASEDATOS == BaseDatos.ORACLE) {
+            if (Validation.isNullOrEmpty(newBdAUsutipousu.getIdUsuario())) {
+                throw new RequiredFieldException("ID_USUARIO");
+            }
         }
-        if (Validation.isNullOrEmpty(newBdAUsutipousu.getIdTipousuario())) {
-            throw new RequiredFieldException("ID_TIPOUSUARIO");
+        if(AppInit.TIPO_BASEDATOS == BaseDatos.ORACLE) {
+            if (Validation.isNullOrEmpty(newBdAUsutipousu.getIdTipousuario())) {
+                throw new RequiredFieldException("ID_TIPOUSUARIO");
+            }
         }
         if (Validation.isNullOrEmpty(newBdAUsutipousu.getFeAlta())) {
             throw new RequiredFieldException("FE_ALTA");

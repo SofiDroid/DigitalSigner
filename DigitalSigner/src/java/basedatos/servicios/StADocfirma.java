@@ -11,6 +11,8 @@ import tomcat.persistence.EntityManager;
 import utilidades.Session;
 import utilidades.Validation;
 import basedatos.tablas.BdADocfirma;
+import init.AppInit;
+import utilidades.BaseDatos;
 
 /**
  *
@@ -58,8 +60,10 @@ public class StADocfirma extends StBase {
     
     public int alta(BdADocfirma newBdADocfirma, EntityManager em) throws Exception {
 
-        if (Validation.isNullOrEmpty(newBdADocfirma.getIdDocfirma())) {
-            throw new RequiredFieldException("ID_DOCFIRMA");
+        if(AppInit.TIPO_BASEDATOS == BaseDatos.ORACLE) {
+            if (Validation.isNullOrEmpty(newBdADocfirma.getIdDocfirma())) {
+                throw new RequiredFieldException("ID_DOCFIRMA");
+            }
         }
         if (Validation.isNullOrEmpty(newBdADocfirma.getIdDocumento())) {
             throw new RequiredFieldException("ID_DOCUMENTO");

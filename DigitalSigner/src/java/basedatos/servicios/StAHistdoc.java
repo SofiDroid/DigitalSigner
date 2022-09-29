@@ -58,7 +58,7 @@ public class StAHistdoc extends StBase {
     
     public int alta(BdAHistdoc newBdAHistdoc, EntityManager em) throws Exception {
 
-        if (AppInit.TIPO_BASEDATOS == BaseDatos.ORACLE) {
+        if(AppInit.TIPO_BASEDATOS == BaseDatos.ORACLE) {
             if (Validation.isNullOrEmpty(newBdAHistdoc.getIdHistdoc())) {
                 throw new RequiredFieldException("ID_HISTDOC");
             }
@@ -71,7 +71,14 @@ public class StAHistdoc extends StBase {
         }
         if (Validation.isNullOrEmpty(newBdAHistdoc.getFeAlta())) {
             throw new RequiredFieldException("FE_ALTA");
-        }   
+        }
+        if (Validation.isNullOrEmpty(newBdAHistdoc.getUsuariobd())) {
+            throw new RequiredFieldException("USUARIOBD");
+        }
+        if (Validation.isNullOrEmpty(newBdAHistdoc.getTstbd())) {
+            throw new RequiredFieldException("TSTBD");
+        }
+   
 
         newBdAHistdoc.setUsuariobd(Session.getCoUsuario());
 

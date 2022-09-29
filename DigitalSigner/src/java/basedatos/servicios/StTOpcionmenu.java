@@ -11,6 +11,8 @@ import tomcat.persistence.EntityManager;
 import utilidades.Session;
 import utilidades.Validation;
 import basedatos.tablas.BdTOpcionmenu;
+import init.AppInit;
+import utilidades.BaseDatos;
 
 /**
  *
@@ -59,8 +61,10 @@ public class StTOpcionmenu extends StBase {
     
     public int alta(BdTOpcionmenu newBdTOpcionmenu, EntityManager em) throws Exception {
 
-        if (Validation.isNullOrEmpty(newBdTOpcionmenu.getIdOpcionmenu())) {
-            throw new RequiredFieldException("ID_OPCIONMENU");
+        if(AppInit.TIPO_BASEDATOS == BaseDatos.ORACLE) {
+            if (Validation.isNullOrEmpty(newBdTOpcionmenu.getIdOpcionmenu())) {
+                throw new RequiredFieldException("ID_OPCIONMENU");
+            }
         }
         if (Validation.isNullOrEmpty(newBdTOpcionmenu.getCoOpcionmenu())) {
             throw new RequiredFieldException("CO_OPCIONMENU");

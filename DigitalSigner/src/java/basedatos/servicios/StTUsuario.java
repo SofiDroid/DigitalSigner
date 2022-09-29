@@ -11,6 +11,8 @@ import tomcat.persistence.EntityManager;
 import utilidades.Session;
 import utilidades.Validation;
 import basedatos.tablas.BdTUsuario;
+import init.AppInit;
+import utilidades.BaseDatos;
 
 /**
  *
@@ -61,8 +63,10 @@ public class StTUsuario extends StBase {
     
     public int alta(BdTUsuario newBdTUsuario, EntityManager em) throws Exception {
 
-        if (Validation.isNullOrEmpty(newBdTUsuario.getIdUsuario())) {
-            throw new RequiredFieldException("ID_USUARIO");
+        if(AppInit.TIPO_BASEDATOS == BaseDatos.ORACLE) {
+            if (Validation.isNullOrEmpty(newBdTUsuario.getIdUsuario())) {
+                throw new RequiredFieldException("ID_USUARIO");
+            }
         }
         if (Validation.isNullOrEmpty(newBdTUsuario.getCoNIF())) {
             throw new RequiredFieldException("CO_NIF");

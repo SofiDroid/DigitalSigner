@@ -11,6 +11,8 @@ import tomcat.persistence.EntityManager;
 import utilidades.Session;
 import utilidades.Validation;
 import basedatos.tablas.BdDSalidaxml;
+import init.AppInit;
+import utilidades.BaseDatos;
 
 /**
  *
@@ -56,8 +58,10 @@ public class StDSalidaxml extends StBase {
     
     public int alta(BdDSalidaxml newBdDSalidaxml, EntityManager em) throws Exception {
 
-        if (Validation.isNullOrEmpty(newBdDSalidaxml.getIdSalidaxml())) {
-            throw new RequiredFieldException("ID_SALIDAXML");
+        if(AppInit.TIPO_BASEDATOS == BaseDatos.ORACLE) {
+            if (Validation.isNullOrEmpty(newBdDSalidaxml.getIdSalidaxml())) {
+                throw new RequiredFieldException("ID_SALIDAXML");
+            }
         }
         if (Validation.isNullOrEmpty(newBdDSalidaxml.getBlSalidaxml())) {
             throw new RequiredFieldException("BL_SALIDAXML");

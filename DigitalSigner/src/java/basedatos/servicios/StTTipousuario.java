@@ -11,6 +11,8 @@ import tomcat.persistence.EntityManager;
 import utilidades.Session;
 import utilidades.Validation;
 import basedatos.tablas.BdTTipousuario;
+import init.AppInit;
+import utilidades.BaseDatos;
 
 /**
  *
@@ -55,8 +57,10 @@ public class StTTipousuario extends StBase {
     
     public int alta(BdTTipousuario newBdTTipousuario, EntityManager em) throws Exception {
 
-        if (Validation.isNullOrEmpty(newBdTTipousuario.getIdTipousuario())) {
-            throw new RequiredFieldException("ID_TIPOUSUARIO");
+        if(AppInit.TIPO_BASEDATOS == BaseDatos.ORACLE) {
+            if (Validation.isNullOrEmpty(newBdTTipousuario.getIdTipousuario())) {
+                throw new RequiredFieldException("ID_TIPOUSUARIO");
+            }
         }
         if (Validation.isNullOrEmpty(newBdTTipousuario.getCoTipousuario())) {
             throw new RequiredFieldException("CO_TIPOUSUARIO");

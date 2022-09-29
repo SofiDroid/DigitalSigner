@@ -11,6 +11,8 @@ import tomcat.persistence.EntityManager;
 import utilidades.Session;
 import utilidades.Validation;
 import basedatos.tablas.BdTAutoridad;
+import init.AppInit;
+import utilidades.BaseDatos;
 
 /**
  *
@@ -55,8 +57,10 @@ public class StTAutoridad extends StBase {
     
     public int alta(BdTAutoridad newBdTAutoridad, EntityManager em) throws Exception {
 
-        if (Validation.isNullOrEmpty(newBdTAutoridad.getIdAutoridad())) {
-            throw new RequiredFieldException("ID_AUTORIDAD");
+        if(AppInit.TIPO_BASEDATOS == BaseDatos.ORACLE) {
+            if (Validation.isNullOrEmpty(newBdTAutoridad.getIdAutoridad())) {
+                throw new RequiredFieldException("ID_AUTORIDAD");
+            }
         }
         if (Validation.isNullOrEmpty(newBdTAutoridad.getCoAutoridad())) {
             throw new RequiredFieldException("CO_AUTORIDAD");

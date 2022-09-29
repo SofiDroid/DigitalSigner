@@ -11,6 +11,8 @@ import tomcat.persistence.EntityManager;
 import utilidades.Session;
 import utilidades.Validation;
 import basedatos.tablas.BdTConfiguracion;
+import init.AppInit;
+import utilidades.BaseDatos;
 
 /**
  *
@@ -54,8 +56,10 @@ public class StTConfiguracion extends StBase {
     
     public int alta(BdTConfiguracion newBdTConfiguracion, EntityManager em) throws Exception {
 
-        if (Validation.isNullOrEmpty(newBdTConfiguracion.getIdConfiguracion())) {
-            throw new RequiredFieldException("ID_CONFIGURACION");
+        if(AppInit.TIPO_BASEDATOS == BaseDatos.ORACLE) {
+            if (Validation.isNullOrEmpty(newBdTConfiguracion.getIdConfiguracion())) {
+                throw new RequiredFieldException("ID_CONFIGURACION");
+            }
         }
         if (Validation.isNullOrEmpty(newBdTConfiguracion.getCoConfiguracion())) {
             throw new RequiredFieldException("CO_CONFIGURACION");

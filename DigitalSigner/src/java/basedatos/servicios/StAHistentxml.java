@@ -11,6 +11,8 @@ import tomcat.persistence.EntityManager;
 import utilidades.Session;
 import utilidades.Validation;
 import basedatos.tablas.BdAHistentxml;
+import init.AppInit;
+import utilidades.BaseDatos;
 
 /**
  *
@@ -54,8 +56,10 @@ public class StAHistentxml extends StBase {
     
     public int alta(BdAHistentxml newBdAHistentxml, EntityManager em) throws Exception {
 
-        if (Validation.isNullOrEmpty(newBdAHistentxml.getIdHistentxml())) {
-            throw new RequiredFieldException("ID_HISTENTXML");
+        if(AppInit.TIPO_BASEDATOS == BaseDatos.ORACLE) {
+            if (Validation.isNullOrEmpty(newBdAHistentxml.getIdHistentxml())) {
+                throw new RequiredFieldException("ID_HISTENTXML");
+            }
         }
         if (Validation.isNullOrEmpty(newBdAHistentxml.getIdEntradaxml())) {
             throw new RequiredFieldException("ID_ENTRADAXML");

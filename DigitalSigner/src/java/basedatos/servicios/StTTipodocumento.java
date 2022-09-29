@@ -11,6 +11,8 @@ import tomcat.persistence.EntityManager;
 import utilidades.Session;
 import utilidades.Validation;
 import basedatos.tablas.BdTTipodocumento;
+import init.AppInit;
+import utilidades.BaseDatos;
 
 /**
  *
@@ -54,8 +56,10 @@ public class StTTipodocumento extends StBase {
     
     public int alta(BdTTipodocumento newBdTTipodocumento, EntityManager em) throws Exception {
 
-        if (Validation.isNullOrEmpty(newBdTTipodocumento.getIdTipodocumento())) {
-            throw new RequiredFieldException("ID_TIPODOCUMENTO");
+        if(AppInit.TIPO_BASEDATOS == BaseDatos.ORACLE) {
+            if (Validation.isNullOrEmpty(newBdTTipodocumento.getIdTipodocumento())) {
+                throw new RequiredFieldException("ID_TIPODOCUMENTO");
+            }
         }
         if (Validation.isNullOrEmpty(newBdTTipodocumento.getCoTipodocumento())) {
             throw new RequiredFieldException("CO_TIPODOCUMENTO");

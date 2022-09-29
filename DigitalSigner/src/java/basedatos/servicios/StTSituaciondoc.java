@@ -11,6 +11,8 @@ import tomcat.persistence.EntityManager;
 import utilidades.Session;
 import utilidades.Validation;
 import basedatos.tablas.BdTSituaciondoc;
+import init.AppInit;
+import utilidades.BaseDatos;
 
 /**
  *
@@ -54,8 +56,10 @@ public class StTSituaciondoc extends StBase {
     
     public int alta(BdTSituaciondoc newBdTSituaciondoc, EntityManager em) throws Exception {
 
-        if (Validation.isNullOrEmpty(newBdTSituaciondoc.getIdSituaciondoc())) {
-            throw new RequiredFieldException("ID_SITUACIONDOC");
+        if(AppInit.TIPO_BASEDATOS == BaseDatos.ORACLE) {
+            if (Validation.isNullOrEmpty(newBdTSituaciondoc.getIdSituaciondoc())) {
+                throw new RequiredFieldException("ID_SITUACIONDOC");
+            }
         }
         if (Validation.isNullOrEmpty(newBdTSituaciondoc.getCoSituaciondoc())) {
             throw new RequiredFieldException("CO_SITUACIONDOC");

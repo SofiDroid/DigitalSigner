@@ -11,6 +11,8 @@ import tomcat.persistence.EntityManager;
 import utilidades.Session;
 import utilidades.Validation;
 import basedatos.tablas.BdATipousuopcper;
+import init.AppInit;
+import utilidades.BaseDatos;
 
 /**
  *
@@ -56,14 +58,20 @@ public class StATipousuopcper extends StBase {
     
     public int alta(BdATipousuopcper newBdATipousuopcper, EntityManager em) throws Exception {
 
-        if (Validation.isNullOrEmpty(newBdATipousuopcper.getIdTipousuario())) {
-            throw new RequiredFieldException("ID_TIPOUSUARIO");
+        if(AppInit.TIPO_BASEDATOS == BaseDatos.ORACLE) {
+            if (Validation.isNullOrEmpty(newBdATipousuopcper.getIdTipousuario())) {
+                throw new RequiredFieldException("ID_TIPOUSUARIO");
+            }
         }
-        if (Validation.isNullOrEmpty(newBdATipousuopcper.getIdOpcionmenu())) {
-            throw new RequiredFieldException("ID_OPCIONMENU");
+        if(AppInit.TIPO_BASEDATOS == BaseDatos.ORACLE) {
+            if (Validation.isNullOrEmpty(newBdATipousuopcper.getIdOpcionmenu())) {
+                throw new RequiredFieldException("ID_OPCIONMENU");
+            }
         }
-        if (Validation.isNullOrEmpty(newBdATipousuopcper.getIdPermiso())) {
-            throw new RequiredFieldException("ID_PERMISO");
+        if(AppInit.TIPO_BASEDATOS == BaseDatos.ORACLE) {
+            if (Validation.isNullOrEmpty(newBdATipousuopcper.getIdPermiso())) {
+                throw new RequiredFieldException("ID_PERMISO");
+            }
         }
         if (Validation.isNullOrEmpty(newBdATipousuopcper.getFeAlta())) {
             throw new RequiredFieldException("FE_ALTA");

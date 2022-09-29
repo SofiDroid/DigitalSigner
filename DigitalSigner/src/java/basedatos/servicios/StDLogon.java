@@ -11,6 +11,8 @@ import tomcat.persistence.EntityManager;
 import utilidades.Session;
 import utilidades.Validation;
 import basedatos.tablas.BdDLogon;
+import init.AppInit;
+import utilidades.BaseDatos;
 
 /**
  *
@@ -57,8 +59,10 @@ public class StDLogon extends StBase {
     
     public int alta(BdDLogon newBdDLogon, EntityManager em) throws Exception {
 
-        if (Validation.isNullOrEmpty(newBdDLogon.getIdLogon())) {
-            throw new RequiredFieldException("ID_LOGON");
+        if(AppInit.TIPO_BASEDATOS == BaseDatos.ORACLE) {
+            if (Validation.isNullOrEmpty(newBdDLogon.getIdLogon())) {
+                throw new RequiredFieldException("ID_LOGON");
+            }
         }
         if (Validation.isNullOrEmpty(newBdDLogon.getBoError())) {
             throw new RequiredFieldException("BO_ERROR");

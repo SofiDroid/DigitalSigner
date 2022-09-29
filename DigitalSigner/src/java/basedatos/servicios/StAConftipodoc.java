@@ -11,6 +11,8 @@ import tomcat.persistence.EntityManager;
 import utilidades.Session;
 import utilidades.Validation;
 import basedatos.tablas.BdAConftipodoc;
+import init.AppInit;
+import utilidades.BaseDatos;
 
 /**
  *
@@ -57,8 +59,10 @@ public class StAConftipodoc extends StBase {
     
     public int alta(BdAConftipodoc newBdAConftipodoc, EntityManager em) throws Exception {
 
-        if (Validation.isNullOrEmpty(newBdAConftipodoc.getIdConftipodoc())) {
-            throw new RequiredFieldException("ID_CONFTIPODOC");
+        if(AppInit.TIPO_BASEDATOS == BaseDatos.ORACLE) {
+            if (Validation.isNullOrEmpty(newBdAConftipodoc.getIdConftipodoc())) {
+                throw new RequiredFieldException("ID_CONFTIPODOC");
+            }
         }
         if (Validation.isNullOrEmpty(newBdAConftipodoc.getIdTipodocumento())) {
             throw new RequiredFieldException("ID_TIPODOCUMENTO");
