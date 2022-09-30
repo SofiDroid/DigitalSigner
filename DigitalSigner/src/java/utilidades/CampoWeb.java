@@ -11,10 +11,15 @@ public class CampoWeb {
         Descripcion,
         Fecha,
         FechaRango,
-        Lupa
+        Lupa,
+        Check,
+        Numero,
+        Password
     }
     
+    private String clientId = "";
     private String width = ""; 
+    private Integer size = null;
     private String widthLabel = ""; 
     private String maxlength = "";
     private Tipo tipo = Tipo.Codigo;
@@ -93,5 +98,21 @@ public class CampoWeb {
 
     public String getRequiredChar() {
         return (required ? " <span style='color: red'>*</span>" : "");
+    }
+
+    public String getClientId() {
+        return clientId;
+    }
+
+    public void setClientId(String clientId) {
+        this.clientId = clientId;
+    }
+
+    public Integer getSize() {
+        return size;
+    }
+
+    public void setSize(Integer size) {
+        this.size = size;
     }
 }

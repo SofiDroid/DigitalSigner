@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:cc="http://xmlns.jcp.org/jsf/composite"
+      xmlns:p="http://primefaces.org/ui">
+
+    <!-- INTERFACE -->
+    <cc:interface>
+        <cc:attribute name = "beanClass" />
+    </cc:interface>
+
+    <!-- IMPLEMENTATION -->
+    <cc:implementation>
+        <p:panelGrid columns="2" columnClasses="colFit, col-12">
+            <p:outputLabel for="#{cc.attrs.id}" value="#{cc.attrs.beanClass.label}#{cc.attrs.beanClass.requiredChar}" escape="false" style="display: block;#{cc.attrs.beanClass.widthLabel}"/>
+            <p:inputNumber id="#{cc.attrs.id}" size="#{cc.attrs.beanClass.size}" value="#{cc.attrs.beanClass.value}" 
+                           symbol=" #{cc.attrs.beanClass.moneda}" symbolPosition="s" decimalSeparator="," thousandSeparator="."
+                           minValue="#{cc.attrs.beanClass.minValue}" maxValue="#{cc.attrs.beanClass.maxValue}"
+                           decimalPlaces="#{cc.attrs.beanClass.numDecimales}" required="#{cc.attrs.beanClass.required}"
+                           disabled="#{cc.attrs.beanClass.protegido}" />
+        </p:panelGrid>
+    </cc:implementation>
+</html>

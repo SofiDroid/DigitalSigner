@@ -266,7 +266,7 @@ public class FiltroUnidades implements Serializable {
             this.edicionUnidades = new EdicionUnidades(this, null);
             this.edicionUnidades.setPaginaRetorno("filtroUnidades");
             
-            return "edicionPerfiles";
+            return "edicionUnidades";
         } catch (Exception ex) {
             LOG.error(ex.getMessage(), ex);
             Mensajes.showError("Error al navegar al detalle", ex.getMessage());
