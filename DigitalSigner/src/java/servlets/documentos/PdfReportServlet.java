@@ -21,10 +21,12 @@ public class PdfReportServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         byte[] content = (byte[]) request.getSession().getAttribute("reportBytes");
-        request.getSession().removeAttribute("reportBytes");
-        
-        response.setContentType("application/pdf");
-        response.setContentLength(content.length);
-        response.getOutputStream().write(content);
+        if (content != null) {
+            request.getSession().removeAttribute("reportBytes");
+
+            response.setContentType("application/pdf");
+            response.setContentLength(content.length);
+            response.getOutputStream().write(content);
+        }
     }
 }
