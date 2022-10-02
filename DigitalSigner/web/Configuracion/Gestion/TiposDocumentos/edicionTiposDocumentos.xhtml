@@ -8,8 +8,8 @@
 
     <ui:composition template="/main.xhtml">
         <ui:define id="tmpPrincipal" name="tmpPrincipal">
-            <c:if test="#{filtroUsuarios.edicionUsuarios ne null}">
-                <c:set var="beanEdicion" value="#{filtroUsuarios.edicionUsuarios}"/>
+            <c:if test="#{filtroTiposDocumentos.edicionTiposDocumentos ne null}">
+                <c:set var="beanEdicion" value="#{filtroTiposDocumentos.edicionTiposDocumentos}"/>
             </c:if>
             <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" width="350">
                 <p:commandButton value="#{msg['No']}" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
@@ -18,7 +18,7 @@
             <p:card styleClass="card">
                 <p:toolbar>
                     <p:toolbarGroup align="left">
-                        <p:outputLabel value="Mantenimiento de Usuarios - Detalle" style="font-size: large; font-weight: bold" /> 
+                        <p:outputLabel value="Mantenimiento de Tipos de Documentos - Detalle" style="font-size: large; font-weight: bold" /> 
                     </p:toolbarGroup>
                     <p:toolbarGroup align="right">
                         <p:commandButton id="btnGuardar" icon="pi pi-save" styleClass="rounded-button ui-button-success" 
@@ -45,7 +45,7 @@
 
                         <p:commandButton id="btnVolver" icon="pi pi-undo" styleClass="rounded-button ui-button-warning" 
                                          style="height: 2rem;width: 2rem;margin-left:0.3rem" action="#{beanEdicion.volver}" title="(alt+V) Volver"
-                                         update="@form" process="@this" accesskey="v" immediate="true" />
+                                         update="@form" accesskey="v" immediate="true" process="@this" />
                     </p:toolbarGroup>
                 </p:toolbar>
             </p:card>
@@ -57,25 +57,9 @@
                      styleClass="ui-panelgrid-blank ui-fluid"
                      style="border:0px none;background-color:transparent;">
 
-                    <sd:campoWebTexto id="txtNIF" beanClass="#{beanEdicion.getcCoNIF()}" />
-                    
-                    <sd:campoWebTexto id="txtCodigoUsuario" beanClass="#{beanEdicion.getcCoUsuario()}" />
+                    <sd:campoWebTexto id="txtCodigoTipoDocumento" beanClass="#{beanEdicion.getcCoTipodocumento()}" />
 
-                    <sd:campoWebPassword id="txtPassword1" match="formulario:txtPassword2:txtPassword2" beanClass="#{beanEdicion.getcCoPassword1()}" />
-
-                    <sd:campoWebPassword id="txtPassword2" beanClass="#{beanEdicion.getcCoPassword2()}" />
-
-                    <sd:campoWebTexto id="txtNombre" beanClass="#{beanEdicion.getcDsNombre()}" />
-
-                    <sd:campoWebTexto id="txtApellido1" beanClass="#{beanEdicion.getcDsApellido1()}" />
-
-                    <sd:campoWebTexto id="txtApellido2" beanClass="#{beanEdicion.getcDsApellido2()}" />
-
-                    <sd:campoWebNumero id="txtIntentos" beanClass="#{beanEdicion.getcEnIntentos()}" />
-
-                    <sd:campoWebNumero id="txtIntentosMax" beanClass="#{beanEdicion.getcEnIntentosMax()}" />
-
-                    <sd:campoWebCheck id="chkAdmin" beanClass="#{beanEdicion.getcBoAdmin()}" />
+                    <sd:campoWebTexto id="txtDescripcionTipoDocumento" beanClass="#{beanEdicion.getcDsTipodocumento()}" />
 
                     <sd:campoWebFecha id="txtFeAlta" beanClass="#{beanEdicion.getcFeAlta()}" />
 
