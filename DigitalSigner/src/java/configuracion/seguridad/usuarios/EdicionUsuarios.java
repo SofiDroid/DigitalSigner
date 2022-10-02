@@ -64,18 +64,29 @@ public class EdicionUsuarios implements Serializable {
             this.cCoUsuario = new CampoWebCodigo();
             this.cCoUsuario.setLabel(Msg.getString("lbl_EdicionUsuarios_CoUsuario"));
             this.cCoUsuario.setWidthLabel("100px");
+            this.cCoUsuario.setAutocomplete(false);
             this.cCoUsuario.setRequired(true);
             
             this.cCoPassword1 = new CampoWebPassword();
             this.cCoPassword1.setLabel(Msg.getString("lbl_EdicionUsuarios_CoPassword1"));
             this.cCoPassword1.setWidthLabel("100px");
-            this.cCoPassword1.setWidth("10em");
+            this.cCoPassword1.setSize(20);
+            this.cCoPassword1.setFeedback(true);
+            this.cCoPassword1.setToggleMask(true);
+            this.cCoPassword1.setMaxlength("20");
+            this.cCoPassword1.setAutocomplete(false);
+            this.cCoPassword1.setIgnoreLastPass(true);
             this.cCoPassword1.setRequired(true);
             
             this.cCoPassword2 = new CampoWebPassword();
             this.cCoPassword2.setLabel(Msg.getString("lbl_EdicionUsuarios_CoPassword2"));
             this.cCoPassword2.setWidthLabel("100px");
-            this.cCoPassword2.setWidth("10em");
+            this.cCoPassword2.setSize(20);
+            this.cCoPassword2.setFeedback(true);
+            this.cCoPassword2.setToggleMask(true);
+            this.cCoPassword2.setMaxlength("20");
+            this.cCoPassword2.setAutocomplete(false);
+            this.cCoPassword2.setIgnoreLastPass(true);
             this.cCoPassword2.setRequired(true);
             
             this.cDsNombre = new CampoWebDescripcion();

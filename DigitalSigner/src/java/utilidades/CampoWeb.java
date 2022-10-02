@@ -26,6 +26,7 @@ public class CampoWeb {
     private Object value = null;
     private boolean protegido = false;
     private boolean required = false;
+    private boolean autocomplete = true;
     private String label = "";
 
     public CampoWeb(Tipo tipo) {
@@ -114,5 +115,13 @@ public class CampoWeb {
 
     public void setSize(Integer size) {
         this.size = size;
+    }
+
+    public boolean isAutocomplete() {
+        return autocomplete;
+    }
+
+    public void setAutocomplete(boolean autocomplete) {
+        this.autocomplete = autocomplete;
     }
 }

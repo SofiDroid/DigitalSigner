@@ -13,6 +13,7 @@ public class CampoWebPassword extends CampoWeb {
     protected String strongLabel = "Fuerte";
     protected boolean toggleMask = false;
     protected boolean redisplay = true;
+    protected boolean ignoreLastPass = false;
     
     public CampoWebPassword() {
         super(Tipo.Password);
@@ -82,5 +83,13 @@ public class CampoWebPassword extends CampoWeb {
 
     public void setRedisplay(boolean redisplay) {
         this.redisplay = redisplay;
+    }
+
+    public boolean isIgnoreLastPass() {
+        return ignoreLastPass;
+    }
+
+    public void setIgnoreLastPass(boolean ignoreLastPass) {
+        this.ignoreLastPass = ignoreLastPass;
     }
 }
