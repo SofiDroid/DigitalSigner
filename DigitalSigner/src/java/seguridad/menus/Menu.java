@@ -38,6 +38,7 @@ public class Menu implements Serializable {
         submenu.getElements().add(item);
 
         item = DefaultMenuItem.builder()
+                .id("mnuConsultaDocumentos")
                 .value(Msg.getString("mnuConsultaDocumentos"))
                 /*.icon("pi pi-save")*/
                 .command("/GestionDocumentos/ConsultaDocumentos/filtroConsultaDocumentos")
@@ -45,6 +46,7 @@ public class Menu implements Serializable {
         submenu.getElements().add(item);
 
         item = DefaultMenuItem.builder()
+                .id("mnuInformes")
                 .value(Msg.getString("mnuInformes"))
                 /*.icon("pi pi-save")*/
                 .command("/GestionDocumentos/Informes/filtroInformes")
@@ -56,10 +58,12 @@ public class Menu implements Serializable {
         
         //Gestión de XML
         submenu = DefaultSubMenu.builder()
+                .id("mnuGestionXML")
                 .label(Msg.getString("mnuGestionXML"))
                 .build();
 
         item = DefaultMenuItem.builder()
+                .id("mnuEntradas")
                 .value(Msg.getString("mnuEntradas"))
                 /*.icon("pi pi-save")*/
                 .command("/GestionXML/Entradas/filtroEntradas")
@@ -67,6 +71,7 @@ public class Menu implements Serializable {
         submenu.getElements().add(item);
 
         item = DefaultMenuItem.builder()
+                .id("mnuSalidas")
                 .value(Msg.getString("mnuSalidas"))
                 /*.icon("pi pi-save")*/
                 .command("/GestionXML/Salidas/filtroSalidas")
@@ -74,6 +79,7 @@ public class Menu implements Serializable {
         submenu.getElements().add(item);
 
         item = DefaultMenuItem.builder()
+                .id("mnuInformes")
                 .value(Msg.getString("mnuInformes"))
                 /*.icon("pi pi-save")*/
                 .command("/GestionXML/Informes/filtroInformes")
@@ -91,10 +97,12 @@ public class Menu implements Serializable {
 
         //Gestión
         DefaultSubMenu submenu2 = DefaultSubMenu.builder()
+                .id("mnuGestion")
                 .label(Msg.getString("mnuGestion"))
                 .build();
         
         item = DefaultMenuItem.builder()
+                .id("mnuAutoridades")
                 .value(Msg.getString("mnuAutoridades"))
                 /*.icon("pi pi-save")*/
                 .command("/Configuracion/Gestion/Autoridades/filtroAutoridades")
@@ -102,6 +110,7 @@ public class Menu implements Serializable {
         submenu2.getElements().add(item);
         
         item = DefaultMenuItem.builder()
+                .id("mnuTiposDocumentos")
                 .value(Msg.getString("mnuTiposDocumentos"))
                 /*.icon("pi pi-save")*/
                 .command("/Configuracion/Gestion/TiposDocumentos/filtroTiposDocumentos")
@@ -109,6 +118,7 @@ public class Menu implements Serializable {
         submenu2.getElements().add(item);
         
         item = DefaultMenuItem.builder()
+                .id("mnuSituacionesDocumentos")
                 .value(Msg.getString("mnuSituacionesDocumentos"))
                 /*.icon("pi pi-save")*/
                 .command("/Configuracion/Gestion/SituacionesDocumentos/filtroSituacionesDocumentos")
@@ -116,6 +126,7 @@ public class Menu implements Serializable {
         submenu2.getElements().add(item);
         
         item = DefaultMenuItem.builder()
+                .id("mnuSituacionesXML")
                 .value(Msg.getString("mnuSituacionesXML"))
                 /*.icon("pi pi-save")*/
                 .command("/Configuracion/Gestion/SituacionesXML/filtroSituacionesXML")
@@ -131,6 +142,7 @@ public class Menu implements Serializable {
                 .build();
         
         item = DefaultMenuItem.builder()
+                .id("mnuUsuarios")
                 .value(Msg.getString("mnuUsuarios"))
                 /*.icon("pi pi-save")*/
                 .command("/Configuracion/Seguridad/Usuarios/filtroUsuarios")
@@ -138,6 +150,7 @@ public class Menu implements Serializable {
         submenu2.getElements().add(item);
         
         item = DefaultMenuItem.builder()
+                .id("mnuPerfiles")
                 .value(Msg.getString("mnuPerfiles"))
                 /*.icon("pi pi-save")*/
                 .command("/Configuracion/Seguridad/Perfiles/filtroPerfiles")
@@ -153,6 +166,7 @@ public class Menu implements Serializable {
         submenu2.getElements().add(item);
         
         item = DefaultMenuItem.builder()
+                .id("mnuHistoricoAccesos")
                 .value(Msg.getString("mnuHistoricoAccesos"))
                 /*.icon("pi pi-save")*/
                 .command("/Configuracion/Seguridad/HistoricoAccesos/filtroHistoricoAccesos")
@@ -163,10 +177,12 @@ public class Menu implements Serializable {
         
         //Sistema
         submenu2 = DefaultSubMenu.builder()
+                .id("mnuSistema")
                 .label(Msg.getString("mnuSistema"))
                 .build();
         
         item = DefaultMenuItem.builder()
+                .id("mnuOpcionesMenu")
                 .value(Msg.getString("mnuOpcionesMenu"))
                 /*.icon("pi pi-save")*/
                 .command("/Configuracion/Sistema/OpcionesMenu/filtroOpcionesMenu")
@@ -174,6 +190,7 @@ public class Menu implements Serializable {
         submenu2.getElements().add(item);
         
         item = DefaultMenuItem.builder()
+                .id("mnuPermisos")
                 .value(Msg.getString("mnuPermisos"))
                 /*.icon("pi pi-save")*/
                 .command("/Configuracion/Sistema/Permisos/filtroPermisos")
@@ -181,6 +198,7 @@ public class Menu implements Serializable {
         submenu2.getElements().add(item);
         
         item = DefaultMenuItem.builder()
+                .id("mnuVariablesConfiguracion")
                 .value(Msg.getString("mnuVariablesConfiguracion"))
                 /*.icon("pi pi-save")*/
                 .command("/Configuracion/Sistema/VariablesConfiguracion/fitroVariablesConfiguracion")
@@ -191,10 +209,12 @@ public class Menu implements Serializable {
         
         //Informes
         submenu2 = DefaultSubMenu.builder()
+                .id("mnuInformes")
                 .label(Msg.getString("mnuInformes"))
                 .build();
         
         item = DefaultMenuItem.builder()
+                .id("mnuInformesGestion")
                 .value(Msg.getString("mnuInformesGestion"))
                 /*.icon("pi pi-save")*/
                 .command("/Configuracion/Informes/InformesGestion/filtroInformesGestion")
@@ -202,6 +222,7 @@ public class Menu implements Serializable {
         submenu2.getElements().add(item);
         
         item = DefaultMenuItem.builder()
+                .id("mnuInformesSeguridad")
                 .value(Msg.getString("mnuInformesSeguridad"))
                 /*.icon("pi pi-save")*/
                 .command("/Configuracion/Informes/InformesSeguridad/filtroInformesSeguridad")
@@ -209,6 +230,7 @@ public class Menu implements Serializable {
         submenu2.getElements().add(item);
         
         item = DefaultMenuItem.builder()
+                .id("mnuInformesSistema")
                 .value(Msg.getString("mnuInformesSistema"))
                 /*.icon("pi pi-save")*/
                 .command("/Configuracion/Informes/InformesSistema/filtroInformesSistema")

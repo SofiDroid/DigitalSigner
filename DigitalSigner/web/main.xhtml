@@ -4,7 +4,6 @@
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:p="http://primefaces.org/ui"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-      xmlns:sd="http://xmlns.jcp.org/jsf/composite/sofidroid"
       lang="es" xml:lang="es">
     <h:head>
 <!--        <meta http-equiv="cache-control" content="max-age=0" />
@@ -57,22 +56,31 @@
                     yearSuffix: ''
                 };
             </script>
+            <script>
+                $(document).ready(function () {
+                    $(document).ready(function () {
+                        PrimeFaces.getWidgetById('formulario:mnuPrincipal').stateKey = '-digitalsigner-main.xhtmlformulario:mnuPrincipal-panelmenu';
+                        PrimeFaces.getWidgetById('formulario:mnuPrincipal').restoreState();
+                    });
+                });
+            </script>
             <p:growl id="mensaje" widgetVar="mensaje" showDetail="true" life="4000" />
             <p:card id="cardPrincipal" styleClass="pad0 ">
-                <p:splitter layout="vertical" style="background-image: linear-gradient(to right, whitesmoke, #d2d2d2);">
-                    <p:splitterPanel size="5" minSize="5" 
+                <p:splitter id="sPrincipal" layout="vertical" style="background-image: linear-gradient(to right, whitesmoke, #d2d2d2);">
+                    <p:splitterPanel id="spCabecera" size="5" minSize="5" 
                                      style="background-image: url('resources/images/DigitalSigner_logo2.png');background-repeat: no-repeat;background-size: auto 90px;background-position-y: center;min-height: 100px!important;max-height: 100px!important">
                         <p:outputPanel style="text-align: right;padding: 10px;position: relative;right:10px;top:55px">
                             <p:outputLabel for="txtCoUsuario" value="#{msg['lblUsuarioBD']}: "/>
                             <p:inputText id="txtCoUsuario" value="#{datosUsuario.bdTUsuario.coUsuario}" disabled="true" style="width: 70px;" />
                         </p:outputPanel>
                     </p:splitterPanel>
-                    <p:splitterPanel size="95" minSize="95" style="min-height: calc(100vh - 125px)!important;max-height: calc(100vh - 125px)!important">
-                        <p:splitter style="background-color: transparent;">
-                            <p:splitterPanel size="15" style="background-color: transparent;min-width: 250px!important;overflow-y: auto">
-                                <p:panelMenu id="mnuPrincipal" widgetVar="mnuPrincipal" model="#{menu.model}" style="width:100%" />
+                    <p:splitterPanel id="spCuerpo" size="95" minSize="95" style="min-height: calc(100vh - 125px)!important;max-height: calc(100vh - 125px)!important">
+                        <p:splitter id="sCuerpo" style="background-color: transparent;">
+                            <p:splitterPanel id="spMenu" size="15" style="background-color: transparent;min-width: 250px!important;overflow-y: auto">
+                                <p:panelMenu id="mnuPrincipal" style="width:100%" model="#{menu.model}" stateful="true">
+                                </p:panelMenu>
                             </p:splitterPanel>
-                            <p:splitterPanel size="85" minSize="70">
+                            <p:splitterPanel id="spFormularios" size="85" minSize="70">
                                 <div style="height: 100%;background-color: transparent;padding: 0.2rem">
                                     <ui:insert id="tmpPrincipal" name="tmpPrincipal">
                                         <p:card styleClass="centerDiv" style="width: fit-content">
