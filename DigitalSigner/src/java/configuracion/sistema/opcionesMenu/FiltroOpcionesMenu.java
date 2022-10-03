@@ -1,6 +1,5 @@
 package configuracion.sistema.opcionesMenu;
 
-import configuracion.seguridad.unidades.*;
 import basedatos.ColumnBase;
 import basedatos.DataSet;
 import basedatos.RowCabecera;
@@ -88,7 +87,7 @@ public class FiltroOpcionesMenu implements Serializable {
             this.filtroVisible = (event.getVisibility() == Visibility.VISIBLE);
         }
         if (this.filtroVisible) {
-            this.dsResultado.setHeightFiltro("25.9rem");
+            this.dsResultado.setHeightFiltro("26.0rem");
         }
         else {
             this.dsResultado.setHeightFiltro("16.5rem");

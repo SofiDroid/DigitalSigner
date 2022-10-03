@@ -11,21 +11,13 @@
     </cc:interface>
 
     <!-- IMPLEMENTATION -->
-    <cc:implementation>
+    <cc:implementation>        
         <style>
             .ui-datatable-scrollable-body {
                 max-height: -webkit-fill-available;
+                height: "calc(#{cc.attrs.dataSet.height} - 1.8rem)!important";
             }
         </style>    
-        <script>
-            $(document).ready(function() {
-                $(document).ready(function() {
-                    if ($(".ui-paginator").length > 0) {
-                        $(".ui-datatable-scrollable-body")[0].style.height = "calc(#{cc.attrs.dataSet.height} - 5.5rem)!important";
-                    }
-                });
-            });
-        </script>
         <p:dataTable id="#{cc.attrs.id}" widgetVar="#{cc.attrs.id}" var="itemRow" value="#{cc.attrs.dataSet.rows}" scrollable="true" scrollHeight="100%" 
                      style="height: #{cc.attrs.dataSet.height};width:100%;padding:0.2rem" size="small"
                      selection="#{cc.attrs.dataSet.selectedRows}" rowKey="#{itemRow.id}"

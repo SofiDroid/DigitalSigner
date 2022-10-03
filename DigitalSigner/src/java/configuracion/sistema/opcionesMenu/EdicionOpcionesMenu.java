@@ -1,10 +1,7 @@
 package configuracion.sistema.opcionesMenu;
 
 import basedatos.servicios.StTOpcionmenu;
-import configuracion.seguridad.unidades.*;
-import basedatos.servicios.StTUnidad;
 import basedatos.tablas.BdTOpcionmenu;
-import basedatos.tablas.BdTUnidad;
 import excepciones.FormModeException;
 import excepciones.RegistryNotFoundException;
 import excepciones.RequiredFieldException;
@@ -315,8 +312,8 @@ public class EdicionOpcionesMenu implements Serializable {
         cOpcionMenuPadre.setId(this.bdTOpcionmenu.getIdOpcionmenupadre());
         cEnOrden.setValueInteger(this.bdTOpcionmenu.getEnOrden());
         cDsTitulo.setValue(this.bdTOpcionmenu.getDsTitulo());
-        cDsOpcionMenu.setValue(this.bdTOpcionmenu.getDsTooltip());
-        cDsOpcionMenu.setValue(this.bdTOpcionmenu.getDsRuta());
+        cDsTooltip.setValue(this.bdTOpcionmenu.getDsTooltip());
+        cDsRuta.setValue(this.bdTOpcionmenu.getDsRuta());
         cFeAlta.setValue(this.bdTOpcionmenu.getFeAlta());
         cFeDesactivo.setValue(this.bdTOpcionmenu.getFeDesactivo());
     }

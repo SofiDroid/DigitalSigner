@@ -5,9 +5,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
-import org.primefaces.model.StreamedContent;
 
 /**
  *
@@ -56,13 +54,6 @@ public final class DataSet extends StBase {
     }
     
     public void eliminarFilaSeleccionada() {
-//        for (int i = this.rows.size()-1; i >= 0; i--) {
-//            if (this.rows.get(i).getColumnaID().getValue().equals(this.getSelectedRow().getColumnaID().getValue())) {
-//                this.rows.remove(i);
-//                this.selectedRow = null;
-//                break;
-//            }
-//        }
         this.getRows().remove(this.getSelectedRow());
     }
     
