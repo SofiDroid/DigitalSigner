@@ -54,6 +54,10 @@ body .button-inline.ui-button.ui-button-icon-only .ui-button-text {
     background-color: #a6cae3!important;
 }
 
+body .ui-datatable .ui-paginator {
+    padding: 0.1rem!important;
+}
+
 body .ui-toolbar {
     padding: 0.5rem!important;
     background-color: #213a68!important;

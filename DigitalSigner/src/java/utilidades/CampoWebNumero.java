@@ -9,8 +9,8 @@ import java.math.BigDecimal;
 public class CampoWebNumero extends CampoWeb {
     
     protected String moneda = "";
-    protected String minValue = "";
-    protected String maxValue = "";
+    protected BigDecimal minValue = BigDecimal.valueOf(Integer.MIN_VALUE);
+    protected BigDecimal maxValue = BigDecimal.valueOf(Integer.MAX_VALUE);
     protected Integer numDecimales = null;
     
     public CampoWebNumero() {
@@ -26,7 +26,7 @@ public class CampoWebNumero extends CampoWeb {
     }
     
     public Integer getValueInteger() {
-        if (super.getValue() != null) {
+        if (super.getValue() != null && !super.getValue().toString().isBlank()) {
             if (super.getValue() instanceof Integer intValue) {
                 return intValue;
             }
@@ -44,7 +44,7 @@ public class CampoWebNumero extends CampoWeb {
     }
     
     public BigDecimal getValueBigDecimal() {
-        if (super.getValue() != null) {
+        if (super.getValue() != null && !super.getValue().toString().isBlank()) {
             if (super.getValue() instanceof Integer intValue) {
                 return BigDecimal.valueOf(intValue);
             }
@@ -69,20 +69,38 @@ public class CampoWebNumero extends CampoWeb {
         this.moneda = moneda;
     }
 
-    public String getMinValue() {
+    public BigDecimal getMinValue() {
         return minValue;
     }
 
-    public void setMinValue(String minValue) {
+    public void setMinValue(BigDecimal minValue) {
         this.minValue = minValue;
     }
 
-    public String getMaxValue() {
+    public void setMinValue(Integer minValue) {
+        if (minValue != null) {
+            this.minValue = BigDecimal.valueOf(minValue);
+        }
+        else {
+            this.minValue = BigDecimal.valueOf(Integer.MIN_VALUE);
+        }
+    }
+
+    public BigDecimal getMaxValue() {
         return maxValue;
     }
 
-    public void setMaxValue(String maxValue) {
+    public void setMaxValue(BigDecimal maxValue) {
         this.maxValue = maxValue;
+    }
+
+    public void setMaxValue(Integer maxValue) {
+        if (maxValue != null) {
+            this.maxValue = BigDecimal.valueOf(maxValue);
+        }
+        else {
+            this.maxValue = BigDecimal.valueOf(Integer.MAX_VALUE);
+        }
     }
 
     public Integer getNumDecimales() {

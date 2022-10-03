@@ -108,8 +108,8 @@ public class EdicionUsuarios implements Serializable {
             this.cEnIntentos.setWidthLabel("100px");
             this.cEnIntentos.setSize(2);
             this.cEnIntentos.setRequired(true);
-            this.cEnIntentos.setMinValue("0");
-            this.cEnIntentos.setMaxValue("10");
+            this.cEnIntentos.setMinValue(0);
+            this.cEnIntentos.setMaxValue(10);
             this.cEnIntentos.setNumDecimales(0);
             
             this.cEnIntentosMax = new CampoWebNumero();
@@ -117,8 +117,8 @@ public class EdicionUsuarios implements Serializable {
             this.cEnIntentosMax.setWidthLabel("100px");
             this.cEnIntentosMax.setSize(2);
             this.cEnIntentosMax.setRequired(true);
-            this.cEnIntentosMax.setMinValue("0");
-            this.cEnIntentosMax.setMaxValue("10");
+            this.cEnIntentosMax.setMinValue(0);
+            this.cEnIntentosMax.setMaxValue(10);
             this.cEnIntentosMax.setNumDecimales(0);
             
             this.cBoAdmin = new CampoWebCheck();

@@ -89,8 +89,13 @@ public class CampoWebLupa extends CampoWeb {
     }
 
     public void setId(Integer idValue) {
-        Row itemRow = recuperaPorValue(idValue);
-        this.selectedItem = new AutocompleteItem(itemRow.getColumnName(this.columnaID).getValueInteger(), itemRow.getColumnName(this.columnaLabel).getValueString());
+        if (idValue != null) {
+            Row itemRow = recuperaPorValue(idValue);
+            this.selectedItem = new AutocompleteItem(itemRow.getColumnName(this.columnaID).getValueInteger(), itemRow.getColumnName(this.columnaLabel).getValueString());
+        }
+        else {
+            this.selectedItem = null;
+        }
     }
     
     public Integer getId() {
