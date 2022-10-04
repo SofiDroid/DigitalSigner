@@ -41,8 +41,96 @@ public class EdicionPerfiles implements Serializable {
     private CampoWebFecha cFeDesactivo = null;
     private CampoWebLupa cUnidad = null;
     
-    private TreeNode<BdTOpcionmenu> treeOpcionesMenu = null;
-    private BdTOpcionmenu selectedOpcionMenu = null;
+    public class OpcionMenuPermisos {
+        private Integer idOpcionMenu = null;
+        private String dsTitulo = null;
+        private String dsOpcionMenu = null;
+        private Integer idOpcionMenuPadre = null;
+        private boolean chkConsulta = false;
+        private boolean chkAlta = false;
+        private boolean chkModificacion = false;
+        private boolean chkBorrado = false;
+        
+        public OpcionMenuPermisos() {
+        }
+        
+        public OpcionMenuPermisos(Integer idOpcionMenu, String dsTitulo, String dsOpcionMenu, Integer idOpcionMenuPadre,
+                boolean chkConsulta, boolean chkAlta, boolean chkModificacion, boolean chkBorrado) {
+            this.idOpcionMenu = idOpcionMenu;
+            this.dsTitulo = dsTitulo;
+            this.dsOpcionMenu = dsOpcionMenu;
+            this.idOpcionMenuPadre = idOpcionMenuPadre;
+            this.chkConsulta = chkConsulta;
+            this.chkAlta = chkAlta;
+            this.chkModificacion = chkModificacion;
+            this.chkBorrado = chkBorrado;
+        }
+
+        public Integer getIdOpcionMenu() {
+            return idOpcionMenu;
+        }
+
+        public void setIdOpcionMenu(Integer idOpcionMenu) {
+            this.idOpcionMenu = idOpcionMenu;
+        }
+
+        public String getDsTitulo() {
+            return dsTitulo;
+        }
+
+        public void setDsTitulo(String dsTitulo) {
+            this.dsTitulo = dsTitulo;
+        }
+
+        public String getDsOpcionMenu() {
+            return dsOpcionMenu;
+        }
+
+        public void setDsOpcionMenu(String dsOpcionMenu) {
+            this.dsOpcionMenu = dsOpcionMenu;
+        }
+
+        public Integer getIdOpcionMenuPadre() {
+            return idOpcionMenuPadre;
+        }
+
+        public void setIdOpcionMenuPadre(Integer idOpcionMenuPadre) {
+            this.idOpcionMenuPadre = idOpcionMenuPadre;
+        }
+
+        public boolean isChkConsulta() {
+            return chkConsulta;
+        }
+
+        public void setChkConsulta(boolean chkConsulta) {
+            this.chkConsulta = chkConsulta;
+        }
+
+        public boolean isChkAlta() {
+            return chkAlta;
+        }
+
+        public void setChkAlta(boolean chkAlta) {
+            this.chkAlta = chkAlta;
+        }
+
+        public boolean isChkModificacion() {
+            return chkModificacion;
+        }
+
+        public void setChkModificacion(boolean chkModificacion) {
+            this.chkModificacion = chkModificacion;
+        }
+
+        public boolean isChkBorrado() {
+            return chkBorrado;
+        }
+
+        public void setChkBorrado(boolean chkBorrado) {
+            this.chkBorrado = chkBorrado;
+        }
+    }
+    private TreeNode<OpcionMenuPermisos> treeOpcionesMenu = null;
     
     BdTTipousuario bdTTipousuario = null;
 
@@ -341,47 +429,39 @@ public class EdicionPerfiles implements Serializable {
         this.parent = parent;
     }
 
-    public TreeNode<BdTOpcionmenu> getTreeOpcionesMenu() {
+    public TreeNode<OpcionMenuPermisos> getTreeOpcionesMenu() {
         return treeOpcionesMenu;
     }
 
-    public void setTreeOpcionesMenu(TreeNode<BdTOpcionmenu> treeOpcionesMenu) {
+    public void setTreeOpcionesMenu(TreeNode<OpcionMenuPermisos> treeOpcionesMenu) {
         this.treeOpcionesMenu = treeOpcionesMenu;
     }
-
-    public BdTOpcionmenu getSelectedOpcionMenu() {
-        return selectedOpcionMenu;
-    }
-
-    public void setSelectedOpcionMenu(BdTOpcionmenu selectedOpcionMenu) {
-        this.selectedOpcionMenu = selectedOpcionMenu;
-    }
     
-    public TreeNode<BdTOpcionmenu> buscarNodoPadre(TreeNode<BdTOpcionmenu> root, Integer idOpcionmenu) {
+    public TreeNode<OpcionMenuPermisos> buscarNodoPadre(TreeNode<OpcionMenuPermisos> root, Integer idOpcionmenu) {
         if (root.getChildCount() > 0) {
-            for (TreeNode<BdTOpcionmenu> item : root.getChildren()) {
-                TreeNode<BdTOpcionmenu> resul = buscarNodoPadre(item, idOpcionmenu);
+            for (TreeNode<OpcionMenuPermisos> item : root.getChildren()) {
+                TreeNode<OpcionMenuPermisos> resul = buscarNodoPadre(item, idOpcionmenu);
                 if (resul != null) {
                     return resul;
                 }
             }
         }
-        if (root.getData().getIdOpcionmenu().compareTo(idOpcionmenu) == 0) {
+        if (root.getData().getIdOpcionMenu().compareTo(idOpcionmenu) == 0) {
             return root;
         }
         return null;
     }
     
-    public TreeNode<BdTOpcionmenu> createCheckboxDocuments() {
+    public TreeNode<OpcionMenuPermisos> createCheckboxDocuments() {
         try {
-            TreeNode<BdTOpcionmenu> root = new CheckboxTreeNode<>(new BdTOpcionmenu(), null);
+            TreeNode<OpcionMenuPermisos> root = new CheckboxTreeNode<>(new OpcionMenuPermisos(), null);
             
             DataSet dsOpcionesMenu = new DataSet("SELECT ID_OPCIONMENU, DS_OPCIONMENU, DS_TITULO, ID_OPCIONMENUPADRE FROM BD_T_OPCIONMENU ORDER BY ID_OPCIONMENUPADRE ASC", "ID_OPCIONMENU");
             for (Row itemRow : dsOpcionesMenu.getRows()) {
-                BdTOpcionmenu item = new BdTOpcionmenu();
-                item.setIdOpcionmenu(itemRow.getColumnName("ID_OPCIONMENU").getValueInteger());
+                OpcionMenuPermisos item = new OpcionMenuPermisos();
+                item.setIdOpcionMenu(itemRow.getColumnName("ID_OPCIONMENU").getValueInteger());
                 item.setDsTitulo(itemRow.getColumnName("DS_TITULO").getValueString());
-                item.setDsOpcionmenu(itemRow.getColumnName("DS_OPCIONMENU").getValueString());
+                item.setDsOpcionMenu(itemRow.getColumnName("DS_OPCIONMENU").getValueString());
                 
                 TreeNode padre = root;
                 if (itemRow.getColumnName("ID_OPCIONMENUPADRE").getValueInteger() != null) {
