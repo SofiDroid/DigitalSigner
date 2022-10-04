@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 import utilidades.CampoWebCodigo;
 import utilidades.CampoWebDescripcion;
 import utilidades.CampoWebFechaRango;
+import utilidades.CampoWebLupa;
 import utilidades.Formateos;
 import utilidades.Mensajes;
 import utilidades.Msg;
@@ -31,6 +32,7 @@ public class FiltroPerfiles implements Serializable {
     private CampoWebDescripcion cDsTipousuario = null;
     private CampoWebFechaRango cFeAlta = null;
     private CampoWebFechaRango cFeDesactivo = null;
+    private CampoWebLupa cUnidad = null;
     private boolean filtroVisible = true;
     private DataSet dsResultado = null;
     
@@ -55,6 +57,14 @@ public class FiltroPerfiles implements Serializable {
         this.cFeDesactivo = new CampoWebFechaRango();
         this.cFeDesactivo.setLabel(Msg.getString("lbl_FiltroPerfiles_FeDesactivo"));
         this.cFeDesactivo.setWidthLabel("100px");
+        
+        this.cUnidad = new CampoWebLupa();
+        this.cUnidad.setLabel(Msg.getString("lbl_FiltroPerfiles_Unidad"));
+        this.cUnidad.setWidthLabel("70px");
+        String sql = "SELECT ID_UNIDAD, CO_UNIDAD + ' - ' + DS_UNIDAD as Unidad FROM BD_T_UNIDAD";
+        this.cUnidad.setConsulta(sql);
+        this.cUnidad.setColumnaID("ID_UNIDAD");
+        this.cUnidad.setColumnaLabel("Unidad");
         
         this.dsResultado = new DataSet();
     }
@@ -85,6 +95,14 @@ public class FiltroPerfiles implements Serializable {
 
     public CampoWebFechaRango getcFeDesactivo() {
         return cFeDesactivo;
+    }
+    
+    public CampoWebLupa getcUnidad() {
+        return cUnidad;
+    }
+
+    public void setcUnidad(CampoWebLupa cUnidad) {
+        this.cUnidad = cUnidad;
     }
 
     public void setcFeDesactivo(CampoWebFechaRango cFeDesactivo) {
@@ -123,6 +141,7 @@ public class FiltroPerfiles implements Serializable {
             cFeAlta.setValueFin(null);
             cFeDesactivo.setValueIni(null);
             cFeDesactivo.setValueFin(null);
+            cUnidad.setId(null);
             
             this.dsResultado.clear();
         } catch (Exception ex) {
@@ -203,6 +222,9 @@ public class FiltroPerfiles implements Serializable {
                 sql += "(FE_DESACTIVO <= " + Formateos.dateToSql((Date)cFeDesactivo.getValueFin()) + ")";
             }
             sql += ")";
+        }
+        if (cUnidad.getId() != null) {
+            sql += " AND ID_UNIDAD = " + cUnidad.getId();
         }
         
         return sql;

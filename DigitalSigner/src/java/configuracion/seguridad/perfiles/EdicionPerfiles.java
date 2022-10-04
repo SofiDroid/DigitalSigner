@@ -11,6 +11,7 @@ import javax.faces.context.FacesContext;
 import utilidades.CampoWebCodigo;
 import utilidades.CampoWebDescripcion;
 import utilidades.CampoWebFecha;
+import utilidades.CampoWebLupa;
 import utilidades.Mensajes;
 import utilidades.ModoFormulario;
 import utilidades.Msg;
@@ -28,6 +29,7 @@ public class EdicionPerfiles implements Serializable {
     private CampoWebDescripcion cDsTipousuario= null;
     private CampoWebFecha cFeAlta = null;
     private CampoWebFecha cFeDesactivo = null;
+    private CampoWebLupa cUnidad = null;
     
     BdTTipousuario bdTTipousuario = null;
 
@@ -64,6 +66,15 @@ public class EdicionPerfiles implements Serializable {
             this.cFeDesactivo.setLabel(Msg.getString("lbl_EdicionPerfiles_FeDesactivo"));
             this.cFeDesactivo.setWidthLabel("100px");
             
+            this.cUnidad = new CampoWebLupa();
+            this.cUnidad.setLabel(Msg.getString("lbl_EdicionPerfiles_Unidad"));
+            this.cUnidad.setWidthLabel("100px");
+            String sql = "SELECT ID_UNIDAD, CO_UNIDAD + ' - ' + DS_UNIDAD as Unidad FROM BD_T_UNIDAD";
+            this.cUnidad.setConsulta(sql);
+            this.cUnidad.setColumnaID("ID_UNIDAD");
+            this.cUnidad.setColumnaLabel("Unidad");
+            this.cUnidad.setRequired(true);
+            
             this.setModoFormulario(ModoFormulario.CONSULTA);
 
             if (idTipousuario != null) {
@@ -95,6 +106,7 @@ public class EdicionPerfiles implements Serializable {
                 this.bdTTipousuario.setDsTipousuario(this.cDsTipousuario.getValue());
                 this.bdTTipousuario.setFeAlta(this.cFeAlta.getValue());
                 this.bdTTipousuario.setFeDesactivo(this.cFeDesactivo.getValue());
+                this.bdTTipousuario.setIdUnidad(this.cUnidad.getId());
                 
                 StTTipousuario stTTipousuario = new StTTipousuario();
                 stTTipousuario.alta(this.bdTTipousuario, null);
@@ -112,6 +124,7 @@ public class EdicionPerfiles implements Serializable {
                 this.bdTTipousuario.setDsTipousuario(this.cDsTipousuario.getValue());
                 this.bdTTipousuario.setFeAlta(this.cFeAlta.getValue());
                 this.bdTTipousuario.setFeDesactivo(this.cFeDesactivo.getValue());
+                this.bdTTipousuario.setIdUnidad(this.cUnidad.getId());
                 
                 StTTipousuario stTTipousuario = new StTTipousuario();
                 stTTipousuario.actualiza(this.bdTTipousuario, null);
@@ -164,6 +177,7 @@ public class EdicionPerfiles implements Serializable {
         this.cDsTipousuario.setValue(null);
         this.cFeAlta.setValue(null);
         this.cFeDesactivo.setValue(null);
+        this.cUnidad.setId(null);
     }
     
     public String volver() {
@@ -192,6 +206,9 @@ public class EdicionPerfiles implements Serializable {
         if (Validation.isNullOrEmpty(this.cFeAlta.getValue())) {
             throw new RequiredFieldException(this.cFeAlta.getLabel());
         }
+        if (Validation.isNullOrEmpty(this.cUnidad.getId())) {
+            throw new RequiredFieldException(this.cUnidad.getLabel());
+        }
     }
     
     private void protegerCampos() throws Exception {
@@ -201,12 +218,14 @@ public class EdicionPerfiles implements Serializable {
                 this.cDsTipousuario.setProtegido(true);
                 this.cFeAlta.setProtegido(true);
                 this.cFeDesactivo.setProtegido(true);
+                this.cUnidad.setProtegido(true);
             }
             case EDICION -> {
                 this.cCoTipousuario.setProtegido(false);
                 this.cDsTipousuario.setProtegido(false);
                 this.cFeAlta.setProtegido(false);
                 this.cFeDesactivo.setProtegido(false);
+                this.cUnidad.setProtegido(false);
             }
             case ALTA -> {
                 limpiar();
@@ -214,6 +233,7 @@ public class EdicionPerfiles implements Serializable {
                 this.cDsTipousuario.setProtegido(false);
                 this.cFeAlta.setProtegido(false);
                 this.cFeDesactivo.setProtegido(false);
+                this.cUnidad.setProtegido(false);
             }
             default -> throw new FormModeException();
         }
@@ -229,7 +249,8 @@ public class EdicionPerfiles implements Serializable {
         cCoTipousuario.setValue(this.bdTTipousuario.getCoTipousuario());
         cDsTipousuario.setValue(this.bdTTipousuario.getDsTipousuario());
         cFeAlta.setValue(this.bdTTipousuario.getFeAlta());
-        cFeDesactivo.setValue(this.bdTTipousuario.getFeDesactivo());
+        cFeDesactivo.setValue(this.bdTTipousuario.getFeDesactivo());        
+        cUnidad.setId(this.bdTTipousuario.getIdUnidad());
     }
 
     public CampoWebCodigo getcCoTipousuario() {
@@ -262,6 +283,14 @@ public class EdicionPerfiles implements Serializable {
 
     public void setcFeDesactivo(CampoWebFecha cFeDesactivo) {
         this.cFeDesactivo = cFeDesactivo;
+    }
+
+    public CampoWebLupa getcUnidad() {
+        return cUnidad;
+    }
+
+    public void setcUnidad(CampoWebLupa cUnidad) {
+        this.cUnidad = cUnidad;
     }
 
     public BdTTipousuario getBdTTipousuario() {

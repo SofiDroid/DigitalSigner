@@ -73,6 +73,7 @@ public class EdicionAutoridades implements Serializable {
             this.cUnidad.setConsulta(sql);
             this.cUnidad.setColumnaID("ID_UNIDAD");
             this.cUnidad.setColumnaLabel("Unidad");
+            this.cUnidad.setRequired(true);
 
             this.setModoFormulario(ModoFormulario.CONSULTA);
 
