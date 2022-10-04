@@ -1,7 +1,6 @@
 package basedatos.conversores;
 
 import basedatos.AutocompleteItem;
-import basedatos.Row;
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;

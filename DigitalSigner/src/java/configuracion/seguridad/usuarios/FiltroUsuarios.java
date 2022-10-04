@@ -10,8 +10,6 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
 import org.apache.log4j.Logger;
-import org.primefaces.event.ToggleEvent;
-import org.primefaces.model.Visibility;
 import utilidades.CampoWebCheckTriState;
 import utilidades.CampoWebCodigo;
 import utilidades.CampoWebDescripcion;
@@ -179,7 +177,7 @@ public class FiltroUsuarios implements Serializable {
             cDsNombre.setValue(null);
             cDsApellido1.setValue(null);
             cDsApellido2.setValue(null);
-            cBoAdmin.setValue(false);
+            cBoAdmin.setBooleanValue(null);
             cFeAlta.setValueIni(null);
             cFeAlta.setValueFin(null);
             cFeDesactivo.setValueIni(null);

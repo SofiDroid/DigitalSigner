@@ -190,6 +190,9 @@ public class OperacionSQL {
                 else if (valorBD instanceof Date) {
                     throw new Exception("EntityManager: No se puede convertir Date a Boolean.");
                 }
+                else if (valorBD instanceof Boolean valor) {
+                    campo.set(campoJavaClass, valor);
+                }
             }
             else {
                 throw new Exception("EntityManager: Conversion de " + tipo.getName() + " a " + valorBD.getClass().getName() + " no configurada.");

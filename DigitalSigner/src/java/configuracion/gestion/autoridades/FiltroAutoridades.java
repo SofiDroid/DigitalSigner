@@ -1,5 +1,6 @@
-package configuracion.sistema.opcionesMenu;
+package configuracion.gestion.autoridades;
 
+import configuracion.seguridad.unidades.*;
 import basedatos.ColumnBase;
 import basedatos.DataSet;
 import basedatos.RowCabecera;
@@ -25,106 +26,64 @@ import utilidades.Session;
  */
 @Named
 @SessionScoped
-public class FiltroOpcionesMenu implements Serializable {
-    private final Logger LOG = Logger.getLogger(FiltroOpcionesMenu.class);
+public class FiltroAutoridades implements Serializable {
+    private final Logger LOG = Logger.getLogger(FiltroAutoridades.class);
     
-    private CampoWebCodigo cCoOpcionMenu = null;
-    private CampoWebDescripcion cDsOpcionMenu = null;
+    private CampoWebCodigo cCoAutoridad = null;
+    private CampoWebDescripcion cDsAutoridad= null;
     private CampoWebFechaRango cFeAlta = null;
     private CampoWebFechaRango cFeDesactivo = null;
-    private CampoWebDescripcion cDsTitulo = null;
-    private CampoWebDescripcion cDsRuta = null;
-    private CampoWebLupa cOpcionMenuPadre = null;
+    private CampoWebLupa cUnidad = null;
     private boolean filtroVisible = true;
     private DataSet dsResultado = null;
     
-    private EdicionOpcionesMenu edicionOpcionesMenu = null; 
+    private EdicionAutoridades edicionAutoridades = null; 
     
     @PostConstruct
     public void init() {
         Session.limpiarOtrosBeans(this.getClass().getName());
 
-        this.cCoOpcionMenu = new CampoWebCodigo();
-        this.cCoOpcionMenu.setLabel(Msg.getString("lbl_FiltroOpcionesMenu_CoOpcionMenu"));
-        this.cCoOpcionMenu.setWidthLabel("100px");
+        this.cCoAutoridad = new CampoWebCodigo();
+        this.cCoAutoridad.setLabel(Msg.getString("lbl_FiltroAutoridades_CoAutoridad"));
+        this.cCoAutoridad.setWidthLabel("100px");
         
-        this.cDsOpcionMenu = new CampoWebDescripcion();
-        this.cDsOpcionMenu.setLabel(Msg.getString("lbl_FiltroOpcionesMenu_DsOpcionMenu"));
-        this.cDsOpcionMenu.setWidthLabel("100px");
+        this.cDsAutoridad = new CampoWebDescripcion();
+        this.cDsAutoridad.setLabel(Msg.getString("lbl_FiltroAutoridades_DsAutoridad"));
+        this.cDsAutoridad.setWidthLabel("100px");
         
         this.cFeAlta = new CampoWebFechaRango();
-        this.cFeAlta.setLabel(Msg.getString("lbl_FiltroOpcionesMenu_FeAlta"));
+        this.cFeAlta.setLabel(Msg.getString("lbl_FiltroAutoridades_FeAlta"));
         this.cFeAlta.setWidthLabel("100px");
 
         this.cFeDesactivo = new CampoWebFechaRango();
-        this.cFeDesactivo.setLabel(Msg.getString("lbl_FiltroOpcionesMenu_FeDesactivo"));
+        this.cFeDesactivo.setLabel(Msg.getString("lbl_FiltroAutoridades_FeDesactivo"));
         this.cFeDesactivo.setWidthLabel("100px");
         
-        this.cDsTitulo = new CampoWebDescripcion();
-        this.cDsTitulo.setLabel(Msg.getString("lbl_FiltroOpcionesMenu_DsTitulo"));
-        this.cDsTitulo.setWidthLabel("100px");
-        
-        this.cDsRuta = new CampoWebDescripcion();
-        this.cDsRuta.setLabel(Msg.getString("lbl_FiltroOpcionesMenu_DsRuta"));
-        this.cDsRuta.setWidthLabel("100px");
-        
-        this.cOpcionMenuPadre = new CampoWebLupa();
-        this.cOpcionMenuPadre.setLabel(Msg.getString("lbl_FiltroOpcionesMenu_OpcionMenuPadre"));
-        this.cOpcionMenuPadre.setWidthLabel("100px");
-        String sql = "SELECT ID_OPCIONMENU, CO_OPCIONMENU + ' - ' + DS_OPCIONMENU as 'Menú' FROM BD_T_OPCIONMENU";
-        this.cOpcionMenuPadre.setConsulta(sql);
-        this.cOpcionMenuPadre.setColumnaID("ID_OPCIONMENU");
-        this.cOpcionMenuPadre.setColumnaLabel("Menú");
+        this.cUnidad = new CampoWebLupa();
+        this.cUnidad.setLabel(Msg.getString("lbl_FiltroAutoridades_Unidad"));
+        this.cUnidad.setWidthLabel("100px");
+        String sql = "SELECT ID_UNIDAD, CO_UNIDAD + ' - ' + DS_UNIDAD as Unidad FROM BD_T_UNIDAD";
+        this.cUnidad.setConsulta(sql);
+        this.cUnidad.setColumnaID("ID_UNIDAD");
+        this.cUnidad.setColumnaLabel("Unidad");
         
         this.dsResultado = new DataSet();
     }
     
-    public CampoWebCodigo getcCoOpcionMenu() {
-        return cCoOpcionMenu;
+    public CampoWebCodigo getcCoAutoridad() {
+        return cCoAutoridad;
     }
 
-    public void setcCoOpcionMenu(CampoWebCodigo cCoOpcionMenu) {
-        this.cCoOpcionMenu = cCoOpcionMenu;
+    public void setcCoAutoridad(CampoWebCodigo cCoAutoridad) {
+        this.cCoAutoridad = cCoAutoridad;
     }
 
-    public CampoWebDescripcion getcDsOpcionMenu() {
-        return cDsOpcionMenu;
+    public CampoWebDescripcion getcDsAutoridad() {
+        return cDsAutoridad;
     }
 
-    public void setcDsOpcionMenu(CampoWebDescripcion cDsOpcionMenu) {
-        this.cDsOpcionMenu = cDsOpcionMenu;
-    }
-
-    public CampoWebDescripcion getcDsTitulo() {
-        return cDsTitulo;
-    }
-
-    public void setcDsTitulo(CampoWebDescripcion cDsTitulo) {
-        this.cDsTitulo = cDsTitulo;
-    }
-
-    public CampoWebDescripcion getcDsRuta() {
-        return cDsRuta;
-    }
-
-    public void setcDsRuta(CampoWebDescripcion cDsRuta) {
-        this.cDsRuta = cDsRuta;
-    }
-
-    public CampoWebLupa getcOpcionMenuPadre() {
-        return cOpcionMenuPadre;
-    }
-
-    public void setcOpcionMenuPadre(CampoWebLupa cOpcionMenuPadre) {
-        this.cOpcionMenuPadre = cOpcionMenuPadre;
-    }
-
-    public EdicionOpcionesMenu getEdicionOpcionesMenu() {
-        return edicionOpcionesMenu;
-    }
-
-    public void setEdicionOpcionesMenu(EdicionOpcionesMenu edicionOpcionesMenu) {
-        this.edicionOpcionesMenu = edicionOpcionesMenu;
+    public void setcDsAutoridad(CampoWebDescripcion cDsAutoridad) {
+        this.cDsAutoridad = cDsAutoridad;
     }
 
     public CampoWebFechaRango getcFeAlta() {
@@ -143,6 +102,14 @@ public class FiltroOpcionesMenu implements Serializable {
         this.cFeDesactivo = cFeDesactivo;
     }
 
+    public CampoWebLupa getcUnidad() {
+        return cUnidad;
+    }
+
+    public void setcUnidad(CampoWebLupa cUnidad) {
+        this.cUnidad = cUnidad;
+    }
+
     public DataSet getDsResultado() {
         return dsResultado;
     }
@@ -158,18 +125,24 @@ public class FiltroOpcionesMenu implements Serializable {
     public void setFiltroVisible(boolean filtroVisible) {
         this.filtroVisible = filtroVisible;
     }
+
+    public EdicionAutoridades getEdicionAutoridades() {
+        return edicionAutoridades;
+    }
+
+    public void setEdicionAutoridades(EdicionAutoridades edicionAutoridades) {
+        this.edicionAutoridades = edicionAutoridades;
+    }
     
     public void limpiar() {
         try {
-            cCoOpcionMenu.setValue(null);
-            cDsOpcionMenu.setValue(null);
+            cCoAutoridad.setValue(null);
+            cDsAutoridad.setValue(null);
             cFeAlta.setValueIni(null);
             cFeAlta.setValueFin(null);
             cFeDesactivo.setValueIni(null);
             cFeDesactivo.setValueFin(null);
-            cDsTitulo.setValue(null);
-            cDsRuta.setValue(null);
-            cOpcionMenuPadre.setValue(null);
+            cUnidad.setId(null);
             
             this.dsResultado.clear();
         } catch (Exception ex) {
@@ -180,19 +153,19 @@ public class FiltroOpcionesMenu implements Serializable {
     
     public void buscar() {
         try {
-            String sql = "SELECT ID_OPCIONMENU, CO_OPCIONMENU, DS_OPCIONMENU, FE_ALTA, FE_DESACTIVO FROM BD_T_OPCIONMENU WHERE 1 = 1";
+            String sql = "SELECT ID_AUTORIDAD, CO_AUTORIDAD, DS_AUTORIDAD, FE_ALTA, FE_DESACTIVO FROM BD_T_AUTORIDAD WHERE 1 = 1";
             sql = filtros(sql);
 
-            this.dsResultado = new DataSet(sql, "ID_OPCIONMENU");
+            this.dsResultado = new DataSet(sql, "ID_AUTORIDAD");
 
             if (this.getDsResultado().getRowsCount() > 0) {
                 // Establecer formato de salida
                 RowCabecera cabecera = this.dsResultado.getCabecera();
 
-                cabecera.getColumnName("ID_OPCIONMENU")
+                cabecera.getColumnName("ID_AUTORIDAD")
                         .setVisible(false);
 
-                cabecera.getColumnName("CO_OPCIONMENU")
+                cabecera.getColumnName("CO_AUTORIDAD")
                         .setTitle("Código")
                         .setWidth("6rem")
                         .setTipo(ColumnBase.Tipo.LINK)
@@ -200,7 +173,7 @@ public class FiltroOpcionesMenu implements Serializable {
                         .setMethod(this.getClass().getMethod("verDetalle"))
                         .setUpdate("formulario:panelResultado,formulario:mensaje");
 
-                cabecera.getColumnName("DS_OPCIONMENU")
+                cabecera.getColumnName("DS_AUTORIDAD")
                         .setTitle("Descripción")
                         .setWidth("100%");
 
@@ -219,11 +192,11 @@ public class FiltroOpcionesMenu implements Serializable {
     }
     
     private String filtros(String sql) {
-        if (cCoOpcionMenu.getValue() != null) {
-            sql += " AND UPPER(CO_OPCIONMENU) LIKE '%" + cCoOpcionMenu.getValue().toUpperCase() + "%'";
+        if (cCoAutoridad.getValue() != null) {
+            sql += " AND UPPER(CO_AUTORIDAD) LIKE '%" + cCoAutoridad.getValue().toUpperCase() + "%'";
         }
-        if (cDsOpcionMenu.getValue() != null) {
-            sql += " AND UPPER(DS_OPCIONMENU) LIKE '%" + cDsOpcionMenu.getValue().toUpperCase() + "%'";
+        if (cDsAutoridad.getValue() != null) {
+            sql += " AND UPPER(DS_AUTORIDAD) LIKE '%" + cDsAutoridad.getValue().toUpperCase() + "%'";
         }
         if (cFeAlta.getValueIni() != null || cFeAlta.getValueFin() != null) {
             sql += " AND (";
@@ -251,8 +224,8 @@ public class FiltroOpcionesMenu implements Serializable {
             }
             sql += ")";
         }
-        if (cOpcionMenuPadre.getId() != null) {
-            sql += " AND ID_OPCIONMENUPADRE = " + cOpcionMenuPadre.getId();
+        if (cUnidad.getId() != null) {
+            sql += " AND ID_UNIDAD = " + cUnidad.getId();
         }
         
         return sql;
@@ -260,10 +233,10 @@ public class FiltroOpcionesMenu implements Serializable {
     
     public String verDetalle() {
         try {
-            this.edicionOpcionesMenu = new EdicionOpcionesMenu(this, this.dsResultado.getSelectedRow().getColumnName("ID_OPCIONMENU").getValueInteger());
-            this.edicionOpcionesMenu.setPaginaRetorno("filtroOpcionesMenu");
+            this.edicionAutoridades = new EdicionAutoridades(this, this.dsResultado.getSelectedRow().getColumnName("ID_AUTORIDAD").getValueInteger());
+            this.edicionAutoridades.setPaginaRetorno("filtroAutoridades");
     
-            return "edicionOpcionesMenu";
+            return "edicionAutoridades";
         } catch (Exception ex) {
             LOG.error(ex.getMessage(), ex);
             Mensajes.showError("Error al navegar al detalle", ex.getMessage());
@@ -274,10 +247,10 @@ public class FiltroOpcionesMenu implements Serializable {
 
     public String nuevo() {
         try {
-            this.edicionOpcionesMenu = new EdicionOpcionesMenu(this, null);
-            this.edicionOpcionesMenu.setPaginaRetorno("filtroOpcionesMenu");
+            this.edicionAutoridades = new EdicionAutoridades(this, null);
+            this.edicionAutoridades.setPaginaRetorno("filtroAutoridades");
             
-            return "edicionOpcionesMenu";
+            return "edicionAutoridades";
         } catch (Exception ex) {
             LOG.error(ex.getMessage(), ex);
             Mensajes.showError("Error al navegar al detalle", ex.getMessage());

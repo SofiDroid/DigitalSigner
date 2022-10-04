@@ -12,11 +12,12 @@ public class CampoWebCodigo extends CampoWeb {
     }
     
     public void setValue(String value) {
-        super.setValue(value);
+        super.setValue(((value != null && !value.isBlank()) ? value : null));
     }
 
     @Override
     public String getValue() {
-        return (String)super.getValue();
-    }   
+        return ((super.getValue() != null  && !((String)super.getValue()).isBlank()) ? (String)super.getValue() : null);
+    }
+   
 }

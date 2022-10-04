@@ -6,7 +6,6 @@ package utilidades;
 
 import basedatos.tablas.BdTUsuario;
 import java.util.Set;
-import javax.annotation.ManagedBean;
 import javax.el.ELContext;
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.context.spi.AlterableContext;

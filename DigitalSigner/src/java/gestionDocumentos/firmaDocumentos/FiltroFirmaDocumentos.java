@@ -14,8 +14,6 @@ import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
 import org.apache.log4j.Logger;
 import org.primefaces.context.PrimeRequestContext;
-import org.primefaces.event.ToggleEvent;
-import org.primefaces.model.Visibility;
 import utilidades.CampoWebCodigo;
 import utilidades.CampoWebDescripcion;
 import utilidades.CampoWebFechaRango;

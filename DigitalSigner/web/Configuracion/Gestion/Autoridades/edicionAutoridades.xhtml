@@ -1,0 +1,75 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+      xmlns:sd="http://xmlns.jcp.org/jsf/composite/sofidroid">
+
+    <ui:composition template="/main.xhtml">
+        <ui:define id="tmpPrincipal" name="tmpPrincipal">
+            <c:if test="#{filtroAutoridades.edicionAutoridades ne null}">
+                <c:set var="beanEdicion" value="#{filtroAutoridades.edicionAutoridades}"/>
+            </c:if>
+            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" width="350">
+                <p:commandButton value="#{msg['No']}" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
+                <p:commandButton value="#{msg['Si']}" type="button" styleClass="ui-confirmdialog-yes" />
+            </p:confirmDialog>
+            <p:card styleClass="card">
+                <p:toolbar>
+                    <p:toolbarGroup align="left">
+                        <p:outputLabel value="Mantenimiento de Autoridades - Detalle" style="font-size: large; font-weight: bold" /> 
+                    </p:toolbarGroup>
+                    <p:toolbarGroup align="right">
+                        <p:commandButton id="btnGuardar" icon="pi pi-save" styleClass="rounded-button ui-button-success" 
+                                         style="height: 2rem;width: 2rem;margin-left:0.3rem" action="#{beanEdicion.guardar}" title="(alt+S) Guardar"
+                                         update="@form" accesskey="s" 
+                                         rendered="#{beanEdicion.modoFormulario eq 'EDICION' or beanEdicion.modoFormulario eq 'ALTA'}" />
+
+                        <p:commandButton id="btnModificar" icon="pi pi-pencil" styleClass="rounded-button ui-button-primary" 
+                                         style="height: 2rem;width: 2rem;margin-left:0.3rem" action="#{beanEdicion.modificar}" title="(alt+M) Modifcar"
+                                         update="@form" accesskey="m" immediate="true"
+                                         rendered="#{beanEdicion.modoFormulario eq 'CONSULTA'}" />
+
+                        <p:commandButton id="btnEliminar" icon="pi pi-trash" styleClass="rounded-button ui-button-danger" 
+                                         style="height: 2rem;width: 2rem;margin-left:0.3rem" action="#{beanEdicion.eliminar}" title="(alt+E) Eliminar"
+                                         update="@form" accesskey="e" immediate="true"
+                                         rendered="#{beanEdicion.modoFormulario eq 'CONSULTA'}">
+                            <p:confirm header="#{msg['confirmacion']}" message="#{msg['confirmacion_borrado']}" icon="pi pi-info-circle"/>
+                        </p:commandButton>
+                        
+                        <p:commandButton id="btnLimpiar" icon="pi pi-filter-slash" styleClass="rounded-button ui-button-secondary" 
+                                         style="height: 2rem;width: 2rem;margin-left:0.3rem" action="#{beanEdicion.limpiar}" title="(alt+L) Limpiar formulario"
+                                         update="@form" accesskey="l" immediate="true"
+                                         rendered="#{beanEdicion.modoFormulario eq 'EDICION'}" />
+
+                        <p:commandButton id="btnVolver" icon="pi pi-undo" styleClass="rounded-button ui-button-warning" 
+                                         style="height: 2rem;width: 2rem;margin-left:0.3rem" action="#{beanEdicion.volver}" title="(alt+V) Volver"
+                                         update="@form" accesskey="v" immediate="true" />
+                    </p:toolbarGroup>
+                </p:toolbar>
+            </p:card>
+            <p:focus context="cardEdicion"/>
+            <p:card id="cardEdicion" styleClass="card">
+                <p:panelGrid columns="1"
+                     columnClasses="col-12"
+                     layout="grid"
+                     styleClass="ui-panelgrid-blank ui-fluid"
+                     style="border:0px none;background-color:transparent;">
+
+                    <sd:campoWebTexto id="txtCodigoAutoridad" beanClass="#{beanEdicion.getcCoAutoridad()}" />
+
+                    <sd:campoWebTexto id="txtDescripcionAutoridad" beanClass="#{beanEdicion.getcDsAutoridad()}" />
+
+                    <sd:campoWebFecha id="txtFeAlta" beanClass="#{beanEdicion.getcFeAlta()}" />
+
+                    <sd:campoWebFecha id="txtFeDesactivo" beanClass="#{beanEdicion.getcFeDesactivo()}" />
+
+                    <sd:campoWebLupa id="txtUnidad" beanClass="#{beanEdicion.getcUnidad()}" />
+
+                </p:panelGrid>
+            </p:card>
+        </ui:define>
+    </ui:composition>
+</html>
+

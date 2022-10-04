@@ -2,7 +2,6 @@ package configuracion.gestion.situacionesDocumentos;
 
 import basedatos.servicios.StTSituaciondoc;
 import basedatos.tablas.BdTSituaciondoc;
-import basedatos.tablas.BdTSituaciondoc;
 import excepciones.FormModeException;
 import excepciones.RegistryNotFoundException;
 import excepciones.RequiredFieldException;
