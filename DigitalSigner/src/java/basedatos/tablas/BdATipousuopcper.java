@@ -127,8 +127,8 @@ public class BdATipousuopcper extends OperacionSQL implements InterfazDAO {
         }
         sb_sql.append(" WHERE ");
         sb_sql.append("ID_TIPOUSUARIO = ").append(":ID_TIPOUSUARIO");
-        sb_sql.append("AND ID_OPCIONMENU = ").append(":ID_OPCIONMENU");
-        sb_sql.append("AND ID_PERMISO = ").append(":ID_PERMISO");
+        sb_sql.append(" AND ID_OPCIONMENU = ").append(":ID_OPCIONMENU");
+        sb_sql.append(" AND ID_PERMISO = ").append(":ID_PERMISO");
         
         return sb_sql.toString();
     }
@@ -138,8 +138,8 @@ public class BdATipousuopcper extends OperacionSQL implements InterfazDAO {
         StringBuilder sb_sql = new StringBuilder("DELETE BD_A_TIPOUSUOPCPER ");
         sb_sql.append(" WHERE ");
         sb_sql.append("ID_TIPOUSUARIO = ").append(":ID_TIPOUSUARIO");
-        sb_sql.append("AND ID_OPCIONMENU = ").append(":ID_OPCIONMENU");
-        sb_sql.append("AND ID_PERMISO = ").append(":ID_PERMISO");
+        sb_sql.append(" AND ID_OPCIONMENU = ").append(":ID_OPCIONMENU");
+        sb_sql.append(" AND ID_PERMISO = ").append(":ID_PERMISO");
         
         return sb_sql.toString();
     }

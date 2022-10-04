@@ -88,7 +88,10 @@ public class StTTipousuario extends StBase {
         parametros.put("TSTBD", newBdTTipousuario.getTstbd());
 
 
-        return executeNativeQueryParametros(newBdTTipousuario.getInsert(), parametros, em);
+        int result = executeNativeQueryParametros(newBdTTipousuario.getInsert(), parametros, em);
+        newBdTTipousuario.setIdTipousuario(filtro(newBdTTipousuario, em).get(0).getIdTipousuario());
+        
+        return result;
     }
 
     public int actualiza(BdTTipousuario upBdTTipousuario, EntityManager em) throws Exception {

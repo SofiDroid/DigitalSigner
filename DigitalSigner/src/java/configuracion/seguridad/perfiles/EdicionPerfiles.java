@@ -2,14 +2,19 @@ package configuracion.seguridad.perfiles;
 
 import basedatos.DataSet;
 import basedatos.Row;
+import basedatos.servicios.StATipousuopcper;
 import basedatos.servicios.StTTipousuario;
+import basedatos.tablas.BdATipousuopcper;
 import basedatos.tablas.BdTOpcionmenu;
 import basedatos.tablas.BdTTipousuario;
 import excepciones.FormModeException;
 import excepciones.RegistryNotFoundException;
 import excepciones.RequiredFieldException;
+import init.AppInit;
 import java.io.Serializable;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,6 +23,7 @@ import javax.faces.context.FacesContext;
 import javax.swing.text.Document;
 import org.primefaces.model.CheckboxTreeNode;
 import org.primefaces.model.TreeNode;
+import tomcat.persistence.EntityManager;
 import utilidades.CampoWebCodigo;
 import utilidades.CampoWebDescripcion;
 import utilidades.CampoWebFecha;
@@ -40,12 +46,16 @@ public class EdicionPerfiles implements Serializable {
     private CampoWebFecha cFeAlta = null;
     private CampoWebFecha cFeDesactivo = null;
     private CampoWebLupa cUnidad = null;
-    
+
     public class OpcionMenuPermisos {
         private Integer idOpcionMenu = null;
         private String dsTitulo = null;
         private String dsOpcionMenu = null;
         private Integer idOpcionMenuPadre = null;
+        private Integer idPermisoConsulta = null;
+        private Integer idPermisoAlta = null;
+        private Integer idPermisoEdicion = null;
+        private Integer idPermisoBorrado = null;
         private boolean chkConsulta = false;
         private boolean chkAlta = false;
         private boolean chkModificacion = false;
@@ -54,18 +64,6 @@ public class EdicionPerfiles implements Serializable {
         public OpcionMenuPermisos() {
         }
         
-        public OpcionMenuPermisos(Integer idOpcionMenu, String dsTitulo, String dsOpcionMenu, Integer idOpcionMenuPadre,
-                boolean chkConsulta, boolean chkAlta, boolean chkModificacion, boolean chkBorrado) {
-            this.idOpcionMenu = idOpcionMenu;
-            this.dsTitulo = dsTitulo;
-            this.dsOpcionMenu = dsOpcionMenu;
-            this.idOpcionMenuPadre = idOpcionMenuPadre;
-            this.chkConsulta = chkConsulta;
-            this.chkAlta = chkAlta;
-            this.chkModificacion = chkModificacion;
-            this.chkBorrado = chkBorrado;
-        }
-
         public Integer getIdOpcionMenu() {
             return idOpcionMenu;
         }
@@ -96,6 +94,38 @@ public class EdicionPerfiles implements Serializable {
 
         public void setIdOpcionMenuPadre(Integer idOpcionMenuPadre) {
             this.idOpcionMenuPadre = idOpcionMenuPadre;
+        }
+
+        public Integer getIdPermisoConsulta() {
+            return idPermisoConsulta;
+        }
+
+        public void setIdPermisoConsulta(Integer idPermisoConsulta) {
+            this.idPermisoConsulta = idPermisoConsulta;
+        }
+
+        public Integer getIdPermisoAlta() {
+            return idPermisoAlta;
+        }
+
+        public void setIdPermisoAlta(Integer idPermisoAlta) {
+            this.idPermisoAlta = idPermisoAlta;
+        }
+
+        public Integer getIdPermisoEdicion() {
+            return idPermisoEdicion;
+        }
+
+        public void setIdPermisoEdicion(Integer idPermisoEdicion) {
+            this.idPermisoEdicion = idPermisoEdicion;
+        }
+
+        public Integer getIdPermisoBorrado() {
+            return idPermisoBorrado;
+        }
+
+        public void setIdPermisoBorrado(Integer idPermisoBorrado) {
+            this.idPermisoBorrado = idPermisoBorrado;
         }
 
         public boolean isChkConsulta() {
@@ -176,8 +206,6 @@ public class EdicionPerfiles implements Serializable {
             this.cUnidad.setColumnaLabel("Unidad");
             this.cUnidad.setRequired(true);
             
-            this.treeOpcionesMenu = createCheckboxDocuments();
-            
             this.setModoFormulario(ModoFormulario.CONSULTA);
 
             if (idTipousuario != null) {
@@ -185,6 +213,7 @@ public class EdicionPerfiles implements Serializable {
             }
             else {
                 this.setModoFormulario(ModoFormulario.ALTA);
+                this.treeOpcionesMenu = createCheckboxDocuments(0);
             }
         }
         catch (Exception ex) {
@@ -201,50 +230,122 @@ public class EdicionPerfiles implements Serializable {
     public void guardar() {
         try {
             validarCampos();
-            
-            //ALTA
-            if (this.modoFormulario == ModoFormulario.ALTA) {
-                this.bdTTipousuario = new BdTTipousuario();
-                this.bdTTipousuario.setCoTipousuario(this.cCoTipousuario.getValue());
-                this.bdTTipousuario.setDsTipousuario(this.cDsTipousuario.getValue());
-                this.bdTTipousuario.setFeAlta(this.cFeAlta.getValue());
-                this.bdTTipousuario.setFeDesactivo(this.cFeDesactivo.getValue());
-                this.bdTTipousuario.setIdUnidad(this.cUnidad.getId());
-                
-                StTTipousuario stTTipousuario = new StTTipousuario();
-                stTTipousuario.alta(this.bdTTipousuario, null);
-                
-                if (this.parent instanceof FiltroPerfiles filtroPerfiles) {
-                    filtroPerfiles.getDsResultado().refrescarDatos();
+            // INICIO TRANSACCION
+            try (EntityManager entityManager = AppInit.getEntityManager())
+            {
+                entityManager.getTransaction().begin();
+                try {
+                    //ALTA
+                    if (this.modoFormulario == ModoFormulario.ALTA) {
+                        this.bdTTipousuario = new BdTTipousuario();
+                        this.bdTTipousuario.setCoTipousuario(this.cCoTipousuario.getValue());
+                        this.bdTTipousuario.setDsTipousuario(this.cDsTipousuario.getValue());
+                        this.bdTTipousuario.setFeAlta(this.cFeAlta.getValue());
+                        this.bdTTipousuario.setFeDesactivo(this.cFeDesactivo.getValue());
+                        this.bdTTipousuario.setIdUnidad(this.cUnidad.getId());
+
+                        StTTipousuario stTTipousuario = new StTTipousuario();
+                        stTTipousuario.alta(this.bdTTipousuario, entityManager);
+
+                        grabarCambiosOpcionesMenu(this.treeOpcionesMenu, this.bdTTipousuario, entityManager);
+                        
+                        entityManager.getTransaction().commit();
+
+                        if (this.parent instanceof FiltroPerfiles filtroPerfiles) {
+                            filtroPerfiles.getDsResultado().refrescarDatos();
+                        }
+
+                        Mensajes.showInfo("Información", "Alta realizada correctamente!");
+                    }
+
+                    //ACTUALIZACION
+                    if (this.modoFormulario == ModoFormulario.EDICION) {
+                        this.bdTTipousuario.setCoTipousuario(this.cCoTipousuario.getValue());
+                        this.bdTTipousuario.setDsTipousuario(this.cDsTipousuario.getValue());
+                        this.bdTTipousuario.setFeAlta(this.cFeAlta.getValue());
+                        this.bdTTipousuario.setFeDesactivo(this.cFeDesactivo.getValue());
+                        this.bdTTipousuario.setIdUnidad(this.cUnidad.getId());
+
+                        StTTipousuario stTTipousuario = new StTTipousuario();
+                        stTTipousuario.actualiza(this.bdTTipousuario, entityManager);
+
+                        grabarCambiosOpcionesMenu(this.treeOpcionesMenu, this.bdTTipousuario, entityManager);
+
+                        entityManager.getTransaction().commit();
+
+                        if (this.parent instanceof FiltroPerfiles filtroPerfiles) {
+                            ELContext elContext = FacesContext.getCurrentInstance().getELContext();
+                            filtroPerfiles = (FiltroPerfiles)elContext.getELResolver().getValue(elContext, null, "filtroPerfiles");
+                            filtroPerfiles.getDsResultado().actualizarFilaSeleccionada();
+                        }
+
+                        Mensajes.showInfo("Información", "Actualización realizada correctamente!");
+                    }
                 }
-                
-                Mensajes.showInfo("Información", "Alta realizada correctamente!");
-            }
-            
-            //ACTUALIZACION
-            if (this.modoFormulario == ModoFormulario.EDICION) {
-                this.bdTTipousuario.setCoTipousuario(this.cCoTipousuario.getValue());
-                this.bdTTipousuario.setDsTipousuario(this.cDsTipousuario.getValue());
-                this.bdTTipousuario.setFeAlta(this.cFeAlta.getValue());
-                this.bdTTipousuario.setFeDesactivo(this.cFeDesactivo.getValue());
-                this.bdTTipousuario.setIdUnidad(this.cUnidad.getId());
-                
-                StTTipousuario stTTipousuario = new StTTipousuario();
-                stTTipousuario.actualiza(this.bdTTipousuario, null);
-                
-                if (this.parent instanceof FiltroPerfiles filtroPerfiles) {
-                    ELContext elContext = FacesContext.getCurrentInstance().getELContext();
-                    filtroPerfiles = (FiltroPerfiles)elContext.getELResolver().getValue(elContext, null, "filtroPerfiles");
-                    filtroPerfiles.getDsResultado().actualizarFilaSeleccionada();
+                catch (Exception ex) {
+                    entityManager.getTransaction().rollback();
+                    throw ex;
                 }
-                
-                Mensajes.showInfo("Información", "Actualización realizada correctamente!");
             }
-            
+            // FIN TRANSACCION
             this.setModoFormulario(ModoFormulario.CONSULTA);
         }
         catch (Exception ex) {
             Mensajes.showException(this.getClass(), ex);
+        }
+    }
+    
+    private void grabarCambiosOpcionesMenu(TreeNode<OpcionMenuPermisos> treeNode, BdTTipousuario bdTTipousuario, EntityManager entityManager) throws Exception {
+        if (treeNode.getChildCount() > 0) {
+            for (TreeNode<OpcionMenuPermisos> itemNode : treeNode.getChildren()) {
+                grabarCambiosOpcionesMenu(itemNode, bdTTipousuario, entityManager);
+            }
+        }
+        else if (treeNode.getData().getIdOpcionMenu() != null) {
+            //SOLO LOS NODOS FINALISTAS (SIN HIJOS)
+            BdATipousuopcper filtroBdATipousuopcper = new BdATipousuopcper();
+            filtroBdATipousuopcper.setIdTipousuario(this.bdTTipousuario.getIdTipousuario());
+            filtroBdATipousuopcper.setIdOpcionmenu(treeNode.getData().getIdOpcionMenu());
+
+            // CONSULTA
+            filtroBdATipousuopcper.setIdPermiso(treeNode.getData().getIdPermisoConsulta());
+            grabarDatoOpcionMenu(filtroBdATipousuopcper, treeNode.getData().isChkConsulta(), entityManager);
+
+            // ALTA
+            filtroBdATipousuopcper.setIdPermiso(treeNode.getData().getIdPermisoAlta());
+            grabarDatoOpcionMenu(filtroBdATipousuopcper, treeNode.getData().isChkAlta(), entityManager);
+
+            // EDICION
+            filtroBdATipousuopcper.setIdPermiso(treeNode.getData().getIdPermisoEdicion());
+            grabarDatoOpcionMenu(filtroBdATipousuopcper, treeNode.getData().isChkModificacion(), entityManager);
+
+            // BORRADO
+            filtroBdATipousuopcper.setIdPermiso(treeNode.getData().getIdPermisoBorrado());
+            grabarDatoOpcionMenu(filtroBdATipousuopcper, treeNode.getData().isChkBorrado(), entityManager);
+        }
+    }
+    
+    private void grabarDatoOpcionMenu(BdATipousuopcper filtroBdATipousuopcper, Boolean chkPermiso, EntityManager entityManager) throws Exception {
+        StATipousuopcper stATipousuopcper = new StATipousuopcper();
+        ArrayList<BdATipousuopcper> listaBdATipousuopcper = stATipousuopcper.filtro(filtroBdATipousuopcper, entityManager);
+        if (listaBdATipousuopcper != null) {
+            for (BdATipousuopcper itemOpcionMenu : listaBdATipousuopcper) {
+                if (!chkPermiso) {
+                    //Si ya no tiene permiso y existe el registro, este se elimina
+                    stATipousuopcper.baja(itemOpcionMenu, entityManager);
+                }
+            }
+        }
+        else {
+            BdATipousuopcper newBdATipousuopcper = new BdATipousuopcper();
+            newBdATipousuopcper.setIdTipousuario(this.bdTTipousuario.getIdTipousuario());
+            newBdATipousuopcper.setIdOpcionmenu(filtroBdATipousuopcper.getIdOpcionmenu());
+            newBdATipousuopcper.setIdPermiso(filtroBdATipousuopcper.getIdPermiso());
+            newBdATipousuopcper.setFeAlta(this.bdTTipousuario.getFeAlta());
+            if (chkPermiso) {
+                //Si tiene el permiso pero no existe el registro, este se crea
+                stATipousuopcper.alta(newBdATipousuopcper, entityManager);
+            }
         }
     }
     
@@ -259,13 +360,37 @@ public class EdicionPerfiles implements Serializable {
     
     public void eliminar() {
         try {
-            StTTipousuario stTTipousuario = new StTTipousuario();
-            stTTipousuario.baja(this.bdTTipousuario, null);
-            
-            if (this.parent instanceof FiltroPerfiles filtroPerfiles) {
-                filtroPerfiles.getDsResultado().eliminarFilaSeleccionada();
-            }
+            // INICIO TRANSACCION
+            try (EntityManager entityManager = AppInit.getEntityManager())
+            {
+                entityManager.getTransaction().begin();
+                try {
+                    BdATipousuopcper filtroBdATipousuopcper = new BdATipousuopcper();
+                    filtroBdATipousuopcper.setIdTipousuario(this.bdTTipousuario.getIdTipousuario());
+                    
+                    StATipousuopcper stATipousuopcper = new StATipousuopcper();
+                    ArrayList<BdATipousuopcper> listaBdATipousuopcper = stATipousuopcper.filtro(filtroBdATipousuopcper, entityManager);
+                    if (listaBdATipousuopcper != null) {
+                        for (BdATipousuopcper itemBdATipousuopcper : listaBdATipousuopcper) {
+                            stATipousuopcper.baja(itemBdATipousuopcper, entityManager);
+                        }
+                    }
+                                        
+                    StTTipousuario stTTipousuario = new StTTipousuario();
+                    stTTipousuario.baja(this.bdTTipousuario, entityManager);
 
+                    entityManager.getTransaction().commit();
+
+                    if (this.parent instanceof FiltroPerfiles filtroPerfiles) {
+                        filtroPerfiles.getDsResultado().eliminarFilaSeleccionada();
+                    }
+                }
+                catch (Exception ex) {
+                    entityManager.getTransaction().rollback();
+                    throw ex;
+                }
+            }
+            // FIN TRANSACCION
             Mensajes.showInfo("Información", "Registro eliminado correctamente!");
             
             this.setModoFormulario(ModoFormulario.ELIMINADO);
@@ -354,6 +479,8 @@ public class EdicionPerfiles implements Serializable {
         cFeAlta.setValue(this.bdTTipousuario.getFeAlta());
         cFeDesactivo.setValue(this.bdTTipousuario.getFeDesactivo());        
         cUnidad.setId(this.bdTTipousuario.getIdUnidad());
+        
+        this.treeOpcionesMenu = createCheckboxDocuments(idTipousuario);
     }
 
     public CampoWebCodigo getcCoTipousuario() {
@@ -452,16 +579,54 @@ public class EdicionPerfiles implements Serializable {
         return null;
     }
     
-    public TreeNode<OpcionMenuPermisos> createCheckboxDocuments() {
+    public TreeNode<OpcionMenuPermisos> createCheckboxDocuments(Integer idTipousuario) {
         try {
             TreeNode<OpcionMenuPermisos> root = new CheckboxTreeNode<>(new OpcionMenuPermisos(), null);
-            
-            DataSet dsOpcionesMenu = new DataSet("SELECT ID_OPCIONMENU, DS_OPCIONMENU, DS_TITULO, ID_OPCIONMENUPADRE FROM BD_T_OPCIONMENU ORDER BY ID_OPCIONMENUPADRE ASC", "ID_OPCIONMENU");
+            String sql = """
+                         SELECT 
+                             ID_OPCIONMENU, 
+                             DS_OPCIONMENU, 
+                             DS_TITULO, 
+                             ID_OPCIONMENUPADRE,
+                             (SELECT ID_PERMISO FROM BD_T_PERMISO WHERE CO_PERMISO = 'CONSULTA') as ID_PERMISO_CONSULTA,
+                             (SELECT ID_PERMISO FROM BD_T_PERMISO WHERE CO_PERMISO = 'ALTA') as ID_PERMISO_ALTA,
+                             (SELECT ID_PERMISO FROM BD_T_PERMISO WHERE CO_PERMISO = 'EDICION') as ID_PERMISO_EDICION,
+                             (SELECT ID_PERMISO FROM BD_T_PERMISO WHERE CO_PERMISO = 'BORRADO') as ID_PERMISO_BORRADO,
+                             ISNULL((SELECT CONVERT(BIT,1) FROM BD_A_TIPOUSUOPCPER 
+                                     WHERE ID_OPCIONMENU = T1.ID_OPCIONMENU 
+                                     AND ID_TIPOUSUARIO = :ID_TIPOUSUARIO
+                                     AND ID_PERMISO = (SELECT ID_PERMISO FROM BD_T_PERMISO WHERE CO_PERMISO = 'CONSULTA')),CONVERT(BIT,0)) as CONSULTA,
+                             ISNULL((SELECT CONVERT(BIT,1) FROM BD_A_TIPOUSUOPCPER 
+                                     WHERE ID_OPCIONMENU = T1.ID_OPCIONMENU 
+                                     AND ID_TIPOUSUARIO = :ID_TIPOUSUARIO
+                                     AND ID_PERMISO = (SELECT ID_PERMISO FROM BD_T_PERMISO WHERE CO_PERMISO = 'ALTA')),CONVERT(BIT,0)) as ALTA,
+                             ISNULL((SELECT CONVERT(BIT,1) FROM BD_A_TIPOUSUOPCPER 
+                                     WHERE ID_OPCIONMENU = T1.ID_OPCIONMENU 
+                                     AND ID_TIPOUSUARIO = :ID_TIPOUSUARIO
+                                     AND ID_PERMISO = (SELECT ID_PERMISO FROM BD_T_PERMISO WHERE CO_PERMISO = 'EDICION')),CONVERT(BIT,0)) as EDICION,
+                             ISNULL((SELECT CONVERT(BIT,1) FROM BD_A_TIPOUSUOPCPER 
+                                     WHERE ID_OPCIONMENU = T1.ID_OPCIONMENU 
+                                     AND ID_TIPOUSUARIO = :ID_TIPOUSUARIO
+                                     AND ID_PERMISO = (SELECT ID_PERMISO FROM BD_T_PERMISO WHERE CO_PERMISO = 'BORRADO')),CONVERT(BIT,0)) as BORRADO
+                         FROM 
+                             BD_T_OPCIONMENU T1
+                         ORDER BY 
+                             ID_OPCIONMENUPADRE ASC""";
+            sql = sql.replaceAll("(?i):ID_TIPOUSUARIO", idTipousuario.toString());
+            DataSet dsOpcionesMenu = new DataSet(sql, "ID_OPCIONMENU");
             for (Row itemRow : dsOpcionesMenu.getRows()) {
                 OpcionMenuPermisos item = new OpcionMenuPermisos();
                 item.setIdOpcionMenu(itemRow.getColumnName("ID_OPCIONMENU").getValueInteger());
                 item.setDsTitulo(itemRow.getColumnName("DS_TITULO").getValueString());
-                item.setDsOpcionMenu(itemRow.getColumnName("DS_OPCIONMENU").getValueString());
+                item.setDsOpcionMenu(itemRow.getColumnName("DS_OPCIONMENU").getValueString());    
+                item.setIdPermisoConsulta(itemRow.getColumnName("ID_PERMISO_CONSULTA").getValueInteger());
+                item.setIdPermisoAlta(itemRow.getColumnName("ID_PERMISO_ALTA").getValueInteger());
+                item.setIdPermisoEdicion(itemRow.getColumnName("ID_PERMISO_EDICION").getValueInteger());
+                item.setIdPermisoBorrado(itemRow.getColumnName("ID_PERMISO_BORRADO").getValueInteger());
+                item.setChkConsulta((Boolean)itemRow.getColumnName("CONSULTA").getValue());
+                item.setChkAlta((Boolean)itemRow.getColumnName("ALTA").getValue());
+                item.setChkModificacion((Boolean)itemRow.getColumnName("EDICION").getValue());
+                item.setChkBorrado((Boolean)itemRow.getColumnName("BORRADO").getValue());
                 
                 TreeNode padre = root;
                 if (itemRow.getColumnName("ID_OPCIONMENUPADRE").getValueInteger() != null) {

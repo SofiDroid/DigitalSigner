@@ -45,7 +45,7 @@
 
                         <p:commandButton id="btnVolver" icon="pi pi-undo" styleClass="rounded-button ui-button-warning" 
                                          style="height: 2rem;width: 2rem;margin-left:0.3rem" action="#{beanEdicion.volver}" title="(alt+V) Volver"
-                                         update="@form" accesskey="v" immediate="true" />
+                                         update="@form" accesskey="v" immediate="true" process="@this" />
                     </p:toolbarGroup>
                 </p:toolbar>
             </p:card>
@@ -70,7 +70,7 @@
                 </p:panelGrid>
             </p:card>
             <p:card id="panelOpcionesMenu" styleClass="card">
-                <p:treeTable value="#{beanEdicion.treeOpcionesMenu}" nodeVar="nodo" var="item"
+                <p:treeTable id="trOpcionesMenu" widgetVar="trOpcionesMenu" value="#{beanEdicion.treeOpcionesMenu}" nodeVar="nodo" var="item"
                              size="small">
                     <p:column headerText="Título" width="200px">
                         <p:outputLabel value="#{item.dsTitulo}"/>
@@ -79,16 +79,32 @@
                         <p:outputLabel value="#{item.dsOpcionMenu}"/>
                     </p:column>
                     <p:column headerText="Consulta" width="70px" style="text-align: center">
-                        <p:selectBooleanCheckbox id="chkConsulta" value="#{item.chkConsulta}" rendered="#{nodo.getChildCount() eq 0}" />
+                        <p:selectBooleanCheckbox id="chkConsulta" value="#{item.chkConsulta}" 
+                                                 rendered="#{nodo.getChildCount() eq 0}"
+                                                 disabled="#{beanEdicion.modoFormulario eq 'CONSULTA' or beanEdicion.modoFormulario eq 'ELIMINADO'}">
+                            <p:ajax update="@this" process="@this" />
+                        </p:selectBooleanCheckbox>
                     </p:column>
                     <p:column headerText="Alta" width="70px" style="text-align: center">
-                        <p:selectBooleanCheckbox id="chkAlta" value="#{item.chkAlta}" rendered="#{nodo.getChildCount() eq 0}" />
+                        <p:selectBooleanCheckbox id="chkAlta" value="#{item.chkAlta}" 
+                                                 rendered="#{nodo.getChildCount() eq 0}" 
+                                                 disabled="#{beanEdicion.modoFormulario eq 'CONSULTA' or beanEdicion.modoFormulario eq 'ELIMINADO'}">
+                            <p:ajax update="@this" process="@this" />
+                        </p:selectBooleanCheckbox>
                     </p:column>
                     <p:column headerText="Modificación" width="70px" style="text-align: center">
-                        <p:selectBooleanCheckbox id="chkModificacion" value="#{item.chkModificacion}" rendered="#{nodo.getChildCount() eq 0}" />
+                        <p:selectBooleanCheckbox id="chkModificacion" value="#{item.chkModificacion}" 
+                                                 rendered="#{nodo.getChildCount() eq 0}" 
+                                                 disabled="#{beanEdicion.modoFormulario eq 'CONSULTA' or beanEdicion.modoFormulario eq 'ELIMINADO'}">
+                            <p:ajax update="@this" process="@this" />
+                        </p:selectBooleanCheckbox>
                     </p:column>
                     <p:column headerText="Borrado" width="70px" style="text-align: center">
-                        <p:selectBooleanCheckbox id="chkBorrado" value="#{item.chkBorrado}" rendered="#{nodo.getChildCount() eq 0}" />
+                        <p:selectBooleanCheckbox id="chkBorrado" value="#{item.chkBorrado}" 
+                                                 rendered="#{nodo.getChildCount() eq 0}" 
+                                                 disabled="#{beanEdicion.modoFormulario eq 'CONSULTA' or beanEdicion.modoFormulario eq 'ELIMINADO'}">
+                            <p:ajax update="@this" process="@this" />
+                        </p:selectBooleanCheckbox>
                     </p:column>
                 </p:treeTable>
             </p:card>
