@@ -1,13 +1,23 @@
 package configuracion.seguridad.perfiles;
 
+import basedatos.DataSet;
+import basedatos.Row;
 import basedatos.servicios.StTTipousuario;
+import basedatos.tablas.BdTOpcionmenu;
 import basedatos.tablas.BdTTipousuario;
 import excepciones.FormModeException;
 import excepciones.RegistryNotFoundException;
 import excepciones.RequiredFieldException;
 import java.io.Serializable;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.el.ELContext;
 import javax.faces.context.FacesContext;
+import javax.swing.text.Document;
+import org.primefaces.model.CheckboxTreeNode;
+import org.primefaces.model.TreeNode;
 import utilidades.CampoWebCodigo;
 import utilidades.CampoWebDescripcion;
 import utilidades.CampoWebFecha;
@@ -30,6 +40,9 @@ public class EdicionPerfiles implements Serializable {
     private CampoWebFecha cFeAlta = null;
     private CampoWebFecha cFeDesactivo = null;
     private CampoWebLupa cUnidad = null;
+    
+    private TreeNode<BdTOpcionmenu> treeOpcionesMenu = null;
+    private BdTOpcionmenu selectedOpcionMenu = null;
     
     BdTTipousuario bdTTipousuario = null;
 
@@ -74,6 +87,8 @@ public class EdicionPerfiles implements Serializable {
             this.cUnidad.setColumnaID("ID_UNIDAD");
             this.cUnidad.setColumnaLabel("Unidad");
             this.cUnidad.setRequired(true);
+            
+            this.treeOpcionesMenu = createCheckboxDocuments();
             
             this.setModoFormulario(ModoFormulario.CONSULTA);
 
@@ -324,5 +339,61 @@ public class EdicionPerfiles implements Serializable {
 
     public void setParent(Object parent) {
         this.parent = parent;
+    }
+
+    public TreeNode<BdTOpcionmenu> getTreeOpcionesMenu() {
+        return treeOpcionesMenu;
+    }
+
+    public void setTreeOpcionesMenu(TreeNode<BdTOpcionmenu> treeOpcionesMenu) {
+        this.treeOpcionesMenu = treeOpcionesMenu;
+    }
+
+    public BdTOpcionmenu getSelectedOpcionMenu() {
+        return selectedOpcionMenu;
+    }
+
+    public void setSelectedOpcionMenu(BdTOpcionmenu selectedOpcionMenu) {
+        this.selectedOpcionMenu = selectedOpcionMenu;
+    }
+    
+    public TreeNode<BdTOpcionmenu> buscarNodoPadre(TreeNode<BdTOpcionmenu> root, Integer idOpcionmenu) {
+        if (root.getChildCount() > 0) {
+            for (TreeNode<BdTOpcionmenu> item : root.getChildren()) {
+                TreeNode<BdTOpcionmenu> resul = buscarNodoPadre(item, idOpcionmenu);
+                if (resul != null) {
+                    return resul;
+                }
+            }
+        }
+        if (root.getData().getIdOpcionmenu().compareTo(idOpcionmenu) == 0) {
+            return root;
+        }
+        return null;
+    }
+    
+    public TreeNode<BdTOpcionmenu> createCheckboxDocuments() {
+        try {
+            TreeNode<BdTOpcionmenu> root = new CheckboxTreeNode<>(new BdTOpcionmenu(), null);
+            
+            DataSet dsOpcionesMenu = new DataSet("SELECT ID_OPCIONMENU, DS_OPCIONMENU, DS_TITULO, ID_OPCIONMENUPADRE FROM BD_T_OPCIONMENU ORDER BY ID_OPCIONMENUPADRE ASC", "ID_OPCIONMENU");
+            for (Row itemRow : dsOpcionesMenu.getRows()) {
+                BdTOpcionmenu item = new BdTOpcionmenu();
+                item.setIdOpcionmenu(itemRow.getColumnName("ID_OPCIONMENU").getValueInteger());
+                item.setDsTitulo(itemRow.getColumnName("DS_TITULO").getValueString());
+                item.setDsOpcionmenu(itemRow.getColumnName("DS_OPCIONMENU").getValueString());
+                
+                TreeNode padre = root;
+                if (itemRow.getColumnName("ID_OPCIONMENUPADRE").getValueInteger() != null) {
+                    padre = buscarNodoPadre(root, itemRow.getColumnName("ID_OPCIONMENUPADRE").getValueInteger());
+                }
+                CheckboxTreeNode checkboxTreeNode = new CheckboxTreeNode(item, padre);
+            }
+
+            return root;
+        } catch (SQLException ex) {
+            Mensajes.showException(this.getClass(), ex);
+        }
+        return null;
     }
 }

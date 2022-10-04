@@ -69,6 +69,29 @@
 
                 </p:panelGrid>
             </p:card>
+            <p:card id="panelOpcionesMenu" styleClass="card">
+                <p:treeTable value="#{beanEdicion.treeOpcionesMenu}" nodeVar="nodo" var="item"
+                             size="small">
+                    <p:column headerText="Título" width="200px">
+                        <p:outputLabel value="#{item.dsTitulo}"/>
+                    </p:column>
+                    <p:column headerText="Descripción" width="100%">
+                        <p:outputLabel value="#{item.dsOpcionmenu}"/>
+                    </p:column>
+                    <p:column headerText="Consulta" width="70px" style="text-align: center">
+                        <p:selectBooleanCheckbox id="chkConsulta" rendered="#{nodo.getChildCount() eq 0}" />
+                    </p:column>
+                    <p:column headerText="Alta" width="70px" style="text-align: center">
+                        <p:selectBooleanCheckbox id="chkAlta" rendered="#{nodo.getChildCount() eq 0}" />
+                    </p:column>
+                    <p:column headerText="Modificación" width="70px" style="text-align: center">
+                        <p:selectBooleanCheckbox id="chkModificacion" rendered="#{nodo.getChildCount() eq 0}" />
+                    </p:column>
+                    <p:column headerText="Borrado" width="70px" style="text-align: center">
+                        <p:selectBooleanCheckbox id="chkBorrado" rendered="#{nodo.getChildCount() eq 0}" />
+                    </p:column>
+                </p:treeTable>
+            </p:card>
         </ui:define>
     </ui:composition>
 </html>
