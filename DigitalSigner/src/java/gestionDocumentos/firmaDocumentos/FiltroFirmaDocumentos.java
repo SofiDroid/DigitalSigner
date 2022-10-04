@@ -106,21 +106,8 @@ public class FiltroFirmaDocumentos implements Serializable {
         this.cAutoridad.setColumnaLabel("Autoridad");
         
         this.dsResultado = new DataSet();
-        toggleFiltro(null);
     }
 
-    public void toggleFiltro(ToggleEvent event) {
-        if (event != null) {
-            this.filtroVisible = (event.getVisibility() == Visibility.VISIBLE);
-        }
-        if (this.filtroVisible) {
-            this.dsResultado.setHeightFiltro("26rem");
-        }
-        else {
-            this.dsResultado.setHeightFiltro("16.5rem");
-        }
-    }
-    
     public CampoWebCodigo getcCoDocumento() {
         return cCoDocumento;
     }
@@ -270,7 +257,6 @@ public class FiltroFirmaDocumentos implements Serializable {
             sql = filtros(sql);
 
             this.dsResultado = new DataSet(sql, "ID_DOCUMENTO");
-            toggleFiltro(null);
 
             if (this.getDsResultado().getRowsCount() > 0) {
                 // Establecer formato de salida

@@ -74,10 +74,10 @@
                             <p:inputText id="txtCoUsuario" value="#{datosUsuario.bdTUsuario.coUsuario}" disabled="true" style="width: 70px;" />
                         </p:outputPanel>
                     </p:splitterPanel>
-                    <p:splitterPanel id="spCuerpo" size="95" minSize="95" style="min-height: calc(100vh - 125px)!important;max-height: calc(100vh - 125px)!important">
+                    <p:splitterPanel id="spCuerpo" size="95" minSize="95" style="min-height: calc(100vh - 125px)!important">
                         <p:splitter id="sCuerpo" style="background-color: transparent;">
                             <p:splitterPanel id="spMenu" size="15" style="background-color: transparent;min-width: 250px!important;overflow-y: auto">
-                                <p:panelMenu id="mnuPrincipal" style="width:100%" model="#{menu.model}" stateful="true">
+                                <p:panelMenu id="mnuPrincipal" style="width:100%;max-height: calc(100vh - 125px)!important" model="#{menu.model}" stateful="true">
                                 </p:panelMenu>
                             </p:splitterPanel>
                             <p:splitterPanel id="spFormularios" size="85" minSize="70">

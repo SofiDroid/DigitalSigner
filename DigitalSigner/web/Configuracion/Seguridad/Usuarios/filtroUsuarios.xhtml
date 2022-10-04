@@ -32,7 +32,6 @@
             </p:card>
             <p:card styleClass="card">
                 <p:fieldset id="fsFiltros" legend="#{msg['filtros']}" collapsed="#{!filtroUsuarios.filtroVisible}" toggleable="true">
-                    <p:ajax event="toggle" listener="#{filtroUsuarios.toggleFiltro}" update="panelResultado"/>
                     <p:panelGrid columns="2"
                      columnClasses="col-6,col-6"
                      layout="grid"

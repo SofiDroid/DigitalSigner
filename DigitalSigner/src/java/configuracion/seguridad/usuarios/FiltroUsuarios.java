@@ -82,21 +82,8 @@ public class FiltroUsuarios implements Serializable {
         this.cFeDesactivo.setWidthLabel("100px");
         
         this.dsResultado = new DataSet();
-        toggleFiltro(null);
     }
     
-    public void toggleFiltro(ToggleEvent event) {
-        if (event != null) {
-            this.filtroVisible = (event.getVisibility() == Visibility.VISIBLE);
-        }
-        if (this.filtroVisible) {
-            this.dsResultado.setHeightFiltro("25.8rem");
-        }
-        else {
-            this.dsResultado.setHeightFiltro("16.5rem");
-        }
-    }
-
     public CampoWebCodigo getcCoNIF() {
         return cCoNIF;
     }
@@ -211,7 +198,6 @@ public class FiltroUsuarios implements Serializable {
             sql = filtros(sql);
 
             this.dsResultado = new DataSet(sql, "ID_USUARIO");
-            toggleFiltro(null);
 
             if (this.getDsResultado().getRowsCount() > 0) {
                 // Establecer formato de salida

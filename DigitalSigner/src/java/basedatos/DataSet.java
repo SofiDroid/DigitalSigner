@@ -24,8 +24,7 @@ public final class DataSet extends StBase {
     protected Object rowSelectClass = null;
     protected String rowSelectUpdate = "@widgetVar(mensaje)";
     protected String rowSelectColumnaID = null;
-    protected String heightFiltro = "27.8rem";
-    protected String height = "calc(100vh - " + heightFiltro + ")";
+    protected Integer rowsPerPage = 20;
 
     public DataSet() {
     
@@ -219,23 +218,6 @@ public final class DataSet extends StBase {
         this.rowSelectColumnaID = rowSelectColumnaID;
     }
 
-    public String getHeightFiltro() {
-        return heightFiltro;
-    }
-
-    public void setHeightFiltro(String heightFiltro) {
-        this.heightFiltro = heightFiltro;
-        this.height = "calc(100vh - " + this.heightFiltro + ")";
-    }
-
-    public String getHeight() {
-        return height;
-    }
-
-    public void setHeight(String height) {
-        this.height = height;
-    }
-
     public ArrayList<Row> getSelectedRows() {
         return selectedRows;
     }
@@ -272,5 +254,13 @@ public final class DataSet extends StBase {
         }
 
         return this;
+    }
+
+    public Integer getRowsPerPage() {
+        return rowsPerPage;
+    }
+
+    public void setRowsPerPage(Integer rowsPerPage) {
+        this.rowsPerPage = rowsPerPage;
     }
 }

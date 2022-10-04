@@ -12,16 +12,10 @@
 
     <!-- IMPLEMENTATION -->
     <cc:implementation>        
-        <style>
-            .ui-datatable-scrollable-body {
-                max-height: -webkit-fill-available;
-                height: "calc(#{cc.attrs.dataSet.height} - 1.8rem)!important";
-            }
-        </style>    
-        <p:dataTable id="#{cc.attrs.id}" widgetVar="#{cc.attrs.id}" var="itemRow" value="#{cc.attrs.dataSet.rows}" scrollable="true" scrollHeight="100%" 
-                     style="height: #{cc.attrs.dataSet.height};width:100%;padding:0.2rem" size="small"
+        <p:dataTable id="#{cc.attrs.id}" widgetVar="#{cc.attrs.id}" var="itemRow" value="#{cc.attrs.dataSet.rows}" 
+                     style="width:100%;padding:0.2rem" size="small"
                      selection="#{cc.attrs.dataSet.selectedRows}" rowKey="#{itemRow.id}"
-                     paginator="true" rows="20" selectionPageOnly="false"
+                     paginator="true" rows="#{cc.attrs.dataSet.rowsPerPage}" selectionPageOnly="false"
                      paginatorPosition="bottom" paginatorAlwaysVisible="false"
                      paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                      currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} registros">

@@ -79,21 +79,8 @@ public class FiltroOpcionesMenu implements Serializable {
         this.cOpcionMenuPadre.setColumnaLabel("Menú");
         
         this.dsResultado = new DataSet();
-        toggleFiltro(null);
     }
     
-    public void toggleFiltro(ToggleEvent event) {
-        if (event != null) {
-            this.filtroVisible = (event.getVisibility() == Visibility.VISIBLE);
-        }
-        if (this.filtroVisible) {
-            this.dsResultado.setHeightFiltro("26.0rem");
-        }
-        else {
-            this.dsResultado.setHeightFiltro("16.5rem");
-        }
-    }
-
     public CampoWebCodigo getcCoOpcionMenu() {
         return cCoOpcionMenu;
     }
@@ -199,7 +186,6 @@ public class FiltroOpcionesMenu implements Serializable {
             sql = filtros(sql);
 
             this.dsResultado = new DataSet(sql, "ID_OPCIONMENU");
-            toggleFiltro(null);
 
             if (this.getDsResultado().getRowsCount() > 0) {
                 // Establecer formato de salida
