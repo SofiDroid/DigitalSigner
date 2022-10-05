@@ -15,7 +15,10 @@ public class BdATipousuopcper extends OperacionSQL implements InterfazDAO {
     
     protected Integer idTipousuario;
     protected Integer idOpcionmenu;
-    protected Integer idPermiso;
+    protected Boolean boConsulta;
+    protected Boolean boAlta;
+    protected Boolean boEdicion;
+    protected Boolean boBorrado;
     protected Date feAlta;
     protected Date feDesactivo;
     protected String usuariobd;
@@ -30,6 +33,10 @@ public class BdATipousuopcper extends OperacionSQL implements InterfazDAO {
         recuperaValorCampo(this, "idTipousuario", "ID_TIPOUSUARIO", bld);
         recuperaValorCampo(this, "idOpcionmenu", "ID_OPCIONMENU", bld);
         recuperaValorCampo(this, "idPermiso", "ID_PERMISO", bld);
+        recuperaValorCampo(this, "boConsulta", "BO_CONSULTA", bld);
+        recuperaValorCampo(this, "boAlta", "BO_ALTA", bld);
+        recuperaValorCampo(this, "boEdicion", "BO_EDICION", bld);
+        recuperaValorCampo(this, "boBorrado", "BO_BORRADO", bld);
         recuperaValorCampo(this, "feAlta", "FE_ALTA", bld);
         recuperaValorCampo(this, "feDesactivo", "FE_DESACTIVO", bld);
         recuperaValorCampo(this, "usuariobd", "USUARIOBD", bld);
@@ -42,7 +49,10 @@ public class BdATipousuopcper extends OperacionSQL implements InterfazDAO {
         StringBuilder sb_sql = new StringBuilder("SELECT ");
         sb_sql.append("ID_TIPOUSUARIO");
         sb_sql.append(",ID_OPCIONMENU");
-        sb_sql.append(",ID_PERMISO");
+        sb_sql.append(",BO_CONSULTA");
+        sb_sql.append(",BO_ALTA");
+        sb_sql.append(",BO_EDICION");
+        sb_sql.append(",BO_BORRADO");
         sb_sql.append(",FE_ALTA");
         sb_sql.append(",FE_DESACTIVO");
         sb_sql.append(",USUARIOBD");
@@ -55,8 +65,17 @@ public class BdATipousuopcper extends OperacionSQL implements InterfazDAO {
         if (idOpcionmenu != null) {
             sb_sql.append(" AND ID_OPCIONMENU = :ID_OPCIONMENU");
         }
-        if (idPermiso != null) {
-            sb_sql.append(" AND ID_PERMISO = :ID_PERMISO");
+        if (boConsulta != null) {
+            sb_sql.append(" AND BO_CONSULTA = :BO_CONSULTA");
+        }
+        if (boAlta != null) {
+            sb_sql.append(" AND BO_ALTA = :BO_ALTA");
+        }
+        if (boEdicion != null) {
+            sb_sql.append(" AND BO_EDICION = :BO_EDICION");
+        }
+        if (boBorrado != null) {
+            sb_sql.append(" AND BO_BORRADO = :BO_BORRADO");
         }
         if (feAlta != null) {
             sb_sql.append(" AND (FE_ALTA <= :FE_ALTA)");
@@ -80,7 +99,10 @@ public class BdATipousuopcper extends OperacionSQL implements InterfazDAO {
 
         sb_sql.append("ID_TIPOUSUARIO");
         sb_sql.append(",ID_OPCIONMENU");
-        sb_sql.append(",ID_PERMISO");
+        sb_sql.append(",BO_CONSULTA");
+        sb_sql.append(",BO_ALTA");
+        sb_sql.append(",BO_EDICION");
+        sb_sql.append(",BO_BORRADO");
         sb_sql.append(",FE_ALTA");
         sb_sql.append(",FE_DESACTIVO");
         sb_sql.append(",USUARIOBD");
@@ -90,7 +112,10 @@ public class BdATipousuopcper extends OperacionSQL implements InterfazDAO {
         if(AppInit.TIPO_BASEDATOS == BaseDatos.ORACLE) {
             sb_sql.append(":ID_TIPOUSUARIO");
             sb_sql.append(",").append(":ID_OPCIONMENU");
-            sb_sql.append(",").append(":ID_PERMISO");
+            sb_sql.append(",").append("DECODE(:BO_CONSULTA, null, NULL, :BO_CONSULTA)");
+            sb_sql.append(",").append("DECODE(:BO_ALTA, null, NULL, :BO_ALTA)");
+            sb_sql.append(",").append("DECODE(:BO_EDICION, null, NULL, :BO_EDICION)");
+            sb_sql.append(",").append("DECODE(:BO_BORRADO, null, NULL, :BO_BORRADO)");
             sb_sql.append(",").append("DECODE(:FE_ALTA, null, NULL, :FE_ALTA)");
             sb_sql.append(",").append("DECODE(:FE_DESACTIVO, null, NULL, :FE_DESACTIVO)");
             sb_sql.append(",").append("DECODE(:USUARIOBD, null, NULL, :USUARIOBD)");
@@ -99,7 +124,10 @@ public class BdATipousuopcper extends OperacionSQL implements InterfazDAO {
         else {
             sb_sql.append(":ID_TIPOUSUARIO");
             sb_sql.append(",").append(":ID_OPCIONMENU");
-            sb_sql.append(",").append(":ID_PERMISO");
+            sb_sql.append(",").append(":BO_CONSULTA");
+            sb_sql.append(",").append(":BO_ALTA");
+            sb_sql.append(",").append(":BO_EDICION");
+            sb_sql.append(",").append(":BO_BORRADO");
             sb_sql.append(",").append(":FE_ALTA");
             sb_sql.append(",").append(":FE_DESACTIVO");
             sb_sql.append(",").append(":USUARIOBD");
@@ -114,13 +142,21 @@ public class BdATipousuopcper extends OperacionSQL implements InterfazDAO {
         StringBuilder sb_sql = new StringBuilder("UPDATE BD_A_TIPOUSUOPCPER SET ");
         
         if (AppInit.TIPO_BASEDATOS == BaseDatos.ORACLE) {
-            sb_sql.append("FE_ALTA = ").append("DECODE(:FE_ALTA, null, NULL, :FE_ALTA)");
+            sb_sql.append("BO_CONSULTA = ").append("DECODE(:BO_CONSULTA, null, NULL, :BO_CONSULTA)");
+            sb_sql.append(",BO_ALTA = ").append("DECODE(:BO_ALTA, null, NULL, :BO_ALTA)");
+            sb_sql.append(",BO_EDICION = ").append("DECODE(:BO_EDICION, null, NULL, :BO_EDICION)");
+            sb_sql.append(",BO_BORRADO = ").append("DECODE(:BO_BORRADO, null, NULL, :BO_BORRADO)");
+            sb_sql.append(",FE_ALTA = ").append("DECODE(:FE_ALTA, null, NULL, :FE_ALTA)");
             sb_sql.append(",FE_DESACTIVO = ").append("DECODE(:FE_DESACTIVO, null, NULL, :FE_DESACTIVO)");
             sb_sql.append(",USUARIOBD = ").append("DECODE(:USUARIOBD, null, NULL, :USUARIOBD)");
             sb_sql.append(",TSTBD = ").append("DECODE(:TSTBD, null, NULL, :TSTBD)");
         }
         else {
-            sb_sql.append("FE_ALTA = :FE_ALTA");
+            sb_sql.append("BO_CONSULTA = :BO_CONSULTA");
+            sb_sql.append(",BO_ALTA = :BO_ALTA");
+            sb_sql.append(",BO_EDICION = :BO_EDICION");
+            sb_sql.append(",BO_BORRADO = :BO_BORRADO");
+            sb_sql.append(",FE_ALTA = :FE_ALTA");
             sb_sql.append(",FE_DESACTIVO = :FE_DESACTIVO");
             sb_sql.append(",USUARIOBD = :USUARIOBD");
             sb_sql.append(",TSTBD = :TSTBD");
@@ -128,7 +164,6 @@ public class BdATipousuopcper extends OperacionSQL implements InterfazDAO {
         sb_sql.append(" WHERE ");
         sb_sql.append("ID_TIPOUSUARIO = ").append(":ID_TIPOUSUARIO");
         sb_sql.append(" AND ID_OPCIONMENU = ").append(":ID_OPCIONMENU");
-        sb_sql.append(" AND ID_PERMISO = ").append(":ID_PERMISO");
         
         return sb_sql.toString();
     }
@@ -139,7 +174,6 @@ public class BdATipousuopcper extends OperacionSQL implements InterfazDAO {
         sb_sql.append(" WHERE ");
         sb_sql.append("ID_TIPOUSUARIO = ").append(":ID_TIPOUSUARIO");
         sb_sql.append(" AND ID_OPCIONMENU = ").append(":ID_OPCIONMENU");
-        sb_sql.append(" AND ID_PERMISO = ").append(":ID_PERMISO");
         
         return sb_sql.toString();
     }
@@ -160,14 +194,37 @@ public class BdATipousuopcper extends OperacionSQL implements InterfazDAO {
         this.idOpcionmenu = idOpcionmenu;
     }
 
-    public Integer getIdPermiso() {
-        return idPermiso;
+    public Boolean getBoConsulta() {
+        return boConsulta;
     }
 
-    public void setIdPermiso(Integer idPermiso) {
-        this.idPermiso = idPermiso;
+    public void setBoConsulta(Boolean boConsulta) {
+        this.boConsulta = boConsulta;
     }
 
+    public Boolean getBoAlta() {
+        return boAlta;
+    }
+
+    public void setBoAlta(Boolean boAlta) {
+        this.boAlta = boAlta;
+    }
+
+    public Boolean getBoEdicion() {
+        return boEdicion;
+    }
+
+    public void setBoEdicion(Boolean boEdicion) {
+        this.boEdicion = boEdicion;
+    }
+
+    public Boolean getBoBorrado() {
+        return boBorrado;
+    }
+
+    public void setBoBorrado(Boolean boBorrado) {
+        this.boBorrado = boBorrado;
+    }
     public Date getFeAlta() {
         return feAlta;
     }

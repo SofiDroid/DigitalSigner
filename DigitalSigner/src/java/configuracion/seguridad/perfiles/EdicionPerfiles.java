@@ -5,7 +5,6 @@ import basedatos.Row;
 import basedatos.servicios.StATipousuopcper;
 import basedatos.servicios.StTTipousuario;
 import basedatos.tablas.BdATipousuopcper;
-import basedatos.tablas.BdTOpcionmenu;
 import basedatos.tablas.BdTTipousuario;
 import excepciones.FormModeException;
 import excepciones.RegistryNotFoundException;
@@ -14,13 +13,8 @@ import init.AppInit;
 import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.el.ELContext;
 import javax.faces.context.FacesContext;
-import javax.swing.text.Document;
 import org.primefaces.model.CheckboxTreeNode;
 import org.primefaces.model.TreeNode;
 import tomcat.persistence.EntityManager;
@@ -52,13 +46,9 @@ public class EdicionPerfiles implements Serializable {
         private String dsTitulo = null;
         private String dsOpcionMenu = null;
         private Integer idOpcionMenuPadre = null;
-        private Integer idPermisoConsulta = null;
-        private Integer idPermisoAlta = null;
-        private Integer idPermisoEdicion = null;
-        private Integer idPermisoBorrado = null;
         private boolean chkConsulta = false;
         private boolean chkAlta = false;
-        private boolean chkModificacion = false;
+        private boolean chkEdicion = false;
         private boolean chkBorrado = false;
         
         public OpcionMenuPermisos() {
@@ -95,39 +85,7 @@ public class EdicionPerfiles implements Serializable {
         public void setIdOpcionMenuPadre(Integer idOpcionMenuPadre) {
             this.idOpcionMenuPadre = idOpcionMenuPadre;
         }
-
-        public Integer getIdPermisoConsulta() {
-            return idPermisoConsulta;
-        }
-
-        public void setIdPermisoConsulta(Integer idPermisoConsulta) {
-            this.idPermisoConsulta = idPermisoConsulta;
-        }
-
-        public Integer getIdPermisoAlta() {
-            return idPermisoAlta;
-        }
-
-        public void setIdPermisoAlta(Integer idPermisoAlta) {
-            this.idPermisoAlta = idPermisoAlta;
-        }
-
-        public Integer getIdPermisoEdicion() {
-            return idPermisoEdicion;
-        }
-
-        public void setIdPermisoEdicion(Integer idPermisoEdicion) {
-            this.idPermisoEdicion = idPermisoEdicion;
-        }
-
-        public Integer getIdPermisoBorrado() {
-            return idPermisoBorrado;
-        }
-
-        public void setIdPermisoBorrado(Integer idPermisoBorrado) {
-            this.idPermisoBorrado = idPermisoBorrado;
-        }
-
+        
         public boolean isChkConsulta() {
             return chkConsulta;
         }
@@ -144,12 +102,12 @@ public class EdicionPerfiles implements Serializable {
             this.chkAlta = chkAlta;
         }
 
-        public boolean isChkModificacion() {
-            return chkModificacion;
+        public boolean isChkEdicion() {
+            return chkEdicion;
         }
 
-        public void setChkModificacion(boolean chkModificacion) {
-            this.chkModificacion = chkModificacion;
+        public void setChkEdicion(boolean chkEdicion) {
+            this.chkEdicion = chkEdicion;
         }
 
         public boolean isChkBorrado() {
@@ -307,43 +265,30 @@ public class EdicionPerfiles implements Serializable {
             filtroBdATipousuopcper.setIdTipousuario(this.bdTTipousuario.getIdTipousuario());
             filtroBdATipousuopcper.setIdOpcionmenu(treeNode.getData().getIdOpcionMenu());
 
-            // CONSULTA
-            filtroBdATipousuopcper.setIdPermiso(treeNode.getData().getIdPermisoConsulta());
-            grabarDatoOpcionMenu(filtroBdATipousuopcper, treeNode.getData().isChkConsulta(), entityManager);
-
-            // ALTA
-            filtroBdATipousuopcper.setIdPermiso(treeNode.getData().getIdPermisoAlta());
-            grabarDatoOpcionMenu(filtroBdATipousuopcper, treeNode.getData().isChkAlta(), entityManager);
-
-            // EDICION
-            filtroBdATipousuopcper.setIdPermiso(treeNode.getData().getIdPermisoEdicion());
-            grabarDatoOpcionMenu(filtroBdATipousuopcper, treeNode.getData().isChkModificacion(), entityManager);
-
-            // BORRADO
-            filtroBdATipousuopcper.setIdPermiso(treeNode.getData().getIdPermisoBorrado());
-            grabarDatoOpcionMenu(filtroBdATipousuopcper, treeNode.getData().isChkBorrado(), entityManager);
-        }
-    }
-    
-    private void grabarDatoOpcionMenu(BdATipousuopcper filtroBdATipousuopcper, Boolean chkPermiso, EntityManager entityManager) throws Exception {
-        StATipousuopcper stATipousuopcper = new StATipousuopcper();
-        ArrayList<BdATipousuopcper> listaBdATipousuopcper = stATipousuopcper.filtro(filtroBdATipousuopcper, entityManager);
-        if (listaBdATipousuopcper != null) {
-            for (BdATipousuopcper itemOpcionMenu : listaBdATipousuopcper) {
-                if (!chkPermiso) {
-                    //Si ya no tiene permiso y existe el registro, este se elimina
-                    stATipousuopcper.baja(itemOpcionMenu, entityManager);
+            StATipousuopcper stATipousuopcper = new StATipousuopcper();
+            ArrayList<BdATipousuopcper> listaBdATipousuopcper = stATipousuopcper.filtro(filtroBdATipousuopcper, entityManager);
+            if (listaBdATipousuopcper != null) {
+                //Si existe el registro, se modifica
+                for (BdATipousuopcper itemOpcionMenu : listaBdATipousuopcper) {
+                    itemOpcionMenu.setBoConsulta(treeNode.getData().isChkConsulta());
+                    itemOpcionMenu.setBoAlta(treeNode.getData().isChkAlta());
+                    itemOpcionMenu.setBoEdicion(treeNode.getData().isChkEdicion());
+                    itemOpcionMenu.setBoBorrado(treeNode.getData().isChkBorrado());
+                    
+                    stATipousuopcper.actualiza(itemOpcionMenu, entityManager);
                 }
             }
-        }
-        else {
-            BdATipousuopcper newBdATipousuopcper = new BdATipousuopcper();
-            newBdATipousuopcper.setIdTipousuario(this.bdTTipousuario.getIdTipousuario());
-            newBdATipousuopcper.setIdOpcionmenu(filtroBdATipousuopcper.getIdOpcionmenu());
-            newBdATipousuopcper.setIdPermiso(filtroBdATipousuopcper.getIdPermiso());
-            newBdATipousuopcper.setFeAlta(this.bdTTipousuario.getFeAlta());
-            if (chkPermiso) {
-                //Si tiene el permiso pero no existe el registro, este se crea
+            else {
+                //Si no existe el registro, se crea
+                BdATipousuopcper newBdATipousuopcper = new BdATipousuopcper();
+                newBdATipousuopcper.setIdTipousuario(this.bdTTipousuario.getIdTipousuario());
+                newBdATipousuopcper.setIdOpcionmenu(treeNode.getData().getIdOpcionMenu());
+                newBdATipousuopcper.setBoConsulta(treeNode.getData().isChkConsulta());
+                newBdATipousuopcper.setBoAlta(treeNode.getData().isChkAlta());
+                newBdATipousuopcper.setBoEdicion(treeNode.getData().isChkEdicion());
+                newBdATipousuopcper.setBoBorrado(treeNode.getData().isChkBorrado());
+                newBdATipousuopcper.setFeAlta(this.bdTTipousuario.getFeAlta());
+
                 stATipousuopcper.alta(newBdATipousuopcper, entityManager);
             }
         }
@@ -406,6 +351,7 @@ public class EdicionPerfiles implements Serializable {
         this.cFeAlta.setValue(null);
         this.cFeDesactivo.setValue(null);
         this.cUnidad.setId(null);
+        limpiarNodos(this.treeOpcionesMenu);
     }
     
     public String volver() {
@@ -579,39 +525,37 @@ public class EdicionPerfiles implements Serializable {
         return null;
     }
     
+    private void limpiarNodos(TreeNode<OpcionMenuPermisos> nodo) {
+        if (nodo.getChildCount() > 0) {
+            for (TreeNode<OpcionMenuPermisos> subNodo : nodo.getChildren()) {
+                limpiarNodos(subNodo);
+            }
+        }
+        nodo.getData().setChkConsulta(false);
+        nodo.getData().setChkAlta(false);
+        nodo.getData().setChkEdicion(false);
+        nodo.getData().setChkBorrado(false);
+    }
+    
     public TreeNode<OpcionMenuPermisos> createCheckboxDocuments(Integer idTipousuario) {
         try {
             TreeNode<OpcionMenuPermisos> root = new CheckboxTreeNode<>(new OpcionMenuPermisos(), null);
             String sql = """
-                         SELECT 
-                             ID_OPCIONMENU, 
-                             DS_OPCIONMENU, 
-                             DS_TITULO, 
-                             ID_OPCIONMENUPADRE,
-                             (SELECT ID_PERMISO FROM BD_T_PERMISO WHERE CO_PERMISO = 'CONSULTA') as ID_PERMISO_CONSULTA,
-                             (SELECT ID_PERMISO FROM BD_T_PERMISO WHERE CO_PERMISO = 'ALTA') as ID_PERMISO_ALTA,
-                             (SELECT ID_PERMISO FROM BD_T_PERMISO WHERE CO_PERMISO = 'EDICION') as ID_PERMISO_EDICION,
-                             (SELECT ID_PERMISO FROM BD_T_PERMISO WHERE CO_PERMISO = 'BORRADO') as ID_PERMISO_BORRADO,
-                             ISNULL((SELECT CONVERT(BIT,1) FROM BD_A_TIPOUSUOPCPER 
-                                     WHERE ID_OPCIONMENU = T1.ID_OPCIONMENU 
-                                     AND ID_TIPOUSUARIO = :ID_TIPOUSUARIO
-                                     AND ID_PERMISO = (SELECT ID_PERMISO FROM BD_T_PERMISO WHERE CO_PERMISO = 'CONSULTA')),CONVERT(BIT,0)) as CONSULTA,
-                             ISNULL((SELECT CONVERT(BIT,1) FROM BD_A_TIPOUSUOPCPER 
-                                     WHERE ID_OPCIONMENU = T1.ID_OPCIONMENU 
-                                     AND ID_TIPOUSUARIO = :ID_TIPOUSUARIO
-                                     AND ID_PERMISO = (SELECT ID_PERMISO FROM BD_T_PERMISO WHERE CO_PERMISO = 'ALTA')),CONVERT(BIT,0)) as ALTA,
-                             ISNULL((SELECT CONVERT(BIT,1) FROM BD_A_TIPOUSUOPCPER 
-                                     WHERE ID_OPCIONMENU = T1.ID_OPCIONMENU 
-                                     AND ID_TIPOUSUARIO = :ID_TIPOUSUARIO
-                                     AND ID_PERMISO = (SELECT ID_PERMISO FROM BD_T_PERMISO WHERE CO_PERMISO = 'EDICION')),CONVERT(BIT,0)) as EDICION,
-                             ISNULL((SELECT CONVERT(BIT,1) FROM BD_A_TIPOUSUOPCPER 
-                                     WHERE ID_OPCIONMENU = T1.ID_OPCIONMENU 
-                                     AND ID_TIPOUSUARIO = :ID_TIPOUSUARIO
-                                     AND ID_PERMISO = (SELECT ID_PERMISO FROM BD_T_PERMISO WHERE CO_PERMISO = 'BORRADO')),CONVERT(BIT,0)) as BORRADO
-                         FROM 
-                             BD_T_OPCIONMENU T1
-                         ORDER BY 
-                             ID_OPCIONMENUPADRE ASC""";
+                        SELECT 
+                            OM.ID_OPCIONMENU, 
+                            OM.DS_OPCIONMENU, 
+                            OM.DS_TITULO, 
+                            OM.ID_OPCIONMENUPADRE,
+                            ISNULL(TUOP.BO_CONSULTA, CONVERT(BIT,0)) as BO_CONSULTA,
+                            ISNULL(TUOP.BO_ALTA, CONVERT(BIT,0)) as BO_ALTA,
+                            ISNULL(TUOP.BO_EDICION, CONVERT(BIT,0)) as BO_EDICION,
+                            ISNULL(TUOP.BO_BORRADO, CONVERT(BIT,0)) as BO_BORRADO
+                        FROM 
+                            BD_T_OPCIONMENU OM
+                        LEFT JOIN
+                            BD_A_TIPOUSUOPCPER TUOP ON (TUOP.ID_OPCIONMENU = OM.ID_OPCIONMENU AND TUOP.ID_TIPOUSUARIO = :ID_TIPOUSUARIO)
+                        ORDER BY 
+                            ID_OPCIONMENUPADRE ASC""";
             sql = sql.replaceAll("(?i):ID_TIPOUSUARIO", idTipousuario.toString());
             DataSet dsOpcionesMenu = new DataSet(sql, "ID_OPCIONMENU");
             for (Row itemRow : dsOpcionesMenu.getRows()) {
@@ -619,14 +563,10 @@ public class EdicionPerfiles implements Serializable {
                 item.setIdOpcionMenu(itemRow.getColumnName("ID_OPCIONMENU").getValueInteger());
                 item.setDsTitulo(itemRow.getColumnName("DS_TITULO").getValueString());
                 item.setDsOpcionMenu(itemRow.getColumnName("DS_OPCIONMENU").getValueString());    
-                item.setIdPermisoConsulta(itemRow.getColumnName("ID_PERMISO_CONSULTA").getValueInteger());
-                item.setIdPermisoAlta(itemRow.getColumnName("ID_PERMISO_ALTA").getValueInteger());
-                item.setIdPermisoEdicion(itemRow.getColumnName("ID_PERMISO_EDICION").getValueInteger());
-                item.setIdPermisoBorrado(itemRow.getColumnName("ID_PERMISO_BORRADO").getValueInteger());
-                item.setChkConsulta((Boolean)itemRow.getColumnName("CONSULTA").getValue());
-                item.setChkAlta((Boolean)itemRow.getColumnName("ALTA").getValue());
-                item.setChkModificacion((Boolean)itemRow.getColumnName("EDICION").getValue());
-                item.setChkBorrado((Boolean)itemRow.getColumnName("BORRADO").getValue());
+                item.setChkConsulta((Boolean)itemRow.getColumnName("BO_CONSULTA").getValue());
+                item.setChkAlta((Boolean)itemRow.getColumnName("BO_ALTA").getValue());
+                item.setChkEdicion((Boolean)itemRow.getColumnName("BO_EDICION").getValue());
+                item.setChkBorrado((Boolean)itemRow.getColumnName("BO_BORRADO").getValue());
                 
                 TreeNode padre = root;
                 if (itemRow.getColumnName("ID_OPCIONMENUPADRE").getValueInteger() != null) {

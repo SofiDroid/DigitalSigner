@@ -82,7 +82,7 @@ public class Column extends ColumnBase {
             }
         }
         else {
-            return "";
+            return null;
         }
     }
 

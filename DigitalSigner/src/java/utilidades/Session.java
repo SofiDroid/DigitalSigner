@@ -50,18 +50,25 @@ public class Session {
     }
     
     public static void limpiarOtrosBeans(String beanEnUso) {
+        limpiarOtrosBeans(beanEnUso, false);
+    }
+    
+    public static void limpiarOtrosBeans(String beanEnUso, boolean boTodo) {
         //Cambiar esto y que lo recoja de una lista de propiedades o mirar como sacar solo los de las gestiones.
         AlterableContext ctxSession = (AlterableContext) CDI.current().getBeanManager().getContext(SessionScoped.class);
         Set<Bean<?>> beans = CDI.current().getBeanManager().getBeans(Object.class, new AnnotationLiteral<Any>() {});
         for (Bean<?> itemBean : beans) {
             if (itemBean.getBeanClass().getDeclaredAnnotation(Named.class) != null && itemBean.getScope() == SessionScoped.class)
             {
-                if (!itemBean.getBeanClass().getSimpleName().equals("DatosUsuario")
-                        && !itemBean.getBeanClass().getSimpleName().equals("Menu")
-                        && !itemBean.getBeanClass().getName().equals(beanEnUso)) {
-                    //REMOVE
-                    ctxSession.destroy(itemBean);
-                }
+                if (!boTodo) {
+                    if (itemBean.getBeanClass().getSimpleName().equals("DatosUsuario") 
+                            || itemBean.getBeanClass().getSimpleName().equals("Menu")
+                            || itemBean.getBeanClass().getName().equals(beanEnUso)) {
+                        continue;
+                    }
+                }                    
+                //REMOVE
+                ctxSession.destroy(itemBean);
             }
         }
     }

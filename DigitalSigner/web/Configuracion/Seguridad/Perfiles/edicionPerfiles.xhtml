@@ -93,7 +93,7 @@
                         </p:selectBooleanCheckbox>
                     </p:column>
                     <p:column headerText="Modificación" width="70px" style="text-align: center">
-                        <p:selectBooleanCheckbox id="chkModificacion" value="#{item.chkModificacion}" 
+                        <p:selectBooleanCheckbox id="chkModificacion" value="#{item.chkEdicion}" 
                                                  rendered="#{nodo.getChildCount() eq 0}" 
                                                  disabled="#{beanEdicion.modoFormulario eq 'CONSULTA' or beanEdicion.modoFormulario eq 'ELIMINADO'}">
                             <p:ajax update="@this" process="@this" />

@@ -1,14 +1,21 @@
 package seguridad.menus;
 
+import basedatos.DataSet;
+import basedatos.Row;
 import java.io.Serializable;
+import java.util.List;
+import java.util.MissingResourceException;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
 import org.primefaces.model.menu.DefaultMenuItem;
 import org.primefaces.model.menu.DefaultMenuModel;
 import org.primefaces.model.menu.DefaultSubMenu;
+import org.primefaces.model.menu.MenuElement;
 import org.primefaces.model.menu.MenuModel;
+import utilidades.Mensajes;
 import utilidades.Msg;
+import utilidades.Session;
 
 /**
  *
@@ -19,227 +26,10 @@ import utilidades.Msg;
 public class Menu implements Serializable {
     private MenuModel model;
     
-    @PostConstruct
-    public void init() {
-        model = new DefaultMenuModel();
-
-        //Gestión de documentos
-        DefaultSubMenu submenu = DefaultSubMenu.builder()
-                .id("mnuGestionDocumentos")
-                .label(Msg.getString("mnuGestionDocumentos"))
-                .build();
-
-        DefaultMenuItem item = DefaultMenuItem.builder()
-                .id("mnuFirmaDocumentos")
-                .value(Msg.getString("mnuFirmaDocumentos"))
-                /*.icon("pi pi-save")*/
-                .command("/GestionDocumentos/FirmaDocumentos/filtroFirmaDocumentos")
-                .build();
-        submenu.getElements().add(item);
-
-        item = DefaultMenuItem.builder()
-                .id("mnuConsultaDocumentos")
-                .value(Msg.getString("mnuConsultaDocumentos"))
-                /*.icon("pi pi-save")*/
-                .command("/GestionDocumentos/ConsultaDocumentos/filtroConsultaDocumentos")
-                .build();
-        submenu.getElements().add(item);
-
-        item = DefaultMenuItem.builder()
-                .id("mnuInformes")
-                .value(Msg.getString("mnuInformes"))
-                /*.icon("pi pi-save")*/
-                .command("/GestionDocumentos/Informes/filtroInformes")
-                .build();
-        submenu.getElements().add(item);
-
-        model.getElements().add(submenu);
-
-        
-        //Gestión de XML
-        submenu = DefaultSubMenu.builder()
-                .id("mnuGestionXML")
-                .label(Msg.getString("mnuGestionXML"))
-                .build();
-
-        item = DefaultMenuItem.builder()
-                .id("mnuEntradas")
-                .value(Msg.getString("mnuEntradas"))
-                /*.icon("pi pi-save")*/
-                .command("/GestionXML/Entradas/filtroEntradas")
-                .build();
-        submenu.getElements().add(item);
-
-        item = DefaultMenuItem.builder()
-                .id("mnuSalidas")
-                .value(Msg.getString("mnuSalidas"))
-                /*.icon("pi pi-save")*/
-                .command("/GestionXML/Salidas/filtroSalidas")
-                .build();
-        submenu.getElements().add(item);
-
-        item = DefaultMenuItem.builder()
-                .id("mnuInformes")
-                .value(Msg.getString("mnuInformes"))
-                /*.icon("pi pi-save")*/
-                .command("/GestionXML/Informes/filtroInformes")
-                .build();
-        submenu.getElements().add(item);
-
-        model.getElements().add(submenu);
-        
-        
-        //Configuración
-        submenu = DefaultSubMenu.builder()
-                .id("mnuConfiguracion")
-                .label(Msg.getString("mnuConfiguracion"))
-                .build();
-
-        //Gestión
-        DefaultSubMenu submenu2 = DefaultSubMenu.builder()
-                .id("mnuGestion")
-                .label(Msg.getString("mnuGestion"))
-                .build();
-        
-        item = DefaultMenuItem.builder()
-                .id("mnuAutoridades")
-                .value(Msg.getString("mnuAutoridades"))
-                /*.icon("pi pi-save")*/
-                .command("/Configuracion/Gestion/Autoridades/filtroAutoridades")
-                .build();
-        submenu2.getElements().add(item);
-        
-        item = DefaultMenuItem.builder()
-                .id("mnuTiposDocumentos")
-                .value(Msg.getString("mnuTiposDocumentos"))
-                /*.icon("pi pi-save")*/
-                .command("/Configuracion/Gestion/TiposDocumentos/filtroTiposDocumentos")
-                .build();
-        submenu2.getElements().add(item);
-        
-        item = DefaultMenuItem.builder()
-                .id("mnuSituacionesDocumentos")
-                .value(Msg.getString("mnuSituacionesDocumentos"))
-                /*.icon("pi pi-save")*/
-                .command("/Configuracion/Gestion/SituacionesDocumentos/filtroSituacionesDocumentos")
-                .build();
-        submenu2.getElements().add(item);
-        
-        item = DefaultMenuItem.builder()
-                .id("mnuSituacionesXML")
-                .value(Msg.getString("mnuSituacionesXML"))
-                /*.icon("pi pi-save")*/
-                .command("/Configuracion/Gestion/SituacionesXML/filtroSituacionesXML")
-                .build();
-        submenu2.getElements().add(item);
-        
-        submenu.getElements().add(submenu2);
-        
-        //Seguridad
-        submenu2 = DefaultSubMenu.builder()
-                .id("mnuSeguridad")
-                .label(Msg.getString("mnuSeguridad"))
-                .build();
-        
-        item = DefaultMenuItem.builder()
-                .id("mnuUsuarios")
-                .value(Msg.getString("mnuUsuarios"))
-                /*.icon("pi pi-save")*/
-                .command("/Configuracion/Seguridad/Usuarios/filtroUsuarios")
-                .build();
-        submenu2.getElements().add(item);
-        
-        item = DefaultMenuItem.builder()
-                .id("mnuPerfiles")
-                .value(Msg.getString("mnuPerfiles"))
-                /*.icon("pi pi-save")*/
-                .command("/Configuracion/Seguridad/Perfiles/filtroPerfiles")
-                .build();
-        submenu2.getElements().add(item);
-        
-        item = DefaultMenuItem.builder()
-                .id("mnuUnidades")
-                .value(Msg.getString("mnuUnidades"))
-                /*.icon("pi pi-save")*/
-                .command("/Configuracion/Seguridad/Unidades/filtroUnidades")
-                .build();
-        submenu2.getElements().add(item);
-        
-        item = DefaultMenuItem.builder()
-                .id("mnuHistoricoAccesos")
-                .value(Msg.getString("mnuHistoricoAccesos"))
-                /*.icon("pi pi-save")*/
-                .command("/Configuracion/Seguridad/HistoricoAccesos/filtroHistoricoAccesos")
-                .build();
-        submenu2.getElements().add(item);
-        
-        submenu.getElements().add(submenu2);
-        
-        //Sistema
-        submenu2 = DefaultSubMenu.builder()
-                .id("mnuSistema")
-                .label(Msg.getString("mnuSistema"))
-                .build();
-        
-        item = DefaultMenuItem.builder()
-                .id("mnuOpcionesMenu")
-                .value(Msg.getString("mnuOpcionesMenu"))
-                /*.icon("pi pi-save")*/
-                .command("/Configuracion/Sistema/OpcionesMenu/filtroOpcionesMenu")
-                .build();
-        submenu2.getElements().add(item);
-        
-        item = DefaultMenuItem.builder()
-                .id("mnuPermisos")
-                .value(Msg.getString("mnuPermisos"))
-                /*.icon("pi pi-save")*/
-                .command("/Configuracion/Sistema/Permisos/filtroPermisos")
-                .build();
-        submenu2.getElements().add(item);
-        
-        item = DefaultMenuItem.builder()
-                .id("mnuVariablesConfiguracion")
-                .value(Msg.getString("mnuVariablesConfiguracion"))
-                /*.icon("pi pi-save")*/
-                .command("/Configuracion/Sistema/VariablesConfiguracion/fitroVariablesConfiguracion")
-                .build();
-        submenu2.getElements().add(item);
-        
-        submenu.getElements().add(submenu2);
-        
-        //Informes
-        submenu2 = DefaultSubMenu.builder()
-                .id("mnuInformes")
-                .label(Msg.getString("mnuInformes"))
-                .build();
-        
-        item = DefaultMenuItem.builder()
-                .id("mnuInformesGestion")
-                .value(Msg.getString("mnuInformesGestion"))
-                /*.icon("pi pi-save")*/
-                .command("/Configuracion/Informes/InformesGestion/filtroInformesGestion")
-                .build();
-        submenu2.getElements().add(item);
-        
-        item = DefaultMenuItem.builder()
-                .id("mnuInformesSeguridad")
-                .value(Msg.getString("mnuInformesSeguridad"))
-                /*.icon("pi pi-save")*/
-                .command("/Configuracion/Informes/InformesSeguridad/filtroInformesSeguridad")
-                .build();
-        submenu2.getElements().add(item);
-        
-        item = DefaultMenuItem.builder()
-                .id("mnuInformesSistema")
-                .value(Msg.getString("mnuInformesSistema"))
-                /*.icon("pi pi-save")*/
-                .command("/Configuracion/Informes/InformesSistema/filtroInformesSistema")
-                .build();
-        submenu2.getElements().add(item);
-        
-        submenu.getElements().add(submenu2);
-        
-        model.getElements().add(submenu);
+    public Menu() {
+        this.model = new DefaultMenuModel();
+        cargarMenuUsuarioUnidad(Session.getDatosUsuario().getBdTUsuario().getIdUsuario(),
+                            Session.getDatosUsuario().getBdTUnidad().getIdUnidad());
     }
 
     public MenuModel getModel() {
@@ -248,5 +38,202 @@ public class Menu implements Serializable {
 
     public void setModel(MenuModel model) {
         this.model = model;
+    }
+    
+    private void cargarMenuUsuarioUnidad(Integer idUsuario, Integer idUnidad) {
+        try {
+            String sql = """
+                        WITH CTE_OPCIONMENU 
+                        AS
+                        (
+                            SELECT
+                                CAST(OM.EN_ORDEN as NVARCHAR(MAX)) as ORDEN,
+                                OM.ID_OPCIONMENU, 
+                                OM.CO_OPCIONMENU, 
+                                OM.DS_TITULO, 
+                                OM.DS_RUTA,
+                                OM.ID_OPCIONMENUPADRE
+                            FROM
+                                BD_T_OPCIONMENU OM
+                            WHERE 
+                                OM.ID_OPCIONMENUPADRE IS NULL
+                        UNION ALL
+                            SELECT
+                                cte.ORDEN + '->' + CAST(OM.EN_ORDEN as NVARCHAR(MAX)) as ORDEN,
+                                OM.ID_OPCIONMENU, 
+                                OM.CO_OPCIONMENU, 
+                                OM.DS_TITULO, 
+                                OM.DS_RUTA,
+                                OM.ID_OPCIONMENUPADRE
+                            FROM 
+                                BD_T_OPCIONMENU OM
+                            INNER JOIN 
+                                CTE_OPCIONMENU cte ON (OM.ID_OPCIONMENUPADRE = cte.ID_OPCIONMENU)
+                        ),
+                        WT_TIPOUSUOPCPER
+                        AS
+                        (
+                            SELECT DISTINCT
+                                TUOP.*
+                            FROM 
+                                BD_T_TIPOUSUARIO tu
+                            INNER JOIN
+                                BD_A_USUTIPOUSU utu ON (utu.ID_TIPOUSUARIO = tu.ID_TIPOUSUARIO)
+                            INNER JOIN
+                                BD_A_TIPOUSUOPCPER TUOP ON (tuop.ID_TIPOUSUARIO = tu.ID_TIPOUSUARIO)
+                            WHERE tu.ID_UNIDAD = :ID_UNIDAD
+                            AND utu.ID_USUARIO = :ID_USUARIO
+                        )
+                        SELECT 
+                            OM.ORDEN,
+                            OM.ID_OPCIONMENU, 
+                            OM.CO_OPCIONMENU, 
+                            OM.DS_TITULO, 
+                            OM.DS_RUTA,
+                            OM.ID_OPCIONMENUPADRE,
+                            (SELECT count(*) FROM BD_T_OPCIONMENU WHERE ID_OPCIONMENUPADRE = OM.ID_OPCIONMENU) as HIJOS,
+                            CONVERT(BIT,MAX(CONVERT(INT,ISNULL(TUOP.BO_CONSULTA, CONVERT(BIT,0))))) as BO_CONSULTA,
+                            CONVERT(BIT,MAX(CONVERT(INT,ISNULL(TUOP.BO_ALTA, CONVERT(BIT,0))))) as BO_ALTA,
+                            CONVERT(BIT,MAX(CONVERT(INT,ISNULL(TUOP.BO_EDICION, CONVERT(BIT,0))))) as BO_EDICION,
+                            CONVERT(BIT,MAX(CONVERT(INT,ISNULL(TUOP.BO_BORRADO, CONVERT(BIT,0))))) as BO_BORRADO
+                        FROM 
+                            CTE_OPCIONMENU OM
+                        LEFT JOIN
+                            WT_TIPOUSUOPCPER TUOP ON (TUOP.ID_OPCIONMENU = OM.ID_OPCIONMENU)
+                        GROUP BY
+                            OM.ORDEN,
+                            OM.ID_OPCIONMENU, 
+                            OM.CO_OPCIONMENU, 
+                            OM.DS_TITULO, 
+                            OM.DS_RUTA,
+                            OM.ID_OPCIONMENUPADRE
+                        ORDER BY 
+                            OM.ORDEN ASC                        
+                         """;
+            sql = sql.replaceAll("(?i):ID_USUARIO", idUsuario.toString());
+            sql = sql.replaceAll("(?i):ID_UNIDAD", idUnidad.toString());
+            DataSet dsResultado = new DataSet(sql, "ID_OPCIONMENU");
+            if (dsResultado.getRowsCount() > 0) {
+                for (Row itemRow : dsResultado.getRows()) {
+                    Boolean boConsulta = (Boolean)itemRow.getColumnName("BO_CONSULTA").getValue();
+                    Boolean boAlta = (Boolean)itemRow.getColumnName("BO_CONSULTA").getValue();
+                    Boolean boEdicion = (Boolean)itemRow.getColumnName("BO_CONSULTA").getValue();
+                    Boolean boBorrado = (Boolean)itemRow.getColumnName("BO_CONSULTA").getValue();
+                    String idOpcionesMenu = itemRow.getColumnName("ID_OPCIONMENU").getValueString();
+                    String idOpcionesMenuPadre = itemRow.getColumnName("ID_OPCIONMENUPADRE").getValueString();
+                    String dsTitulo = itemRow.getColumnName("DS_TITULO").getValueString();
+                    String dsRuta = itemRow.getColumnName("DS_RUTA").getValueString();
+                    try {
+                        dsTitulo = Msg.getString(itemRow.getColumnName("DS_TITULO").getValueString());
+                    }
+                    catch (MissingResourceException na) {
+                        //NADA SI NO ENCUENTRA EL RESOURCE PARA IDIOMAS
+                    }
+                    if (itemRow.getColumnName("HIJOS").getValueInteger() > 0) {
+                        DefaultSubMenu submenu = DefaultSubMenu.builder()
+                                .id(idOpcionesMenu)
+                                .label(dsTitulo)
+                                .build();                
+                        
+                        if (!model.getElements().isEmpty()) {
+                            boolean encontrado = false;
+                            for (MenuElement itemElement : model.getElements()) {
+                                DefaultSubMenu subMenuPadre = enlazarMenu(itemElement, idOpcionesMenuPadre);
+                                if (subMenuPadre != null) {
+                                    subMenuPadre.getElements().add(submenu);
+                                    encontrado = true;
+                                    break;
+                                }
+                            }
+                            if (!encontrado) {
+                                model.getElements().add(submenu);
+                            }
+                        }
+                        else {
+                            model.getElements().add(submenu);
+                        }
+                    }
+                    else {
+                        //Si no tiene ningun permiso no muestro la opcion en el menu.
+                        if (!boConsulta && !boAlta && !boEdicion && !boBorrado) {
+                            continue; //Paso al siguiente elemento
+                        }
+
+                        DefaultMenuItem item = DefaultMenuItem.builder()
+                                .id(idOpcionesMenu)
+                                .value(dsTitulo)
+                                /*.icon("pi pi-save")*/
+                                .command(dsRuta)
+                                .build();
+                        if (!model.getElements().isEmpty()) {
+                            boolean encontrado = false;
+                            for (MenuElement itemElement : model.getElements()) {
+                                DefaultSubMenu subMenuPadre = enlazarMenu(itemElement, idOpcionesMenuPadre);
+                                if (subMenuPadre != null) {
+                                    subMenuPadre.getElements().add(item);
+                                    encontrado = true;
+                                    break;
+                                }
+                            }
+                            if (!encontrado) {
+                                model.getElements().add(item);
+                            }
+                        }
+                        else {
+                            model.getElements().add(item);
+                        }
+                    }
+                }
+            }
+            
+            if (!model.getElements().isEmpty()) {
+                for (int i = model.getElements().size()-1; i >= 0; i--) {
+                    limpiarSubMenusVacios(null, model.getElements().get(i));
+                    if (model.getElements().get(i) instanceof DefaultSubMenu) {
+                        if (((DefaultSubMenu)model.getElements().get(i)).getElementsCount() == 0)
+                        {
+                            model.getElements().remove(i);
+                        }
+                    }
+                }
+            }
+        }
+        catch (Exception ex) {
+            Mensajes.showException(Menu.class, ex);
+        }
+    }
+    
+    private DefaultSubMenu enlazarMenu(MenuElement nodo, String idOpcionMenuPadre) {
+        if (nodo instanceof DefaultSubMenu submenu) {
+            if (submenu.getId().equals(idOpcionMenuPadre)) {
+                return submenu;
+            }
+            if (!submenu.getElements().isEmpty()) {
+                for (MenuElement itemElement : submenu.getElements()) {
+                    DefaultSubMenu resultado = enlazarMenu(itemElement, idOpcionMenuPadre);
+                    if (resultado != null) {
+                        return resultado;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+    
+    private void limpiarSubMenusVacios(MenuElement nodoPadre, MenuElement nodo) {
+        if (nodo instanceof DefaultSubMenu) {
+            DefaultSubMenu submenu = (DefaultSubMenu)nodo;
+            if (submenu.getElementsCount() != 0) {
+                for (int i = submenu.getElements().size()-1; i >= 0; i--) {
+                    limpiarSubMenusVacios(nodo, submenu.getElements().get(i));
+                }
+            }
+            
+            if (submenu.getElementsCount() == 0) {
+                if (nodoPadre != null) {
+                    ((DefaultSubMenu)nodoPadre).getElements().remove(submenu);
+                }
+            }
+        }
     }
 }

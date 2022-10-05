@@ -28,7 +28,10 @@ public class StATipousuopcper extends StBase {
         HashMap<String, Object> parametros = new HashMap<>();
         parametros.put("ID_TIPOUSUARIO", filtroBdATipousuopcper.getIdTipousuario());
         parametros.put("ID_OPCIONMENU", filtroBdATipousuopcper.getIdOpcionmenu());
-        parametros.put("ID_PERMISO", filtroBdATipousuopcper.getIdPermiso());
+        parametros.put("BO_CONSULTA", filtroBdATipousuopcper.getBoConsulta());
+        parametros.put("BO_ALTA", filtroBdATipousuopcper.getBoAlta());
+        parametros.put("BO_EDICION", filtroBdATipousuopcper.getBoEdicion());
+        parametros.put("BO_BORRADO", filtroBdATipousuopcper.getBoBorrado());
         parametros.put("FE_ALTA", filtroBdATipousuopcper.getFeAlta());
         parametros.put("FE_DESACTIVO", filtroBdATipousuopcper.getFeDesactivo());
         parametros.put("USUARIOBD", filtroBdATipousuopcper.getUsuariobd());
@@ -46,8 +49,6 @@ public class StATipousuopcper extends StBase {
         BdATipousuopcper filtroBdATipousuopcper = new BdATipousuopcper();
         filtroBdATipousuopcper.setIdTipousuario(idTipousuario);
         filtroBdATipousuopcper.setIdOpcionmenu(idOpcionmenu);
-        filtroBdATipousuopcper.setIdPermiso(idPermiso);
-
         
         ArrayList<BdATipousuopcper> listaBdATipousuopcper = filtro(filtroBdATipousuopcper, em);
         if (listaBdATipousuopcper != null && !listaBdATipousuopcper.isEmpty()) {
@@ -68,11 +69,6 @@ public class StATipousuopcper extends StBase {
                 throw new RequiredFieldException("ID_OPCIONMENU");
             }
         }
-        if(AppInit.TIPO_BASEDATOS == BaseDatos.ORACLE) {
-            if (Validation.isNullOrEmpty(newBdATipousuopcper.getIdPermiso())) {
-                throw new RequiredFieldException("ID_PERMISO");
-            }
-        }
         if (Validation.isNullOrEmpty(newBdATipousuopcper.getFeAlta())) {
             throw new RequiredFieldException("FE_ALTA");
         }
@@ -85,7 +81,10 @@ public class StATipousuopcper extends StBase {
         HashMap<String, Object> parametros = new HashMap<>();
         parametros.put("ID_TIPOUSUARIO", newBdATipousuopcper.getIdTipousuario());
         parametros.put("ID_OPCIONMENU", newBdATipousuopcper.getIdOpcionmenu());
-        parametros.put("ID_PERMISO", newBdATipousuopcper.getIdPermiso());
+        parametros.put("BO_CONSULTA", newBdATipousuopcper.getBoConsulta());
+        parametros.put("BO_ALTA", newBdATipousuopcper.getBoAlta());
+        parametros.put("BO_EDICION", newBdATipousuopcper.getBoEdicion());
+        parametros.put("BO_BORRADO", newBdATipousuopcper.getBoBorrado());
         parametros.put("FE_ALTA", newBdATipousuopcper.getFeAlta());
         parametros.put("FE_DESACTIVO", newBdATipousuopcper.getFeDesactivo());
         parametros.put("USUARIOBD", newBdATipousuopcper.getUsuariobd());
@@ -103,9 +102,6 @@ public class StATipousuopcper extends StBase {
         if (Validation.isNullOrEmpty(upBdATipousuopcper.getIdOpcionmenu())) {
             throw new RequiredFieldException("ID_OPCIONMENU");
         }
-        if (Validation.isNullOrEmpty(upBdATipousuopcper.getIdPermiso())) {
-            throw new RequiredFieldException("ID_PERMISO");
-        }
         if (Validation.isNullOrEmpty(upBdATipousuopcper.getFeAlta())) {
             throw new RequiredFieldException("FE_ALTA");
         }
@@ -118,7 +114,10 @@ public class StATipousuopcper extends StBase {
         HashMap<String, Object> parametros = new HashMap<>();
         parametros.put("ID_TIPOUSUARIO", upBdATipousuopcper.getIdTipousuario());
         parametros.put("ID_OPCIONMENU", upBdATipousuopcper.getIdOpcionmenu());
-        parametros.put("ID_PERMISO", upBdATipousuopcper.getIdPermiso());
+        parametros.put("BO_CONSULTA", upBdATipousuopcper.getBoConsulta());
+        parametros.put("BO_ALTA", upBdATipousuopcper.getBoAlta());
+        parametros.put("BO_EDICION", upBdATipousuopcper.getBoEdicion());
+        parametros.put("BO_BORRADO", upBdATipousuopcper.getBoBorrado());
         parametros.put("FE_ALTA", upBdATipousuopcper.getFeAlta());
         parametros.put("FE_DESACTIVO", upBdATipousuopcper.getFeDesactivo());
         parametros.put("USUARIOBD", upBdATipousuopcper.getUsuariobd());
@@ -136,15 +135,11 @@ public class StATipousuopcper extends StBase {
         if (Validation.isNullOrEmpty(delBdATipousuopcper.getIdOpcionmenu())) {
             throw new RequiredFieldException("ID_OPCIONMENU");
         }
-        if (Validation.isNullOrEmpty(delBdATipousuopcper.getIdPermiso())) {
-            throw new RequiredFieldException("ID_PERMISO");
-        }
         
 
         HashMap<String, Object> parametros = new HashMap<>();
         parametros.put("ID_TIPOUSUARIO", delBdATipousuopcper.getIdTipousuario());
         parametros.put("ID_OPCIONMENU", delBdATipousuopcper.getIdOpcionmenu());
-        parametros.put("ID_PERMISO", delBdATipousuopcper.getIdPermiso());
 
 
         return executeNativeQueryParametros(delBdATipousuopcper.getDelete(), parametros, em);
