@@ -13,7 +13,6 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
 import org.apache.log4j.Logger;
-import seguridad.menus.Menu;
 import utilidades.Mensajes;
 import utilidades.Session;
 
@@ -37,7 +36,7 @@ public class LoginForm implements Serializable {
 
     public String login() {
         try {
-            Session.limpiarOtrosBeans(this.getClass().getName(), true);
+            Session.limpiarOtrosBeans(this.getClass().getName(), true, true);
             StTUsuario stTUsuario = new StTUsuario();
             BdTUsuario filtroBdTUsuario = new BdTUsuario();
             filtroBdTUsuario.setCoUsuario(this.usuario);
@@ -65,14 +64,13 @@ public class LoginForm implements Serializable {
                         StTUnidad stTUnidad = new StTUnidad();
                         ArrayList<BdTUnidad> listaBdTUnidad = stTUnidad.filtro(filtroBdTUnidad, null);
                         if (listaBdTUnidad != null && !listaBdTUnidad.isEmpty()) {
-                            Session.getDatosUsuario().getListaBdTUnidad().add(listaBdTUnidad.get(0));
+                            Session.getDatosUsuario().getListaBdTUnidad().addAll(listaBdTUnidad);
                         }
                     }
+                    Session.getDatosUsuario().cargarComboUnidades();
                     Session.getDatosUsuario().setBdTUnidad(Session.getDatosUsuario().getListaBdTUnidad().get(0));
-                    
-                    // Cargo las opciones de menu según los permisos
-                    Menu menu = new Menu();
-                    
+                    //Session.getDatosUsuario().getcUnidad().setValue(Session.getDatosUsuario().getListaBdTUnidad().get(0).getIdUnidad().toString());
+                            
                     //Redirecciono al formulario principal
                     return "main";
                 }

@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:cc="http://xmlns.jcp.org/jsf/composite"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <!-- INTERFACE -->
+    <cc:interface>
+        <cc:attribute name = "beanClass" />
+    </cc:interface>
+
+    <!-- IMPLEMENTATION -->
+    <cc:implementation>
+        <p:panelGrid columns="2" columnClasses="colFit, col-12">
+            <p:outputLabel for="#{cc.attrs.id}" value="#{cc.attrs.beanClass.label}#{cc.attrs.beanClass.requiredChar}" escape="false" style="display: block;#{cc.attrs.beanClass.widthLabel}"/>
+            <p:selectOneMenu id="#{cc.attrs.id}" style="#{cc.attrs.beanClass.width}" autoWidth="false"
+                             value="#{cc.attrs.beanClass.value}" disabled="#{cc.attrs.beanClass.protegido}"
+                             required="#{cc.attrs.beanClass.required}" label="#{cc.attrs.beanClass.label}"
+                             hideNoSelectionOption="#{not empty cc.attrs.beanClass.value}">
+                <p:ajax update="@this,#{cc.attrs.beanClass.update}" process="@this" action="#{cc.attrs.beanClass}" />
+                    <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" noSelectionOption="true"/>
+                    <f:selectItems value="#{cc.attrs.beanClass.options.entrySet()}" var="entry" 
+                                    itemValue="#{entry.key}" itemLabel="#{entry.value}" />
+                    <f:facet name="footer">
+                        <p:divider styleClass="mt-0" />
+                        <p:outputLabel value="#{cc.attrs.beanClass.options.size()} elementos" style="font-weight:bold;"/>
+                    </f:facet>
+                </p:selectOneMenu>
+        </p:panelGrid>
+    </cc:implementation>
+</html>

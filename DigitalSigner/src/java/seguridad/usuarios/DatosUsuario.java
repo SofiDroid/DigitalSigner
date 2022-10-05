@@ -14,6 +14,11 @@ import basedatos.tablas.BdTUnidad;
 import basedatos.tablas.BdTUsuario;
 import java.util.ArrayList;
 import javax.servlet.http.HttpServletRequest;
+import seguridad.menus.Menu;
+import utilidades.CampoWebCodigo;
+import utilidades.CampoWebCombo;
+import utilidades.Msg;
+import utilidades.Session;
 
 /**
  *
@@ -23,6 +28,8 @@ import javax.servlet.http.HttpServletRequest;
 @SessionScoped
 public class DatosUsuario implements Serializable {
     
+    private CampoWebCombo cUnidad = null;
+    private CampoWebCodigo cUsuario = null;
     private ArrayList<BdTUnidad> listaBdTUnidad = new ArrayList<>();
     private BdTUsuario bdTUsuario = null;
     private BdTUnidad bdTUnidad = null;
@@ -38,6 +45,17 @@ public class DatosUsuario implements Serializable {
         //Paises
         paises = servicioPaises.getLocales();
         pais = paises.get(0);
+        
+        this.cUsuario = new CampoWebCodigo();
+        this.cUsuario.setLabel(Msg.getString("lblUsuarioBD"));
+        this.cUsuario.setWidthLabel("5em");
+        this.cUsuario.setProtegido(true);
+
+        this.cUnidad = new CampoWebCombo();
+        this.cUnidad.setLabel("Unidad Activa");
+        this.cUnidad.setWidthLabel("10em");
+        this.cUnidad.setWidth("35em");
+        this.cUnidad.setUpdate("@form");
     }
 
     public Pais getPais() {
@@ -77,6 +95,7 @@ public class DatosUsuario implements Serializable {
 
     public void setBdTUsuario(BdTUsuario bdTUsuario) {
         this.bdTUsuario = bdTUsuario;
+        this.cUsuario.setValue(this.bdTUsuario.getCoUsuario());
     }
     
     public String getModoFirma() {
@@ -110,5 +129,44 @@ public class DatosUsuario implements Serializable {
 
     public void setListaBdTUnidad(ArrayList<BdTUnidad> listaBdTUnidad) {
         this.listaBdTUnidad = listaBdTUnidad;
+    }
+
+    public CampoWebCombo getcUnidad() {
+        return cUnidad;
+    }
+
+    public void setcUnidad(CampoWebCombo cUnidad) {
+        this.cUnidad = cUnidad;
+    }
+    
+    public void cargarComboUnidades() {
+        if (this.listaBdTUnidad != null) {
+            for (BdTUnidad itemBdTUnidad : this.listaBdTUnidad) {
+                this.cUnidad.getOptions().put(itemBdTUnidad.getIdUnidad().toString(), itemBdTUnidad.getCoUnidad() + " - " + itemBdTUnidad.getDsUnidad());
+            }
+        }
+    }
+    
+    public void selectOptionUnidad() {
+        if (this.cUnidad.getValue() != null && this.listaBdTUnidad != null) {
+            for (BdTUnidad itemBdTUnidad : this.listaBdTUnidad) {
+                if (itemBdTUnidad.getIdUnidad().toString().equals((String)this.cUnidad.getValue())) {
+                    this.setBdTUnidad(itemBdTUnidad);
+                    refrescarMenu();
+                }
+            }
+        }
+    }
+    
+    public void refrescarMenu() {
+        Session.limpiarOtrosBeans(this.getClass().getName(), false, true);
+    }
+
+    public CampoWebCodigo getcUsuario() {
+        return cUsuario;
+    }
+
+    public void setcUsuario(CampoWebCodigo cUsuario) {
+        this.cUsuario = cUsuario;
     }
 }

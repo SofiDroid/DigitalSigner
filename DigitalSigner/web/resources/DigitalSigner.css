@@ -27,6 +27,14 @@
     position: fixed!important;
 }
 
+body .ui-inputfield {
+    font-size: 0.8rem!important;
+}
+
+body .ui-fluid .ui-selectonemenu-label {
+    min-height: 0em!important;
+}
+
 body .ui-card {
     box-shadow: 4px 4px 2px -2px rgb(0 0 0 / 20%), 2px 2px 2px 0 rgb(0 0 0 / 14%), 2px 2px 6px 0 rgb(0 0 0 / 12%)!important;
 }
@@ -139,6 +147,10 @@ body .ui-inputfield{
 
 body .ui-panelgrid .ui-panelgrid-cell{
     padding: 0.2rem!important;
+}
+
+ body .gridTransparente .ui-panelgrid-cell{
+    background-color: transparent!important;
 }
 
 .col{

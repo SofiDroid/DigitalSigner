@@ -4,6 +4,7 @@
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:p="http://primefaces.org/ui"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:sd="http://xmlns.jcp.org/jsf/composite/sofidroid"
       lang="es" xml:lang="es">
     <h:head>
 <!--        <meta http-equiv="cache-control" content="max-age=0" />
@@ -69,10 +70,19 @@
                 <p:splitter id="sPrincipal" layout="vertical" style="background-image: linear-gradient(to right, whitesmoke, #d2d2d2);">
                     <p:splitterPanel id="spCabecera" size="5" minSize="5" 
                                      style="background-image: url('resources/images/DigitalSigner_logo2.png');background-repeat: no-repeat;background-size: auto 90px;background-position-y: center;min-height: 100px!important;max-height: 100px!important">
-                        <p:outputPanel style="text-align: right;padding: 10px;position: relative;right:10px;top:55px">
-                            <p:outputLabel for="txtCoUsuario" value="#{msg['lblUsuarioBD']}: "/>
-                            <p:inputText id="txtCoUsuario" value="#{datosUsuario.bdTUsuario.coUsuario}" disabled="true" style="width: 70px;" />
-                        </p:outputPanel>
+                        <p:panelGrid columns="3"
+                            columnClasses="col-4,col-6,col-2"
+                            layout="grid"
+                            styleClass="ui-fluid gridTransparente"
+                            style="border:0px none; background-color:transparent;padding-top: 60px">
+                            
+                            <div />
+
+                            <sd:campoWebCombo id="ddlUnidad" beanClass="#{datosUsuario.cUnidad}" />
+                            
+                            <sd:campoWebTexto id="txtCoUsuario" beanClass="#{datosUsuario.cUsuario}" /> 
+
+                        </p:panelGrid>
                     </p:splitterPanel>
                     <p:splitterPanel id="spCuerpo" size="95" minSize="95" style="min-height: calc(100vh - 125px)!important">
                         <p:splitter id="sCuerpo" style="background-color: transparent;">

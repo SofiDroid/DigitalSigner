@@ -14,7 +14,8 @@ public class CampoWeb {
         Lupa,
         Check,
         Numero,
-        Password
+        Password,
+        Combo
     }
     
     private String clientId = "";
