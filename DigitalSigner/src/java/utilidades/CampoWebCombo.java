@@ -1,5 +1,6 @@
 package utilidades;
 
+import java.lang.reflect.Method;
 import java.util.HashMap;
 
 /**
@@ -10,6 +11,8 @@ public class CampoWebCombo extends CampoWeb {
     
     private HashMap<String,String> options = new HashMap<>();
     private String update;
+    private Method selectMethod = null;
+    private Object selectClass = null;
     
     public CampoWebCombo() {
         super(Tipo.Combo);
@@ -29,5 +32,30 @@ public class CampoWebCombo extends CampoWeb {
 
     public void setUpdate(String update) {
         this.update = update;
+    }
+
+    public Method getSelectMethod() {
+        return selectMethod;
+    }
+
+    public void setSelectMethod(Method selectMethod) {
+        this.selectMethod = selectMethod;
+    }
+
+    public Object getSelectClass() {
+        return selectClass;
+    }
+
+    public void setSelectClass(Object selectClass) {
+        this.selectClass = selectClass;
+    }
+    
+    public String onSelect() {
+        try {
+            return (String)this.selectMethod.invoke(this.selectClass);
+        } catch (Exception ex) {
+            Mensajes.showException(CampoWebCombo.class, ex);
+        }
+        return null;
     }
 }

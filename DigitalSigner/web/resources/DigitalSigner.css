@@ -31,7 +31,7 @@ body .ui-inputfield {
     font-size: 0.8rem!important;
 }
 
-body .ui-fluid .ui-selectonemenu-label {
+body .ui-selectonemenu .ui-selectonemenu-label {
     min-height: 0em!important;
 }
 
@@ -150,7 +150,8 @@ body .ui-panelgrid .ui-panelgrid-cell{
 }
 
  body .gridTransparente .ui-panelgrid-cell{
-    background-color: transparent!important;
+    background-color: transparent;
+    border: none;
 }
 
 .col{

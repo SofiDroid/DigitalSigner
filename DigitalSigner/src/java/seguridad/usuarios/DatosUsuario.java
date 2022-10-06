@@ -14,9 +14,9 @@ import basedatos.tablas.BdTUnidad;
 import basedatos.tablas.BdTUsuario;
 import java.util.ArrayList;
 import javax.servlet.http.HttpServletRequest;
-import seguridad.menus.Menu;
 import utilidades.CampoWebCodigo;
 import utilidades.CampoWebCombo;
+import utilidades.Mensajes;
 import utilidades.Msg;
 import utilidades.Session;
 
@@ -48,14 +48,20 @@ public class DatosUsuario implements Serializable {
         
         this.cUsuario = new CampoWebCodigo();
         this.cUsuario.setLabel(Msg.getString("lblUsuarioBD"));
-        this.cUsuario.setWidthLabel("5em");
+        this.cUsuario.setWidthLabel("4em");
         this.cUsuario.setProtegido(true);
 
         this.cUnidad = new CampoWebCombo();
         this.cUnidad.setLabel("Unidad Activa");
-        this.cUnidad.setWidthLabel("10em");
+        this.cUnidad.setWidthLabel("7em");
         this.cUnidad.setWidth("35em");
         this.cUnidad.setUpdate("@form");
+        this.cUnidad.setSelectClass(this);
+        try {
+            this.cUnidad.setSelectMethod(this.getClass().getMethod("selectOptionUnidad"));
+        } catch (Exception ex) {
+            Mensajes.showException(DatosUsuario.class, ex);
+        }
     }
 
     public Pais getPais() {
@@ -168,5 +174,13 @@ public class DatosUsuario implements Serializable {
 
     public void setcUsuario(CampoWebCodigo cUsuario) {
         this.cUsuario = cUsuario;
+    }
+    
+    public String logout() {
+        //Limpio todos los beans de sesion
+        Session.limpiarOtrosBeans(null, true, true);
+        
+        //Retorno a la pagina de login
+        return "/index";
     }
 }
