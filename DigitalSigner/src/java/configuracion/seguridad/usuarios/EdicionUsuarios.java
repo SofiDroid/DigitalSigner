@@ -1,13 +1,19 @@
 package configuracion.seguridad.usuarios;
 
+import basedatos.servicios.StATokenusuario;
 import basedatos.servicios.StTUsuario;
+import basedatos.tablas.BdATokenusuario;
 import basedatos.tablas.BdTUsuario;
 import excepciones.FormModeException;
 import excepciones.RegistryNotFoundException;
 import excepciones.RequiredFieldException;
+import init.AppInit;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
 import javax.el.ELContext;
 import javax.faces.context.FacesContext;
+import tomcat.persistence.EntityManager;
 import utilidades.CampoWebCheck;
 import utilidades.CampoWebCodigo;
 import utilidades.CampoWebDescripcion;
@@ -39,6 +45,7 @@ public class EdicionUsuarios implements Serializable {
     private CampoWebCheck cBoAdmin = null;
     private CampoWebFecha cFeAlta = null;
     private CampoWebFecha cFeDesactivo = null;
+    private CampoWebDescripcion cToken = null;
     
     BdTUsuario bdTUsuario = null;
 
@@ -134,6 +141,13 @@ public class EdicionUsuarios implements Serializable {
             this.cFeDesactivo.setLabel(Msg.getString("lbl_EdicionUsuarios_FeDesactivo"));
             this.cFeDesactivo.setWidthLabel("100px");
             
+            this.cToken = new CampoWebDescripcion();
+            this.cToken.setLabel(Msg.getString("lbl_EdicionUsuarios_DsToken"));
+            this.cToken.setWidthLabel("100px");
+            this.cToken.setMaxlength("64");
+            this.cToken.setProtegido(true);
+            
+            
             this.setModoFormulario(ModoFormulario.CONSULTA);
 
             if (idUsuario != null) {
@@ -141,6 +155,7 @@ public class EdicionUsuarios implements Serializable {
             }
             else {
                 this.setModoFormulario(ModoFormulario.ALTA);
+                this.cToken.setValue("");
             }
         }
         catch (Exception ex) {
@@ -157,58 +172,103 @@ public class EdicionUsuarios implements Serializable {
     public void guardar() {
         try {
             validarCampos();
-            
-            //ALTA
-            if (this.modoFormulario == ModoFormulario.ALTA) {
-                this.bdTUsuario = new BdTUsuario();
-                this.bdTUsuario.setCoNIF(this.cCoNIF.getValue());
-                this.bdTUsuario.setCoUsuario(this.cCoUsuario.getValue());
-                this.bdTUsuario.setCoPassword(this.cCoPassword1.getValue());
-                this.bdTUsuario.setDsNombre(this.cDsNombre.getValue());
-                this.bdTUsuario.setDsApellido1(this.cDsApellido1.getValue());
-                this.bdTUsuario.setDsApellido2(this.cDsApellido2.getValue());
-                this.bdTUsuario.setEnIntentos(this.cEnIntentos.getValueInteger());
-                this.bdTUsuario.setEnIntentosmax(this.cEnIntentosMax.getValueInteger());
-                this.bdTUsuario.setBoAdmin(this.cBoAdmin.getValue());
-                this.bdTUsuario.setFeAlta(this.cFeAlta.getValue());
-                this.bdTUsuario.setFeDesactivo(this.cFeDesactivo.getValue());
-                
-                StTUsuario stTUsuario = new StTUsuario();
-                stTUsuario.alta(this.bdTUsuario, null);
-                
-                if (this.parent instanceof FiltroUsuarios filtroUsuarios) {
-                    filtroUsuarios.getDsResultado().refrescarDatos();
-                }
-                
-                Mensajes.showInfo("Información", "Alta realizada correctamente!");
+            // INICIO TRANSACCION
+            try (EntityManager entityManager = AppInit.getEntityManager())
+            {
+                entityManager.getTransaction().begin();
+                try {
+                    //ALTA
+                    if (this.modoFormulario == ModoFormulario.ALTA) {
+                        this.bdTUsuario = new BdTUsuario();
+                        this.bdTUsuario.setCoNIF(this.cCoNIF.getValue());
+                        this.bdTUsuario.setCoUsuario(this.cCoUsuario.getValue());
+                        this.bdTUsuario.setCoPassword(this.cCoPassword1.getValue());
+                        this.bdTUsuario.setDsNombre(this.cDsNombre.getValue());
+                        this.bdTUsuario.setDsApellido1(this.cDsApellido1.getValue());
+                        this.bdTUsuario.setDsApellido2(this.cDsApellido2.getValue());
+                        this.bdTUsuario.setEnIntentos(this.cEnIntentos.getValueInteger());
+                        this.bdTUsuario.setEnIntentosmax(this.cEnIntentosMax.getValueInteger());
+                        this.bdTUsuario.setBoAdmin(this.cBoAdmin.getValue());
+                        this.bdTUsuario.setFeAlta(this.cFeAlta.getValue());
+                        this.bdTUsuario.setFeDesactivo(this.cFeDesactivo.getValue());
+
+                        StTUsuario stTUsuario = new StTUsuario();
+                        stTUsuario.alta(this.bdTUsuario, entityManager);
+
+                        //GUARDAR TOKEN GENERADO
+                        if (this.cToken.getValue() != null && !this.cToken.getValue().isBlank()) {
+                            BdATokenusuario newBdATokenusuario = new BdATokenusuario();
+                            newBdATokenusuario.setIdUsuario(this.bdTUsuario.getIdUsuario());
+                            newBdATokenusuario.setDsToken(this.cToken.getValue());
+                            newBdATokenusuario.setFeAlta(new Date());
+
+                            StATokenusuario stATokenusuario = new StATokenusuario();
+                            stATokenusuario.alta(newBdATokenusuario, entityManager);
+                        }
+                        
+                        entityManager.getTransaction().commit();
+
+                        if (this.parent instanceof FiltroUsuarios filtroUsuarios) {
+                            filtroUsuarios.getDsResultado().refrescarDatos();
+                        }
+
+                        Mensajes.showInfo("Información", "Alta realizada correctamente!");
+                    }
+
+                    //ACTUALIZACION
+                    if (this.modoFormulario == ModoFormulario.EDICION) {
+                        this.bdTUsuario.setCoNIF(this.cCoNIF.getValue());
+                        this.bdTUsuario.setCoUsuario(this.cCoUsuario.getValue());
+                        this.bdTUsuario.setCoPassword(this.cCoPassword1.getValue());
+                        this.bdTUsuario.setDsNombre(this.cDsNombre.getValue());
+                        this.bdTUsuario.setDsApellido1(this.cDsApellido1.getValue());
+                        this.bdTUsuario.setDsApellido2(this.cDsApellido2.getValue());
+                        this.bdTUsuario.setEnIntentos(this.cEnIntentos.getValueInteger());
+                        this.bdTUsuario.setEnIntentosmax(this.cEnIntentosMax.getValueInteger());
+                        this.bdTUsuario.setBoAdmin(this.cBoAdmin.getValue());
+                        this.bdTUsuario.setFeAlta(this.cFeAlta.getValue());
+                        this.bdTUsuario.setFeDesactivo(this.cFeDesactivo.getValue());
+
+                        StTUsuario stTUsuario = new StTUsuario();
+                        stTUsuario.actualiza(this.bdTUsuario, entityManager);
+
+                        //GUARDAR TOKEN GENERADO
+                        if (this.cToken.getValue() != null && !this.cToken.getValue().isBlank()) {
+                            BdATokenusuario filtroBdATokenusuario = new BdATokenusuario();
+                            filtroBdATokenusuario.setIdUsuario(this.bdTUsuario.getIdUsuario());
+                            filtroBdATokenusuario.setDsToken(this.cToken.getValue());
+                            StATokenusuario stATokenusuario = new StATokenusuario();
+                            ArrayList<BdATokenusuario> listaBdATokenusuario = stATokenusuario.filtro(filtroBdATokenusuario, entityManager);
+                            //Solo si ha cambiado el token de ese usuario lo guardo
+                            if (listaBdATokenusuario == null || listaBdATokenusuario.isEmpty()) {
+                                //Desactivo si habia alguno.
+                                stATokenusuario.desactivarToken(this.bdTUsuario.getIdUsuario(), entityManager);
+                                
+                                BdATokenusuario newBdATokenusuario = new BdATokenusuario();
+                                newBdATokenusuario.setIdUsuario(this.bdTUsuario.getIdUsuario());
+                                newBdATokenusuario.setDsToken(this.cToken.getValue());
+                                newBdATokenusuario.setFeAlta(new Date());
+                                stATokenusuario.alta(newBdATokenusuario, entityManager);
+                            }
+                        }
+
+                        entityManager.getTransaction().commit();
+
+                        if (this.parent instanceof FiltroUsuarios filtroUsuarios) {
+                            ELContext elContext = FacesContext.getCurrentInstance().getELContext();
+                            filtroUsuarios = (FiltroUsuarios)elContext.getELResolver().getValue(elContext, null, "filtroUsuarios");
+                            filtroUsuarios.getDsResultado().actualizarFilaSeleccionada();
+                        }
+
+                        Mensajes.showInfo("Información", "Actualización realizada correctamente!");
+                    }
             }
-            
-            //ACTUALIZACION
-            if (this.modoFormulario == ModoFormulario.EDICION) {
-                this.bdTUsuario.setCoNIF(this.cCoNIF.getValue());
-                this.bdTUsuario.setCoUsuario(this.cCoUsuario.getValue());
-                this.bdTUsuario.setCoPassword(this.cCoPassword1.getValue());
-                this.bdTUsuario.setDsNombre(this.cDsNombre.getValue());
-                this.bdTUsuario.setDsApellido1(this.cDsApellido1.getValue());
-                this.bdTUsuario.setDsApellido2(this.cDsApellido2.getValue());
-                this.bdTUsuario.setEnIntentos(this.cEnIntentos.getValueInteger());
-                this.bdTUsuario.setEnIntentosmax(this.cEnIntentosMax.getValueInteger());
-                this.bdTUsuario.setBoAdmin(this.cBoAdmin.getValue());
-                this.bdTUsuario.setFeAlta(this.cFeAlta.getValue());
-                this.bdTUsuario.setFeDesactivo(this.cFeDesactivo.getValue());
-                
-                StTUsuario stTUsuario = new StTUsuario();
-                stTUsuario.actualiza(this.bdTUsuario, null);
-                
-                if (this.parent instanceof FiltroUsuarios filtroUsuarios) {
-                    ELContext elContext = FacesContext.getCurrentInstance().getELContext();
-                    filtroUsuarios = (FiltroUsuarios)elContext.getELResolver().getValue(elContext, null, "filtroUsuarios");
-                    filtroUsuarios.getDsResultado().actualizarFilaSeleccionada();
+                catch (Exception ex) {
+                    entityManager.getTransaction().rollback();
+                    throw ex;
                 }
-                
-                Mensajes.showInfo("Información", "Actualización realizada correctamente!");
             }
-            
+            // FIN TRANSACCION
             this.setModoFormulario(ModoFormulario.CONSULTA);
         }
         catch (Exception ex) {

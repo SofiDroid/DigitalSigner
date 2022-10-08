@@ -46,6 +46,11 @@
                         <p:commandButton id="btnVolver" icon="pi pi-undo" styleClass="rounded-button ui-button-warning" 
                                          style="height: 2rem;width: 2rem;margin-left:0.3rem" action="#{beanEdicion.volver}" title="(alt+V) Volver"
                                          update="@form" process="@this" accesskey="v" immediate="true" />
+                        
+                        <p:commandButton id="btnGenerarToken" icon="pi pi-undo" styleClass="rounded-button ui-button-warning" 
+                                         style="height: 2rem;width: 2rem;margin-left:0.3rem" action="#{beanEdicion.generarToken}" title="(alt+T) Generar Token"
+                                         update="@form" process="@this" accesskey="T" immediate="true"
+                                         rendered="#{beanEdicion.modoFormulario eq 'EDICION' or beanEdicion.modoFormulario eq 'ALTA'}" />
                     </p:toolbarGroup>
                 </p:toolbar>
             </p:card>
@@ -81,6 +86,8 @@
 
                     <sd:campoWebFecha id="txtFeDesactivo" beanClass="#{beanEdicion.getcFeDesactivo()}" />
 
+                    <sd:campoWebTexto id="txtToken" beanClass="#{beanEdicion.getcDsToken()}" />
+                    
                 </p:panelGrid>
             </p:card>
         </ui:define>
