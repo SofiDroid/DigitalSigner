@@ -135,5 +135,19 @@ public class StATokenusuario extends StBase {
 
         return executeNativeQueryParametros(delBdATokenusuario.getDelete(), parametros, em);
     }
+
+    public int desactivarToken(Integer idUsuario, EntityManager em) throws Exception {
+        if (Validation.isNullOrEmpty(idUsuario)) {
+            throw new RequiredFieldException("ID_USUARIO");
+        }
+        
+        HashMap<String, Object> parametros = new HashMap<>();
+        parametros.put("ID_USUARIO", idUsuario);
+        parametros.put("FE_DESACTIVO", new Date());
+        parametros.put("USUARIOBD", Session.getCoUsuario());
+        parametros.put("TSTBD", new Date());
+
+        return executeNativeQueryParametros(new BdATokenusuario().getDesactivarToken(), parametros, em);
+    }
 }
 

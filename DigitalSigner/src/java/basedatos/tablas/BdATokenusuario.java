@@ -153,6 +153,19 @@ public class BdATokenusuario extends OperacionSQL implements InterfazDAO {
         return sb_sql.toString();
     }
 
+    public String getDesactivarToken()
+    {
+        return """
+                UPDATE BD_A_TOKENUSUARIO SET
+                 FE_DESACTIVO = :FE_DESACTIVO,
+                 USUARIOBD = :USUARIOBD,
+                 TSTBD = :TSTBD
+                WHERE
+                 FE_DESACTIVO IS NULL
+                AND ID_USUARIO = :ID_USUARIO
+                """;
+    }
+
     public Integer getIdTokenusuario() {
         return idTokenusuario;
     }

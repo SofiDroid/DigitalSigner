@@ -21,6 +21,12 @@
                         <p:outputLabel value="Mantenimiento de Usuarios - Detalle" style="font-size: large; font-weight: bold" /> 
                     </p:toolbarGroup>
                     <p:toolbarGroup align="right">
+
+                        <p:commandButton id="btnGenerarToken" icon="pi pi-key" styleClass="rounded-button ui-button-warning ui-button-outlined" 
+                                         style="height: 2rem;width: 2rem;margin-left:0.3rem" action="#{beanEdicion.generarToken}" title="(alt+T) Generar Token"
+                                         update="@form" process="@this" accesskey="T" immediate="true"
+                                         rendered="#{beanEdicion.modoFormulario eq 'EDICION' or beanEdicion.modoFormulario eq 'ALTA'}" />
+
                         <p:commandButton id="btnGuardar" icon="pi pi-save" styleClass="rounded-button ui-button-success" 
                                          style="height: 2rem;width: 2rem;margin-left:0.3rem" action="#{beanEdicion.guardar}" title="(alt+S) Guardar"
                                          update="@form" accesskey="s" 
@@ -40,17 +46,13 @@
                         
                         <p:commandButton id="btnLimpiar" icon="pi pi-filter-slash" styleClass="rounded-button ui-button-secondary" 
                                          style="height: 2rem;width: 2rem;margin-left:0.3rem" action="#{beanEdicion.limpiar}" title="(alt+L) Limpiar formulario"
-                                         update="@form" accesskey="l" immediate="true"
+                                         update="@form" process="@this" accesskey="l" immediate="true"
                                          rendered="#{beanEdicion.modoFormulario eq 'EDICION'}" />
 
                         <p:commandButton id="btnVolver" icon="pi pi-undo" styleClass="rounded-button ui-button-warning" 
                                          style="height: 2rem;width: 2rem;margin-left:0.3rem" action="#{beanEdicion.volver}" title="(alt+V) Volver"
                                          update="@form" process="@this" accesskey="v" immediate="true" />
                         
-                        <p:commandButton id="btnGenerarToken" icon="pi pi-undo" styleClass="rounded-button ui-button-warning" 
-                                         style="height: 2rem;width: 2rem;margin-left:0.3rem" action="#{beanEdicion.generarToken}" title="(alt+T) Generar Token"
-                                         update="@form" process="@this" accesskey="T" immediate="true"
-                                         rendered="#{beanEdicion.modoFormulario eq 'EDICION' or beanEdicion.modoFormulario eq 'ALTA'}" />
                     </p:toolbarGroup>
                 </p:toolbar>
             </p:card>
@@ -86,7 +88,7 @@
 
                     <sd:campoWebFecha id="txtFeDesactivo" beanClass="#{beanEdicion.getcFeDesactivo()}" />
 
-                    <sd:campoWebTexto id="txtToken" beanClass="#{beanEdicion.getcDsToken()}" />
+                    <sd:campoWebTexto id="txtToken" beanClass="#{beanEdicion.getcToken()}" />
                     
                 </p:panelGrid>
             </p:card>

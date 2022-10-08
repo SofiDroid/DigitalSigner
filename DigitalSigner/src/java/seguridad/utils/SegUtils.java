@@ -8,7 +8,7 @@ import org.apache.commons.codec.digest.DigestUtils;
  * @author ihuegal
  */
 public class SegUtils {
-    public String generarTokenRandom() {
+    public static String generarTokenRandom() {
         return DigestUtils.sha256Hex(String.valueOf(new Date().getTime()));
     }
 }

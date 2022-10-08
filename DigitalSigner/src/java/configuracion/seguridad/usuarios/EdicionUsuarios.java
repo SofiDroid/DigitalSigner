@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import javax.el.ELContext;
 import javax.faces.context.FacesContext;
+import seguridad.utils.SegUtils;
 import tomcat.persistence.EntityManager;
 import utilidades.CampoWebCheck;
 import utilidades.CampoWebCodigo;
@@ -303,6 +304,15 @@ public class EdicionUsuarios implements Serializable {
         }
     }
     
+    public void generarToken() {
+        try {
+            this.cToken.setValue(SegUtils.generarTokenRandom());
+        }
+        catch (Exception ex) {
+            Mensajes.showException(this.getClass(), ex);
+        }
+    }
+    
     public void limpiar() {
         this.cCoNIF.setValue(null);
         this.cCoUsuario.setValue(null);
@@ -432,6 +442,20 @@ public class EdicionUsuarios implements Serializable {
         cBoAdmin.setValue(this.bdTUsuario.getBoAdmin());
         cFeAlta.setValue(this.bdTUsuario.getFeAlta());
         cFeDesactivo.setValue(this.bdTUsuario.getFeDesactivo());
+        
+        BdATokenusuario filtroBdATokenusuario = new BdATokenusuario();
+        filtroBdATokenusuario.setIdUsuario(this.bdTUsuario.getIdUsuario());
+        filtroBdATokenusuario.setFeAlta(new Date());
+        filtroBdATokenusuario.setFeDesactivo(new Date());
+        
+        StATokenusuario stATokenusuario = new StATokenusuario();
+        ArrayList<BdATokenusuario> listaBdATokenusuario = stATokenusuario.filtro(filtroBdATokenusuario, null);
+        if (listaBdATokenusuario != null && !listaBdATokenusuario.isEmpty()) {
+            this.cToken.setValue(listaBdATokenusuario.get(0).getDsToken());
+        }
+        else {
+            this.cToken.setValue(null);
+        }
     }
     
     public String getPaginaRetorno() {
@@ -553,6 +577,14 @@ public class EdicionUsuarios implements Serializable {
 
     public void setcFeDesactivo(CampoWebFecha cFeDesactivo) {
         this.cFeDesactivo = cFeDesactivo;
+    }
+
+    public CampoWebDescripcion getcToken() {
+        return cToken;
+    }
+
+    public void setcToken(CampoWebDescripcion cToken) {
+        this.cToken = cToken;
     }
 
     public BdTUsuario getBdTUsuario() {
