@@ -12,6 +12,7 @@ public class Extras {
     private String coExtension;
     private byte[] blFichero;
 
+    @XmlElement(required = true)
     public String getCoFichero() {
         return coFichero;
     }
@@ -20,6 +21,7 @@ public class Extras {
         this.coFichero = coFichero;
     }
 
+    @XmlElement(required = true)
     public String getCoExtension() {
         return coExtension;
     }
@@ -28,6 +30,7 @@ public class Extras {
         this.coExtension = coExtension;
     }
 
+    @XmlElement(required = true)
     public byte[] getBlFichero() {
         return blFichero;
     }

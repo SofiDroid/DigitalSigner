@@ -14,6 +14,7 @@ public class Documento {
     private String dsDocumento;
     private String dsObservaciones;
 
+    @XmlElement(required = true)
     public String getCoFichero() {
         return coFichero;
     }
@@ -22,6 +23,7 @@ public class Documento {
         this.coFichero = coFichero;
     }
 
+    @XmlElement(required = true)
     public String getCoExtension() {
         return coExtension;
     }
@@ -30,6 +32,7 @@ public class Documento {
         this.coExtension = coExtension;
     }
 
+    @XmlElement(required = true)
     public byte[] getBlDocumento() {
         return blDocumento;
     }
@@ -38,6 +41,7 @@ public class Documento {
         this.blDocumento = blDocumento;
     }
 
+    @XmlElement(required = false)
     public String getDsDocumento() {
         return dsDocumento;
     }
@@ -46,6 +50,7 @@ public class Documento {
         this.dsDocumento = dsDocumento;
     }
 
+    @XmlElement(required = false)
     public String getDsObservaciones() {
         return dsObservaciones;
     }

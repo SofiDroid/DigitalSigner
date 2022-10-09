@@ -1,5 +1,6 @@
 package jax.ws.services.types.clases;
 
+import javax.xml.bind.annotation.XmlElement;
 
 /**
  *
@@ -10,6 +11,7 @@ public class Cabecera {
     private String tokenUsuario;
     private String coUnidad;
 
+    @XmlElement(required = true)
     public String getTokenUsuario() {
         return tokenUsuario;
     }
@@ -18,6 +20,7 @@ public class Cabecera {
         this.tokenUsuario = tokenUsuario;
     }
 
+    @XmlElement(required = true)
     public String getCoUnidad() {
         return coUnidad;
     }

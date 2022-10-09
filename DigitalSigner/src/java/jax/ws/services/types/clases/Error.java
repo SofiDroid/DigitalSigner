@@ -1,5 +1,7 @@
 package jax.ws.services.types.clases;
 
+import javax.xml.bind.annotation.XmlElement;
+
 /**
  *
  * @author ihuegal

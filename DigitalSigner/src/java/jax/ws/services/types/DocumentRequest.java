@@ -1,5 +1,6 @@
 package jax.ws.services.types;
 
+import javax.xml.bind.annotation.XmlElement;
 import jax.ws.services.types.clases.Cabecera;
 import jax.ws.services.types.clases.Extras;
 import jax.ws.services.types.clases.Documento;
@@ -14,6 +15,7 @@ public class DocumentRequest {
     private Documento documento;
     private Extras extras;
 
+    @XmlElement(required = true)
     public Cabecera getCabecera() {
         return cabecera;
     }
@@ -22,6 +24,7 @@ public class DocumentRequest {
         this.cabecera = cabecera;
     }
 
+    @XmlElement(required = true)
     public Documento getDocumento() {
         return documento;
     }
@@ -30,6 +33,7 @@ public class DocumentRequest {
         this.documento = documento;
     }
 
+    @XmlElement(required = false)
     public Extras getExtras() {
         return extras;
     }
