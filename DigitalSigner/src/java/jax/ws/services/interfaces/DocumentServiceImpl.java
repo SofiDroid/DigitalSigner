@@ -1,6 +1,7 @@
 package jax.ws.services.interfaces;
 
 import javax.jws.*;
+import javax.xml.bind.annotation.XmlElement;
 import jax.ws.services.types.AcuseReciboDocumentResponse;
 import jax.ws.services.types.DocumentRequest;
 
@@ -17,7 +18,7 @@ public class DocumentServiceImpl {
      * @return 
      */
     @WebMethod(operationName = "sendDocument")
-    public AcuseReciboDocumentResponse sendDocument(@WebParam(name = "documentRequest") DocumentRequest documentRequest) {
+    public AcuseReciboDocumentResponse sendDocument(@XmlElement(required = true) @WebParam(name = "documentRequest") DocumentRequest documentRequest) {
         AcuseReciboDocumentResponse acuseReciboDocumentResponse = new AcuseReciboDocumentResponse();
         acuseReciboDocumentResponse.getAcuseReciboDocument().setIdEntradaXML(0);
         acuseReciboDocumentResponse.getAcuseReciboDocument().setHash("123123123");

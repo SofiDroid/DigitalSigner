@@ -1,0 +1,10 @@
+<endpoints
+    xmlns="http://java.sun.com/xml/ns/jax-ws/ri/runtime"
+    version="2.0">
+    
+    <endpoint
+        name="DocumentService"
+        implementation="jax.ws.services.interfaces.DocumentServiceImpl"
+        url-pattern="/DocumentService"/>
+    
+</endpoints>

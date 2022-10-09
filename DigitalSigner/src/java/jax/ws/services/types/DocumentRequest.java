@@ -9,6 +9,7 @@ import jax.ws.services.types.clases.Documento;
  * @author ihuegal
  */
 public class DocumentRequest {
+    
     private Cabecera cabecera;
     private Documento documento;
     private Extras extras;

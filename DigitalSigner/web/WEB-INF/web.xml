@@ -63,6 +63,22 @@
         <servlet-name>subidaFicheroFirmado</servlet-name>
         <url-pattern>/subidaFicheroFirmado</url-pattern>
     </servlet-mapping>
+    <listener>
+        <listener-class>
+                com.sun.xml.ws.transport.http.servlet.WSServletContextListener
+        </listener-class>
+    </listener>
+    <servlet>
+            <servlet-name>DocumentService</servlet-name>
+            <servlet-class>
+                    com.sun.xml.ws.transport.http.servlet.WSServlet
+            </servlet-class>
+            <load-on-startup>3</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+            <servlet-name>DocumentService</servlet-name>
+            <url-pattern>/DocumentService</url-pattern>
+    </servlet-mapping>
     <session-config>
         <session-timeout>
             30

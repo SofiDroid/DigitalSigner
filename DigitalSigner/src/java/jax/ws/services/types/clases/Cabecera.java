@@ -1,10 +1,12 @@
 package jax.ws.services.types.clases;
 
+
 /**
  *
  * @author ihuegal
  */
 public class Cabecera {
+    
     private String tokenUsuario;
     private String coUnidad;
 
