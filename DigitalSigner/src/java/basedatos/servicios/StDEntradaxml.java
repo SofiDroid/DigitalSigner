@@ -93,7 +93,15 @@ public class StDEntradaxml extends StBase {
         parametros.put("TSTBD", newBdDEntradaxml.getTstbd());
 
 
-        return executeNativeQueryParametros(newBdDEntradaxml.getInsert(), parametros, em);
+        int registrosInsertados = executeNativeQueryParametros(newBdDEntradaxml.getInsert(), parametros, em);
+        
+        if (AppInit.TIPO_BASEDATOS == BaseDatos.SQLSERVER) {
+            String sqlPk = "SELECT SCOPE_IDENTITY() as ID_ENTRADAXML";
+            ArrayList<LinkedHashMap<String, Object>> listaResultado = executeNativeQueryListParametros(sqlPk, null, em);
+            return (Integer)listaResultado.get(0).getOrDefault("ID_ENTRADAXML", registrosInsertados);
+        }
+        
+        return registrosInsertados;
     }
 
     public int actualiza(BdDEntradaxml upBdDEntradaxml, EntityManager em) throws Exception {

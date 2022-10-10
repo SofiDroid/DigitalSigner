@@ -49,10 +49,13 @@ public class StTUsuario extends StBase {
         return null;
     }
     
-    public BdTUsuario item(Integer idUsuario, EntityManager em) throws Exception {
+    public BdTUsuario item(Integer idUsuario, boolean boSoloActivos, EntityManager em) throws Exception {
         BdTUsuario filtroBdTUsuario = new BdTUsuario();
         filtroBdTUsuario.setIdUsuario(idUsuario);
-
+        if (boSoloActivos) {
+            filtroBdTUsuario.setFeAlta(new Date());
+            filtroBdTUsuario.setFeDesactivo(new Date());
+        }
         
         ArrayList<BdTUsuario> listaBdTUsuario = filtro(filtroBdTUsuario, em);
         if (listaBdTUsuario != null && !listaBdTUsuario.isEmpty()) {

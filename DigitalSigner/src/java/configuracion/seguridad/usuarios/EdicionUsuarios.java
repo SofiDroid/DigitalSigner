@@ -425,7 +425,7 @@ public class EdicionUsuarios implements Serializable {
     
     private void recuperarRegistro(Integer idUsuario) throws Exception {
         StTUsuario stTUsuario = new StTUsuario();
-        this.bdTUsuario = stTUsuario.item(idUsuario, null);
+        this.bdTUsuario = stTUsuario.item(idUsuario, false, null);
         if (this.bdTUsuario == null) {
             throw new RegistryNotFoundException();
         }

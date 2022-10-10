@@ -7,14 +7,14 @@ import utilidades.Msg;
  *
  * @author ihuegal
  */
-public class RegistryNotFoundException extends GestionException {
+public class InvalidTokenException extends SecurityException {
     
-    public RegistryNotFoundException() {
+    public InvalidTokenException() {
         super.setSeverity(FacesMessage.SEVERITY_ERROR);
     }
     
     @Override
     public String getMessage() {
-        return Msg.getString("err_registro_no_encontrado");
+        return Msg.getString("err_token_no_valido");
     }
 }

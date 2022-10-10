@@ -8,11 +8,21 @@ import javax.xml.bind.annotation.XmlElement;
  */
 public class Documento {
     
+    private String coTipoDocumento;
     private String coFichero;
     private String coExtension;
     private byte[] blDocumento;
     private String dsDocumento;
     private String dsObservaciones;
+
+    @XmlElement(required = true)
+    public String getCoTipoDocumento() {
+        return coTipoDocumento;
+    }
+
+    public void setCoTipoDocumento(String coTipoDocumento) {
+        this.coTipoDocumento = coTipoDocumento;
+    }
 
     @XmlElement(required = true)
     public String getCoFichero() {

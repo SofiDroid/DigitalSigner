@@ -110,7 +110,15 @@ public class StDDocumento extends StBase {
         parametros.put("TSTBD", newBdDDocumento.getTstbd());
 
 
-        return executeNativeQueryParametros(newBdDDocumento.getInsert(), parametros, em);
+        int registrosInsertados = executeNativeQueryParametros(newBdDDocumento.getInsert(), parametros, em);
+        
+        if (AppInit.TIPO_BASEDATOS == BaseDatos.SQLSERVER) {
+            String sqlPk = "SELECT SCOPE_IDENTITY() as ID_DOCUMENTO";
+            ArrayList<LinkedHashMap<String, Object>> listaResultado = executeNativeQueryListParametros(sqlPk, null, em);
+            return (Integer)listaResultado.get(0).getOrDefault("ID_DOCUMENTO", registrosInsertados);
+        }
+        
+        return registrosInsertados;
     }
 
     public int actualiza(BdDDocumento upBdDDocumento, EntityManager em) throws Exception {

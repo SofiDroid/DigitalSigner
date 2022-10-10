@@ -138,7 +138,7 @@ public class BdDDocumento extends OperacionSQL implements InterfazDAO {
             } else {
                 sb_sql.append(":ID_DOCUMENTO");
             }
-            sb_sql.append(",").append("DECODE(:CO_DOCUMENTO, null, NULL, :CO_DOCUMENTO)");
+            sb_sql.append(",").append("DECODE(:CO_DOCUMENTO, null, SBD_D_DOCUMENTO.CURRVAL, :CO_DOCUMENTO)");
             sb_sql.append(",").append("DECODE(:DS_DOCUMENTO, null, NULL, :DS_DOCUMENTO)");
             sb_sql.append(",").append("DECODE(:ID_TIPODOCUMENTO, null, NULL, :ID_TIPODOCUMENTO)");
             sb_sql.append(",").append("DECODE(:BL_DOCUMENTO, null, NULL, :BL_DOCUMENTO)");
@@ -152,7 +152,7 @@ public class BdDDocumento extends OperacionSQL implements InterfazDAO {
             sb_sql.append(",").append("DECODE(:TSTBD, null, NULL, :TSTBD)");
         }
         else {
-            sb_sql.append(":CO_DOCUMENTO");
+            sb_sql.append("CASE WEHN :CO_DOCUMENTO IS NULL THEN IDENT_CURRENT('BD_D_DOCUMENTO') ELSE :CO_DOCUMENTO END");
             sb_sql.append(",").append(":DS_DOCUMENTO");
             sb_sql.append(",").append(":ID_TIPODOCUMENTO");
             sb_sql.append(",").append(":BL_DOCUMENTO");
