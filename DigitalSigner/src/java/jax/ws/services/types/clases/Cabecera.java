@@ -1,6 +1,8 @@
 package jax.ws.services.types.clases;
 
+import excepciones.RequiredFieldException;
 import javax.xml.bind.annotation.XmlElement;
+import utilidades.Validation;
 
 /**
  *
@@ -12,7 +14,10 @@ public class Cabecera {
     private String coUnidad;
 
     @XmlElement(required = true)
-    public String getTokenUsuario() {
+    public String getTokenUsuario() throws RequiredFieldException {
+        if (Validation.isNullOrEmpty(tokenUsuario)) {
+            throw new RequiredFieldException("tokenUsuario");
+        }
         return tokenUsuario;
     }
 
@@ -21,7 +26,10 @@ public class Cabecera {
     }
 
     @XmlElement(required = true)
-    public String getCoUnidad() {
+    public String getCoUnidad() throws RequiredFieldException {
+        if (Validation.isNullOrEmpty(coUnidad)) {
+            throw new RequiredFieldException("coUnidad");
+        }
         return coUnidad;
     }
 

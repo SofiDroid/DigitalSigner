@@ -95,7 +95,7 @@ public class StDDocumento extends StBase {
         parametros.put("CO_DOCUMENTO", newBdDDocumento.getCoDocumento());
         parametros.put("DS_DOCUMENTO", newBdDDocumento.getDsDocumento());
         parametros.put("ID_TIPODOCUMENTO", newBdDDocumento.getIdTipodocumento());
-        parametros.put("BL_DOCUMENTO", newBdDDocumento.getBlDocumento());
+        parametros.put("BL_DOCUMENTO", newBdDDocumento.getBlDocumento(em));
         parametros.put("CO_FICHERO", newBdDDocumento.getCoFichero());
         parametros.put("CO_EXTENSION", newBdDDocumento.getCoExtension());
         parametros.put("ID_SITUACIONDOC", newBdDDocumento.getIdSituaciondoc());
@@ -148,7 +148,7 @@ public class StDDocumento extends StBase {
         parametros.put("CO_DOCUMENTO", upBdDDocumento.getCoDocumento());
         parametros.put("DS_DOCUMENTO", upBdDDocumento.getDsDocumento());
         parametros.put("ID_TIPODOCUMENTO", upBdDDocumento.getIdTipodocumento());
-        parametros.put("BL_DOCUMENTO", upBdDDocumento.getBlDocumento());
+        parametros.put("BL_DOCUMENTO", upBdDDocumento.getBlDocumento(em));
         parametros.put("CO_FICHERO", upBdDDocumento.getCoFichero());
         parametros.put("CO_EXTENSION", upBdDDocumento.getCoExtension());
         parametros.put("ID_SITUACIONDOC", upBdDDocumento.getIdSituaciondoc());

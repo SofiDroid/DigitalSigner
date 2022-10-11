@@ -330,7 +330,7 @@ public class FiltroConsultaDocumentos implements Serializable {
         try {
             Integer idDocumento = this.dsResultado.getSelectedRow().getColumnaID().getValueInteger();
             BdDDocumento bdDDocumento = new StDDocumento().item(idDocumento, null);
-            Session.grabarAtributo("reportBytes", bdDDocumento.getBlDocumento());
+            Session.grabarAtributo("reportBytes", bdDDocumento.getBlDocumento(null));
         } catch (Exception ex) {
             LOG.error(ex.getMessage(), ex);
             Mensajes.showError("Error al navegar al detalle", ex.getMessage());

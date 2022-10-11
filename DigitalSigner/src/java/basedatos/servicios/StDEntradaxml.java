@@ -76,7 +76,7 @@ public class StDEntradaxml extends StBase {
 
         HashMap<String, Object> parametros = new HashMap<>();
         parametros.put("ID_ENTRADAXML", newBdDEntradaxml.getIdEntradaxml());
-        parametros.put("BL_ENTRADAXML", newBdDEntradaxml.getBlEntradaxml());
+        parametros.put("BL_ENTRADAXML", newBdDEntradaxml.getBlEntradaxml(em));
         parametros.put("ID_DOCUMENTO", newBdDEntradaxml.getIdDocumento());
         parametros.put("ID_SITUACIONXML", newBdDEntradaxml.getIdSituacionxml());
         parametros.put("DS_RUTA", newBdDEntradaxml.getDsRuta());
@@ -109,7 +109,7 @@ public class StDEntradaxml extends StBase {
 
         HashMap<String, Object> parametros = new HashMap<>();
         parametros.put("ID_ENTRADAXML", upBdDEntradaxml.getIdEntradaxml());
-        parametros.put("BL_ENTRADAXML", upBdDEntradaxml.getBlEntradaxml());
+        parametros.put("BL_ENTRADAXML", upBdDEntradaxml.getBlEntradaxml(em));
         parametros.put("ID_DOCUMENTO", upBdDEntradaxml.getIdDocumento());
         parametros.put("ID_SITUACIONXML", upBdDEntradaxml.getIdSituacionxml());
         parametros.put("DS_RUTA", upBdDEntradaxml.getDsRuta());

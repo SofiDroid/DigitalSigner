@@ -18,6 +18,13 @@ public class RequiredFieldException extends GestionException {
     
     @Override
     public String getMessage() {
-        return new Msg().getString("warn_campo_requerido") + " " + campoRequerido;
+        String resultado = "Campo requerido -> " + campoRequerido;
+        try {
+            resultado = Msg.getString("warn_campo_requerido") + " " + campoRequerido;
+        }
+        catch (Exception na) {
+            // NADA
+        }
+        return resultado;
     }
 }

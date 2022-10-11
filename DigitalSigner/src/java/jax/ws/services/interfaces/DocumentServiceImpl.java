@@ -31,6 +31,7 @@ import basedatos.tablas.BdTUsuario;
 import excepciones.InvalidTokenException;
 import excepciones.InvalidUnitException;
 import excepciones.RegistryNotFoundException;
+import excepciones.RequiredFieldException;
 import init.AppInit;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
@@ -72,6 +73,8 @@ public class DocumentServiceImpl {
         AcuseReciboDocumentResponse acuseReciboDocumentResponse = new AcuseReciboDocumentResponse();
         
         try {
+            validarCampos(documentRequest);
+            
             validarToken(documentRequest.getCabecera(), context);
             
             StringWriter sw = new StringWriter();
@@ -231,6 +234,7 @@ public class DocumentServiceImpl {
             if (listaBdTSituaciondoc == null || listaBdTSituaciondoc.isEmpty()) {
                 throw new RegistryNotFoundException();
             }
+            bdDDocumento = stDDocumento.item(bdDDocumento.getIdDocumento(), entityManager);
             bdDDocumento.setIdSituaciondoc(listaBdTSituaciondoc.get(0).getIdSituaciondoc());
             stDDocumento.actualiza(bdDDocumento, entityManager);
         }
@@ -312,5 +316,26 @@ public class DocumentServiceImpl {
         
         bdDEntradaxml.setIdSituacionxml(listaBdTSituacionxml.get(0).getIdSituacionxml());
         stDEntradaxml.actualiza(bdDEntradaxml, entityManager);
+    }
+
+    private void validarCampos(DocumentRequest documentRequest) throws RequiredFieldException {
+        documentRequest.getCabecera().getCoUnidad();
+        documentRequest.getCabecera().getTokenUsuario();
+        documentRequest.getDocumento().getBlDocumento();
+        documentRequest.getDocumento().getCoExtension();
+        documentRequest.getDocumento().getCoFichero();
+        documentRequest.getDocumento().getCoTipoDocumento();
+        documentRequest.getDocumento().getDsDocumento();
+        documentRequest.getDocumento().getDsObservaciones();
+        
+        documentRequest.getExtras();
+        if (documentRequest.getExtras() != null) {
+            for (Extra itemExtra : documentRequest.getExtras()) {
+                itemExtra.getBlFichero();
+                itemExtra.getCoExtension();
+                itemExtra.getCoFichero();
+            }
+        }
+        
     }
 }

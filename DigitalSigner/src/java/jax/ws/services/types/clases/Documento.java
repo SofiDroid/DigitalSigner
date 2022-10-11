@@ -1,6 +1,8 @@
 package jax.ws.services.types.clases;
 
+import excepciones.RequiredFieldException;
 import javax.xml.bind.annotation.XmlElement;
+import utilidades.Validation;
 
 /**
  *
@@ -16,7 +18,10 @@ public class Documento {
     private String dsObservaciones;
 
     @XmlElement(required = true)
-    public String getCoTipoDocumento() {
+    public String getCoTipoDocumento() throws RequiredFieldException {
+        if (Validation.isNullOrEmpty(coTipoDocumento)) {
+            throw new RequiredFieldException("coTipoDocumento");
+        }
         return coTipoDocumento;
     }
 
@@ -25,7 +30,10 @@ public class Documento {
     }
 
     @XmlElement(required = true)
-    public String getCoFichero() {
+    public String getCoFichero() throws RequiredFieldException {
+        if (Validation.isNullOrEmpty(coFichero)) {
+            throw new RequiredFieldException("coFichero");
+        }
         return coFichero;
     }
 
@@ -34,7 +42,10 @@ public class Documento {
     }
 
     @XmlElement(required = true)
-    public String getCoExtension() {
+    public String getCoExtension() throws RequiredFieldException {
+        if (Validation.isNullOrEmpty(coExtension)) {
+            throw new RequiredFieldException("coExtension");
+        }
         return coExtension;
     }
 
@@ -43,7 +54,10 @@ public class Documento {
     }
 
     @XmlElement(required = true)
-    public byte[] getBlDocumento() {
+    public byte[] getBlDocumento() throws RequiredFieldException {
+        if (Validation.isNullOrEmpty(blDocumento)) {
+            throw new RequiredFieldException("blDocumento");
+        }
         return blDocumento;
     }
 

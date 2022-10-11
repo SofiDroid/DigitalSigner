@@ -1,6 +1,8 @@
 package jax.ws.services.types.clases;
 
+import excepciones.RequiredFieldException;
 import javax.xml.bind.annotation.XmlElement;
+import utilidades.Validation;
 
 /**
  *
@@ -13,7 +15,10 @@ public class Extra {
     private byte[] blFichero;
 
     @XmlElement(required = true)
-    public String getCoFichero() {
+    public String getCoFichero() throws RequiredFieldException {
+        if (Validation.isNullOrEmpty(coFichero)) {
+            throw new RequiredFieldException("coFichero");
+        }
         return coFichero;
     }
 
@@ -22,7 +27,10 @@ public class Extra {
     }
 
     @XmlElement(required = true)
-    public String getCoExtension() {
+    public String getCoExtension() throws RequiredFieldException {
+        if (Validation.isNullOrEmpty(coExtension)) {
+            throw new RequiredFieldException("coExtension");
+        }
         return coExtension;
     }
 
@@ -31,7 +39,10 @@ public class Extra {
     }
 
     @XmlElement(required = true)
-    public byte[] getBlFichero() {
+    public byte[] getBlFichero() throws RequiredFieldException {
+        if (Validation.isNullOrEmpty(blFichero)) {
+            throw new RequiredFieldException("blFichero");
+        }
         return blFichero;
     }
 

@@ -108,7 +108,7 @@ public class SubidaFicheroFirmado extends HttpServlet
                             bdAHistdoc.setFeAlta(new Date());
                             bdAHistdoc.setFeDesactivo(null);
                             bdAHistdoc.setDsRuta(null);
-                            bdAHistdoc.setBlDocumento(bdDDocumento.getBlDocumento());
+                            bdAHistdoc.setBlDocumento(bdDDocumento.getBlDocumento(null));
                             stAHistdoc.alta(bdAHistdoc, entityManager);
 
                             //Actualizar el documento en BD_D_DOCUMENTOS

@@ -3,8 +3,10 @@ package basedatos.tablas;
 import basedatos.InterfazDAO;
 import basedatos.OperacionSQL;
 import init.AppInit;
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.HashMap;
+import tomcat.persistence.EntityManager;
 import utilidades.BaseDatos;
 import utilidades.Ficheros;
 
@@ -248,9 +250,9 @@ public class BdDDocumento extends OperacionSQL implements InterfazDAO {
         this.idTipodocumento = idTipodocumento;
     }
 
-    public byte[] getBlDocumento() {
+    public byte[] getBlDocumento(EntityManager em) throws SQLException {
         if (this.idDocumento != null && this.blDocumento == null) {
-            this.blDocumento = new Ficheros().recuperaDocumento(this.idDocumento); 
+            this.blDocumento = new Ficheros().recuperaDocumento(this.idDocumento, em); 
         }
         return blDocumento;
     }

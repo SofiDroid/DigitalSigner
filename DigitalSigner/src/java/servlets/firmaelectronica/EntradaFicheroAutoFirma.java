@@ -89,7 +89,7 @@ public class EntradaFicheroAutoFirma extends HttpServlet
                     //StEscaner stScanner = new StEscaner(null, contexto);
                     //String id = doc.getID_DOCEXPTE().toString();
 
-                    byte[] binDocumento = bdDDocumento.getBlDocumento();
+                    byte[] binDocumento = bdDDocumento.getBlDocumento(null);
 
                     if(binDocumento == null || binDocumento.length == 0)
                     {

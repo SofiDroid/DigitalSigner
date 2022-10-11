@@ -14,11 +14,12 @@ import tomcat.persistence.EntityManager;
  * @author ihuegal
  */
 public class Ficheros {
-    public byte[] recuperaDocumento(Integer idDocumento) {
+    public byte[] recuperaDocumento(Integer idDocumento, EntityManager em) throws SQLException {
         String sql = "SELECT BL_DOCUMENTO FROM BD_D_DOCUMENTO WHERE ID_DOCUMENTO = :ID_DOCUMENTO";
         HashMap<String, Object> parametros = new HashMap<>();
         parametros.put("ID_DOCUMENTO", idDocumento);
-        try (EntityManager entityManager = AppInit.getEntityManager()) {
+        EntityManager entityManager = (em != null ? em : AppInit.getEntityManager());
+        try {
             ArrayList<LinkedHashMap<String, Object>> resultado = new ExecuteQuery().executeNativeQueryListParametros(sql, parametros, entityManager);
             if (resultado != null && !resultado.isEmpty()) {
                 return (byte[])resultado.get(0).get("BL_DOCUMENTO");
@@ -27,15 +28,21 @@ public class Ficheros {
         } catch (SQLException ex) {
             Logger.getLogger(Ficheros.class).error(ex.getMessage(), ex);
         }
+        finally {
+            if (em == null && entityManager != null) {
+                entityManager.close();
+            }
+        }
         
         return null;
     }
 
-    public byte[] recuperaEntradaXML(Integer idEntradaxml) {
+    public byte[] recuperaEntradaXML(Integer idEntradaxml, EntityManager em) throws SQLException {
         String sql = "SELECT BL_ENTRADAXML FROM BD_D_ENTRADAXML WHERE ID_ENTRADAXML = :ID_ENTRADAXML";
         HashMap<String, Object> parametros = new HashMap<>();
         parametros.put("ID_ENTRADAXML", idEntradaxml);
-        try (EntityManager entityManager = AppInit.getEntityManager()) {
+        EntityManager entityManager = (em != null ? em : AppInit.getEntityManager());
+        try {
             ArrayList<LinkedHashMap<String, Object>> resultado = new ExecuteQuery().executeNativeQueryListParametros(sql, parametros, entityManager);
             if (resultado != null && !resultado.isEmpty()) {
                 return (byte[])resultado.get(0).get("BL_ENTRADAXML");
@@ -44,15 +51,21 @@ public class Ficheros {
         } catch (SQLException ex) {
             Logger.getLogger(Ficheros.class).error(ex.getMessage(), ex);
         }
+        finally {
+            if (em == null && entityManager != null) {
+                entityManager.close();
+            }
+        }
         
         return null;
     }
 
-    public byte[] recuperaSalidaXML(Integer idSalidaxml) {
+    public byte[] recuperaSalidaXML(Integer idSalidaxml, EntityManager em) throws SQLException {
         String sql = "SELECT BL_SALIDAXML FROM BD_D_SALIDAXML WHERE ID_SALIDAXML = :ID_SALIDAXML";
         HashMap<String, Object> parametros = new HashMap<>();
         parametros.put("ID_SALIDAXML", idSalidaxml);
-        try (EntityManager entityManager = AppInit.getEntityManager()) {
+        EntityManager entityManager = (em != null ? em : AppInit.getEntityManager());
+        try {
             ArrayList<LinkedHashMap<String, Object>> resultado = new ExecuteQuery().executeNativeQueryListParametros(sql, parametros, entityManager);
             if (resultado != null && !resultado.isEmpty()) {
                 return (byte[])resultado.get(0).get("BL_SALIDAXML");
@@ -61,7 +74,11 @@ public class Ficheros {
         } catch (SQLException ex) {
             Logger.getLogger(Ficheros.class).error(ex.getMessage(), ex);
         }
-        
+        finally {
+            if (em == null && entityManager != null) {
+                entityManager.close();
+            }
+        }
         return null;
     }
 }

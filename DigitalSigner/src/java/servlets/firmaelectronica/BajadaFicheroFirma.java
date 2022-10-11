@@ -87,7 +87,7 @@ public class BajadaFicheroFirma extends HttpServlet
 //                    String id = doc.getID_DOCEXPTE().toString();
                     String extension = bdDDocumento.getCoExtension().toUpperCase();
                     String fileName = bdDDocumento.getCoFichero();
-                    byte[] binDocumento = bdDDocumento.getBlDocumento();
+                    byte[] binDocumento = bdDDocumento.getBlDocumento(null);
                     
                     if(binDocumento == null || binDocumento.length == 0)
                     {
