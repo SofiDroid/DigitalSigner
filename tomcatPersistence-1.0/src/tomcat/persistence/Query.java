@@ -5,8 +5,10 @@
  */
 package tomcat.persistence;
 
+import java.sql.Statement;
 import java.math.BigDecimal;
 import java.sql.CallableStatement;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.util.ArrayList;
@@ -231,10 +233,24 @@ public class Query {
 
         this.parametrosPosicionados.clear();
         encontrarParametros(0);
-        try (CallableStatement stmt = entityManager.getConnection().prepareCall(sql))
+        
+        try (PreparedStatement stmt = entityManager.getConnection().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS))
         {
             establecerParametros(stmt);
-            return stmt.executeUpdate();
+            int affectedRows = stmt.executeUpdate();
+
+            if (affectedRows == 0) {
+                return 0;
+            }
+
+            try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    return generatedKeys.getInt(1);
+                }
+                else {
+                    return 0;
+                }
+            }
         }
         catch (SQLException ex) {
             this.entityManager.getTransaction().setRollbackOnly();
@@ -489,7 +505,7 @@ public class Query {
         encontrarParametros(posFin);
     }
     
-    private void establecerParametros(CallableStatement stmt) throws SQLException {
+    private void establecerParametros(PreparedStatement stmt) throws SQLException {
         if (this.parametrosPosicionados == null || this.parametrosPosicionados.isEmpty())
             return;
         
@@ -506,66 +522,31 @@ public class Query {
         {
             if (item.valor() instanceof  Integer valor)
             {
-                if (item.posicion() != null) {
-                    stmt.setInt(item.posicion(), valor);
-                }
-                else {
-                    if (contieneParametro(item.nombreParametro())) stmt.setInt(item.nombreParametro(), valor);
-                }
+                stmt.setInt(item.posicion(), valor);
             }
             else if (item.valor() instanceof String valor)
             {
-                if (item.posicion() != null) {
-                    stmt.setString(item.posicion(), valor);
-                }
-                else {
-                    if (contieneParametro(item.nombreParametro())) stmt.setString(item.nombreParametro(), valor);
-                }
+                stmt.setString(item.posicion(), valor);
             }
             else if (item.valor() instanceof byte[] valor)
             {
-                if (item.posicion() != null) {
-                    stmt.setBytes(item.posicion(), valor);
-                }
-                else {
-                    if (contieneParametro(item.nombreParametro())) stmt.setBytes(item.nombreParametro(), valor);
-                }
+                stmt.setBytes(item.posicion(), valor);
             }
             else if (item.valor() instanceof Date valor) 
             {
-                if (item.posicion() != null) {
-                    stmt.setDate(item.posicion(), (valor != null ? new java.sql.Date(valor.getTime()) : null));
-                }
-                else {
-                    if (contieneParametro(item.nombreParametro())) stmt.setDate(item.nombreParametro(), (valor != null ? new java.sql.Date(valor.getTime()) : null));
-                }
+                stmt.setDate(item.posicion(), (valor != null ? new java.sql.Date(valor.getTime()) : null));
             }
             else if (item.valor() instanceof Boolean valor)
             {
-                if (item.posicion() != null) {
-                    stmt.setBoolean(item.posicion(), valor);
-                }
-                else {
-                    if (contieneParametro(item.nombreParametro())) stmt.setBoolean(item.nombreParametro(), valor);
-                }
+                stmt.setBoolean(item.posicion(), valor);
             }
             else if (item.valor() instanceof BigDecimal valor)
             {
-                if (item.posicion() != null) {
-                    stmt.setBigDecimal(item.posicion(), valor);
-                }
-                else {
-                    if (contieneParametro(item.nombreParametro())) stmt.setBigDecimal(item.nombreParametro(), valor);
-                }
+                stmt.setBigDecimal(item.posicion(), valor);
             }
             else if (item.valor() == null)
             {
-                if (item.posicion() != null) {
-                    stmt.setNull(item.posicion(), java.sql.Types.NULL);
-                }
-                else {
-                    if (contieneParametro(item.nombreParametro())) stmt.setNull(item.nombreParametro(), java.sql.Types.NULL);
-                }
+                stmt.setNull(item.posicion(), java.sql.Types.NULL);
             }
             else
             {
