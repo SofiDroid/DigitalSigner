@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.XmlElement;
  *
  * @author ihuegal
  */
-public class Extras {
+public class Extra {
     
     private String coFichero;
     private String coExtension;

@@ -27,7 +27,6 @@ public class StDEntradaxml extends StBase {
     public ArrayList<BdDEntradaxml> filtro(BdDEntradaxml filtroBdDEntradaxml, EntityManager em) throws Exception {
         HashMap<String, Object> parametros = new HashMap<>();
         parametros.put("ID_ENTRADAXML", filtroBdDEntradaxml.getIdEntradaxml());
-        parametros.put("BL_ENTRADAXML", filtroBdDEntradaxml.getBlEntradaxml());
         parametros.put("ID_DOCUMENTO", filtroBdDEntradaxml.getIdDocumento());
         parametros.put("ID_SITUACIONXML", filtroBdDEntradaxml.getIdSituacionxml());
         parametros.put("DS_RUTA", filtroBdDEntradaxml.getDsRuta());
@@ -63,12 +62,6 @@ public class StDEntradaxml extends StBase {
                 throw new RequiredFieldException("ID_ENTRADAXML");
             }
         }
-        if (Validation.isNullOrEmpty(newBdDEntradaxml.getBlEntradaxml())) {
-            throw new RequiredFieldException("BL_ENTRADAXML");
-        }
-        if (Validation.isNullOrEmpty(newBdDEntradaxml.getIdDocumento())) {
-            throw new RequiredFieldException("ID_DOCUMENTO");
-        }
         if (Validation.isNullOrEmpty(newBdDEntradaxml.getIdSituacionxml())) {
             throw new RequiredFieldException("ID_SITUACIONXML");
         }
@@ -92,28 +85,15 @@ public class StDEntradaxml extends StBase {
         parametros.put("USUARIOBD", newBdDEntradaxml.getUsuariobd());
         parametros.put("TSTBD", newBdDEntradaxml.getTstbd());
 
+        newBdDEntradaxml.setIdEntradaxml(executeNativeQueryParametros(newBdDEntradaxml.getInsert(), parametros, em));
 
-        int registrosInsertados = executeNativeQueryParametros(newBdDEntradaxml.getInsert(), parametros, em);
-        
-        if (AppInit.TIPO_BASEDATOS == BaseDatos.SQLSERVER) {
-            String sqlPk = "SELECT SCOPE_IDENTITY() as ID_ENTRADAXML";
-            ArrayList<LinkedHashMap<String, Object>> listaResultado = executeNativeQueryListParametros(sqlPk, null, em);
-            return (Integer)listaResultado.get(0).getOrDefault("ID_ENTRADAXML", registrosInsertados);
-        }
-        
-        return registrosInsertados;
+        return newBdDEntradaxml.getIdEntradaxml();
     }
 
     public int actualiza(BdDEntradaxml upBdDEntradaxml, EntityManager em) throws Exception {
         
         if (Validation.isNullOrEmpty(upBdDEntradaxml.getIdEntradaxml())) {
             throw new RequiredFieldException("ID_ENTRADAXML");
-        }
-        if (Validation.isNullOrEmpty(upBdDEntradaxml.getBlEntradaxml())) {
-            throw new RequiredFieldException("BL_ENTRADAXML");
-        }
-        if (Validation.isNullOrEmpty(upBdDEntradaxml.getIdDocumento())) {
-            throw new RequiredFieldException("ID_DOCUMENTO");
         }
         if (Validation.isNullOrEmpty(upBdDEntradaxml.getIdSituacionxml())) {
             throw new RequiredFieldException("ID_SITUACIONXML");

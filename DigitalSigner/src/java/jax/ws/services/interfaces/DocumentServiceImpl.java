@@ -1,5 +1,10 @@
 package jax.ws.services.interfaces;
 
+import basedatos.servicios.StAConftipodoc;
+import basedatos.servicios.StADocextra;
+import basedatos.servicios.StADocfirma;
+import basedatos.servicios.StADocobs;
+import basedatos.servicios.StAHistentxml;
 import basedatos.servicios.StATokenusuario;
 import basedatos.servicios.StAUniusu;
 import basedatos.servicios.StDDocumento;
@@ -9,6 +14,11 @@ import basedatos.servicios.StTSituacionxml;
 import basedatos.servicios.StTTipodocumento;
 import basedatos.servicios.StTUnidad;
 import basedatos.servicios.StTUsuario;
+import basedatos.tablas.BdAConftipodoc;
+import basedatos.tablas.BdADocextra;
+import basedatos.tablas.BdADocfirma;
+import basedatos.tablas.BdADocobs;
+import basedatos.tablas.BdAHistentxml;
 import basedatos.tablas.BdATokenusuario;
 import basedatos.tablas.BdAUniusu;
 import basedatos.tablas.BdDDocumento;
@@ -26,18 +36,19 @@ import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
+import javax.annotation.Resource;
 import javax.jws.*;
 import javax.xml.bind.JAXB;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.ws.WebServiceContext;
 import jax.ws.services.types.AcuseReciboDocumentResponse;
 import jax.ws.services.types.DocumentRequest;
 import jax.ws.services.types.clases.Cabecera;
 import jax.ws.services.types.clases.Documento;
-import jax.ws.services.types.clases.Extras;
+import jax.ws.services.types.clases.Extra;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.log4j.Logger;
 import tomcat.persistence.EntityManager;
-import utilidades.BaseDatos;
 import utilidades.Session;
 
 /**
@@ -47,6 +58,9 @@ import utilidades.Session;
 @WebService(serviceName = "DocumentService")
 public class DocumentServiceImpl {
 
+    @Resource
+    private WebServiceContext context;
+    
     /**
      * Web service operation
      * @param documentRequest
@@ -58,7 +72,7 @@ public class DocumentServiceImpl {
         AcuseReciboDocumentResponse acuseReciboDocumentResponse = new AcuseReciboDocumentResponse();
         
         try {
-            validarToken(documentRequest.getCabecera());
+            validarToken(documentRequest.getCabecera(), context);
             
             StringWriter sw = new StringWriter();
             JAXB.marshal(documentRequest, sw);
@@ -70,16 +84,28 @@ public class DocumentServiceImpl {
             acuseReciboDocumentResponse.getAcuseReciboDocument().setIdEntradaXML(idEntradaXML);
             acuseReciboDocumentResponse.getAcuseReciboDocument().setHash(md5Hex);
             
-            try {
-                Integer idDocumento = grabarDocumento(documentRequest.getDocumento(), null);
+            // INICIO TRANSACCION
+            try (EntityManager entityManager = AppInit.getEntityManager())
+            {
+                entityManager.getTransaction().begin();
+                try {
+                    Integer idDocumento = grabarDocumento(documentRequest.getDocumento(), entityManager);
 
-                grabarExtras(documentRequest.getExtras(), null);
-                
-                actualizarEntradaXML(idEntradaXML, idDocumento, null);
+                    grabarExtras(documentRequest.getExtras(), idDocumento, entityManager);
+
+                    actualizarEntradaXML(idEntradaXML, idDocumento, entityManager);
+                    
+                    entityManager.getTransaction().commit();
+                }
+                catch (Exception ex) {
+                    entityManager.getTransaction().rollback();
+                    throw ex;
+                }
             }
             catch (Exception ex) {
                 Logger.getLogger(DocumentServiceImpl.class).error(ex.getMessage(), ex);
             }
+            // FIN TRANSACCION
         }
         catch (Exception ex) {
             Logger.getLogger(DocumentServiceImpl.class).error(ex.getMessage(), ex);
@@ -89,7 +115,7 @@ public class DocumentServiceImpl {
         return acuseReciboDocumentResponse;
     }
     
-    private void validarToken(Cabecera cabecera) throws Exception {
+    private void validarToken(Cabecera cabecera, WebServiceContext context) throws Exception {
         
         String tokenUsuario = cabecera.getTokenUsuario();
         String coUnidad = cabecera.getCoUnidad();
@@ -108,6 +134,11 @@ public class DocumentServiceImpl {
         if (itemBdTUsuario == null) {
             throw new InvalidTokenException();
         }
+        
+        Session session = new Session();
+        session.setContext(context);
+        session.crearDatosUsuario();
+        
         Session.getDatosUsuario().setBdTUsuario(itemBdTUsuario);
         
         // Validar y obtener la unidad del usuario
@@ -133,13 +164,13 @@ public class DocumentServiceImpl {
         Session.getDatosUsuario().setBdTUnidad(listaBdTUnidad.get(0));
     }
 
-    private Integer grabarDocumento(Documento documento, EntityManager em) throws Exception {
+    private Integer grabarDocumento(Documento documento, EntityManager entityManager) throws Exception {
         BdTTipodocumento filtroBdTTipodocumento = new BdTTipodocumento();
         filtroBdTTipodocumento.setCoTipodocumento(documento.getCoTipoDocumento());
         filtroBdTTipodocumento.setFeAlta(new Date());
         filtroBdTTipodocumento.setFeDesactivo(new Date());
         StTTipodocumento stTTipodocumento = new StTTipodocumento();
-        ArrayList<BdTTipodocumento> listaBdTTipodocumento = stTTipodocumento.filtro(filtroBdTTipodocumento, null);
+        ArrayList<BdTTipodocumento> listaBdTTipodocumento = stTTipodocumento.filtro(filtroBdTTipodocumento, entityManager);
         if (listaBdTTipodocumento == null || listaBdTTipodocumento.isEmpty()) {
             throw new RegistryNotFoundException();
         }
@@ -149,7 +180,7 @@ public class DocumentServiceImpl {
         filtroBdTSituaciondoc.setFeAlta(new Date());
         filtroBdTSituaciondoc.setFeDesactivo(new Date());
         StTSituaciondoc stTSituaciondoc = new StTSituaciondoc();
-        ArrayList<BdTSituaciondoc> listaBdTSituaciondoc = stTSituaciondoc.filtro(filtroBdTSituaciondoc, null);
+        ArrayList<BdTSituaciondoc> listaBdTSituaciondoc = stTSituaciondoc.filtro(filtroBdTSituaciondoc, entityManager);
         if (listaBdTSituaciondoc == null || listaBdTSituaciondoc.isEmpty()) {
             throw new RegistryNotFoundException();
         }
@@ -164,16 +195,75 @@ public class DocumentServiceImpl {
         bdDDocumento.setIdTipodocumento(listaBdTTipodocumento.get(0).getIdTipodocumento());
         
         StDDocumento stDDocumento = new StDDocumento();
-        Integer idDocumento = stDDocumento.alta(bdDDocumento, null);
-        if (AppInit.TIPO_BASEDATOS == BaseDatos.SQLSERVER) {
-            bdDDocumento.setIdDocumento(idDocumento);
+        stDDocumento.alta(bdDDocumento, entityManager);
+        
+        BdAConftipodoc filtroBdAConftipodoc = new BdAConftipodoc();
+        filtroBdAConftipodoc.setIdTipodocumento(listaBdTTipodocumento.get(0).getIdTipodocumento());
+        filtroBdAConftipodoc.setFeAlta(new Date());
+        filtroBdAConftipodoc.setFeDesactivo(new Date());
+        StAConftipodoc stAConftipodoc = new StAConftipodoc();
+        ArrayList<BdAConftipodoc> listaBdAConftipodoc = stAConftipodoc.filtro(filtroBdAConftipodoc, entityManager);
+        if (listaBdAConftipodoc == null || listaBdAConftipodoc.isEmpty()) {
+            throw new RegistryNotFoundException();
+        }
+        
+        boolean boTieneFirmas = false;
+        for (BdAConftipodoc itemBdAConftipodoc : listaBdAConftipodoc) {
+            BdADocfirma bdADocfirma = new BdADocfirma();
+            bdADocfirma.setIdDocumento(bdDDocumento.getIdDocumento());
+            bdADocfirma.setIdAutoridad(itemBdAConftipodoc.getIdAutoridad());
+            bdADocfirma.setEnOrden(itemBdAConftipodoc.getEnOrden());
+            bdADocfirma.setDsFirmaposx(itemBdAConftipodoc.getDsFirmaposx());
+            bdADocfirma.setDsFirmaposy(itemBdAConftipodoc.getDsFirmaposy());
+            bdADocfirma.setFeAlta(new Date());
+            
+            StADocfirma stADocfirma = new StADocfirma();
+            stADocfirma.alta(bdADocfirma, entityManager);
+            boTieneFirmas = true;
+        }
+        
+        if (boTieneFirmas) {
+            filtroBdTSituaciondoc = new BdTSituaciondoc();
+            filtroBdTSituaciondoc.setCoSituaciondoc("PENDIENTE_FIRMA");
+            filtroBdTSituaciondoc.setFeAlta(new Date());
+            filtroBdTSituaciondoc.setFeDesactivo(new Date());
+            listaBdTSituaciondoc = stTSituaciondoc.filtro(filtroBdTSituaciondoc, entityManager);
+            if (listaBdTSituaciondoc == null || listaBdTSituaciondoc.isEmpty()) {
+                throw new RegistryNotFoundException();
+            }
+            bdDDocumento.setIdSituaciondoc(listaBdTSituaciondoc.get(0).getIdSituaciondoc());
+            stDDocumento.actualiza(bdDDocumento, entityManager);
+        }
+        
+        if (documento.getDsObservaciones() != null && !documento.getDsObservaciones().isBlank()) {
+            BdADocobs bdADocobs = new BdADocobs();
+            bdADocobs.setDsObservaciones(documento.getDsObservaciones());
+            bdADocobs.setIdDocumento(bdDDocumento.getIdDocumento());
+            bdADocobs.setIdUsuario(Session.getDatosUsuario().getBdTUsuario().getIdUsuario());
+            bdADocobs.setFeAlta(new Date());
+            
+            StADocobs stADocobs = new StADocobs();
+            stADocobs.alta(bdADocobs, entityManager);
+            
         }
         
         return bdDDocumento.getIdDocumento();
     }
 
-    private void grabarExtras(Extras extras, EntityManager em) {
-        return;
+    private void grabarExtras(ArrayList<Extra> extras, Integer idDocumento, EntityManager entityManager) throws Exception {
+        if (extras != null && !extras.isEmpty()) {
+            for (Extra itemExtra : extras) {
+                BdADocextra bdADocextra = new BdADocextra();
+                bdADocextra.setIdDocumento(idDocumento);
+                bdADocextra.setCoFichero(itemExtra.getCoFichero());
+                bdADocextra.setCoExtension(itemExtra.getCoExtension());
+                bdADocextra.setBlFichero(itemExtra.getBlFichero());
+                bdADocextra.setFeAlta(new Date());
+                
+                StADocextra stADocextra = new StADocextra();
+                stADocextra.alta(bdADocextra, entityManager);
+            }
+        }
     }
 
     private Integer grabarEntradaXML(String xmlString) throws Exception {
@@ -192,15 +282,35 @@ public class DocumentServiceImpl {
         bdDEntradaxml.setFeAlta(new Date());
         bdDEntradaxml.setIdSituacionxml(listaBdTSituacionxml.get(0).getIdSituacionxml());
         StDEntradaxml stDEntradaxml = new StDEntradaxml();
-        Integer idEntradaxml = stDEntradaxml.alta(bdDEntradaxml, null);
-        if (AppInit.TIPO_BASEDATOS == BaseDatos.SQLSERVER) {
-            bdDEntradaxml.setIdEntradaxml(idEntradaxml);
-        }
-        
+        stDEntradaxml.alta(bdDEntradaxml, null);
+
         return bdDEntradaxml.getIdEntradaxml();
     }
 
-    private void actualizarEntradaXML(Integer idEntradaXML, Integer idDocumento, EntityManager em) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    private void actualizarEntradaXML(Integer idEntradaXML, Integer idDocumento, EntityManager entityManager) throws Exception {
+        BdTSituacionxml filtroBdTSituacionxml = new BdTSituacionxml();
+        filtroBdTSituacionxml.setCoSituacionxml("PROCESADO");
+        filtroBdTSituacionxml.setFeAlta(new Date());
+        filtroBdTSituacionxml.setFeDesactivo(new Date());
+        StTSituacionxml stTSituacionxml = new StTSituacionxml();
+        ArrayList<BdTSituacionxml> listaBdTSituacionxml = stTSituacionxml.filtro(filtroBdTSituacionxml, entityManager);
+        if (listaBdTSituacionxml == null || listaBdTSituacionxml.isEmpty()) {
+            throw new RegistryNotFoundException();
+        }
+        
+        StDEntradaxml stDEntradaxml = new StDEntradaxml();
+        BdDEntradaxml bdDEntradaxml = stDEntradaxml.item(idEntradaXML, entityManager);
+        bdDEntradaxml.setIdDocumento(idDocumento);
+        stDEntradaxml.actualiza(bdDEntradaxml, entityManager);
+        
+        BdAHistentxml bdAHistentxml = new BdAHistentxml();
+        bdAHistentxml.setIdEntradaxml(bdDEntradaxml.getIdEntradaxml());
+        bdAHistentxml.setIdSituacionxml(bdDEntradaxml.getIdSituacionxml());
+        bdAHistentxml.setFeAlta(new Date());
+        StAHistentxml stAHistentxml = new StAHistentxml();
+        stAHistentxml.alta(bdAHistentxml, entityManager);
+        
+        bdDEntradaxml.setIdSituacionxml(listaBdTSituacionxml.get(0).getIdSituacionxml());
+        stDEntradaxml.actualiza(bdDEntradaxml, entityManager);
     }
 }

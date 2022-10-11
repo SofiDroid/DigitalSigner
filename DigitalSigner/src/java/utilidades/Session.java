@@ -13,8 +13,17 @@ import javax.enterprise.inject.Any;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.CDI;
 import javax.enterprise.util.AnnotationLiteral;
+import javax.faces.FactoryFinder;
 import javax.faces.context.FacesContext;
+import javax.faces.context.FacesContextFactory;
+import javax.faces.lifecycle.Lifecycle;
+import javax.faces.lifecycle.LifecycleFactory;
 import javax.inject.Named;
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.xml.ws.WebServiceContext;
+import javax.xml.ws.handler.MessageContext;
 import seguridad.usuarios.DatosUsuario;
 
 /**
@@ -22,9 +31,34 @@ import seguridad.usuarios.DatosUsuario;
  * @author ihuegal
  */
 public class Session {
+    
+    private WebServiceContext context;
+
+    public WebServiceContext getContext() {
+        return context;
+    }
+
+    public void setContext(WebServiceContext context) {
+        this.context = context;
+    }
+    
+    public void crearDatosUsuario() {
+        LifecycleFactory lifecycleFactory = (LifecycleFactory) FactoryFinder.getFactory(FactoryFinder.LIFECYCLE_FACTORY);
+        FacesContextFactory m_facesContextFactory = (FacesContextFactory) FactoryFinder.getFactory(FactoryFinder.FACES_CONTEXT_FACTORY);
+        Lifecycle m_lifecycle = lifecycleFactory.getLifecycle(LifecycleFactory.DEFAULT_LIFECYCLE);
+
+        HttpServletRequest httpRequest = (HttpServletRequest) context.getMessageContext().get(MessageContext.SERVLET_REQUEST);
+        HttpServletResponse httpResponse = (HttpServletResponse) context.getMessageContext().get(MessageContext.SERVLET_RESPONSE);
+        ServletContext servletContext = (ServletContext) context.getMessageContext().get(MessageContext.SERVLET_CONTEXT);
+        m_facesContextFactory.getFacesContext(servletContext, httpRequest, httpResponse, m_lifecycle);
+
+        CDI.current().getBeanManager().getContext(SessionScoped.class).get(CDI.current().getBeanManager().getBeans("datosUsuario").iterator().next());
+    }
+    
     public static DatosUsuario getDatosUsuario() {
         if (FacesContext.getCurrentInstance() == null) {
-            return (DatosUsuario)CDI.current().getBeanManager().getContext(SessionScoped.class).get(CDI.current().getBeanManager().getBeans("datosUsuario").iterator().next());
+            DatosUsuario datosUsuario = (DatosUsuario)CDI.current().getBeanManager().getContext(SessionScoped.class).get(CDI.current().getBeanManager().getBeans("datosUsuario").iterator().next());
+            return datosUsuario;
         }
         else {
             ELContext elContext = FacesContext.getCurrentInstance().getELContext();

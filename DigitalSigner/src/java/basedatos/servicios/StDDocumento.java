@@ -30,7 +30,6 @@ public class StDDocumento extends StBase {
         parametros.put("CO_DOCUMENTO", filtroBdDDocumento.getCoDocumento());
         parametros.put("DS_DOCUMENTO", filtroBdDDocumento.getDsDocumento());
         parametros.put("ID_TIPODOCUMENTO", filtroBdDDocumento.getIdTipodocumento());
-        parametros.put("BL_DOCUMENTO", filtroBdDDocumento.getBlDocumento());
         parametros.put("CO_FICHERO", filtroBdDDocumento.getCoFichero());
         parametros.put("CO_EXTENSION", filtroBdDDocumento.getCoExtension());
         parametros.put("ID_SITUACIONDOC", filtroBdDDocumento.getIdSituaciondoc());
@@ -66,9 +65,6 @@ public class StDDocumento extends StBase {
             if (Validation.isNullOrEmpty(newBdDDocumento.getIdDocumento())) {
                 throw new RequiredFieldException("ID_DOCUMENTO");
             }
-        }
-        if (Validation.isNullOrEmpty(newBdDDocumento.getCoDocumento())) {
-            throw new RequiredFieldException("CO_DOCUMENTO");
         }
         if (Validation.isNullOrEmpty(newBdDDocumento.getDsDocumento())) {
             throw new RequiredFieldException("DS_DOCUMENTO");
@@ -110,15 +106,9 @@ public class StDDocumento extends StBase {
         parametros.put("TSTBD", newBdDDocumento.getTstbd());
 
 
-        int registrosInsertados = executeNativeQueryParametros(newBdDDocumento.getInsert(), parametros, em);
+        newBdDDocumento.setIdDocumento(executeNativeQueryParametros(newBdDDocumento.getInsert(), parametros, em));
         
-        if (AppInit.TIPO_BASEDATOS == BaseDatos.SQLSERVER) {
-            String sqlPk = "SELECT SCOPE_IDENTITY() as ID_DOCUMENTO";
-            ArrayList<LinkedHashMap<String, Object>> listaResultado = executeNativeQueryListParametros(sqlPk, null, em);
-            return (Integer)listaResultado.get(0).getOrDefault("ID_DOCUMENTO", registrosInsertados);
-        }
-        
-        return registrosInsertados;
+        return newBdDDocumento.getIdDocumento();
     }
 
     public int actualiza(BdDDocumento upBdDDocumento, EntityManager em) throws Exception {

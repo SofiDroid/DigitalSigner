@@ -1,8 +1,9 @@
 package jax.ws.services.types;
 
+import java.util.ArrayList;
 import javax.xml.bind.annotation.XmlElement;
 import jax.ws.services.types.clases.Cabecera;
-import jax.ws.services.types.clases.Extras;
+import jax.ws.services.types.clases.Extra;
 import jax.ws.services.types.clases.Documento;
 
 /**
@@ -13,7 +14,7 @@ public class DocumentRequest {
     
     private Cabecera cabecera;
     private Documento documento;
-    private Extras extras;
+    private ArrayList<Extra> extras;
 
     @XmlElement(required = true)
     public Cabecera getCabecera() {
@@ -34,11 +35,11 @@ public class DocumentRequest {
     }
 
     @XmlElement(required = false)
-    public Extras getExtras() {
+    public ArrayList<Extra> getExtras() {
         return extras;
     }
 
-    public void setExtras(Extras extras) {
+    public void setExtras(ArrayList<Extra> extras) {
         this.extras = extras;
     }
 }

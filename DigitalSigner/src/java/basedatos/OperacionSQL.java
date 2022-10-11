@@ -125,7 +125,7 @@ public class OperacionSQL {
         Class<?> tipo = campo.getType();
         if (bld.containsKey(campoBD.toUpperCase()) && bld.get(campoBD.toUpperCase()) != null) {
             Object valorBD = bld.get(campoBD.toUpperCase());
-            if (tipo.getName().contains("Integer") || tipo.getName().equalsIgnoreCase("int")) {
+            if (tipo.getSimpleName().equalsIgnoreCase("Integer") || tipo.getSimpleName().equalsIgnoreCase("int")) {
                 if (valorBD instanceof BigDecimal valor) {
                     campo.set(campoJavaClass, valor.intValue());
                 }
@@ -136,7 +136,7 @@ public class OperacionSQL {
                     throw new Exception("EntityManager: No se puede convertir Date a Integer.");
                 }
             }
-            else if (tipo.getName().equalsIgnoreCase("Short")) {
+            else if (tipo.getSimpleName().equalsIgnoreCase("Short")) {
                 if (valorBD instanceof BigDecimal valor) {
                     campo.set(campoJavaClass, valor.shortValue());
                 }
@@ -147,7 +147,7 @@ public class OperacionSQL {
                     throw new Exception("EntityManager: No se puede convertir Date a Short.");
                 }
             }
-            else if (tipo.getName().contains("String")) {
+            else if (tipo.getSimpleName().equalsIgnoreCase("String")) {
                 if (valorBD instanceof BigDecimal valor) {
                     campo.set(campoJavaClass, valor.toString());
                 }
@@ -158,7 +158,7 @@ public class OperacionSQL {
                     campo.set(campoJavaClass, Formateos.dateToString(valor, Formateos.TipoFecha.FECHA));
                 }
             }
-            else if (tipo.getName().contains("Date")) {
+            else if (tipo.getSimpleName().equalsIgnoreCase("Date")) {
                 if (valorBD instanceof BigDecimal) {
                     throw new Exception("EntityManager: No se puede convertir BigDecimal a Date.");
                 }
@@ -169,7 +169,7 @@ public class OperacionSQL {
                     campo.set(campoJavaClass, valor);
                 }
             }
-            else if (tipo.getName().contains("BigDecimal")) {
+            else if (tipo.getSimpleName().equalsIgnoreCase("BigDecimal")) {
                 if (valorBD instanceof BigDecimal valor) {
                     campo.set(campoJavaClass, valor);
                 }
@@ -180,7 +180,7 @@ public class OperacionSQL {
                     throw new Exception("EntityManager: No se puede convertir Date a BigDecimal.");
                 }
             }
-            else if (tipo.getName().contains("Boolean")) {
+            else if (tipo.getSimpleName().equalsIgnoreCase("Boolean")) {
                 if (valorBD instanceof BigDecimal valor) {
                     campo.set(campoJavaClass, (valor.byteValue() == 1));
                 }
@@ -192,6 +192,14 @@ public class OperacionSQL {
                 }
                 else if (valorBD instanceof Boolean valor) {
                     campo.set(campoJavaClass, valor);
+                }
+            }
+            else if (tipo.getSimpleName().equalsIgnoreCase("byte[]")) {
+                if (valorBD instanceof byte[] valor) {
+                    campo.set(campoJavaClass, valor);
+                }
+                else {
+                    throw new Exception("EntityManager: No se puede " + tipo.getSimpleName() + " a byte[].");
                 }
             }
             else {

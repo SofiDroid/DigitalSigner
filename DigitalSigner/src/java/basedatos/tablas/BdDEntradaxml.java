@@ -6,6 +6,7 @@ import init.AppInit;
 import java.util.Date;
 import java.util.HashMap;
 import utilidades.BaseDatos;
+import utilidades.Ficheros;
 
 /**
  *
@@ -45,7 +46,6 @@ public class BdDEntradaxml extends OperacionSQL implements InterfazDAO {
     public String getSelectFiltro() {
         StringBuilder sb_sql = new StringBuilder("SELECT ");
         sb_sql.append("ID_ENTRADAXML");
-        sb_sql.append(",BL_ENTRADAXML");
         sb_sql.append(",ID_DOCUMENTO");
         sb_sql.append(",ID_SITUACIONXML");
         sb_sql.append(",DS_RUTA");
@@ -181,6 +181,9 @@ public class BdDEntradaxml extends OperacionSQL implements InterfazDAO {
     }
 
     public byte[] getBlEntradaxml() {
+        if (this.idEntradaxml != null && this.blEntradaxml == null) {
+            this.blEntradaxml = new Ficheros().recuperaEntradaXML(this.idEntradaxml); 
+        }
         return blEntradaxml;
     }
 

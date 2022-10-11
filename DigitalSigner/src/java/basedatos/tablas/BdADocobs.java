@@ -123,8 +123,7 @@ public class BdADocobs extends OperacionSQL implements InterfazDAO {
             sb_sql.append(",").append("DECODE(:TSTBD, null, NULL, :TSTBD)");
         }
         else {
-            sb_sql.append(":ID_DOCOBS");
-            sb_sql.append(",").append(":DS_OBSERVACIONES");
+            sb_sql.append(":DS_OBSERVACIONES");
             sb_sql.append(",").append(":ID_DOCUMENTO");
             sb_sql.append(",").append(":ID_USUARIO");
             sb_sql.append(",").append(":ID_AUTORIDAD");
