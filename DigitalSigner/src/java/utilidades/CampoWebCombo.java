@@ -52,7 +52,9 @@ public class CampoWebCombo extends CampoWeb {
     
     public String onSelect() {
         try {
-            return (String)this.selectMethod.invoke(this.selectClass);
+            if (this.selectMethod != null) {
+                return (String)this.selectMethod.invoke(this.selectClass);
+            }
         } catch (Exception ex) {
             Mensajes.showException(CampoWebCombo.class, ex);
         }

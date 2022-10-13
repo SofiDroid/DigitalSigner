@@ -25,6 +25,7 @@ public class ColumnBase {
     protected Object clase = null;
     protected String update = "@widgetVar(mensaje)";
     protected String tooltip = "";
+    protected String oncomplete = "";
     
     public ColumnBase(RowBase parent) {
         this.parent = parent;
@@ -79,6 +80,15 @@ public class ColumnBase {
 
     public ColumnBase setUpdate(String update) {
         this.update = update;
+        return this;
+    }
+    
+    public String getOncomplete() {
+        return oncomplete;
+    }
+    
+    public ColumnBase setOncomplete(String oncomplete) {
+        this.oncomplete = oncomplete;
         return this;
     }
     
