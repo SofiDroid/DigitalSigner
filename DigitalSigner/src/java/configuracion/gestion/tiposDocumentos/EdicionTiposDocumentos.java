@@ -2,8 +2,11 @@ package configuracion.gestion.tiposDocumentos;
 
 import basedatos.ColumnBase;
 import basedatos.DataSet;
+import basedatos.Row;
 import basedatos.RowCabecera;
+import basedatos.servicios.StAConftipodoc;
 import basedatos.servicios.StTTipodocumento;
+import basedatos.tablas.BdAConftipodoc;
 import basedatos.tablas.BdTTipodocumento;
 import excepciones.FormModeException;
 import excepciones.RegistryNotFoundException;
@@ -12,7 +15,6 @@ import java.io.Serializable;
 import java.util.HashMap;
 import javax.el.ELContext;
 import javax.faces.context.FacesContext;
-import seguridad.usuarios.DatosUsuario;
 import utilidades.CampoWebCodigo;
 import utilidades.CampoWebCombo;
 import utilidades.CampoWebDescripcion;
@@ -95,14 +97,12 @@ public class EdicionTiposDocumentos implements Serializable {
             this.cEnOrden.setMinValue(0);
             this.cEnOrden.setMaxValue(10);
             this.cEnOrden.setNumDecimales(0);
+            this.cEnOrden.setProtegido(true);
             
             this.cDiTipoFirma = new CampoWebCombo();
             this.cDiTipoFirma.setLabel(Msg.getString("lbl_EdicionTiposDocumentos_DiTipoFirma"));
             this.cDiTipoFirma.setWidthLabel("7em");
             this.cDiTipoFirma.setWidth("100%");
-            this.cDiTipoFirma.getOptions().put("F", "Firma");
-            this.cDiTipoFirma.getOptions().put("CO", "Cofirma");
-            this.cDiTipoFirma.getOptions().put("CT", "Contrafirma");
             
             this.cAutoridad = new CampoWebLupa();
             this.cAutoridad.setLabel(Msg.getString("lbl_EdicionTiposDocumentos_Autoridad"));
@@ -274,6 +274,10 @@ public class EdicionTiposDocumentos implements Serializable {
         }
     }
     
+    private void validarCamposFirma() throws RequiredFieldException {
+        //VALIDAR CAMPOS DE LA FIRMA
+    }
+    
     private void protegerCampos() throws Exception {
         switch (this.modoFormulario) {
             case CONSULTA, ELIMINADO -> {
@@ -282,7 +286,6 @@ public class EdicionTiposDocumentos implements Serializable {
                 this.cFeAlta.setProtegido(true);
                 this.cFeDesactivo.setProtegido(true);
                 
-                this.cEnOrden.setProtegido(true);
                 this.cDiTipoFirma.setProtegido(true);
                 this.cAutoridad.setProtegido(true);
                 this.cDsFirmaPosX.setProtegido(true);
@@ -296,7 +299,6 @@ public class EdicionTiposDocumentos implements Serializable {
                 this.cFeAlta.setProtegido(false);
                 this.cFeDesactivo.setProtegido(false);
                 
-                this.cEnOrden.setProtegido(false);
                 this.cDiTipoFirma.setProtegido(false);
                 this.cAutoridad.setProtegido(false);
                 this.cDsFirmaPosX.setProtegido(false);
@@ -311,7 +313,6 @@ public class EdicionTiposDocumentos implements Serializable {
                 this.cFeAlta.setProtegido(false);
                 this.cFeDesactivo.setProtegido(false);
                 
-                this.cEnOrden.setProtegido(true);
                 this.cDiTipoFirma.setProtegido(true);
                 this.cAutoridad.setProtegido(true);
                 this.cDsFirmaPosX.setProtegido(true);
@@ -338,6 +339,8 @@ public class EdicionTiposDocumentos implements Serializable {
         String sql = """
                     SELECT 
                         T1.ID_CONFTIPODOC, 
+                        T1.ID_TIPODOCUMENTO,
+                        T1.ID_AUTORIDAD,
                         T1.EN_ORDEN,
                         T1.DI_TIPOFIRMA, 
                         (CASE
@@ -346,10 +349,9 @@ public class EdicionTiposDocumentos implements Serializable {
                             WHEN T1.DI_TIPOFIRMA = 'CT' THEN 'Contrafirma'
                             ELSE 'Desconocido'
                         END) as DS_TIPOFIRMA,
-                        aut.ID_AUTORIDAD,
-                        aut.CO_AUTORIDAD + ' - ' + aut.DS_AUTORIDAD as Autoridad,
                         T1.DS_FIRMAPOSX, 
                         T1.DS_FIRMAPOSY, 
+                        aut.CO_AUTORIDAD + ' - ' + aut.DS_AUTORIDAD as Autoridad,
                         T1.FE_ALTA, 
                         T1.FE_DESACTIVO
                     FROM 
@@ -373,6 +375,12 @@ public class EdicionTiposDocumentos implements Serializable {
             cabecera.getColumnName("ID_CONFTIPODOC")
                     .setVisible(false);
 
+            cabecera.getColumnName("ID_TIPODOCUMENTO")
+                    .setVisible(false);
+
+            cabecera.getColumnName("ID_AUTORIDAD")
+                    .setVisible(false);
+
             cabecera.getColumnName("EN_ORDEN")
                     .setTitle("Órden")
                     .setWidth("6rem")
@@ -388,9 +396,6 @@ public class EdicionTiposDocumentos implements Serializable {
             cabecera.getColumnName("DS_TIPOFIRMA")
                     .setTitle("Tipo")
                     .setWidth("6rem");
-
-            cabecera.getColumnName("ID_AUTORIDAD")
-                    .setVisible(false);
 
             cabecera.getColumnName("Autoridad")
                     .setTitle("Autoridad")
@@ -414,7 +419,8 @@ public class EdicionTiposDocumentos implements Serializable {
 
     public void nuevaFirma() {
         try {
-            this.cEnOrden.setValueInteger(null);
+            this.cEnOrden.setValueInteger(this.dsFirmas.getRowsCount() + 1);
+            opcionesDiTipoFirma(this.cEnOrden.getValueInteger());
             this.cDiTipoFirma.setValue(null);
             this.cAutoridad.setId(null);
             this.cDsFirmaPosX.setValueInteger(null);
@@ -430,7 +436,24 @@ public class EdicionTiposDocumentos implements Serializable {
     
     public void guardarFirma() {
         try {
+            // VALIDAR CAMPOS FIRMA
+            validarCamposFirma();
+            
+            //ACTUALIZAR O GRABAR DATOS
+            
+            //Actualizar fila del grid
+            
             camposFirmaRequeridos(false);
+        } catch (Exception ex) {
+            Mensajes.showException(this.getClass(), ex);
+        }
+    }
+    
+    public void eliminarFirma() {
+        try {
+            //Eliminar firma
+            //Actualizar posiciones y ditipofirma del resto de registros
+            //Actualizar grid entero
         } catch (Exception ex) {
             Mensajes.showException(this.getClass(), ex);
         }
@@ -446,7 +469,7 @@ public class EdicionTiposDocumentos implements Serializable {
     
     public void verDetalle() {
         try {
-            camposFirmaCargar(this.dsFirmas.getSelectedRow().getColumnaID().getValueInteger());
+            camposFirmaCargar(this.dsFirmas.getSelectedRow());
             camposFirmaRequeridos(true);
         } catch (Exception ex) {
             Mensajes.showException(this.getClass(), ex);
@@ -589,10 +612,34 @@ public class EdicionTiposDocumentos implements Serializable {
         this.cDsFirmaPosX.setRequired(boRequerido);
         this.cDsFirmaPosY.setRequired(boRequerido);
         this.cFeAltaFirma.setRequired(boRequerido);
-        this.cFeDesactivoFirma.setRequired(boRequerido);
     }
 
-    private void camposFirmaCargar(Integer idConftipodoc) {
-        
+    private void camposFirmaCargar(Row selectedRow) throws Exception {
+        this.cEnOrden.setValueInteger(selectedRow.getColumnName("EN_ORDEN").getValueInteger());
+        opcionesDiTipoFirma(this.cEnOrden.getValueInteger());
+        this.cDiTipoFirma.setValue(selectedRow.getColumnName("DI_TIPOFIRMA").getValueString());
+        this.cAutoridad.setId(selectedRow.getColumnName("ID_AUTORIDAD").getValueInteger());
+        this.cDsFirmaPosX.setValueInteger(selectedRow.getColumnName("DS_FIRMAPOSX").getValueInteger());
+        this.cDsFirmaPosY.setValueInteger(selectedRow.getColumnName("DS_FIRMAPOSY").getValueInteger());
+        this.cFeAltaFirma.setValue(selectedRow.getColumnName("FE_ALTA").getValue());
+        this.cFeDesactivoFirma.setValue(selectedRow.getColumnName("FE_DESACTIVO").getValue());
+    }
+    
+    private void opcionesDiTipoFirma(Integer enOrden) {
+        this.cDiTipoFirma.getOptions().clear();
+        if (enOrden != null && enOrden.compareTo(1) == 0) {
+            this.cDiTipoFirma.getOptions().put("F", "Firma");
+            this.cDiTipoFirma.setValue("F");
+            this.cDiTipoFirma.setProtegido(true);
+        }
+        else if (enOrden != null && enOrden.compareTo(1) > 0) {
+            this.cDiTipoFirma.getOptions().put("CO", "Cofirma");
+            this.cDiTipoFirma.getOptions().put("CT", "Contrafirma");
+        }
+        else {
+            this.cDiTipoFirma.getOptions().put("F", "Firma");
+            this.cDiTipoFirma.getOptions().put("CO", "Cofirma");
+            this.cDiTipoFirma.getOptions().put("CT", "Contrafirma");
+        }
     }
 }

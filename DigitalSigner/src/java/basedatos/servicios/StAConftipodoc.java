@@ -30,6 +30,7 @@ public class StAConftipodoc extends StBase {
         parametros.put("ID_TIPODOCUMENTO", filtroBdAConftipodoc.getIdTipodocumento());
         parametros.put("ID_AUTORIDAD", filtroBdAConftipodoc.getIdAutoridad());
         parametros.put("EN_ORDEN", filtroBdAConftipodoc.getEnOrden());
+        parametros.put("DI_TIPOFIRMA", filtroBdAConftipodoc.getDiTipofirma());
         parametros.put("DS_FIRMAPOSX", filtroBdAConftipodoc.getDsFirmaposx());
         parametros.put("DS_FIRMAPOSY", filtroBdAConftipodoc.getDsFirmaposy());
         parametros.put("FE_ALTA", filtroBdAConftipodoc.getFeAlta());
@@ -73,6 +74,9 @@ public class StAConftipodoc extends StBase {
         if (Validation.isNullOrEmpty(newBdAConftipodoc.getEnOrden())) {
             throw new RequiredFieldException("EN_ORDEN");
         }
+        if (Validation.isNullOrEmpty(newBdAConftipodoc.getDiTipofirma())) {
+            throw new RequiredFieldException("DI_TIPOFIRMA");
+        }
         if (Validation.isNullOrEmpty(newBdAConftipodoc.getDsFirmaposx())) {
             throw new RequiredFieldException("DS_FIRMAPOSX");
         }
@@ -93,6 +97,7 @@ public class StAConftipodoc extends StBase {
         parametros.put("ID_TIPODOCUMENTO", newBdAConftipodoc.getIdTipodocumento());
         parametros.put("ID_AUTORIDAD", newBdAConftipodoc.getIdAutoridad());
         parametros.put("EN_ORDEN", newBdAConftipodoc.getEnOrden());
+        parametros.put("DI_TIPOFIRMA", newBdAConftipodoc.getDiTipofirma());
         parametros.put("DS_FIRMAPOSX", newBdAConftipodoc.getDsFirmaposx());
         parametros.put("DS_FIRMAPOSY", newBdAConftipodoc.getDsFirmaposy());
         parametros.put("FE_ALTA", newBdAConftipodoc.getFeAlta());
@@ -118,6 +123,9 @@ public class StAConftipodoc extends StBase {
         if (Validation.isNullOrEmpty(upBdAConftipodoc.getEnOrden())) {
             throw new RequiredFieldException("EN_ORDEN");
         }
+        if (Validation.isNullOrEmpty(upBdAConftipodoc.getDiTipofirma())) {
+            throw new RequiredFieldException("DI_TIPOFIRMA");
+        }
         if (Validation.isNullOrEmpty(upBdAConftipodoc.getDsFirmaposx())) {
             throw new RequiredFieldException("DS_FIRMAPOSX");
         }
@@ -138,6 +146,7 @@ public class StAConftipodoc extends StBase {
         parametros.put("ID_TIPODOCUMENTO", upBdAConftipodoc.getIdTipodocumento());
         parametros.put("ID_AUTORIDAD", upBdAConftipodoc.getIdAutoridad());
         parametros.put("EN_ORDEN", upBdAConftipodoc.getEnOrden());
+        parametros.put("DI_TIPOFIRMA", upBdAConftipodoc.getDiTipofirma());
         parametros.put("DS_FIRMAPOSX", upBdAConftipodoc.getDsFirmaposx());
         parametros.put("DS_FIRMAPOSY", upBdAConftipodoc.getDsFirmaposy());
         parametros.put("FE_ALTA", upBdAConftipodoc.getFeAlta());

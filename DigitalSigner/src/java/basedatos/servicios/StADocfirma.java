@@ -30,6 +30,7 @@ public class StADocfirma extends StBase {
         parametros.put("ID_DOCUMENTO", filtroBdADocfirma.getIdDocumento());
         parametros.put("ID_AUTORIDAD", filtroBdADocfirma.getIdAutoridad());
         parametros.put("EN_ORDEN", filtroBdADocfirma.getEnOrden());
+        parametros.put("DI_TIPOFIRMA", filtroBdADocfirma.getDiTipofirma());
         parametros.put("DS_FIRMAPOSX", filtroBdADocfirma.getDsFirmaposx());
         parametros.put("DS_FIRMAPOSY", filtroBdADocfirma.getDsFirmaposy());
         parametros.put("FE_FIRMA", filtroBdADocfirma.getFeFirma());
@@ -74,6 +75,9 @@ public class StADocfirma extends StBase {
         if (Validation.isNullOrEmpty(newBdADocfirma.getEnOrden())) {
             throw new RequiredFieldException("EN_ORDEN");
         }
+        if (Validation.isNullOrEmpty(newBdADocfirma.getDiTipofirma())) {
+            throw new RequiredFieldException("DI_TIPOFIRMA");
+        }
         if (Validation.isNullOrEmpty(newBdADocfirma.getDsFirmaposx())) {
             throw new RequiredFieldException("DS_FIRMAPOSX");
         }
@@ -94,6 +98,7 @@ public class StADocfirma extends StBase {
         parametros.put("ID_DOCUMENTO", newBdADocfirma.getIdDocumento());
         parametros.put("ID_AUTORIDAD", newBdADocfirma.getIdAutoridad());
         parametros.put("EN_ORDEN", newBdADocfirma.getEnOrden());
+        parametros.put("DI_TIPOFIRMA", newBdADocfirma.getDiTipofirma());
         parametros.put("DS_FIRMAPOSX", newBdADocfirma.getDsFirmaposx());
         parametros.put("DS_FIRMAPOSY", newBdADocfirma.getDsFirmaposy());
         parametros.put("FE_FIRMA", newBdADocfirma.getFeFirma());
@@ -120,6 +125,9 @@ public class StADocfirma extends StBase {
         if (Validation.isNullOrEmpty(upBdADocfirma.getEnOrden())) {
             throw new RequiredFieldException("EN_ORDEN");
         }
+        if (Validation.isNullOrEmpty(upBdADocfirma.getDiTipofirma())) {
+            throw new RequiredFieldException("DI_TIPOFIRMA");
+        }
         if (Validation.isNullOrEmpty(upBdADocfirma.getDsFirmaposx())) {
             throw new RequiredFieldException("DS_FIRMAPOSX");
         }
@@ -140,6 +148,7 @@ public class StADocfirma extends StBase {
         parametros.put("ID_DOCUMENTO", upBdADocfirma.getIdDocumento());
         parametros.put("ID_AUTORIDAD", upBdADocfirma.getIdAutoridad());
         parametros.put("EN_ORDEN", upBdADocfirma.getEnOrden());
+        parametros.put("DI_TIPOFIRMA", upBdADocfirma.getDiTipofirma());
         parametros.put("DS_FIRMAPOSX", upBdADocfirma.getDsFirmaposx());
         parametros.put("DS_FIRMAPOSY", upBdADocfirma.getDsFirmaposy());
         parametros.put("FE_FIRMA", upBdADocfirma.getFeFirma());

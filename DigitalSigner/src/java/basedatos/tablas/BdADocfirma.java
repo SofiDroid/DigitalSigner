@@ -17,6 +17,7 @@ public class BdADocfirma extends OperacionSQL implements InterfazDAO {
     protected Integer idDocumento;
     protected Integer idAutoridad;
     protected Integer enOrden;
+    protected Integer diTipofirma;
     protected String dsFirmaposx;
     protected String dsFirmaposy;
     protected Date feFirma;
@@ -35,6 +36,7 @@ public class BdADocfirma extends OperacionSQL implements InterfazDAO {
         recuperaValorCampo(this, "idDocumento", "ID_DOCUMENTO", bld);
         recuperaValorCampo(this, "idAutoridad", "ID_AUTORIDAD", bld);
         recuperaValorCampo(this, "enOrden", "EN_ORDEN", bld);
+        recuperaValorCampo(this, "diTipofirma", "DI_TIPOFIRMA", bld);
         recuperaValorCampo(this, "dsFirmaposx", "DS_FIRMAPOSX", bld);
         recuperaValorCampo(this, "dsFirmaposy", "DS_FIRMAPOSY", bld);
         recuperaValorCampo(this, "feFirma", "FE_FIRMA", bld);
@@ -52,6 +54,7 @@ public class BdADocfirma extends OperacionSQL implements InterfazDAO {
         sb_sql.append(",ID_DOCUMENTO");
         sb_sql.append(",ID_AUTORIDAD");
         sb_sql.append(",EN_ORDEN");
+        sb_sql.append(",DI_TIPOFIRMA");
         sb_sql.append(",DS_FIRMAPOSX");
         sb_sql.append(",DS_FIRMAPOSY");
         sb_sql.append(",FE_FIRMA");
@@ -72,6 +75,9 @@ public class BdADocfirma extends OperacionSQL implements InterfazDAO {
         }
         if (enOrden != null) {
             sb_sql.append(" AND EN_ORDEN = :EN_ORDEN");
+        }
+        if (diTipofirma != null) {
+            sb_sql.append(" AND DI_TIPOFIRMA = :DI_TIPOFIRMA");
         }
         if (dsFirmaposx != null) {
             sb_sql.append(" AND UPPER(DS_FIRMAPOSX) = UPPER(:DS_FIRMAPOSX)");
@@ -112,6 +118,7 @@ public class BdADocfirma extends OperacionSQL implements InterfazDAO {
         sb_sql.append("ID_DOCUMENTO");
         sb_sql.append(",ID_AUTORIDAD");
         sb_sql.append(",EN_ORDEN");
+        sb_sql.append(",DI_TIPOFIRMA");
         sb_sql.append(",DS_FIRMAPOSX");
         sb_sql.append(",DS_FIRMAPOSY");
         sb_sql.append(",FE_FIRMA");
@@ -130,6 +137,7 @@ public class BdADocfirma extends OperacionSQL implements InterfazDAO {
             sb_sql.append(",").append("DECODE(:ID_DOCUMENTO, null, NULL, :ID_DOCUMENTO)");
             sb_sql.append(",").append("DECODE(:ID_AUTORIDAD, null, NULL, :ID_AUTORIDAD)");
             sb_sql.append(",").append("DECODE(:EN_ORDEN, null, NULL, :EN_ORDEN)");
+            sb_sql.append(",").append("DECODE(:DI_TIPOFIRMA, null, NULL, :DI_TIPOFIRMA)");
             sb_sql.append(",").append("DECODE(:DS_FIRMAPOSX, null, NULL, :DS_FIRMAPOSX)");
             sb_sql.append(",").append("DECODE(:DS_FIRMAPOSY, null, NULL, :DS_FIRMAPOSY)");
             sb_sql.append(",").append("DECODE(:FE_FIRMA, null, NULL, :FE_FIRMA)");
@@ -142,6 +150,7 @@ public class BdADocfirma extends OperacionSQL implements InterfazDAO {
             sb_sql.append(":ID_DOCUMENTO");
             sb_sql.append(",").append(":ID_AUTORIDAD");
             sb_sql.append(",").append(":EN_ORDEN");
+            sb_sql.append(",").append(":DI_TIPOFIRMA");
             sb_sql.append(",").append(":DS_FIRMAPOSX");
             sb_sql.append(",").append(":DS_FIRMAPOSY");
             sb_sql.append(",").append(":FE_FIRMA");
@@ -162,6 +171,7 @@ public class BdADocfirma extends OperacionSQL implements InterfazDAO {
             sb_sql.append("ID_DOCUMENTO = ").append("DECODE(:ID_DOCUMENTO, null, NULL, :ID_DOCUMENTO)");
             sb_sql.append(",ID_AUTORIDAD = ").append("DECODE(:ID_AUTORIDAD, null, NULL, :ID_AUTORIDAD)");
             sb_sql.append(",EN_ORDEN = ").append("DECODE(:EN_ORDEN, null, NULL, :EN_ORDEN)");
+            sb_sql.append(",DI_TIPOFIRMA = ").append("DECODE(:DI_TIPOFIRMA, null, NULL, :DI_TIPOFIRMA)");
             sb_sql.append(",DS_FIRMAPOSX = ").append("DECODE(:DS_FIRMAPOSX, null, NULL, :DS_FIRMAPOSX)");
             sb_sql.append(",DS_FIRMAPOSY = ").append("DECODE(:DS_FIRMAPOSY, null, NULL, :DS_FIRMAPOSY)");
             sb_sql.append(",FE_FIRMA = ").append("DECODE(:FE_FIRMA, null, NULL, :FE_FIRMA)");
@@ -174,6 +184,7 @@ public class BdADocfirma extends OperacionSQL implements InterfazDAO {
             sb_sql.append("ID_DOCUMENTO = :ID_DOCUMENTO");
             sb_sql.append(",ID_AUTORIDAD = :ID_AUTORIDAD");
             sb_sql.append(",EN_ORDEN = :EN_ORDEN");
+            sb_sql.append(",DI_TIPOFIRMA = :DI_TIPOFIRMA");
             sb_sql.append(",DS_FIRMAPOSX = :DS_FIRMAPOSX");
             sb_sql.append(",DS_FIRMAPOSY = :DS_FIRMAPOSY");
             sb_sql.append(",FE_FIRMA = :FE_FIRMA");
@@ -227,6 +238,14 @@ public class BdADocfirma extends OperacionSQL implements InterfazDAO {
 
     public void setEnOrden(Integer enOrden) {
         this.enOrden = enOrden;
+    }
+
+    public Integer getDiTipofirma() {
+        return diTipofirma;
+    }
+
+    public void setDiTipofirma(Integer diTipofirma) {
+        this.diTipofirma = diTipofirma;
     }
 
     public String getDsFirmaposx() {

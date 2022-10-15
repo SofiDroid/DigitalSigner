@@ -83,7 +83,7 @@
                     <f:facet name="header">
                         <p:commandButton id="btnGuardarFirma" icon="pi pi-save" styleClass="rounded-button ui-button-success" 
                                          style="height: 2rem;width: 2rem;margin-left:0.3rem" action="#{beanEdicion.guardarFirma}" title="(alt+S) Guardar"
-                                         update="@form" onerror="PF('dlgFirmas').show()" oncomplete="PF('dlgFirmas').hide()"
+                                         oncomplete="if (args &amp;&amp; args.validationFailed) PF('dlgFirmas').show()" update="panelFirmas,mensaje"
                                          rendered="#{beanEdicion.modoFormulario eq 'EDICION' or beanEdicion.modoFormulario eq 'ALTA'}" />
                     </f:facet>
                     <p:panelGrid columns="1"
