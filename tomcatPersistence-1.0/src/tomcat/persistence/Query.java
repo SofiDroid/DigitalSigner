@@ -57,12 +57,12 @@ public class Query {
      * @throws SQLException 
      */
     @SuppressWarnings("unchecked")
-    public List getResultList() throws SQLException {
+    public ResultData getResultList() throws SQLException {
         if (this.entityManager.getTransaction().getRollbackOnly()) {
             throw new SQLException("Connection is marked for rollback only.");
         }
         
-        List result = null;
+        ResultData rd = new ResultData();
         
         this.parametrosPosicionados.clear();
         encontrarParametros(0);
@@ -71,17 +71,17 @@ public class Query {
             establecerParametros(stmt);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs != null) {
-                    result = new ArrayList();
+                    rd.setResultList(new ArrayList());
+                    rd.setMetadata(rs.getMetaData());
                     while (rs.next()) {
-                        ResultSetMetaData metaData = rs.getMetaData();
-                        if (metaData.getColumnCount() == 1) {
-                            result.add(rs.getObject(1));
+                        if (rd.getMetadata().getColumnCount() == 1) {
+                            rd.getResultList().add(rs.getObject(1));
                         } else {
-                            Object[] fila = new Object[metaData.getColumnCount()];
-                            for (int i = 0; i < metaData.getColumnCount(); i++) {
+                            Object[] fila = new Object[rd.getMetadata().getColumnCount()];
+                            for (int i = 0; i < rd.getMetadata().getColumnCount(); i++) {
                                 fila[i] = rs.getObject((i+1));
                             }
-                            result.add(fila);
+                            rd.getResultList().add(fila);
                         }
                     }
                 }
@@ -92,7 +92,7 @@ public class Query {
             this.entityManager.getTransaction().setRollbackOnly();
             throw ExceptionMapper.mapear(sql, ex);
         }            
-        return result;
+        return rd;
     }
 
     /**
@@ -104,12 +104,13 @@ public class Query {
      * @throws SQLException 
      */
     @SuppressWarnings("unchecked")
-    public List<LinkedHashMap<String,Object>> getResultListMapped() throws SQLException {
+    public ResultData getResultListMapped() throws SQLException {
         if (this.entityManager.getTransaction().getRollbackOnly()) {
             throw new SQLException("Connection is marked for rollback only.");
         }
         
-        List<LinkedHashMap<String,Object>> result = null;
+        ResultData rd = new ResultData();
+
         this.parametrosPosicionados.clear();
         encontrarParametros(0);
         try (CallableStatement stmt = entityManager.getConnection().prepareCall(sql))
@@ -117,14 +118,14 @@ public class Query {
             establecerParametros(stmt);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs != null) {
-                    result = new ArrayList();
+                    rd.setResultListMapped(new ArrayList());
+                    rd.setMetadata(rs.getMetaData());
                     while (rs.next()) {
-                        ResultSetMetaData metaData = rs.getMetaData();
                         LinkedHashMap<String,Object> fila = new LinkedHashMap<>();
-                        for (int i = 0; i < metaData.getColumnCount(); i++) {
-                            fila.put(metaData.getColumnName((i+1)).toUpperCase(), rs.getObject((i+1)));
+                        for (int i = 0; i < rd.getMetadata().getColumnCount(); i++) {
+                            fila.put(rd.getMetadata().getColumnName((i+1)).toUpperCase(), rs.getObject((i+1)));
                         }
-                        result.add(fila);
+                        rd.getResultListMapped().add(fila);
                     }
                 }
             }
@@ -133,7 +134,7 @@ public class Query {
             this.entityManager.getTransaction().setRollbackOnly();
             throw ExceptionMapper.mapear(sql, ex);
         }            
-        return result;
+        return rd;
     }
     
     /**
@@ -158,12 +159,12 @@ public class Query {
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs != null) {
                     if (rs.next()) {
-                        ResultSetMetaData metaData = rs.getMetaData();
-                        if (metaData.getColumnCount() == 1) {
+                        ResultSetMetaData metadata = rs.getMetaData();
+                        if (metadata.getColumnCount() == 1) {
                             result = rs.getObject(1);
                         } else {
-                            result = new Object[metaData.getColumnCount()];
-                            for (int i = 0; i < metaData.getColumnCount(); i++) {
+                            result = new Object[metadata.getColumnCount()];
+                            for (int i = 0; i < metadata.getColumnCount(); i++) {
                                 ((Object[])result)[(i+1)] = rs.getObject((i+1));
                             }
                         }
@@ -201,10 +202,10 @@ public class Query {
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs != null) {
                     if (rs.next()) {
-                        ResultSetMetaData metaData = rs.getMetaData();
+                        ResultSetMetaData metadata = rs.getMetaData();
                         result = new LinkedHashMap<>();
-                        for (int i = 0; i < metaData.getColumnCount(); i++) {
-                            result.put(metaData.getColumnName((i+1)).toUpperCase(), rs.getObject((i+1)));
+                        for (int i = 0; i < metadata.getColumnCount(); i++) {
+                            result.put(metadata.getColumnName((i+1)).toUpperCase(), rs.getObject((i+1)));
                         }
                         return result;
                     }
