@@ -35,7 +35,7 @@ public class StTSituaciondoc extends StBase {
         parametros.put("TSTBD", filtroBdTSituaciondoc.getTstbd());
 
 
-        ArrayList<LinkedHashMap<String,Object>> lista = executeNativeQueryListParametros(filtroBdTSituaciondoc.getSelectFiltro(), parametros, em);
+        ArrayList<LinkedHashMap<String,Object>> lista = executeNativeQueryListParametros(filtroBdTSituaciondoc.getSelectFiltro(), parametros, em).getResultListMapped();
         if (lista != null && !lista.isEmpty()) {
             return Mapeador.mapea(lista, BdTSituaciondoc.class);
         }

@@ -35,7 +35,7 @@ public class StAHistsalxml extends StBase {
         parametros.put("TSTBD", filtroBdAHistsalxml.getTstbd());
 
 
-        ArrayList<LinkedHashMap<String,Object>> lista = executeNativeQueryListParametros(filtroBdAHistsalxml.getSelectFiltro(), parametros, em);
+        ArrayList<LinkedHashMap<String,Object>> lista = executeNativeQueryListParametros(filtroBdAHistsalxml.getSelectFiltro(), parametros, em).getResultListMapped();
         if (lista != null && !lista.isEmpty()) {
             return Mapeador.mapea(lista, BdAHistsalxml.class);
         }

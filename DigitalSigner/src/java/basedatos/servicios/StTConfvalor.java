@@ -36,7 +36,7 @@ public class StTConfvalor extends StBase {
         parametros.put("TSTBD", filtroBdTConfvalor.getTstbd());
 
 
-        ArrayList<LinkedHashMap<String,Object>> lista = executeNativeQueryListParametros(filtroBdTConfvalor.getSelectFiltro(), parametros, em);
+        ArrayList<LinkedHashMap<String,Object>> lista = executeNativeQueryListParametros(filtroBdTConfvalor.getSelectFiltro(), parametros, em).getResultListMapped();
         if (lista != null && !lista.isEmpty()) {
             return Mapeador.mapea(lista, BdTConfvalor.class);
         }

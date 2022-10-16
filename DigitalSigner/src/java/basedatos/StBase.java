@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import tomcat.persistence.EntityManager;
+import tomcat.persistence.ResultData;
 
 /**
  *
@@ -13,7 +14,7 @@ import tomcat.persistence.EntityManager;
  */
 public class StBase {
     
-    protected ArrayList<LinkedHashMap<String,Object>> executeNativeQueryListParametros(String sql, HashMap<String, Object> parametros, EntityManager em) throws SQLException {
+    protected ResultData executeNativeQueryListParametros(String sql, HashMap<String, Object> parametros, EntityManager em) throws SQLException {
         boolean conexionNueva = (em == null);
         EntityManager entityManager = em;
         try 

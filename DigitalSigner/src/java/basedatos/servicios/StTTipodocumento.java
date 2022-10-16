@@ -35,7 +35,7 @@ public class StTTipodocumento extends StBase {
         parametros.put("TSTBD", filtroBdTTipodocumento.getTstbd());
 
 
-        ArrayList<LinkedHashMap<String,Object>> lista = executeNativeQueryListParametros(filtroBdTTipodocumento.getSelectFiltro(), parametros, em);
+        ArrayList<LinkedHashMap<String,Object>> lista = executeNativeQueryListParametros(filtroBdTTipodocumento.getSelectFiltro(), parametros, em).getResultListMapped();
         if (lista != null && !lista.isEmpty()) {
             return Mapeador.mapea(lista, BdTTipodocumento.class);
         }
@@ -85,8 +85,10 @@ public class StTTipodocumento extends StBase {
         parametros.put("USUARIOBD", newBdTTipodocumento.getUsuariobd());
         parametros.put("TSTBD", newBdTTipodocumento.getTstbd());
 
-
-        return executeNativeQueryParametros(newBdTTipodocumento.getInsert(), parametros, em);
+        int result = executeNativeQueryParametros(newBdTTipodocumento.getInsert(), parametros, em);
+        newBdTTipodocumento.setIdTipodocumento(result);
+        
+        return result;
     }
 
     public int actualiza(BdTTipodocumento upBdTTipodocumento, EntityManager em) throws Exception {

@@ -40,7 +40,7 @@ public class StTOpcionmenu extends StBase {
         parametros.put("ID_OPCIONMENUPADRE", filtroBdTOpcionmenu.getIdOpcionmenupadre());
 
 
-        ArrayList<LinkedHashMap<String,Object>> lista = executeNativeQueryListParametros(filtroBdTOpcionmenu.getSelectFiltro(), parametros, em);
+        ArrayList<LinkedHashMap<String,Object>> lista = executeNativeQueryListParametros(filtroBdTOpcionmenu.getSelectFiltro(), parametros, em).getResultListMapped();
         if (lista != null && !lista.isEmpty()) {
             return Mapeador.mapea(lista, BdTOpcionmenu.class);
         }

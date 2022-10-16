@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import tomcat.persistence.EntityManager;
 import tomcat.persistence.Query;
+import tomcat.persistence.ResultData;
 
 /**
  *
@@ -18,7 +19,7 @@ public class ExecuteQuery {
         // NADA
     }
 
-    public ArrayList<LinkedHashMap<String,Object>> executeNativeQueryListParametros(String sql, HashMap<String, Object> parametros, EntityManager entityManager) throws SQLException {
+    public ResultData executeNativeQueryListParametros(String sql, HashMap<String, Object> parametros, EntityManager entityManager) throws SQLException {
         try {
             Query sentencia = entityManager.createNativeQuery(sql);
             if (parametros != null) {
@@ -26,7 +27,7 @@ public class ExecuteQuery {
                     sentencia.setParameter((String) item.getKey(), item.getValue());
                 }
             }
-            return (ArrayList<LinkedHashMap<String,Object>>) sentencia.getResultListMapped();
+            return sentencia.getResultListMapped();
 
         } catch (SQLException e) {
             throw e;

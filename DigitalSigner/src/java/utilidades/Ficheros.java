@@ -20,7 +20,7 @@ public class Ficheros {
         parametros.put("ID_DOCUMENTO", idDocumento);
         EntityManager entityManager = (em != null ? em : AppInit.getEntityManager());
         try {
-            ArrayList<LinkedHashMap<String, Object>> resultado = new ExecuteQuery().executeNativeQueryListParametros(sql, parametros, entityManager);
+            ArrayList<LinkedHashMap<String, Object>> resultado = new ExecuteQuery().executeNativeQueryListParametros(sql, parametros, entityManager).getResultListMapped();
             if (resultado != null && !resultado.isEmpty()) {
                 return (byte[])resultado.get(0).get("BL_DOCUMENTO");
             }
@@ -43,7 +43,7 @@ public class Ficheros {
         parametros.put("ID_ENTRADAXML", idEntradaxml);
         EntityManager entityManager = (em != null ? em : AppInit.getEntityManager());
         try {
-            ArrayList<LinkedHashMap<String, Object>> resultado = new ExecuteQuery().executeNativeQueryListParametros(sql, parametros, entityManager);
+            ArrayList<LinkedHashMap<String, Object>> resultado = new ExecuteQuery().executeNativeQueryListParametros(sql, parametros, entityManager).getResultListMapped();
             if (resultado != null && !resultado.isEmpty()) {
                 return (byte[])resultado.get(0).get("BL_ENTRADAXML");
             }
@@ -66,7 +66,7 @@ public class Ficheros {
         parametros.put("ID_SALIDAXML", idSalidaxml);
         EntityManager entityManager = (em != null ? em : AppInit.getEntityManager());
         try {
-            ArrayList<LinkedHashMap<String, Object>> resultado = new ExecuteQuery().executeNativeQueryListParametros(sql, parametros, entityManager);
+            ArrayList<LinkedHashMap<String, Object>> resultado = new ExecuteQuery().executeNativeQueryListParametros(sql, parametros, entityManager).getResultListMapped();
             if (resultado != null && !resultado.isEmpty()) {
                 return (byte[])resultado.get(0).get("BL_SALIDAXML");
             }

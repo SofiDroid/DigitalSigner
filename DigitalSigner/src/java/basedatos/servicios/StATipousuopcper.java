@@ -38,7 +38,7 @@ public class StATipousuopcper extends StBase {
         parametros.put("TSTBD", filtroBdATipousuopcper.getTstbd());
 
 
-        ArrayList<LinkedHashMap<String,Object>> lista = executeNativeQueryListParametros(filtroBdATipousuopcper.getSelectFiltro(), parametros, em);
+        ArrayList<LinkedHashMap<String,Object>> lista = executeNativeQueryListParametros(filtroBdATipousuopcper.getSelectFiltro(), parametros, em).getResultListMapped();
         if (lista != null && !lista.isEmpty()) {
             return Mapeador.mapea(lista, BdATipousuopcper.class);
         }

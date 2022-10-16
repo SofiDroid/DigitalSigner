@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import tomcat.persistence.ResultData;
 
 /**
  *
@@ -49,7 +50,7 @@ public final class DataSet extends StBase {
         HashMap<String, Object> parametrosItem = (HashMap<String, Object>)parametros.clone();
         parametrosItem.put(this.getSelectedRow().getColumnaID().getName() + "_ID", this.getSelectedRow().getColumnaID().getValue());
         
-        ArrayList<LinkedHashMap<String,Object>> lista = executeNativeQueryListParametros(sqlItem, parametrosItem, null);
+        ArrayList<LinkedHashMap<String,Object>> lista = executeNativeQueryListParametros(sqlItem, parametrosItem, null).getResultListMapped();
         rellenarFila(lista.get(0), this.getSelectedRow(), false);
     }
     
@@ -64,7 +65,7 @@ public final class DataSet extends StBase {
             HashMap<String, Object> parametrosItem = (HashMap<String, Object>)parametros.clone();
             parametrosItem.put(this.rowSelectColumnaID + "_ID", idNuevaFila);
 
-            ArrayList<LinkedHashMap<String,Object>> lista = executeNativeQueryListParametros(sqlItem, parametrosItem, null);
+            ArrayList<LinkedHashMap<String,Object>> lista = executeNativeQueryListParametros(sqlItem, parametrosItem, null).getResultListMapped();
             Row fila = new Row(this);
             fila.index = this.getRowsCount();
             rellenarFila(lista.get(0), fila, true);
@@ -73,7 +74,7 @@ public final class DataSet extends StBase {
     
     public void refrescarDatos() throws SQLException {
         if (this.sql != null) {
-            ArrayList<LinkedHashMap<String,Object>> lista = executeNativeQueryListParametros(sql, parametros, null);
+            ArrayList<LinkedHashMap<String,Object>> lista = executeNativeQueryListParametros(sql, parametros, null).getResultListMapped();
             if (lista != null && !lista.isEmpty()) {
                 this.getRows().clear();
                 this.setSelectedRow(null);
@@ -83,13 +84,25 @@ public final class DataSet extends StBase {
     }
     
     private void recuperarDatos() throws SQLException {
-        ArrayList<LinkedHashMap<String,Object>> lista = executeNativeQueryListParametros(sql, parametros, null);
+        ResultData resultdata = executeNativeQueryListParametros(sql, parametros, null);
+        ArrayList<LinkedHashMap<String,Object>> lista = resultdata.getResultListMapped();
+        rellenaCabecera(resultdata.getMetadata());
+        //rellenaCabecera(lista);
         if (lista != null && !lista.isEmpty()) {
-            rellenaCabecera(lista);
             rellenaDatos(lista);
         }
     }
 
+    private void rellenaCabecera(java.sql.ResultSetMetaData metadata) throws SQLException {
+        for (int i = 1; i <= metadata.getColumnCount(); i++) {
+            ColumnCabecera columnaCab = new ColumnCabecera(this.cabecera);
+            columnaCab.index = i;
+            columnaCab.name = metadata.getColumnName(i);
+            columnaCab.title = metadata.getColumnName(i);
+            this.cabecera.getColumns().add(columnaCab);
+        }
+    }
+    /*
     private void rellenaCabecera(ArrayList<LinkedHashMap<String,Object>> lista) {
         int i = 0;
         LinkedHashMap<String,Object> itemRow = lista.get(0);
@@ -101,7 +114,7 @@ public final class DataSet extends StBase {
             this.cabecera.getColumns().add(columnaCab);
         }
     }
-    
+    */
     private void rellenaDatos(ArrayList<LinkedHashMap<String,Object>> lista) {
         int f = 0;
         for (LinkedHashMap<String,Object> itemRow : lista) {

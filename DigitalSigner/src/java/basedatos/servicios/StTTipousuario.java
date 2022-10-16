@@ -36,7 +36,7 @@ public class StTTipousuario extends StBase {
         parametros.put("TSTBD", filtroBdTTipousuario.getTstbd());
 
 
-        ArrayList<LinkedHashMap<String,Object>> lista = executeNativeQueryListParametros(filtroBdTTipousuario.getSelectFiltro(), parametros, em);
+        ArrayList<LinkedHashMap<String,Object>> lista = executeNativeQueryListParametros(filtroBdTTipousuario.getSelectFiltro(), parametros, em).getResultListMapped();
         if (lista != null && !lista.isEmpty()) {
             return Mapeador.mapea(lista, BdTTipousuario.class);
         }
@@ -89,7 +89,7 @@ public class StTTipousuario extends StBase {
 
 
         int result = executeNativeQueryParametros(newBdTTipousuario.getInsert(), parametros, em);
-        newBdTTipousuario.setIdTipousuario(filtro(newBdTTipousuario, em).get(0).getIdTipousuario());
+        newBdTTipousuario.setIdTipousuario(result);
         
         return result;
     }

@@ -39,7 +39,7 @@ public class StAConftipodoc extends StBase {
         parametros.put("TSTBD", filtroBdAConftipodoc.getTstbd());
 
 
-        ArrayList<LinkedHashMap<String,Object>> lista = executeNativeQueryListParametros(filtroBdAConftipodoc.getSelectFiltro(), parametros, em);
+        ArrayList<LinkedHashMap<String,Object>> lista = executeNativeQueryListParametros(filtroBdAConftipodoc.getSelectFiltro(), parametros, em).getResultListMapped();
         if (lista != null && !lista.isEmpty()) {
             return Mapeador.mapea(lista, BdAConftipodoc.class);
         }

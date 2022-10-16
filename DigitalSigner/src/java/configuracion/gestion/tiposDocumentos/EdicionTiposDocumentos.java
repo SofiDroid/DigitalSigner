@@ -11,11 +11,15 @@ import basedatos.tablas.BdTTipodocumento;
 import excepciones.FormModeException;
 import excepciones.RegistryNotFoundException;
 import excepciones.RequiredFieldException;
+import init.AppInit;
 import java.io.Serializable;
 import java.sql.SQLException;
+import java.time.Instant;
+import java.util.Date;
 import java.util.HashMap;
 import javax.el.ELContext;
 import javax.faces.context.FacesContext;
+import tomcat.persistence.EntityManager;
 import utilidades.CampoWebCodigo;
 import utilidades.CampoWebCombo;
 import utilidades.CampoWebDescripcion;
@@ -162,44 +166,111 @@ public class EdicionTiposDocumentos implements Serializable {
     public void guardar() {
         try {
             validarCampos();
-            
-            //ALTA
-            if (this.modoFormulario == ModoFormulario.ALTA) {
-                this.bdTTipodocumento = new BdTTipodocumento();
-                this.bdTTipodocumento.setCoTipodocumento(this.cCoTipodocumento.getValue());
-                this.bdTTipodocumento.setDsTipodocumento(this.cDsTipodocumento.getValue());
-                this.bdTTipodocumento.setFeAlta(this.cFeAlta.getValue());
-                this.bdTTipodocumento.setFeDesactivo(this.cFeDesactivo.getValue());
-                
-                StTTipodocumento stTTipodocumento = new StTTipodocumento();
-                stTTipodocumento.alta(this.bdTTipodocumento, null);
-                
-                if (this.parent instanceof FiltroTiposDocumentos filtroTiposDocumentos) {
-                    filtroTiposDocumentos.getDsResultado().refrescarDatos();
+            // INICIO TRANSACCION
+            try (EntityManager entityManager = AppInit.getEntityManager())
+            {
+                entityManager.getTransaction().begin();
+                try {
+                    //ALTA
+                    if (this.modoFormulario == ModoFormulario.ALTA) {
+                        this.bdTTipodocumento = new BdTTipodocumento();
+                        this.bdTTipodocumento.setCoTipodocumento(this.cCoTipodocumento.getValue());
+                        this.bdTTipodocumento.setDsTipodocumento(this.cDsTipodocumento.getValue());
+                        this.bdTTipodocumento.setFeAlta(this.cFeAlta.getValue());
+                        this.bdTTipodocumento.setFeDesactivo(this.cFeDesactivo.getValue());
+
+                        StTTipodocumento stTTipodocumento = new StTTipodocumento();
+                        stTTipodocumento.alta(this.bdTTipodocumento, entityManager);
+
+                        if (this.dsFirmas != null) {
+                            for (Row itemRow : this.dsFirmas.getRows()) {
+                                BdAConftipodoc newBdAConftipodoc = new BdAConftipodoc();
+                                newBdAConftipodoc.setIdTipodocumento(this.bdTTipodocumento.getIdTipodocumento());
+                                newBdAConftipodoc.setIdAutoridad(itemRow.getColumnName("ID_AUTORIDAD").getValueInteger());
+                                newBdAConftipodoc.setEnOrden(itemRow.getColumnName("EN_ORDEN").getValueInteger());
+                                newBdAConftipodoc.setDiTipofirma(itemRow.getColumnName("DI_TIPOFIRMA").getValueString());
+                                newBdAConftipodoc.setDsFirmaposx(itemRow.getColumnName("DS_FIRMAPOSX").getValueString());
+                                newBdAConftipodoc.setDsFirmaposy(itemRow.getColumnName("DS_FIRMAPOSY").getValueString());
+                                newBdAConftipodoc.setFeAlta((Date)itemRow.getColumnName("FE_ALTA").getValue());
+                                newBdAConftipodoc.setFeDesactivo((Date)itemRow.getColumnName("FE_DESACTIVO").getValue());
+
+                                StAConftipodoc stAConftipodoc = new StAConftipodoc();
+                                stAConftipodoc.alta(newBdAConftipodoc, entityManager);
+                            }
+                        }
+                        
+                        entityManager.getTransaction().commit();
+
+                        if (this.parent instanceof FiltroTiposDocumentos filtroTiposDocumentos) {
+                            filtroTiposDocumentos.getDsResultado().refrescarDatos();
+                        }
+
+                        Mensajes.showInfo("Información", "Alta realizada correctamente!");
+                    }
+
+                    //ACTUALIZACION
+                    if (this.modoFormulario == ModoFormulario.EDICION) {
+                        this.bdTTipodocumento.setCoTipodocumento(this.cCoTipodocumento.getValue());
+                        this.bdTTipodocumento.setDsTipodocumento(this.cDsTipodocumento.getValue());
+                        this.bdTTipodocumento.setFeAlta(this.cFeAlta.getValue());
+                        this.bdTTipodocumento.setFeDesactivo(this.cFeDesactivo.getValue());
+
+                        StTTipodocumento stTTipodocumento = new StTTipodocumento();
+                        stTTipodocumento.actualiza(this.bdTTipodocumento, entityManager);
+
+                        if (this.dsFirmas != null) {
+                            for (Row itemRow : this.dsFirmas.getRows()) {
+                                if  (itemRow.getColumnName("ID_CONFTIPODOC").getValue() == null) {
+                                    //ALTA
+                                    BdAConftipodoc newBdAConftipodoc = new BdAConftipodoc();
+                                    newBdAConftipodoc.setIdTipodocumento(this.bdTTipodocumento.getIdTipodocumento());
+                                    newBdAConftipodoc.setIdAutoridad(itemRow.getColumnName("ID_AUTORIDAD").getValueInteger());
+                                    newBdAConftipodoc.setEnOrden(itemRow.getColumnName("EN_ORDEN").getValueInteger());
+                                    newBdAConftipodoc.setDiTipofirma(itemRow.getColumnName("DI_TIPOFIRMA").getValueString());
+                                    newBdAConftipodoc.setDsFirmaposx(itemRow.getColumnName("DS_FIRMAPOSX").getValueString());
+                                    newBdAConftipodoc.setDsFirmaposy(itemRow.getColumnName("DS_FIRMAPOSY").getValueString());
+                                    newBdAConftipodoc.setFeAlta((Date)itemRow.getColumnName("FE_ALTA").getValue());
+                                    newBdAConftipodoc.setFeDesactivo((Date)itemRow.getColumnName("FE_DESACTIVO").getValue());
+
+                                    StAConftipodoc stAConftipodoc = new StAConftipodoc();
+                                    stAConftipodoc.alta(newBdAConftipodoc, entityManager);
+                                }
+                                else {
+                                    //MODIFICACION
+                                    BdAConftipodoc upBdAConftipodoc = new BdAConftipodoc();
+                                    upBdAConftipodoc.setIdConftipodoc(itemRow.getColumnName("ID_CONFTIPODOC").getValueInteger());
+                                    upBdAConftipodoc.setIdTipodocumento(itemRow.getColumnName("ID_TIPODOCUMENTO").getValueInteger());
+                                    upBdAConftipodoc.setIdAutoridad(itemRow.getColumnName("ID_AUTORIDAD").getValueInteger());
+                                    upBdAConftipodoc.setEnOrden(itemRow.getColumnName("EN_ORDEN").getValueInteger());
+                                    upBdAConftipodoc.setDiTipofirma(itemRow.getColumnName("DI_TIPOFIRMA").getValueString());
+                                    upBdAConftipodoc.setDsFirmaposx(itemRow.getColumnName("DS_FIRMAPOSX").getValueString());
+                                    upBdAConftipodoc.setDsFirmaposy(itemRow.getColumnName("DS_FIRMAPOSY").getValueString());
+                                    upBdAConftipodoc.setFeAlta((Date)itemRow.getColumnName("FE_ALTA").getValue());
+                                    upBdAConftipodoc.setFeDesactivo((Date)itemRow.getColumnName("FE_DESACTIVO").getValue());
+
+                                    StAConftipodoc stAConftipodoc = new StAConftipodoc();
+                                    stAConftipodoc.actualiza(upBdAConftipodoc, entityManager);
+                                }
+                            }
+                        }
+
+                        entityManager.getTransaction().commit();
+
+                        if (this.parent instanceof FiltroTiposDocumentos filtroTiposDocumentos) {
+                            ELContext elContext = FacesContext.getCurrentInstance().getELContext();
+                            filtroTiposDocumentos = (FiltroTiposDocumentos)elContext.getELResolver().getValue(elContext, null, "filtroTiposDocumentos");
+                            filtroTiposDocumentos.getDsResultado().actualizarFilaSeleccionada();
+                        }
+
+                        Mensajes.showInfo("Información", "Actualización realizada correctamente!");
+                    }
                 }
-                
-                Mensajes.showInfo("Información", "Alta realizada correctamente!");
-            }
-            
-            //ACTUALIZACION
-            if (this.modoFormulario == ModoFormulario.EDICION) {
-                this.bdTTipodocumento.setCoTipodocumento(this.cCoTipodocumento.getValue());
-                this.bdTTipodocumento.setDsTipodocumento(this.cDsTipodocumento.getValue());
-                this.bdTTipodocumento.setFeAlta(this.cFeAlta.getValue());
-                this.bdTTipodocumento.setFeDesactivo(this.cFeDesactivo.getValue());
-                
-                StTTipodocumento stTTipodocumento = new StTTipodocumento();
-                stTTipodocumento.actualiza(this.bdTTipodocumento, null);
-                
-                if (this.parent instanceof FiltroTiposDocumentos filtroTiposDocumentos) {
-                    ELContext elContext = FacesContext.getCurrentInstance().getELContext();
-                    filtroTiposDocumentos = (FiltroTiposDocumentos)elContext.getELResolver().getValue(elContext, null, "filtroTiposDocumentos");
-                    filtroTiposDocumentos.getDsResultado().actualizarFilaSeleccionada();
+                catch (Exception ex) {
+                    entityManager.getTransaction().rollback();
+                    throw ex;
                 }
-                
-                Mensajes.showInfo("Información", "Actualización realizada correctamente!");
             }
-            
+            // FIN TRANSACCION
             this.setModoFormulario(ModoFormulario.CONSULTA);
         }
         catch (Exception ex) {
@@ -391,53 +462,51 @@ public class EdicionTiposDocumentos implements Serializable {
 
         dsFirmas = new DataSet(sql, parametros, "ID_CONFTIPODOC");
         
-        if (this.getDsFirmas().getRowsCount() > 0) {
-            // Establecer formato de salida
-            RowCabecera cabecera = this.getDsFirmas().getCabecera();
+        // Establecer formato de salida
+        RowCabecera cabecera = this.getDsFirmas().getCabecera();
 
-            cabecera.getColumnName("ID_CONFTIPODOC")
-                    .setVisible(false);
+        cabecera.getColumnName("ID_CONFTIPODOC")
+                .setVisible(false);
 
-            cabecera.getColumnName("ID_TIPODOCUMENTO")
-                    .setVisible(false);
+        cabecera.getColumnName("ID_TIPODOCUMENTO")
+                .setVisible(false);
 
-            cabecera.getColumnName("ID_AUTORIDAD")
-                    .setVisible(false);
+        cabecera.getColumnName("ID_AUTORIDAD")
+                .setVisible(false);
 
-            cabecera.getColumnName("EN_ORDEN")
-                    .setTitle("Órden")
-                    .setWidth("6rem")
-                    .setTipo(ColumnBase.Tipo.LINK)
-                    .setClase(this)
-                    .setMethod(this.getClass().getMethod("verDetalle"))
-                    .setOncomplete("PF('dlgFirmas').show()")
-                    .setUpdate("formulario:panelFirmas,formulario:mensaje");
+        cabecera.getColumnName("EN_ORDEN")
+                .setTitle("Órden")
+                .setWidth("6rem")
+                .setTipo(ColumnBase.Tipo.LINK)
+                .setClase(this)
+                .setMethod(this.getClass().getMethod("verDetalle"))
+                .setOncomplete("PF('dlgFirmas').show()")
+                .setUpdate("formulario:panelFirmas,formulario:mensaje");
 
-            cabecera.getColumnName("DI_TIPOFIRMA")
-                    .setVisible(false);
+        cabecera.getColumnName("DI_TIPOFIRMA")
+                .setVisible(false);
 
-            cabecera.getColumnName("DS_TIPOFIRMA")
-                    .setTitle("Tipo")
-                    .setWidth("6rem");
+        cabecera.getColumnName("DS_TIPOFIRMA")
+                .setTitle("Tipo")
+                .setWidth("6rem");
 
-            cabecera.getColumnName("Autoridad")
-                    .setTitle("Autoridad")
-                    .setWidth("100%");
+        cabecera.getColumnName("Autoridad")
+                .setTitle("Autoridad")
+                .setWidth("100%");
 
-            cabecera.getColumnName("DS_FIRMAPOSX")
-                    .setVisible(false);
+        cabecera.getColumnName("DS_FIRMAPOSX")
+                .setVisible(false);
 
-            cabecera.getColumnName("DS_FIRMAPOSY")
-                    .setVisible(false);
+        cabecera.getColumnName("DS_FIRMAPOSY")
+                .setVisible(false);
 
-            cabecera.getColumnName("FE_ALTA")
-                    .setTitle("F. Alta")
-                    .setWidth("6rem");
+        cabecera.getColumnName("FE_ALTA")
+                .setTitle("F. Alta")
+                .setWidth("6rem");
 
-            cabecera.getColumnName("FE_DESACTIVO")
-                    .setTitle("F. Desactivo")
-                    .setWidth("6rem");
-        }
+        cabecera.getColumnName("FE_DESACTIVO")
+                .setTitle("F. Desactivo")
+                .setWidth("6rem");
     }
      
     public void nuevaFirma() {
@@ -690,11 +759,13 @@ public class EdicionTiposDocumentos implements Serializable {
         else if (enOrden != null && enOrden.compareTo(1) > 0) {
             this.cDiTipoFirma.getOptions().put("CO", "Cofirma");
             this.cDiTipoFirma.getOptions().put("CT", "Contrafirma");
+            this.cDiTipoFirma.setProtegido(!(modoFormulario == ModoFormulario.ALTA || modoFormulario == ModoFormulario.EDICION));
         }
         else {
             this.cDiTipoFirma.getOptions().put("F", "Firma");
             this.cDiTipoFirma.getOptions().put("CO", "Cofirma");
             this.cDiTipoFirma.getOptions().put("CT", "Contrafirma");
+            this.cDiTipoFirma.setProtegido(!(modoFormulario == ModoFormulario.ALTA || modoFormulario == ModoFormulario.EDICION));
         }
     }
 }

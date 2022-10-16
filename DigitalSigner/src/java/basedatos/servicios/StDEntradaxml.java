@@ -36,7 +36,7 @@ public class StDEntradaxml extends StBase {
         parametros.put("TSTBD", filtroBdDEntradaxml.getTstbd());
 
 
-        ArrayList<LinkedHashMap<String,Object>> lista = executeNativeQueryListParametros(filtroBdDEntradaxml.getSelectFiltro(), parametros, em);
+        ArrayList<LinkedHashMap<String,Object>> lista = executeNativeQueryListParametros(filtroBdDEntradaxml.getSelectFiltro(), parametros, em).getResultListMapped();
         if (lista != null && !lista.isEmpty()) {
             return Mapeador.mapea(lista, BdDEntradaxml.class);
         }

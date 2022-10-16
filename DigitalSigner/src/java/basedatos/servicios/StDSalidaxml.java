@@ -37,7 +37,7 @@ public class StDSalidaxml extends StBase {
         parametros.put("TSTBD", filtroBdDSalidaxml.getTstbd());
 
 
-        ArrayList<LinkedHashMap<String,Object>> lista = executeNativeQueryListParametros(filtroBdDSalidaxml.getSelectFiltro(), parametros, em);
+        ArrayList<LinkedHashMap<String,Object>> lista = executeNativeQueryListParametros(filtroBdDSalidaxml.getSelectFiltro(), parametros, em).getResultListMapped();
         if (lista != null && !lista.isEmpty()) {
             return Mapeador.mapea(lista, BdDSalidaxml.class);
         }

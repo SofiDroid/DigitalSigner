@@ -36,7 +36,7 @@ public class StTUnidad extends StBase {
         parametros.put("ID_UNIDADPADRE", filtroBdTUnidad.getIdUnidadpadre());
 
 
-        ArrayList<LinkedHashMap<String,Object>> lista = executeNativeQueryListParametros(filtroBdTUnidad.getSelectFiltro(), parametros, em);
+        ArrayList<LinkedHashMap<String,Object>> lista = executeNativeQueryListParametros(filtroBdTUnidad.getSelectFiltro(), parametros, em).getResultListMapped();
         if (lista != null && !lista.isEmpty()) {
             return Mapeador.mapea(lista, BdTUnidad.class);
         }
