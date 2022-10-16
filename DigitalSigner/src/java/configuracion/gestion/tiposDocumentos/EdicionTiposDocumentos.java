@@ -1,6 +1,7 @@
 package configuracion.gestion.tiposDocumentos;
 
 import basedatos.ColumnBase;
+import basedatos.ColumnCabecera;
 import basedatos.DataSet;
 import basedatos.Row;
 import basedatos.RowCabecera;
@@ -13,8 +14,7 @@ import excepciones.RegistryNotFoundException;
 import excepciones.RequiredFieldException;
 import init.AppInit;
 import java.io.Serializable;
-import java.sql.SQLException;
-import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import javax.el.ELContext;
@@ -45,6 +45,7 @@ public class EdicionTiposDocumentos implements Serializable {
     private CampoWebFecha cFeAlta = null;
     private CampoWebFecha cFeDesactivo = null;
     private DataSet dsFirmas = null;
+    private ArrayList<Integer> listaFirmasEliminadasId = null;
     
     // FIRMAS
     private CampoWebNumero cEnOrden = null;
@@ -93,6 +94,7 @@ public class EdicionTiposDocumentos implements Serializable {
             
             // LISTADO FIRMAS
             this.dsFirmas = new DataSet();
+            this.listaFirmasEliminadasId = new ArrayList<>();
             
             // EDICION DE FIRMA
             this.cEnOrden = new CampoWebNumero();
@@ -142,7 +144,7 @@ public class EdicionTiposDocumentos implements Serializable {
             this.cFeDesactivoFirma.setWidthLabel("100px");
             
             this.setModoFormulario(ModoFormulario.CONSULTA);
-
+            
             if (idTipodocumento != null) {
                 recuperarRegistro(idTipodocumento);
                 inicializarDataSetFirmas(idTipodocumento);
@@ -218,6 +220,14 @@ public class EdicionTiposDocumentos implements Serializable {
                         StTTipodocumento stTTipodocumento = new StTTipodocumento();
                         stTTipodocumento.actualiza(this.bdTTipodocumento, entityManager);
 
+                        for (Integer idConftipodoc : listaFirmasEliminadasId) {
+                            BdAConftipodoc delBdAConftipodoc = new BdAConftipodoc();
+                            delBdAConftipodoc.setIdConftipodoc(idConftipodoc);
+                            
+                            StAConftipodoc stAConftipodoc = new StAConftipodoc();
+                            stAConftipodoc.baja(delBdAConftipodoc, entityManager);
+                        }
+                        
                         if (this.dsFirmas != null) {
                             for (Row itemRow : this.dsFirmas.getRows()) {
                                 if  (itemRow.getColumnName("ID_CONFTIPODOC").getValue() == null) {
@@ -289,15 +299,38 @@ public class EdicionTiposDocumentos implements Serializable {
     
     public void eliminar() {
         try {
-            StTTipodocumento stTTipodocumento = new StTTipodocumento();
-            stTTipodocumento.baja(this.bdTTipodocumento, null);
-            
-            if (this.parent instanceof FiltroTiposDocumentos filtroTiposDocumentos) {
-                filtroTiposDocumentos.getDsResultado().eliminarFilaSeleccionada();
-            }
+            // INICIO TRANSACCION
+            try (EntityManager entityManager = AppInit.getEntityManager())
+            {
+                entityManager.getTransaction().begin();
+                try {
+                    BdAConftipodoc filtroBdAConftipodoc = new BdAConftipodoc();
+                    filtroBdAConftipodoc.setIdTipodocumento(this.bdTTipodocumento.getIdTipodocumento());
+                    StAConftipodoc stAConftipodoc = new StAConftipodoc();
+                    ArrayList<BdAConftipodoc> listaAConftipodoc = stAConftipodoc.filtro(filtroBdAConftipodoc, entityManager);
+                    if (listaAConftipodoc != null && !listaAConftipodoc.isEmpty()) {
+                        for (BdAConftipodoc itemBdAConftipodoc : listaAConftipodoc) {
+                            stAConftipodoc.baja(itemBdAConftipodoc, entityManager);
+                        }
+                    }
+                    
+                    StTTipodocumento stTTipodocumento = new StTTipodocumento();
+                    stTTipodocumento.baja(this.bdTTipodocumento, entityManager);
 
-            Mensajes.showInfo("Información", "Registro eliminado correctamente!");
-            
+                    entityManager.getTransaction().commit();
+                    
+                    if (this.parent instanceof FiltroTiposDocumentos filtroTiposDocumentos) {
+                        filtroTiposDocumentos.getDsResultado().eliminarFilaSeleccionada();
+                    }
+
+                    Mensajes.showInfo("Información", "Registro eliminado correctamente!");
+                }
+                catch (Exception ex) {
+                    entityManager.getTransaction().rollback();
+                    throw ex;
+                }
+            }
+            // FIN TRANSACCION
             this.setModoFormulario(ModoFormulario.ELIMINADO);
         }
         catch (Exception ex) {
@@ -507,8 +540,20 @@ public class EdicionTiposDocumentos implements Serializable {
         cabecera.getColumnName("FE_DESACTIVO")
                 .setTitle("F. Desactivo")
                 .setWidth("6rem");
+        
+        this.dsFirmas.newColumn("btnEliminar");
+        cabecera.getColumnName("btnEliminar")
+                .setTitle("Eliminar")
+                .setAlign(ColumnCabecera.ALIGN.CENTER)
+                .setWidth("10em")
+                .setTipo(ColumnBase.Tipo.BOTON_EDICION)
+                .setClase(this)
+                .setIcon("pi pi-times-circle")
+                .setStyleClass("ui-button-danger")
+                .setMethod(this.getClass().getMethod("eliminarFirma"))
+                .setUpdate("formulario:panelFirmas,formulario:mensaje");
     }
-     
+    
     public void nuevaFirma() {
         try {
             this.cEnOrden.setValueInteger(this.dsFirmas.getRowsCount() + 1);
@@ -573,9 +618,22 @@ public class EdicionTiposDocumentos implements Serializable {
     
     public void eliminarFirma() {
         try {
-            //Eliminar firma
-            //Actualizar posiciones y ditipofirma del resto de registros
-            //Actualizar grid entero
+            Integer idConftipodoc = this.dsFirmas.getSelectedRow().getColumnaID().getValueInteger();
+            if (idConftipodoc != null) {
+                listaFirmasEliminadasId.add(this.dsFirmas.getSelectedRow().getColumnaID().getValueInteger());
+            }
+            this.dsFirmas.getRows().remove(this.dsFirmas.getSelectedRow());
+            if (this.dsFirmas != null) {
+                for (int i = 0; i < this.dsFirmas.getRowsCount(); i++) {
+                    Row itemRow = this.dsFirmas.getRows().get(i);
+                    if (i == 0) {
+                        itemRow.getColumnName("DI_TIPOFIRMA").setValueString("F");
+                        itemRow.getColumnName("DS_TIPOFIRMA").setValue(this.cDiTipoFirma.getOptions().get("F"));
+                    }
+                    itemRow.setIndex(i);
+                    itemRow.getColumnName("EN_ORDEN").setValue((i+1));
+                }
+            }
         } catch (Exception ex) {
             Mensajes.showException(this.getClass(), ex);
         }
@@ -652,6 +710,9 @@ public class EdicionTiposDocumentos implements Serializable {
 
     public void setModoFormulario(ModoFormulario modoFormulario) throws Exception {
         this.modoFormulario = modoFormulario;
+        if (this.dsFirmas != null) {
+            this.dsFirmas.setModoFormulario(modoFormulario);
+        }
         protegerCampos();
     }
 

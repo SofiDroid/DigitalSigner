@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import tomcat.persistence.ResultData;
+import utilidades.ModoFormulario;
 
 /**
  *
@@ -27,6 +28,7 @@ public final class DataSet extends StBase {
     protected String rowSelectUpdate = "@widgetVar(mensaje)";
     protected String rowSelectColumnaID = null;
     protected Integer rowsPerPage = 20;
+    protected ModoFormulario modoFormulario = ModoFormulario.CONSULTA;
 
     public DataSet() {
     
@@ -295,5 +297,13 @@ public final class DataSet extends StBase {
 
     public void setRowsPerPage(Integer rowsPerPage) {
         this.rowsPerPage = rowsPerPage;
+    }
+
+    public ModoFormulario getModoFormulario() {
+        return modoFormulario;
+    }
+
+    public void setModoFormulario(ModoFormulario modoFormulario) {
+        this.modoFormulario = modoFormulario;
     }
 }

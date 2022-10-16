@@ -40,12 +40,30 @@
                             <f:setPropertyActionListener target="#{cc.attrs.dataSet.selectedRow}" value="#{itemRow}" />
                         </p:commandLink>
                     </p:outputPanel>
-                    <p:outputPanel rendered="#{itemColumn.tipo eq 'MEDIA'}">
-                        <p:commandButton                                 title="#{itemRow.getColumnName(itemColumn.name).tooltip}"
+                    <p:outputPanel rendered="#{itemColumn.tipo eq 'BOTON_EDICION'}">
+                        <p:commandButton title="#{itemRow.getColumnName(itemColumn.name).tooltip}"
                                 value="#{itemRow.getColumnName(itemColumn.name)[itemColumn.valueString]}"
-                                action="#{itemColumn.ejecutarMetodo}"
+                                action="#{itemColumn.ejecutarMetodo}" style="height: 1.5rem;width: 1.5rem;margin-left: 0.25rem;"
+                                update="#{itemColumn.update}" rendered="#{cc.attrs.dataSet.modoFormulario eq 'EDICION' or cc.attrs.dataSet.modoFormulario eq 'ALTA'}"
+                                icon="#{itemColumn.icon}" styleClass="#{itemColumn.styleClass}">
+                            <f:setPropertyActionListener target="#{cc.attrs.dataSet.selectedRow}" value="#{itemRow}" />
+                        </p:commandButton>
+                    </p:outputPanel>
+                    <p:outputPanel rendered="#{itemColumn.tipo eq 'BOTON'}">
+                        <p:commandButton title="#{itemRow.getColumnName(itemColumn.name).tooltip}"
+                                value="#{itemRow.getColumnName(itemColumn.name)[itemColumn.valueString]}"
+                                action="#{itemColumn.ejecutarMetodo}" style="height: 1.5rem;width: 1.5rem;margin-left: 0.25rem;"
+                                update="#{itemColumn.update}" rendered="#{itemColumn.rendered}"
+                                icon="#{itemColumn.icon}" styleClass="#{itemColumn.styleClass}">
+                            <f:setPropertyActionListener target="#{cc.attrs.dataSet.selectedRow}" value="#{itemRow}" />
+                        </p:commandButton>
+                    </p:outputPanel>
+                    <p:outputPanel rendered="#{itemColumn.tipo eq 'MEDIA'}">
+                        <p:commandButton title="#{itemRow.getColumnName(itemColumn.name).tooltip}"
+                                value="#{itemRow.getColumnName(itemColumn.name)[itemColumn.valueString]}"
+                                action="#{itemColumn.ejecutarMetodo}" style="height: 1.5rem;width: 1.5rem;margin-left: 0.25rem;"
                                 update="@widgetVar(#{cc.attrs.id}_visorMedia),#{itemColumn.update}" oncomplete="PF('#{cc.attrs.id}_visorMedia').show()"
-                                icon="pi pi-file-pdf" styleClass="button-inline">
+                                icon="#{itemColumn.icon}" styleClass="#{itemColumn.styleClass}">
                             <f:setPropertyActionListener target="#{cc.attrs.dataSet.selectedRow}" value="#{itemRow}" />
                         </p:commandButton>
                     </p:outputPanel>

@@ -12,6 +12,7 @@ public class ColumnBase {
         TEXTO,
         LINK,
         BOTON,
+        BOTON_EDICION,
         IMAGEN,
         CHECKBOX,
         MEDIA
@@ -26,6 +27,9 @@ public class ColumnBase {
     protected String update = "@widgetVar(mensaje)";
     protected String tooltip = "";
     protected String oncomplete = "";
+    protected String icon = "pi pi-file-pdf";
+    protected String styleClass = "button-inline";
+    protected boolean rendered = true;
     
     public ColumnBase(RowBase parent) {
         this.parent = parent;
@@ -104,4 +108,39 @@ public class ColumnBase {
         this.tooltip = tooltip;
         return this;
     }
+
+    public RowBase getParent() {
+        return parent;
+    }
+
+    public void setParent(RowBase parent) {
+        this.parent = parent;
+    }
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public ColumnBase setIcon(String icon) {
+        this.icon = icon;
+        return this;
+    }
+
+    public String getStyleClass() {
+        return styleClass;
+    }
+
+    public ColumnBase setStyleClass(String styleClass) {
+        this.styleClass = styleClass;
+        return this;
+    }
+
+    public boolean getRendered() {
+        return rendered;
+    }
+
+    public ColumnBase setRendered(boolean rendered) {
+        this.rendered = rendered;
+        return this;
+    }    
 }
