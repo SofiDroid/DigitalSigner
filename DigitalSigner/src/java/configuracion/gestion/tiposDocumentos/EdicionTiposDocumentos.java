@@ -12,6 +12,7 @@ import excepciones.FormModeException;
 import excepciones.RegistryNotFoundException;
 import excepciones.RequiredFieldException;
 import java.io.Serializable;
+import java.sql.SQLException;
 import java.util.HashMap;
 import javax.el.ELContext;
 import javax.faces.context.FacesContext;
@@ -140,9 +141,11 @@ public class EdicionTiposDocumentos implements Serializable {
 
             if (idTipodocumento != null) {
                 recuperarRegistro(idTipodocumento);
+                inicializarDataSetFirmas(idTipodocumento);
             }
             else {
                 this.setModoFormulario(ModoFormulario.ALTA);
+                inicializarDataSetFirmas(null);
             }
         }
         catch (Exception ex) {
@@ -276,6 +279,24 @@ public class EdicionTiposDocumentos implements Serializable {
     
     private void validarCamposFirma() throws RequiredFieldException {
         //VALIDAR CAMPOS DE LA FIRMA
+        if (Validation.isNullOrEmpty(this.cEnOrden.getValue())) {
+            throw new RequiredFieldException(this.cEnOrden.getLabel());
+        }
+        if (Validation.isNullOrEmpty(this.cDiTipoFirma.getValue())) {
+            throw new RequiredFieldException(this.cDiTipoFirma.getLabel());
+        }
+        if (Validation.isNullOrEmpty(this.cAutoridad.getValue())) {
+            throw new RequiredFieldException(this.cAutoridad.getLabel());
+        }
+        if (Validation.isNullOrEmpty(this.cDsFirmaPosX.getValue())) {
+            throw new RequiredFieldException(this.cDsFirmaPosX.getLabel());
+        }
+        if (Validation.isNullOrEmpty(this.cDsFirmaPosY.getValue())) {
+            throw new RequiredFieldException(this.cDsFirmaPosY.getLabel());
+        }
+        if (Validation.isNullOrEmpty(this.cFeAltaFirma.getValue())) {
+            throw new RequiredFieldException(this.cFeAltaFirma.getLabel());
+        }
     }
     
     private void protegerCampos() throws Exception {
@@ -313,12 +334,12 @@ public class EdicionTiposDocumentos implements Serializable {
                 this.cFeAlta.setProtegido(false);
                 this.cFeDesactivo.setProtegido(false);
                 
-                this.cDiTipoFirma.setProtegido(true);
-                this.cAutoridad.setProtegido(true);
-                this.cDsFirmaPosX.setProtegido(true);
-                this.cDsFirmaPosY.setProtegido(true);
-                this.cFeAltaFirma.setProtegido(true);
-                this.cFeDesactivoFirma.setProtegido(true);
+                this.cDiTipoFirma.setProtegido(false);
+                this.cAutoridad.setProtegido(false);
+                this.cDsFirmaPosX.setProtegido(false);
+                this.cDsFirmaPosY.setProtegido(false);
+                this.cFeAltaFirma.setProtegido(false);
+                this.cFeDesactivoFirma.setProtegido(false);
             }
             default -> throw new FormModeException();
         }
@@ -335,39 +356,41 @@ public class EdicionTiposDocumentos implements Serializable {
         cDsTipodocumento.setValue(this.bdTTipodocumento.getDsTipodocumento());
         cFeAlta.setValue(this.bdTTipodocumento.getFeAlta());
         cFeDesactivo.setValue(this.bdTTipodocumento.getFeDesactivo());
-        
+    }
+
+    private void inicializarDataSetFirmas(Integer idTipodocumento) throws Exception {
         String sql = """
-                    SELECT 
-                        T1.ID_CONFTIPODOC, 
-                        T1.ID_TIPODOCUMENTO,
-                        T1.ID_AUTORIDAD,
-                        T1.EN_ORDEN,
-                        T1.DI_TIPOFIRMA, 
-                        (CASE
-                            WHEN T1.DI_TIPOFIRMA = 'F' THEN 'Firma'
-                            WHEN T1.DI_TIPOFIRMA = 'CO' THEN 'Cofirma'
-                            WHEN T1.DI_TIPOFIRMA = 'CT' THEN 'Contrafirma'
-                            ELSE 'Desconocido'
-                        END) as DS_TIPOFIRMA,
-                        T1.DS_FIRMAPOSX, 
-                        T1.DS_FIRMAPOSY, 
-                        aut.CO_AUTORIDAD + ' - ' + aut.DS_AUTORIDAD as Autoridad,
-                        T1.FE_ALTA, 
-                        T1.FE_DESACTIVO
-                    FROM 
-                        BD_A_CONFTIPODOC T1
-                    INNER JOIN
-                        BD_T_AUTORIDAD aut ON (aut.ID_AUTORIDAD = T1.ID_AUTORIDAD)
-                    WHERE 1 = 1
-                    AND T1.ID_TIPODOCUMENTO = :ID_TIPODOCUMENTO
-                    ORDER BY
-                        T1.EN_ORDEN ASC
-                    """;
+            SELECT 
+                T1.ID_CONFTIPODOC, 
+                T1.ID_TIPODOCUMENTO,
+                T1.ID_AUTORIDAD,
+                T1.EN_ORDEN,
+                T1.DI_TIPOFIRMA, 
+                (CASE
+                    WHEN T1.DI_TIPOFIRMA = 'F' THEN 'Firma'
+                    WHEN T1.DI_TIPOFIRMA = 'CO' THEN 'Cofirma'
+                    WHEN T1.DI_TIPOFIRMA = 'CT' THEN 'Contrafirma'
+                    ELSE 'Desconocido'
+                END) as DS_TIPOFIRMA,
+                T1.DS_FIRMAPOSX, 
+                T1.DS_FIRMAPOSY, 
+                aut.CO_AUTORIDAD + ' - ' + aut.DS_AUTORIDAD as Autoridad,
+                T1.FE_ALTA, 
+                T1.FE_DESACTIVO
+            FROM 
+                BD_A_CONFTIPODOC T1
+            INNER JOIN
+                BD_T_AUTORIDAD aut ON (aut.ID_AUTORIDAD = T1.ID_AUTORIDAD)
+            WHERE 1 = 1
+            AND T1.ID_TIPODOCUMENTO = :ID_TIPODOCUMENTO
+            ORDER BY
+                T1.EN_ORDEN ASC
+            """;
         HashMap<String, Object> parametros = new HashMap<>();
         parametros.put("ID_TIPODOCUMENTO", idTipodocumento);
-        
-        dsFirmas = new DataSet(sql, parametros, "ID_CONFTIPODOC");
 
+        dsFirmas = new DataSet(sql, parametros, "ID_CONFTIPODOC");
+        
         if (this.getDsFirmas().getRowsCount() > 0) {
             // Establecer formato de salida
             RowCabecera cabecera = this.getDsFirmas().getCabecera();
@@ -416,12 +439,12 @@ public class EdicionTiposDocumentos implements Serializable {
                     .setWidth("6rem");
         }
     }
-
+     
     public void nuevaFirma() {
         try {
             this.cEnOrden.setValueInteger(this.dsFirmas.getRowsCount() + 1);
             opcionesDiTipoFirma(this.cEnOrden.getValueInteger());
-            this.cDiTipoFirma.setValue(null);
+            //this.cDiTipoFirma.setValue(null);
             this.cAutoridad.setId(null);
             this.cDsFirmaPosX.setValueInteger(null);
             this.cDsFirmaPosY.setValueInteger(null);
@@ -439,9 +462,39 @@ public class EdicionTiposDocumentos implements Serializable {
             // VALIDAR CAMPOS FIRMA
             validarCamposFirma();
             
-            //ACTUALIZAR O GRABAR DATOS
-            
-            //Actualizar fila del grid
+            //ACTUALIZAR O GRABAR DATOS EN EL GRID (EN MEMORIA)
+            if (this.cEnOrden.getValueInteger().compareTo(this.dsFirmas.getRowsCount()) > 0)
+            {
+                //ALTA
+                Row newRow = this.dsFirmas.newRow();
+                newRow.getColumnName("ID_CONFTIPODOC").setValue(null);
+                newRow.getColumnName("ID_TIPODOCUMENTO").setValue(null);
+                newRow.getColumnName("ID_AUTORIDAD").setValue(this.cAutoridad.getId());
+                newRow.getColumnName("EN_ORDEN").setValue(this.cEnOrden.getValueInteger());
+                newRow.getColumnName("DI_TIPOFIRMA").setValue(this.cDiTipoFirma.getValue());
+                newRow.getColumnName("DS_TIPOFIRMA").setValue(this.cDiTipoFirma.getOptions().get(this.cDiTipoFirma.getValue().toString()));
+                newRow.getColumnName("Autoridad").setValue(this.cAutoridad.getValue().getLabel());
+                newRow.getColumnName("DS_FIRMAPOSX").setValue(this.cDsFirmaPosX.getValueInteger());
+                newRow.getColumnName("DS_FIRMAPOSY").setValue(this.cDsFirmaPosY.getValueInteger());
+                newRow.getColumnName("FE_ALTA").setValue(this.cFeAltaFirma.getValue());
+                newRow.getColumnName("FE_DESACTIVO").setValue(this.cFeDesactivoFirma.getValue());
+                
+                this.dsFirmas.getRows().add(newRow);
+            }
+            else {
+                //MODIFICACION
+                Row editRow = this.dsFirmas.getSelectedRow();
+
+                editRow.getColumnName("ID_AUTORIDAD").setValue(this.cAutoridad.getId());
+                editRow.getColumnName("EN_ORDEN").setValue(this.cEnOrden.getValueInteger());
+                editRow.getColumnName("DI_TIPOFIRMA").setValue(this.cDiTipoFirma.getValue());
+                editRow.getColumnName("DS_TIPOFIRMA").setValue(this.cDiTipoFirma.getOptions().get(this.cDiTipoFirma.getValue().toString()));
+                editRow.getColumnName("Autoridad").setValue(this.cAutoridad.getValue().getLabel());
+                editRow.getColumnName("DS_FIRMAPOSX").setValue(this.cDsFirmaPosX.getValueInteger());
+                editRow.getColumnName("DS_FIRMAPOSY").setValue(this.cDsFirmaPosY.getValueInteger());
+                editRow.getColumnName("FE_ALTA").setValue(this.cFeAltaFirma.getValue());
+                editRow.getColumnName("FE_DESACTIVO").setValue(this.cFeDesactivoFirma.getValue());
+            }
             
             camposFirmaRequeridos(false);
         } catch (Exception ex) {
@@ -617,7 +670,9 @@ public class EdicionTiposDocumentos implements Serializable {
     private void camposFirmaCargar(Row selectedRow) throws Exception {
         this.cEnOrden.setValueInteger(selectedRow.getColumnName("EN_ORDEN").getValueInteger());
         opcionesDiTipoFirma(this.cEnOrden.getValueInteger());
-        this.cDiTipoFirma.setValue(selectedRow.getColumnName("DI_TIPOFIRMA").getValueString());
+        if (selectedRow.getColumnName("DI_TIPOFIRMA").getValue() != null) {
+            this.cDiTipoFirma.setValue(selectedRow.getColumnName("DI_TIPOFIRMA").getValueString());
+        }
         this.cAutoridad.setId(selectedRow.getColumnName("ID_AUTORIDAD").getValueInteger());
         this.cDsFirmaPosX.setValueInteger(selectedRow.getColumnName("DS_FIRMAPOSX").getValueInteger());
         this.cDsFirmaPosY.setValueInteger(selectedRow.getColumnName("DS_FIRMAPOSY").getValueInteger());

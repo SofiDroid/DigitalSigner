@@ -1,5 +1,6 @@
 package basedatos;
 
+import excepciones.NoDataHeaderException;
 import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -130,6 +131,25 @@ public final class DataSet extends StBase {
         if (nuevaFila) {
             this.rows.add(fila);
         }
+    }
+    
+    public Row newRow() throws NoDataHeaderException {
+        if (this.getCabecera().getColumns().isEmpty()) {
+            throw new NoDataHeaderException();
+        }
+        Row fila = new Row(this);
+        fila.index = this.getRowsCount() + 1;
+        int c = 0;
+        for (ColumnBase itemColumnCab : this.getCabecera().getColumns()) {
+            Column columna = new Column(fila);
+            columna.setCabecera((ColumnCabecera)itemColumnCab);
+            columna.index = c++;
+            columna.name = itemColumnCab.getName();
+            columna.value = null;
+            fila.getColumns().add(columna);
+        }
+        
+       return fila;
     }
     
     public void clear() {
