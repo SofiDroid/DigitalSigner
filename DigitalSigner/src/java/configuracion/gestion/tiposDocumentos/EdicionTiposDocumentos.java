@@ -357,6 +357,7 @@ public class EdicionTiposDocumentos implements Serializable {
         try {
             if (this.modoFormulario == ModoFormulario.EDICION) {
                 recuperarRegistro(this.bdTTipodocumento.getIdTipodocumento());
+                inicializarDataSetFirmas(this.bdTTipodocumento.getIdTipodocumento());
                 this.setModoFormulario(ModoFormulario.CONSULTA);
             }
             else {
@@ -628,7 +629,7 @@ public class EdicionTiposDocumentos implements Serializable {
                     Row itemRow = this.dsFirmas.getRows().get(i);
                     if (i == 0) {
                         itemRow.getColumnName("DI_TIPOFIRMA").setValueString("F");
-                        itemRow.getColumnName("DS_TIPOFIRMA").setValue(this.cDiTipoFirma.getOptions().get("F"));
+                        itemRow.getColumnName("DS_TIPOFIRMA").setValue("Firma");
                     }
                     itemRow.setIndex(i);
                     itemRow.getColumnName("EN_ORDEN").setValue((i+1));
