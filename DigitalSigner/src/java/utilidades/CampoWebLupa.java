@@ -24,6 +24,7 @@ public class CampoWebLupa extends CampoWeb {
     private String columnaID;
     private String update;
     private AutocompleteItem selectedItem;
+    private final ArrayList<String> listaNotIN;
     
     public CampoWebLupa() {
         super(Tipo.Lupa);
@@ -33,6 +34,7 @@ public class CampoWebLupa extends CampoWeb {
         this.maxResults = 5;
         this.moreText = "mas resultados disponibles";
         this.selectedItem = null;
+        this.listaNotIN = new ArrayList<>();
         this.dataSet = new DataSet();
     }
     
@@ -67,6 +69,13 @@ public class CampoWebLupa extends CampoWeb {
     public void buscar() {
         try {
             this.dataSet = new DataSet(consulta, columnaID);
+            if (this.dataSet.getRows() != null) {
+                for(Row itemRow : this.dataSet.getRows()) {
+                    if (this.listaNotIN.contains(itemRow.getColumnName(this.columnaID).getValueString())) {
+                        this.dataSet.getRows().remove(itemRow);
+                    }
+                }
+            }
             this.getDataSet().getCabecera().getColumnName(columnaID).setVisible(false);
         } catch (SQLException ex) {
             Logger.getLogger(CampoWebLupa.class).error(ex.getMessage(), ex);
@@ -129,7 +138,9 @@ public class CampoWebLupa extends CampoWeb {
         ArrayList<AutocompleteItem> resultado = new ArrayList<>();
         if (this.dataSet.getRows() != null) {
             for(Row itemRow : this.dataSet.getRows()) {
-                resultado.add(new AutocompleteItem(itemRow.getColumnName(this.columnaID).getValueInteger(), itemRow.getColumnName(this.columnaLabel).getValueString()));
+                if (!this.listaNotIN.contains(itemRow.getColumnName(this.columnaID).getValueString())) {
+                    resultado.add(new AutocompleteItem(itemRow.getColumnName(this.columnaID).getValueInteger(), itemRow.getColumnName(this.columnaLabel).getValueString()));
+                }
             }
         }
         return resultado;
@@ -210,5 +221,39 @@ public class CampoWebLupa extends CampoWeb {
 
     public void setUpdate(String update) {
         this.update = update;
+    }
+
+    public AutocompleteItem getSelectedItem() {
+        return selectedItem;
+    }
+
+    public void setSelectedItem(AutocompleteItem selectedItem) {
+        this.selectedItem = selectedItem;
+    }
+
+    public String getListaNotIN() {
+        String resul = "";
+        for (String item : listaNotIN) {
+            if (!resul.isBlank()) {
+                resul += ",";
+            }
+            resul += "'" + item + "'";
+        }
+        return resul;
+    }
+    public void setListaNotIN_Clear() {
+        this.listaNotIN.clear();
+    }
+    
+    public void setListaNotIN_Add(String value) {
+        if (value != null && !this.listaNotIN.contains(value)) {
+            this.listaNotIN.add(value);
+        }
+    }
+    
+    public void setListaNotIN_Remove(String value) {
+        if (value != null && this.listaNotIN.contains(value)) {
+            this.listaNotIN.remove(value);
+        }
     }
 }

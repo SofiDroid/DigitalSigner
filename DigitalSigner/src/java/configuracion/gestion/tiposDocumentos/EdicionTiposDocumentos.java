@@ -351,6 +351,14 @@ public class EdicionTiposDocumentos implements Serializable {
         this.cDsFirmaPosY.setValueInteger(null);
         this.cFeAltaFirma.setValue(null);
         this.cFeDesactivoFirma.setValue(null);
+        
+        listaFirmasEliminadasId.clear();
+        if (this.dsFirmas != null) {
+            for (Row itemRow : this.dsFirmas.getRows()) {
+                listaFirmasEliminadasId.add(itemRow.getColumnaID().getValueInteger());
+            }
+            this.dsFirmas.clear();
+        }
     }
     
     public String volver() {

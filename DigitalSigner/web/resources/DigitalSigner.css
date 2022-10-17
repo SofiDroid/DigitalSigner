@@ -154,6 +154,11 @@ body .ui-panelgrid .ui-panelgrid-cell{
     border: none;
 }
 
+body .letrasBlancasNegrita .ui-panelgrid-cell {
+    color: whitesmoke;
+    font-weight: bold;
+}
+
 .col{
     flex-grow:1;
     flex-basis:0;
