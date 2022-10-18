@@ -1,0 +1,10 @@
+<endpoints 
+    xmlns="http://java.sun.com/xml/ns/jax-ws/ri/runtime"
+    version="2.0">
+    
+    <endpoint 
+        name="NotificationReceiver" 
+        implementation="jax.ws.services.interfaces.NotificationReceiverImpl" 
+        url-pattern="/NotificationReceiver"/>
+    
+</endpoints>
