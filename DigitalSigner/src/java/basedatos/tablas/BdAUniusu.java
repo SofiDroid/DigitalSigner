@@ -118,7 +118,7 @@ public class BdAUniusu extends OperacionSQL implements InterfazDAO {
         }
         sb_sql.append(" WHERE ");
         sb_sql.append("ID_UNIDAD = ").append(":ID_UNIDAD");
-        sb_sql.append("AND ID_USUARIO = ").append(":ID_USUARIO");
+        sb_sql.append(" AND ID_USUARIO = ").append(":ID_USUARIO");
         
         return sb_sql.toString();
     }
@@ -128,7 +128,7 @@ public class BdAUniusu extends OperacionSQL implements InterfazDAO {
         StringBuilder sb_sql = new StringBuilder("DELETE BD_A_UNIUSU ");
         sb_sql.append(" WHERE ");
         sb_sql.append("ID_UNIDAD = ").append(":ID_UNIDAD");
-        sb_sql.append("AND ID_USUARIO = ").append(":ID_USUARIO");
+        sb_sql.append(" AND ID_USUARIO = ").append(":ID_USUARIO");
         
         return sb_sql.toString();
     }

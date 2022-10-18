@@ -20,6 +20,7 @@ import java.util.HashMap;
 import javax.el.ELContext;
 import javax.faces.context.FacesContext;
 import tomcat.persistence.EntityManager;
+import tomcat.persistence.exceptions.SQLReferenceException;
 import utilidades.CampoWebCodigo;
 import utilidades.CampoWebDescripcion;
 import utilidades.CampoWebFecha;
@@ -295,7 +296,7 @@ public class EdicionAutoridades implements Serializable {
 
                                 StAAutusu stAAutusu = new StAAutusu();
                                 ArrayList<BdAAutusu> listaBdAAutusu = stAAutusu.filtro(newBdAAutusu, entityManager);
-                                if (listaBdAAutusu == null || !listaBdAAutusu.isEmpty()) {
+                                if (listaBdAAutusu == null || listaBdAAutusu.isEmpty()) {
                                     newBdAAutusu.setFeAlta((Date)itemRow.getColumnName("FE_ALTA").getValue());
                                     newBdAAutusu.setFeDesactivo((Date)itemRow.getColumnName("FE_DESACTIVO").getValue());
 
@@ -355,7 +356,7 @@ public class EdicionAutoridades implements Serializable {
                     }
 
                     StTAutoridad stTAutoridad = new StTAutoridad();
-                    stTAutoridad.baja(this.bdTAutoridad, null);
+                    stTAutoridad.baja(this.bdTAutoridad, entityManager);
 
                     entityManager.getTransaction().commit();
                     
@@ -364,6 +365,11 @@ public class EdicionAutoridades implements Serializable {
                     }
 
                     Mensajes.showInfo("Información", "Registro eliminado correctamente!");
+                }
+                catch (SQLReferenceException rex) {
+                    entityManager.getTransaction().rollback();
+                    Mensajes.showWarn("No se pudo eliminar", "El registro está siendo utilizado en otro apartado del programa. Elimine toda relación con este registro para poder eliminarlo.");
+                    return;
                 }
                 catch (Exception ex) {
                     entityManager.getTransaction().rollback();

@@ -128,7 +128,7 @@ public class BdAUsutipousu extends OperacionSQL implements InterfazDAO {
         StringBuilder sb_sql = new StringBuilder("DELETE BD_A_USUTIPOUSU ");
         sb_sql.append(" WHERE ");
         sb_sql.append("ID_USUARIO = ").append(":ID_USUARIO");
-        sb_sql.append("AND ID_TIPOUSUARIO = ").append(":ID_TIPOUSUARIO");
+        sb_sql.append(" AND ID_TIPOUSUARIO = ").append(":ID_TIPOUSUARIO");
         
         return sb_sql.toString();
     }

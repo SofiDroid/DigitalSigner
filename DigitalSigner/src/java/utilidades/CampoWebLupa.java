@@ -57,6 +57,9 @@ public class CampoWebLupa extends CampoWeb {
     public List<AutocompleteItem> completeText(String filterText) {
         try {
             String sql = "SELECT * FROM (" + this.consulta + ") TDS WHERE UPPER(TDS." + this.columnaLabel + ") LIKE UPPER('%" + filterText + "%')";
+            if (!this.listaNotIN.isEmpty()) {
+                sql = sql + " AND TDS." + this.columnaID + " NOT IN (" + getListaNotIN() + ") ";
+            }
             this.dataSet = new DataSet(sql, columnaID);
             return getListaAutocomplete();
         } catch (SQLException ex) {
@@ -68,14 +71,8 @@ public class CampoWebLupa extends CampoWeb {
     
     public void buscar() {
         try {
-            this.dataSet = new DataSet(consulta, columnaID);
-            if (this.dataSet.getRows() != null) {
-                for(Row itemRow : this.dataSet.getRows()) {
-                    if (this.listaNotIN.contains(itemRow.getColumnName(this.columnaID).getValueString())) {
-                        this.dataSet.getRows().remove(itemRow);
-                    }
-                }
-            }
+            String sql = "SELECT * FROM (" + this.consulta + ") TDS " + (!this.listaNotIN.isEmpty() ? " WHERE TDS." + this.columnaID + " NOT IN (" + getListaNotIN() + ") " : "");
+            this.dataSet = new DataSet(sql, columnaID);
             this.getDataSet().getCabecera().getColumnName(columnaID).setVisible(false);
         } catch (SQLException ex) {
             Logger.getLogger(CampoWebLupa.class).error(ex.getMessage(), ex);
@@ -138,9 +135,7 @@ public class CampoWebLupa extends CampoWeb {
         ArrayList<AutocompleteItem> resultado = new ArrayList<>();
         if (this.dataSet.getRows() != null) {
             for(Row itemRow : this.dataSet.getRows()) {
-                if (!this.listaNotIN.contains(itemRow.getColumnName(this.columnaID).getValueString())) {
-                    resultado.add(new AutocompleteItem(itemRow.getColumnName(this.columnaID).getValueInteger(), itemRow.getColumnName(this.columnaLabel).getValueString()));
-                }
+                resultado.add(new AutocompleteItem(itemRow.getColumnName(this.columnaID).getValueInteger(), itemRow.getColumnName(this.columnaLabel).getValueString()));
             }
         }
         return resultado;
