@@ -5,6 +5,7 @@
       <implementation-class>jax.ws.services.interfaces.DocumentServiceImpl</implementation-class>
     </service>
   </services>
-  <clients/>
+  <clients>
+  </clients>
   <jsr109>true</jsr109>
 </jax-ws>

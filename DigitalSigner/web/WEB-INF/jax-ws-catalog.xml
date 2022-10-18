@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog" prefer="system">
+    <system systemId="http://localhost:92/DigitalSignerNotificaciones/NotificationReceiver?WSDL" uri="wsdl/localhost_92/DigitalSignerNotificaciones/NotificationReceiver.wsdl"/>
+    <system systemId="http://localhost:92/DigitalSignerNotificaciones/NotificationReceiver?xsd=1" uri="wsdl/localhost_92/DigitalSignerNotificaciones/NotificationReceiver.xsd_1.xsd"/>
+</catalog>
