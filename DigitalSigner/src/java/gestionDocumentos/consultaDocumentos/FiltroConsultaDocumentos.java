@@ -255,10 +255,8 @@ public class FiltroConsultaDocumentos implements Serializable {
 
             this.dsResultado = new DataSet(sql, "ID_DOCUMENTO");
 
-            if (this.getDsResultado().getRowsCount() > 0) {
-                // Establecer formato de salida
-                formateaResultado();
-            }
+            // Establecer formato de salida
+            formateaResultado();
         } catch (NoSuchMethodException | SecurityException | SQLException ex) {
             LOG.error(ex.getMessage(), ex);
             Mensajes.showError("Error al buscar", ex.getMessage());

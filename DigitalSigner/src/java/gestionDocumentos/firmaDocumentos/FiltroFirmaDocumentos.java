@@ -1,6 +1,7 @@
 package gestionDocumentos.firmaDocumentos;
 
 import basedatos.ColumnBase;
+import basedatos.ColumnCabecera;
 import basedatos.DataSet;
 import basedatos.Row;
 import basedatos.RowCabecera;
@@ -38,7 +39,6 @@ public class FiltroFirmaDocumentos implements Serializable {
     private CampoWebFechaRango cFeAlta = null;
     private CampoWebFechaRango cFeDesactivo = null;
     private CampoWebLupa cTipodocumento = null;
-    private CampoWebLupa cSituaciondoc = null;
     private CampoWebLupa cAutoridad = null;
     private boolean filtroVisible = true;
     private DataSet dsResultado = null;
@@ -72,17 +72,9 @@ public class FiltroFirmaDocumentos implements Serializable {
         this.cTipodocumento.setColumnaID("ID_TIPODOCUMENTO");
         this.cTipodocumento.setColumnaLabel("Tipo");
         
-        this.cSituaciondoc = new CampoWebLupa();
-        this.cSituaciondoc.setLabel(Msg.getString("lbl_FiltroFirmaDocumentos_SituacionDoc"));
-        this.cSituaciondoc.setWidthLabel("100px");
-        sql = "SELECT ID_SITUACIONDOC, CO_SITUACIONDOC + ' - ' + DS_SITUACIONDOC as Situación FROM BD_T_SITUACIONDOC";
-        this.cSituaciondoc.setConsulta(sql);
-        this.cSituaciondoc.setColumnaID("ID_SITUACIONDOC");
-        this.cSituaciondoc.setColumnaLabel("Situación");
-        
         this.cAutoridad = new CampoWebLupa();
         this.cAutoridad.setLabel(Msg.getString("lbl_FiltroFirmaDocumentos_Autoridad"));
-        this.cAutoridad.setWidthLabel("70px");
+        this.cAutoridad.setWidthLabel("100px");
         sql = """
               SELECT 
                   aut.ID_AUTORIDAD, 
@@ -146,14 +138,6 @@ public class FiltroFirmaDocumentos implements Serializable {
         this.cTipodocumento = cTipodocumento;
     }
 
-    public CampoWebLupa getcSituaciondoc() {
-        return cSituaciondoc;
-    }
-
-    public void setcSituaciondoc(CampoWebLupa cSituaciondoc) {
-        this.cSituaciondoc = cSituaciondoc;
-    }
-
     public CampoWebLupa getcAutoridad() {
         return cAutoridad;
     }
@@ -195,7 +179,6 @@ public class FiltroFirmaDocumentos implements Serializable {
             cFeDesactivo.setValueIni(null);
             cFeDesactivo.setValueFin(null);
             cTipodocumento.setValue(null);
-            cSituaciondoc.setValue(null);
             cAutoridad.setValue(null);
             
             this.dsResultado.clear();
@@ -231,7 +214,12 @@ public class FiltroFirmaDocumentos implements Serializable {
                              aut.DS_AUTORIDAD,
                              uni.ID_UNIDAD,
                              uni.CO_UNIDAD,
-                             uni.DS_UNIDAD
+                             uni.DS_UNIDAD,
+                            (SELECT CAST(count(*) AS VARCHAR) FROM BD_A_DOCFIRMA firmas WHERE firmas.ID_DOCUMENTO = doc.ID_DOCUMENTO AND firmas.FE_FIRMA IS NOT NULL
+                                AND (firmas.FE_ALTA <= CONVERT (date, SYSDATETIME())) AND (firmas.FE_DESACTIVO IS NULL OR firmas.FE_DESACTIVO >= CONVERT (date, SYSDATETIME()))) + 
+                            ' de ' +
+                            (SELECT CAST(count(*) AS VARCHAR) FROM BD_A_DOCFIRMA aux WHERE aux.ID_DOCUMENTO = doc.ID_DOCUMENTO
+                                AND (aux.FE_ALTA <= CONVERT (date, SYSDATETIME())) AND (aux.FE_DESACTIVO IS NULL OR aux.FE_DESACTIVO >= CONVERT (date, SYSDATETIME()))) as FIRMAS
                          FROM
                              BD_D_DOCUMENTO doc
                          INNER JOIN
@@ -256,10 +244,8 @@ public class FiltroFirmaDocumentos implements Serializable {
 
             this.dsResultado = new DataSet(sql, "ID_DOCUMENTO");
 
-            if (this.getDsResultado().getRowsCount() > 0) {
-                // Establecer formato de salida
-                formateaResultado();
-            }
+            // Establecer formato de salida
+            formateaResultado();
         } catch (NoSuchMethodException | SecurityException | SQLException ex) {
             LOG.error(ex.getMessage(), ex);
             Mensajes.showError("Error al buscar", ex.getMessage());
@@ -304,9 +290,6 @@ public class FiltroFirmaDocumentos implements Serializable {
         }
         if (cTipodocumento.getId() != null) {
             sql += " AND tipodoc.ID_TIPODOCUMENTO = " + cTipodocumento.getId();
-        }
-        if (cSituaciondoc.getId() != null) {
-            sql += " AND situaciondoc.ID_SITUACIONDOC = " + cSituaciondoc.getId();
         }
         if (cAutoridad.getId() != null) {
             sql += " AND aut.ID_AUTORIDAD = " + cAutoridad.getId();
@@ -481,6 +464,13 @@ public class FiltroFirmaDocumentos implements Serializable {
 
         cabecera.getColumnName("DS_UNIDAD")
                 .setVisible(false);
+        
+        
+        cabecera.getColumnName("FIRMAS")
+                .setTitle("Nº Firmas")
+                .setAlign(ColumnCabecera.ALIGN.CENTER)
+                .setWidth("10em")
+                .setTooltipColumn("FIRMAS");
         
         this.dsResultado.newColumn("btnDocumento");
         cabecera.getColumnName("btnDocumento")
