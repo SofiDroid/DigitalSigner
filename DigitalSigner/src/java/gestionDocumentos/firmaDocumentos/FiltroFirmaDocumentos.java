@@ -24,6 +24,7 @@ import utilidades.Formateos;
 import utilidades.Mensajes;
 import utilidades.Msg;
 import utilidades.Session;
+import utilidades.VisorMedia;
 
 /**
  *
@@ -42,6 +43,7 @@ public class FiltroFirmaDocumentos implements Serializable {
     private CampoWebLupa cAutoridad = null;
     private boolean filtroVisible = true;
     private DataSet dsResultado = null;
+    private VisorMedia visorDocumentos = null;
     //private EdicionDocumento edicionDocumento = null; 
     
     @PostConstruct
@@ -96,6 +98,7 @@ public class FiltroFirmaDocumentos implements Serializable {
         this.cAutoridad.setColumnaLabel("Autoridad");
         
         this.dsResultado = new DataSet();
+        this.visorDocumentos = new VisorMedia();
     }
 
     public CampoWebCodigo getcCoDocumento() {
@@ -152,6 +155,14 @@ public class FiltroFirmaDocumentos implements Serializable {
 
     public void setDsResultado(DataSet dsResultado) {
         this.dsResultado = dsResultado;
+    }
+
+    public VisorMedia getVisorDocumentos() {
+        return visorDocumentos;
+    }
+
+    public void setVisorDocumentos(VisorMedia visorDocumentos) {
+        this.visorDocumentos = visorDocumentos;
     }
 
     public boolean isFiltroVisible() {
@@ -314,6 +325,8 @@ public class FiltroFirmaDocumentos implements Serializable {
         try {
             Integer idDocumento = this.dsResultado.getSelectedRow().getColumnaID().getValueInteger();
             BdDDocumento bdDDocumento = new StDDocumento().item(idDocumento, null);
+            this.visorDocumentos.setFilename(bdDDocumento.getCoFichero());
+            this.visorDocumentos.setPlayer("pdf");
             Session.grabarAtributo("reportBytes", bdDDocumento.getBlDocumento(null));
         } catch (Exception ex) {
             LOG.error(ex.getMessage(), ex);
@@ -479,6 +492,7 @@ public class FiltroFirmaDocumentos implements Serializable {
                 .setTipo(ColumnBase.Tipo.MEDIA)
                 .setClase(this)
                 .setMethod(this.getClass().getMethod("verDocumento"))
+                .setIdVisorMedia("visorDocumentos")
                 .setUpdate("formulario:panelResultado,formulario:mensaje");
     }
 }

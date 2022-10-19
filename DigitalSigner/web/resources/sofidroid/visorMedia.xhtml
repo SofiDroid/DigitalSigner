@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:cc="http://xmlns.jcp.org/jsf/composite"
+      xmlns:p="http://primefaces.org/ui">
+
+    <!-- INTERFACE -->
+    <cc:interface>
+        <cc:attribute name = "beanClass" />
+    </cc:interface>
+
+    <!-- IMPLEMENTATION -->
+    <cc:implementation>
+        <p:dialog id="#{cc.attrs.id}_visorMedia" widgetVar="#{cc.attrs.id}_visorMedia"
+                  modal="true" width="70%" height="500px" header="Visor de documentos" >
+            <!-- value="/documento.pdf" player="pdf" -->
+            <p:media value="/documento.pdf" height="480px" player="#{cc.attrs.beanClass.player}" cache="false"
+                     width="100%">
+                Your browser can't display #{cc.attrs.beanClass.filename}.
+            </p:media>
+        </p:dialog>
+    </cc:implementation>
+</html>

@@ -62,7 +62,7 @@
                         <p:commandButton title="#{itemRow.getColumnName(itemColumn.name).tooltip}"
                                 value="#{itemRow.getColumnName(itemColumn.name)[itemColumn.valueString]}"
                                 action="#{itemColumn.ejecutarMetodo}" style="height: 1.5rem;width: 1.5rem;margin-left: 0.25rem;"
-                                update="@widgetVar(#{cc.attrs.id}_visorMedia),#{itemColumn.update}" oncomplete="PF('#{cc.attrs.id}_visorMedia').show()"
+                                update="@widgetVar(#{itemColumn.idVisorMedia}_visorMedia),#{itemColumn.update}" oncomplete="PF('#{itemColumn.idVisorMedia}_visorMedia').show()"
                                 icon="#{itemColumn.icon}" styleClass="#{itemColumn.styleClass}">
                             <f:setPropertyActionListener target="#{cc.attrs.dataSet.selectedRow}" value="#{itemRow}" />
                         </p:commandButton>
@@ -70,12 +70,5 @@
                 </p:column>
             </p:columns>
         </p:dataTable>
-        <p:dialog id="#{cc.attrs.id}_visorMedia" widgetVar="#{cc.attrs.id}_visorMedia"
-                  modal="true" width="70%" height="500px" header="Visor de documentos" >
-            <p:media value="/documento.pdf" height="480px" player="pdf" cache="false"
-                     width="100%">
-                Your browser can't display pdf.
-            </p:media>
-        </p:dialog>
     </cc:implementation>
 </html>

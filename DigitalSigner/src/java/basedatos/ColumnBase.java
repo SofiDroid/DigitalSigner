@@ -29,6 +29,7 @@ public class ColumnBase {
     protected String oncomplete = "";
     protected String icon = "pi pi-file-pdf";
     protected String styleClass = "button-inline";
+    protected String idVisorMedia = null;
     protected boolean rendered = true;
     
     public ColumnBase(RowBase parent) {
@@ -143,4 +144,13 @@ public class ColumnBase {
         this.rendered = rendered;
         return this;
     }    
+
+    public String getIdVisorMedia() {
+        return idVisorMedia;
+    }
+
+    public ColumnBase setIdVisorMedia(String idVisorMedia) {
+        this.idVisorMedia = idVisorMedia;
+        return this;
+    }
 }
