@@ -37,10 +37,10 @@ public class VisorMedia {
     
     public String getHeightdoc() {
         if (this.resultadoValidacionFirmas == null || this.resultadoValidacionFirmas.getListaFirmantes().isEmpty()) {
-            return "590px";
+            return "530px";
         }
         else {
-            return (590 - ((this.resultadoValidacionFirmas.getListaFirmantes().size() * 40) + 80)) + "px";
+            return (530 - ((this.resultadoValidacionFirmas.getListaFirmantes().size() * 40) + 60)) + "px";
         }
     }
     public String getHeightfirmas() {
@@ -48,7 +48,7 @@ public class VisorMedia {
             return "0px";
         }
         else {
-            return ((this.resultadoValidacionFirmas.getListaFirmantes().size() * 40) + 80) + "px";
+            return ((this.resultadoValidacionFirmas.getListaFirmantes().size() * 40) + 60) + "px";
         }
     }
 }

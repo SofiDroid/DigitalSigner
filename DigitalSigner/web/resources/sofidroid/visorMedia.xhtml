@@ -12,7 +12,7 @@
     <!-- IMPLEMENTATION -->
     <cc:implementation>
         <p:dialog id="#{cc.attrs.id}_visorMedia" widgetVar="#{cc.attrs.id}_visorMedia"
-                  modal="true" width="70%" resizable="false" height="600px" header="Visor de documentos" >
+                  modal="true" width="70%" resizable="false" height="550px" header="Visor de documentos" >
             <!-- value="/documento.pdf" player="pdf" -->
             <p:media value="/documento.pdf" style="height: #{cc.attrs.beanClass.heightdoc}" player="#{cc.attrs.beanClass.player}" cache="false" width="100%">
                 Your browser can't display #{cc.attrs.beanClass.filename}.
