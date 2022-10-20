@@ -183,6 +183,9 @@ public class SubidaFicheroFirmado extends HttpServlet
                         documentNotificationRequest.getDocumento().setDsDocumento(bdDDocumento.getDsDocumento());
                         documentNotificationRequest.getDocumento().setDsObservaciones(null);
 
+                        // FALTA DAR DE ALTA EL XML DE SALIRA POR SI FALLA PODER REPROCESAR LA SALIDA
+                        // BD_D_SALIDAXML
+                        
                         String resultado = documentNotification(documentNotificationRequest);
                         if (!resultado.equalsIgnoreCase("OK")) {
                             //Error en la comunicación
