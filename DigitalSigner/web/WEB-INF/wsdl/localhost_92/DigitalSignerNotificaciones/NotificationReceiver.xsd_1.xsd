@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='UTF-8'?><!-- Published by JAX-WS RI (https://github.com/eclipse-ee4j/metro-jax-ws). RI's version is Eclipse Metro/2.4.8 (RELEASE-2.4.8-e044505; 2022-01-04T13:29:23+0000) JAXWS-RI/2.3.5 JAXWS-API/2.3.3 JAXB-RI/2.3.5 JAXB-API/2.3.3 git-revision#e044505. --><xs:schema xmlns:tns="http://interfaces.services.ws.jax/" xmlns:xs="http://www.w3.org/2001/XMLSchema" version="1.0" targetNamespace="http://interfaces.services.ws.jax/">
+
+<xs:element name="documentNotification" type="tns:documentNotification"/>
+
+<xs:element name="documentNotificationResponse" type="tns:documentNotificationResponse"/>
+
+<xs:complexType name="documentNotification">
+<xs:sequence>
+<xs:element name="documentNotificationRequest" type="tns:documentNotificationRequest" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="documentNotificationRequest">
+<xs:sequence>
+<xs:element name="cabecera" type="tns:cabecera"/>
+<xs:element name="documento" type="tns:documento"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="cabecera">
+<xs:sequence>
+<xs:element name="coUnidad" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="documento">
+<xs:sequence>
+<xs:element name="blDocumento" type="xs:base64Binary" minOccurs="0"/>
+<xs:element name="coExtension" type="xs:string"/>
+<xs:element name="coFichero" type="xs:string"/>
+<xs:element name="coSituacionDoc" type="xs:string"/>
+<xs:element name="coTipoDocumento" type="xs:string"/>
+<xs:element name="dsDocumento" type="xs:string" minOccurs="0"/>
+<xs:element name="dsObservaciones" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="documentNotificationResponse">
+<xs:sequence>
+<xs:element name="return" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+</xs:schema>

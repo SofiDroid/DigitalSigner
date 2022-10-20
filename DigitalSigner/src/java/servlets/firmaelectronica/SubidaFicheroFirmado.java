@@ -6,10 +6,12 @@ import basedatos.servicios.StADocfirma;
 import basedatos.servicios.StAHistdoc;
 import basedatos.servicios.StDDocumento;
 import basedatos.servicios.StTSituaciondoc;
+import basedatos.servicios.StTTipodocumento;
 import basedatos.tablas.BdADocfirma;
 import basedatos.tablas.BdAHistdoc;
 import basedatos.tablas.BdDDocumento;
 import basedatos.tablas.BdTSituaciondoc;
+import basedatos.tablas.BdTTipodocumento;
 import gestionDocumentos.firmaDocumentos.FiltroFirmaDocumentos;
 import init.AppInit;
 import java.io.IOException;
@@ -19,6 +21,11 @@ import java.util.Date;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import jax.client.services.interfaces.Cabecera;
+import jax.client.services.interfaces.DocumentNotificationRequest;
+import jax.client.services.interfaces.Documento;
+import jax.client.services.interfaces.NotificationReceiver;
+import jax.client.services.interfaces.NotificationReceiverImpl;
 import org.apache.log4j.Logger;
 import org.apache.tomcat.util.codec.binary.Base64;
 import tomcat.persistence.EntityManager;
@@ -155,6 +162,34 @@ public class SubidaFicheroFirmado extends HttpServlet
                         }
                     }
                     // FIN TRANSACCION
+                    
+                    //Notificacion por correo
+                    StTTipodocumento stTTipodocumento = new StTTipodocumento();
+                    BdTTipodocumento bdTTipodocumento = stTTipodocumento.item(bdDDocumento.getIdTipodocumento(), null);
+                    
+                    StTSituaciondoc stTSituaciondoc = new StTSituaciondoc();
+                    BdTSituaciondoc bdTSituaciondoc = stTSituaciondoc.item(bdDDocumento.getIdSituaciondoc(), null);
+                    
+                    if (bdTSituaciondoc.getCoSituaciondoc().equalsIgnoreCase("FIRMADO")) {
+                        DocumentNotificationRequest documentNotificationRequest = new DocumentNotificationRequest();
+                        documentNotificationRequest.setCabecera(new Cabecera());
+                        documentNotificationRequest.getCabecera().setCoUnidad("SYSTEM");
+                        documentNotificationRequest.setDocumento(new Documento());
+                        documentNotificationRequest.getDocumento().setCoSituacionDoc(bdTSituaciondoc.getCoSituaciondoc());
+                        documentNotificationRequest.getDocumento().setCoTipoDocumento(bdTTipodocumento.getCoTipodocumento());
+                        documentNotificationRequest.getDocumento().setCoFichero(bdDDocumento.getCoFichero());
+                        documentNotificationRequest.getDocumento().setCoExtension(bdDDocumento.getCoExtension());
+                        documentNotificationRequest.getDocumento().setBlDocumento(bdDDocumento.getBlDocumento(null));
+                        documentNotificationRequest.getDocumento().setDsDocumento(bdDDocumento.getDsDocumento());
+                        documentNotificationRequest.getDocumento().setDsObservaciones(null);
+
+                        String resultado = documentNotification(documentNotificationRequest);
+                        if (!resultado.equalsIgnoreCase("OK")) {
+                            //Error en la comunicación
+                            LOG.error(resultado);
+                        }
+                    }
+                    //Fin notificacion por correo
                 }
                 catch(IOException | NumberFormatException ex)
                 {
@@ -191,5 +226,11 @@ public class SubidaFicheroFirmado extends HttpServlet
     @Override
     public String getServletInfo() {
         return "Short description";
+    }
+
+    private static String documentNotification(jax.client.services.interfaces.DocumentNotificationRequest documentNotificationRequest) {
+        jax.client.services.interfaces.NotificationReceiver service = new jax.client.services.interfaces.NotificationReceiver();
+        jax.client.services.interfaces.NotificationReceiverImpl port = service.getNotificationReceiverImplPort();
+        return port.documentNotification(documentNotificationRequest);
     }
 }
