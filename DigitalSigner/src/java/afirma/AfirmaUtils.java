@@ -2,6 +2,7 @@ package afirma;
 
 import es.gob.afirma.signers.xml.Utils;
 import es.gob.afirma.signers.xml.dereference.CustomUriDereferencer;
+import excepciones.NoContentException;
 import excepciones.NoSignatureException;
 import java.io.ByteArrayInputStream;
 import java.nio.file.Files;
@@ -34,6 +35,7 @@ import javax.xml.crypto.dsig.keyinfo.KeyValue;
 import javax.xml.crypto.dsig.keyinfo.X509Data;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.apache.log4j.Logger;
+import org.apache.tomcat.util.codec.binary.Base64;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -43,6 +45,20 @@ import org.w3c.dom.NodeList;
  * @author ihuegal
  */
 public class AfirmaUtils {
+    
+    public byte[] recuperarDocumentoXSIG(byte[] binDocumentoXSIG) throws Exception {
+        final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setNamespaceAware(true);
+        final Document doc = dbf.newDocumentBuilder().parse(new ByteArrayInputStream(binDocumentoXSIG));
+
+        // Obtenemos el elemento Signature 
+        final NodeList nl = doc.getElementsByTagName("CONTENT");
+        if (nl.getLength() == 0) {
+            throw new NoContentException();
+        }
+        
+        return new Base64().decode(nl.item(0).getTextContent());
+    }
     
     public ResultadoValidacionFirmas validarFirmas(String filename, boolean validarFirmas, boolean validarCertificados, boolean validarReferencias, boolean obtenerFirmantes) throws Exception {
         byte[] binFichero = Files.readAllBytes(Paths.get(filename));
@@ -104,13 +120,16 @@ public class AfirmaUtils {
             final XMLSignature signature = Utils.getDOMFactory().unmarshalXMLSignature(valContext);
 
             if (validarFirmas) {
-                if (!signature.validate(valContext)) {
-                    firmante.setSignValid(false);
-                    firmante.setDsSignValidacion("La firma es invalida");
-                }
-                else if (!signature.getSignatureValue().validate(valContext)) {
-                    firmante.setSignValid(false);
-                    firmante.setDsSignValidacion("El valor de la firma es inválido");
+                try {
+                    if (!signature.validate(valContext)) {
+                        firmante.setSignValid(false);
+                        firmante.setDsSignValidacion("La firma es invalida");
+                    }
+                } catch (Exception na) {
+                    if (!signature.getSignatureValue().validate(valContext)) {
+                        firmante.setSignValid(false);
+                        firmante.setDsSignValidacion("El valor de la firma es inválido");
+                    }
                 }
             }
             
@@ -143,7 +162,7 @@ public class AfirmaUtils {
                 }
             }
 
-            if (checkCertReferences) {
+            if (/*checkCertReferences*/ false) {
                 // Ahora miramos las referencias una a una 
                 final Iterator<?> i = signature.getSignedInfo().getReferences().iterator();
                 for (int j = 0; i.hasNext(); j++) {

@@ -1,5 +1,7 @@
 package servlets.firmaelectronica;
 
+import afirma.AfirmaUtils;
+import afirma.ResultadoValidacionFirmas;
 import basedatos.servicios.StADocfirma;
 import basedatos.servicios.StAHistdoc;
 import basedatos.servicios.StDDocumento;
@@ -84,9 +86,12 @@ public class SubidaFicheroFirmado extends HttpServlet
                     }
                     
                     // INICIO VALIDAR NIF Y FIRMA
-                    //
-                    //
-                    //
+                    AfirmaUtils afirmaUtils = new AfirmaUtils();
+                    ResultadoValidacionFirmas resultadoValidacionFirmas = afirmaUtils.validarFirmas(binDocumentoFirmado, true, true, true, true);
+                    if (!resultadoValidacionFirmas.isBoValid()) {
+                        LOG.error(resultadoValidacionFirmas.getDsValidacion());
+                        return; //Error en la validación del documento firmado.
+                    }
                     // FIN VALIDAR NIF Y FIRMA
                     
                     // INICIO TRANSACCION
@@ -123,8 +128,9 @@ public class SubidaFicheroFirmado extends HttpServlet
                             ArrayList<BdADocfirma> firmasDocumento = stADocfirma.filtro(filtroBdADocfirma, entityManager);
                             boolean existenFirmasPendientes = false;
                             for (BdADocfirma itemBdADocfirma : firmasDocumento) {
-                                if (itemBdADocfirma.getFeFirma() != null) {
+                                if (itemBdADocfirma.getFeFirma() == null) {
                                     existenFirmasPendientes = true;
+                                    break;
                                 }
                             }
                             

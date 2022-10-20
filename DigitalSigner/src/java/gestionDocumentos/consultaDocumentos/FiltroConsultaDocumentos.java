@@ -1,5 +1,7 @@
 package gestionDocumentos.consultaDocumentos;
 
+import afirma.AfirmaUtils;
+import afirma.ResultadoValidacionFirmas;
 import basedatos.ColumnBase;
 import basedatos.ColumnCabecera;
 import basedatos.DataSet;
@@ -339,12 +341,25 @@ public class FiltroConsultaDocumentos implements Serializable {
         try {
             Integer idDocumento = this.dsResultado.getSelectedRow().getColumnaID().getValueInteger();
             BdDDocumento bdDDocumento = new StDDocumento().item(idDocumento, null);
+            byte[] binDocumento = bdDDocumento.getBlDocumento(null);
+            ResultadoValidacionFirmas resultadoValidacionFirmas = null;
+            if (bdDDocumento.getCoExtension().equalsIgnoreCase("xsig")) {
+                AfirmaUtils afirmaUtils = new AfirmaUtils();
+                try {
+                    resultadoValidacionFirmas = afirmaUtils.validarFirmas(binDocumento, true, true, true, true);
+                }
+                catch (Exception na) {
+                    LOG.error(na.getMessage(), na);
+                    Mensajes.showError("Error al recuperar firmantes del documento", na.getMessage());
+                }
+                binDocumento = afirmaUtils.recuperarDocumentoXSIG(binDocumento);
+            }
             this.visorDocumentos.setFilename(bdDDocumento.getCoFichero());
             this.visorDocumentos.setPlayer("pdf");
-            Session.grabarAtributo("reportBytes", bdDDocumento.getBlDocumento(null));
+            this.visorDocumentos.setResultadoValidacionFirmas(resultadoValidacionFirmas);
+            Session.grabarAtributo("reportBytes", binDocumento);
         } catch (Exception ex) {
-            LOG.error(ex.getMessage(), ex);
-            Mensajes.showError("Error al navegar al detalle", ex.getMessage());
+            Mensajes.showException(this.getClass(), ex);
         }
         
         return null;

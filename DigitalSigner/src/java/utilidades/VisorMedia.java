@@ -1,5 +1,7 @@
 package utilidades;
 
+import afirma.ResultadoValidacionFirmas;
+
 /**
  *
  * @author ihuegal
@@ -7,6 +9,7 @@ package utilidades;
 public class VisorMedia {
     private String filename = "documento.pdf";
     private String player = "pdf";
+    private ResultadoValidacionFirmas resultadoValidacionFirmas = null;
 
     public String getFilename() {
         return filename;
@@ -23,5 +26,29 @@ public class VisorMedia {
     public void setPlayer(String player) {
         this.player = player;
     }
+
+    public ResultadoValidacionFirmas getResultadoValidacionFirmas() {
+        return resultadoValidacionFirmas;
+    }
+
+    public void setResultadoValidacionFirmas(ResultadoValidacionFirmas resultadoValidacionFirmas) {
+        this.resultadoValidacionFirmas = resultadoValidacionFirmas;
+    }
     
+    public String getHeightdoc() {
+        if (this.resultadoValidacionFirmas == null || this.resultadoValidacionFirmas.getListaFirmantes().isEmpty()) {
+            return "590px";
+        }
+        else {
+            return (590 - ((this.resultadoValidacionFirmas.getListaFirmantes().size() * 40) + 80)) + "px";
+        }
+    }
+    public String getHeightfirmas() {
+        if (this.resultadoValidacionFirmas == null || this.resultadoValidacionFirmas.getListaFirmantes().isEmpty()) {
+            return "0px";
+        }
+        else {
+            return ((this.resultadoValidacionFirmas.getListaFirmantes().size() * 40) + 80) + "px";
+        }
+    }
 }

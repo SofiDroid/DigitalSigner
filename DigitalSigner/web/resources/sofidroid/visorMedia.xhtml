@@ -12,12 +12,28 @@
     <!-- IMPLEMENTATION -->
     <cc:implementation>
         <p:dialog id="#{cc.attrs.id}_visorMedia" widgetVar="#{cc.attrs.id}_visorMedia"
-                  modal="true" width="70%" height="500px" header="Visor de documentos" >
+                  modal="true" width="70%" resizable="false" height="600px" header="Visor de documentos" >
             <!-- value="/documento.pdf" player="pdf" -->
-            <p:media value="/documento.pdf" height="480px" player="#{cc.attrs.beanClass.player}" cache="false"
-                     width="100%">
+            <p:media value="/documento.pdf" style="height: #{cc.attrs.beanClass.heightdoc}" player="#{cc.attrs.beanClass.player}" cache="false" width="100%">
                 Your browser can't display #{cc.attrs.beanClass.filename}.
             </p:media>
+            <p:outputPanel rendered="#{cc.attrs.beanClass.resultadoValidacionFirmas ne null}" style="height: #{cc.attrs.beanClass.heightfirmas}">
+                <h3>Firmas</h3>
+                <p:repeat value="#{cc.attrs.beanClass.resultadoValidacionFirmas.listaFirmantes}" var="firmante">
+                    <p:card styleClass="card">
+                        <p:panelGrid columns="3" columnClasses="colFit, col-12, colFit">
+
+                            <p:outputLabel value="#{firmante.fecha}" style="white-space: nowrap" />
+
+                            <p:outputLabel value="#{firmante.nombre}" />
+
+                            <p:avatar icon="pi pi-check" rendered="#{firmante.valid}" style="background-color: green; color: whitesmoke;" shape="circle" />
+                            <p:avatar icon="pi pi-times" rendered="#{!firmante.valid}" style="background-color: darkred; color: whitesmoke;" shape="circle" />
+
+                        </p:panelGrid>
+                    </p:card>
+                </p:repeat>
+            </p:outputPanel>
         </p:dialog>
     </cc:implementation>
 </html>
