@@ -2,6 +2,7 @@ package basedatos.servicios;
 
 import basedatos.Mapeador;
 import basedatos.StBase;
+import basedatos.tablas.BdAHistentxml;
 import excepciones.RequiredFieldException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -13,6 +14,9 @@ import utilidades.Validation;
 import init.AppInit;
 import utilidades.BaseDatos;
 import basedatos.tablas.BdDEntradaxml;
+import basedatos.tablas.BdTSituacionxml;
+import excepciones.RegistryNotFoundException;
+import java.nio.charset.StandardCharsets;
 
 /**
  *
@@ -134,6 +138,67 @@ public class StDEntradaxml extends StBase {
 
 
         return executeNativeQueryParametros(delBdDEntradaxml.getDelete(), parametros, em);
+    }
+
+    public Integer grabarEntradaXML(String xmlString) throws Exception {
+        BdTSituacionxml filtroBdTSituacionxml = new BdTSituacionxml();
+        filtroBdTSituacionxml.setCoSituacionxml("NUEVO");
+        filtroBdTSituacionxml.setFeAlta(new Date());
+        filtroBdTSituacionxml.setFeDesactivo(new Date());
+        StTSituacionxml stTSituacionxml = new StTSituacionxml();
+        ArrayList<BdTSituacionxml> listaBdTSituacionxml = stTSituacionxml.filtro(filtroBdTSituacionxml, null);
+        if (listaBdTSituacionxml == null || listaBdTSituacionxml.isEmpty()) {
+            throw new RegistryNotFoundException();
+        }
+        
+        BdDEntradaxml bdDEntradaxml = new BdDEntradaxml();
+        bdDEntradaxml.setBlEntradaxml(xmlString.getBytes(StandardCharsets.UTF_8));
+        bdDEntradaxml.setFeAlta(new Date());
+        bdDEntradaxml.setIdSituacionxml(listaBdTSituacionxml.get(0).getIdSituacionxml());
+        StDEntradaxml stDEntradaxml = new StDEntradaxml();
+        stDEntradaxml.alta(bdDEntradaxml, null);
+
+        return bdDEntradaxml.getIdEntradaxml();
+    }
+
+    public void actualizarEntradaXML(Integer idEntradaXML, Integer idDocumento, String coSituacionxml) throws Exception {
+        // INICIO TRANSACCION
+        try (EntityManager entityManager = AppInit.getEntityManager()) {
+            entityManager.getTransaction().begin();
+            try {
+                BdTSituacionxml filtroBdTSituacionxml = new BdTSituacionxml();
+                filtroBdTSituacionxml.setCoSituacionxml(coSituacionxml);
+                filtroBdTSituacionxml.setFeAlta(new Date());
+                filtroBdTSituacionxml.setFeDesactivo(new Date());
+                StTSituacionxml stTSituacionxml = new StTSituacionxml();
+                ArrayList<BdTSituacionxml> listaBdTSituacionxml = stTSituacionxml.filtro(filtroBdTSituacionxml, entityManager);
+                if (listaBdTSituacionxml == null || listaBdTSituacionxml.isEmpty()) {
+                    throw new RegistryNotFoundException();
+                }
+
+                StDEntradaxml stDEntradaxml = new StDEntradaxml();
+                BdDEntradaxml bdDEntradaxml = stDEntradaxml.item(idEntradaXML, entityManager);
+                bdDEntradaxml.setIdDocumento(idDocumento);
+                stDEntradaxml.actualiza(bdDEntradaxml, entityManager);
+
+                BdAHistentxml bdAHistentxml = new BdAHistentxml();
+                bdAHistentxml.setIdEntradaxml(bdDEntradaxml.getIdEntradaxml());
+                bdAHistentxml.setIdSituacionxml(bdDEntradaxml.getIdSituacionxml());
+                bdAHistentxml.setFeAlta(new Date());
+                StAHistentxml stAHistentxml = new StAHistentxml();
+                stAHistentxml.alta(bdAHistentxml, entityManager);
+
+                bdDEntradaxml.setIdSituacionxml(listaBdTSituacionxml.get(0).getIdSituacionxml());
+                stDEntradaxml.actualiza(bdDEntradaxml, entityManager);
+                
+                entityManager.getTransaction().commit();
+            }
+            catch (Exception ex) {
+                entityManager.getTransaction().rollback();
+                throw ex;
+            }
+        }
+        // FIN TRANSACCION
     }
 }
 

@@ -80,24 +80,24 @@ public class DocumentServiceImpl {
             StringWriter sw = new StringWriter();
             JAXB.marshal(documentRequest, sw);
             String xmlString = sw.toString();
-            
-            Integer idEntradaXML = grabarEntradaXML(xmlString);
+
+            StDEntradaxml stDEntradaxml = new StDEntradaxml();
+            Integer idEntradaXML = stDEntradaxml.grabarEntradaXML(xmlString);
             String md5Hex = DigestUtils.md5Hex(xmlString).toUpperCase();
             
             acuseReciboDocumentResponse.getAcuseReciboDocument().setIdEntradaXML(idEntradaXML);
             acuseReciboDocumentResponse.getAcuseReciboDocument().setHash(md5Hex);
             
             // INICIO TRANSACCION
+            Integer idDocumento = null;
             try (EntityManager entityManager = AppInit.getEntityManager())
             {
                 entityManager.getTransaction().begin();
                 try {
-                    Integer idDocumento = grabarDocumento(documentRequest.getDocumento(), entityManager);
+                    idDocumento = grabarDocumento(documentRequest.getDocumento(), entityManager);
 
                     grabarExtras(documentRequest.getExtras(), idDocumento, entityManager);
 
-                    actualizarEntradaXML(idEntradaXML, idDocumento, entityManager);
-                    
                     entityManager.getTransaction().commit();
                 }
                 catch (Exception ex) {
@@ -107,8 +107,11 @@ public class DocumentServiceImpl {
             }
             catch (Exception ex) {
                 Logger.getLogger(DocumentServiceImpl.class).error(ex.getMessage(), ex);
+                stDEntradaxml.actualizarEntradaXML(idEntradaXML, idDocumento, "ERROR");
+                throw ex;
             }
             // FIN TRANSACCION
+            stDEntradaxml.actualizarEntradaXML(idEntradaXML, idDocumento, "PROCESADO");
         }
         catch (Exception ex) {
             Logger.getLogger(DocumentServiceImpl.class).error(ex.getMessage(), ex);
@@ -268,54 +271,6 @@ public class DocumentServiceImpl {
                 stADocextra.alta(bdADocextra, entityManager);
             }
         }
-    }
-
-    private Integer grabarEntradaXML(String xmlString) throws Exception {
-        BdTSituacionxml filtroBdTSituacionxml = new BdTSituacionxml();
-        filtroBdTSituacionxml.setCoSituacionxml("NUEVO");
-        filtroBdTSituacionxml.setFeAlta(new Date());
-        filtroBdTSituacionxml.setFeDesactivo(new Date());
-        StTSituacionxml stTSituacionxml = new StTSituacionxml();
-        ArrayList<BdTSituacionxml> listaBdTSituacionxml = stTSituacionxml.filtro(filtroBdTSituacionxml, null);
-        if (listaBdTSituacionxml == null || listaBdTSituacionxml.isEmpty()) {
-            throw new RegistryNotFoundException();
-        }
-        
-        BdDEntradaxml bdDEntradaxml = new BdDEntradaxml();
-        bdDEntradaxml.setBlEntradaxml(xmlString.getBytes(StandardCharsets.UTF_8));
-        bdDEntradaxml.setFeAlta(new Date());
-        bdDEntradaxml.setIdSituacionxml(listaBdTSituacionxml.get(0).getIdSituacionxml());
-        StDEntradaxml stDEntradaxml = new StDEntradaxml();
-        stDEntradaxml.alta(bdDEntradaxml, null);
-
-        return bdDEntradaxml.getIdEntradaxml();
-    }
-
-    private void actualizarEntradaXML(Integer idEntradaXML, Integer idDocumento, EntityManager entityManager) throws Exception {
-        BdTSituacionxml filtroBdTSituacionxml = new BdTSituacionxml();
-        filtroBdTSituacionxml.setCoSituacionxml("PROCESADO");
-        filtroBdTSituacionxml.setFeAlta(new Date());
-        filtroBdTSituacionxml.setFeDesactivo(new Date());
-        StTSituacionxml stTSituacionxml = new StTSituacionxml();
-        ArrayList<BdTSituacionxml> listaBdTSituacionxml = stTSituacionxml.filtro(filtroBdTSituacionxml, entityManager);
-        if (listaBdTSituacionxml == null || listaBdTSituacionxml.isEmpty()) {
-            throw new RegistryNotFoundException();
-        }
-        
-        StDEntradaxml stDEntradaxml = new StDEntradaxml();
-        BdDEntradaxml bdDEntradaxml = stDEntradaxml.item(idEntradaXML, entityManager);
-        bdDEntradaxml.setIdDocumento(idDocumento);
-        stDEntradaxml.actualiza(bdDEntradaxml, entityManager);
-        
-        BdAHistentxml bdAHistentxml = new BdAHistentxml();
-        bdAHistentxml.setIdEntradaxml(bdDEntradaxml.getIdEntradaxml());
-        bdAHistentxml.setIdSituacionxml(bdDEntradaxml.getIdSituacionxml());
-        bdAHistentxml.setFeAlta(new Date());
-        StAHistentxml stAHistentxml = new StAHistentxml();
-        stAHistentxml.alta(bdAHistentxml, entityManager);
-        
-        bdDEntradaxml.setIdSituacionxml(listaBdTSituacionxml.get(0).getIdSituacionxml());
-        stDEntradaxml.actualiza(bdDEntradaxml, entityManager);
     }
 
     private void validarCampos(DocumentRequest documentRequest) throws RequiredFieldException {

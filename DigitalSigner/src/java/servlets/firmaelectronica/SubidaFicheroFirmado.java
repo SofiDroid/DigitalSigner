@@ -4,23 +4,37 @@ import afirma.AfirmaUtils;
 import afirma.ResultadoValidacionFirmas;
 import basedatos.servicios.StADocfirma;
 import basedatos.servicios.StAHistdoc;
+import basedatos.servicios.StAHistentxml;
+import basedatos.servicios.StAHistsalxml;
 import basedatos.servicios.StDDocumento;
+import basedatos.servicios.StDEntradaxml;
+import basedatos.servicios.StDSalidaxml;
 import basedatos.servicios.StTSituaciondoc;
+import basedatos.servicios.StTSituacionxml;
 import basedatos.servicios.StTTipodocumento;
 import basedatos.tablas.BdADocfirma;
 import basedatos.tablas.BdAHistdoc;
+import basedatos.tablas.BdAHistentxml;
+import basedatos.tablas.BdAHistsalxml;
 import basedatos.tablas.BdDDocumento;
+import basedatos.tablas.BdDEntradaxml;
+import basedatos.tablas.BdDSalidaxml;
 import basedatos.tablas.BdTSituaciondoc;
+import basedatos.tablas.BdTSituacionxml;
 import basedatos.tablas.BdTTipodocumento;
+import excepciones.RegistryNotFoundException;
 import gestionDocumentos.firmaDocumentos.FiltroFirmaDocumentos;
 import init.AppInit;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.bind.JAXB;
 import jax.client.services.interfaces.Cabecera;
 import jax.client.services.interfaces.DocumentNotificationRequest;
 import jax.client.services.interfaces.Documento;
@@ -163,17 +177,17 @@ public class SubidaFicheroFirmado extends HttpServlet
                     }
                     // FIN TRANSACCION
                     
-                    //Notificacion por correo
+                    //Notificacion por WebService de que el documento se ha firmado por el ultimo firmante.
                     StTTipodocumento stTTipodocumento = new StTTipodocumento();
                     BdTTipodocumento bdTTipodocumento = stTTipodocumento.item(bdDDocumento.getIdTipodocumento(), null);
-                    
+
                     StTSituaciondoc stTSituaciondoc = new StTSituaciondoc();
                     BdTSituaciondoc bdTSituaciondoc = stTSituaciondoc.item(bdDDocumento.getIdSituaciondoc(), null);
-                    
+
                     if (bdTSituaciondoc.getCoSituaciondoc().equalsIgnoreCase("FIRMADO")) {
                         DocumentNotificationRequest documentNotificationRequest = new DocumentNotificationRequest();
                         documentNotificationRequest.setCabecera(new Cabecera());
-                        documentNotificationRequest.getCabecera().setCoUnidad("SYSTEM");
+                        documentNotificationRequest.getCabecera().setCoUnidad(Session.getDatosUsuario().getBdTUnidad().getCoUnidad());
                         documentNotificationRequest.setDocumento(new Documento());
                         documentNotificationRequest.getDocumento().setCoSituacionDoc(bdTSituaciondoc.getCoSituaciondoc());
                         documentNotificationRequest.getDocumento().setCoTipoDocumento(bdTTipodocumento.getCoTipodocumento());
@@ -183,16 +197,28 @@ public class SubidaFicheroFirmado extends HttpServlet
                         documentNotificationRequest.getDocumento().setDsDocumento(bdDDocumento.getDsDocumento());
                         documentNotificationRequest.getDocumento().setDsObservaciones(null);
 
-                        // FALTA DAR DE ALTA EL XML DE SALIRA POR SI FALLA PODER REPROCESAR LA SALIDA
-                        // BD_D_SALIDAXML
-                        
+                        // DAR DE ALTA EL XML DE SALIRA POR SI FALLA PODER REPROCESAR LA SALIDA
+                        StringWriter sw = new StringWriter();
+                        JAXB.marshal(documentNotificationRequest, sw);
+                        String xmlString = sw.toString();
+
+                        StDSalidaxml stDSalidaxml = new StDSalidaxml();
+                        Integer idSalidaXML = stDSalidaxml.grabarSalidaXML(xmlString, bdDDocumento.getIdDocumento(), null);
+
                         String resultado = documentNotification(documentNotificationRequest);
-                        if (!resultado.equalsIgnoreCase("OK")) {
+                        if (resultado.equalsIgnoreCase("OK")) {
+                            stDSalidaxml.actualizarSalidaXML(idSalidaXML, bdDDocumento.getIdDocumento(), "PROCESADO");
+                        }
+                        else {
                             //Error en la comunicación
                             LOG.error(resultado);
+                            stDSalidaxml.actualizarSalidaXML(idSalidaXML, bdDDocumento.getIdDocumento(), "ERROR");
                         }
                     }
-                    //Fin notificacion por correo
+                    //Fin Notificacion por WebService
+                    
+                    //FALTA NOTIFICACION POR CORREO
+                    //FIN NOTIFICACION POR CORREO
                 }
                 catch(IOException | NumberFormatException ex)
                 {
