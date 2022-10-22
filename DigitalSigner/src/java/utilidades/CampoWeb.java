@@ -1,5 +1,7 @@
 package utilidades;
 
+import javax.faces.context.FacesContext;
+
 /**
  *
  * @author ihuegal
@@ -33,6 +35,11 @@ public class CampoWeb {
 
     public CampoWeb(Tipo tipo) {
         this.tipo = tipo;
+        if (Session.isSessionActiva() && Session.getDatosUsuario().getPais() != null) {
+            FacesContext.getCurrentInstance()
+                   .getViewRoot().setLocale((Session.getDatosUsuario().getPais()).getLocale());
+        }
+
     }
 
     public Tipo getTipo() {

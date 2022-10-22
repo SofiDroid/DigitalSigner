@@ -35,17 +35,9 @@ public class DatosUsuario implements Serializable {
     private BdTUnidad bdTUnidad = null;
 
     private Pais pais;
-    private List<Pais> paises;
-    
-    @Inject
-    private ServicioPaises servicioPaises;
-    
+
     @PostConstruct
     public void init() {
-        //Paises
-        paises = servicioPaises.getLocales();
-        pais = paises.get(0);
-        
         this.cUsuario = new CampoWebCodigo();
         this.cUsuario.setLabel(Msg.getString("lblUsuarioBD"));
         this.cUsuario.setWidthLabel("4em");
@@ -71,29 +63,6 @@ public class DatosUsuario implements Serializable {
     public void setPais(Pais pais) {
         this.pais = pais;
     }
-
-    public List<Pais> getPaises() {
-        return paises;
-    }
-
-    public void setPaises(List<Pais> paises) {
-        this.paises = paises;
-    }
-
-    public ServicioPaises getServicioPaises() {
-        return servicioPaises;
-    }
-
-    public void setServicioPaises(ServicioPaises servicioPaises) {
-        this.servicioPaises = servicioPaises;
-    }
-    
-    public void onPaisChange(SelectEvent e) {
-        if (e != null) {
-            FacesContext.getCurrentInstance()
-               .getViewRoot().setLocale(((Pais)e.getObject()).getLocale());
-        }
-    } 
 
     public BdTUsuario getBdTUsuario() {
         return bdTUsuario;

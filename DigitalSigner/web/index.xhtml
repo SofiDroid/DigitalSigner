@@ -23,15 +23,15 @@
             <div style="width:100%;text-align: right">
             <p:outputLabel for="@next" value="#{msg['idioma']}: " style="width:auto;vertical-align: central" />
             <h:panelGroup id="iconFlag">
-                <span class="flag flag-#{datosUsuario.pais.code}" style="width: 30px; height: 20px;margin-right: 5px"/>
+                <span class="flag flag-#{loginForm.pais.code}" style="width: 30px; height: 20px;margin-right: 5px"/>
             </h:panelGroup>
-            <p:selectOneMenu id="cIdioma" value="#{datosUsuario.pais}" converter="#{conversorPais}"
+            <p:selectOneMenu id="cIdioma" value="#{loginForm.pais}" converter="#{conversorPais}"
                              panelStyle="width:250px" p:effect="fade" var="cIdioma"
                              filter="true" filterMatchMode="startsWith">
                 
-                <p:ajax listener="#{datosUsuario.onPaisChange}" event="itemSelect" immediate="true" update="@form" />
+                <p:ajax listener="#{loginForm.onPaisChange}" event="itemSelect" immediate="true" update="@form" />
 
-                <f:selectItems value="#{datosUsuario.paises}" var="pais" itemLabel="#{pais.displayLanguage}" itemValue="#{pais}"/>
+                <f:selectItems value="#{loginForm.paises}" var="pais" itemLabel="#{pais.displayLanguage}" itemValue="#{pais}"/>
                 
                 <p:column style="width:10%">
                     <span class="flag flag-#{cIdioma.code}" style="width: 30px; height: 20px"/>
@@ -45,7 +45,7 @@
                 </p:column>
 
                 <f:facet name="footer">
-                    <h:outputText value="#{datosUsuario.paises.size()} #{msg['paises']}"
+                    <h:outputText value="#{loginForm.paises.size()} #{msg['paises']}"
                                 style="font-weight:bold;" styleClass="py-1 block"/>
                 </f:facet>
                 

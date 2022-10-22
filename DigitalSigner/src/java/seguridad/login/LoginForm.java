@@ -1,18 +1,24 @@
 package seguridad.login;
 
+import basedatos.servicios.ServicioPaises;
 import basedatos.servicios.StAUniusu;
 import basedatos.servicios.StTUnidad;
 import basedatos.servicios.StTUsuario;
 import basedatos.tablas.BdAUniusu;
 import basedatos.tablas.BdTUnidad;
 import basedatos.tablas.BdTUsuario;
+import basedatos.tablas.Pais;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
+import javax.faces.context.FacesContext;
+import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.log4j.Logger;
+import org.primefaces.event.SelectEvent;
 import utilidades.Mensajes;
 import utilidades.Session;
 
@@ -26,12 +32,53 @@ public class LoginForm implements Serializable {
 
     private String usuario;
     private String password;
+    private List<Pais> paises;
+    private Pais pais;
+    
+    @Inject
+    private ServicioPaises servicioPaises;
 
     @PostConstruct
     public void init() {
         //Inicializacion
         this.usuario = null;
         this.password = null;
+
+        //Paises
+        paises = servicioPaises.getLocales();
+        this.setPais(paises.get(0));
+    }
+
+    public void onPaisChange(SelectEvent e) {
+        if (e != null) {
+            this.setPais((Pais)e.getObject());
+            FacesContext.getCurrentInstance()
+               .getViewRoot().setLocale(this.getPais().getLocale());
+        }
+    } 
+
+    public List<Pais> getPaises() {
+        return paises;
+    }
+
+    public void setPaises(List<Pais> paises) {
+        this.paises = paises;
+    }
+
+    public ServicioPaises getServicioPaises() {
+        return servicioPaises;
+    }
+
+    public void setServicioPaises(ServicioPaises servicioPaises) {
+        this.servicioPaises = servicioPaises;
+    }
+
+    public Pais getPais() {
+        return pais;
+    }
+
+    public void setPais(Pais pais) {
+        this.pais = pais;
     }
 
     public String login() {
@@ -71,7 +118,8 @@ public class LoginForm implements Serializable {
                     //Session.getDatosUsuario().setBdTUnidad(Session.getDatosUsuario().getListaBdTUnidad().get(0));
                     Session.getDatosUsuario().getcUnidad().setValue(Session.getDatosUsuario().getListaBdTUnidad().get(0).getIdUnidad().toString());
                     Session.getDatosUsuario().selectOptionUnidad();
-                            
+
+                    Session.getDatosUsuario().setPais(this.pais);
                     //Redirecciono al formulario principal
                     return "main";
                 }

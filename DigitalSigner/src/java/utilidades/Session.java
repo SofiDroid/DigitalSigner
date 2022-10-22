@@ -31,7 +31,7 @@ import seguridad.usuarios.DatosUsuario;
  * @author ihuegal
  */
 public class Session {
-    
+
     private WebServiceContext context;
 
     public WebServiceContext getContext() {
@@ -54,6 +54,19 @@ public class Session {
 
         CDI.current().getBeanManager().getContext(SessionScoped.class).get(CDI.current().getBeanManager().getBeans("datosUsuario").iterator().next());
     }
+
+    public static boolean isSessionActiva() {
+        if (FacesContext.getCurrentInstance() != null) {
+            DatosUsuario datosUsuario = (DatosUsuario)CDI.current().getBeanManager().getContext(SessionScoped.class).get(CDI.current().getBeanManager().getBeans("datosUsuario").iterator().next());
+            if (datosUsuario != null) {
+                if (datosUsuario.getBdTUsuario() != null) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
     
     public static DatosUsuario getDatosUsuario() {
         if (FacesContext.getCurrentInstance() == null) {
