@@ -83,7 +83,7 @@
                                 value="#{itemRow.getColumnName(itemColumn.name)[itemColumn.valueString]}"
                                 oncomplete="iniciarDescarga()"
                                 action="#{itemColumn.ejecutarMetodo}" style="height: 1.5rem;width: 1.5rem;margin-left: 0.25rem;"
-                                update="#{itemColumn.update}" icon="#{itemColumn.icon}" styleClass="#{itemColumn.styleClass}">
+                                update="#{itemColumn.update}" icon="pi pi-download" styleClass="#{itemColumn.styleClass}">
                             <f:setPropertyActionListener target="#{cc.attrs.dataSet.selectedRow}" value="#{itemRow}" />
                         </p:commandButton>
                     </p:outputPanel>

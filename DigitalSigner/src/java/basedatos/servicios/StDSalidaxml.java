@@ -31,7 +31,7 @@ public class StDSalidaxml extends StBase {
     public ArrayList<BdDSalidaxml> filtro(BdDSalidaxml filtroBdDSalidaxml, EntityManager em) throws Exception {
         HashMap<String, Object> parametros = new HashMap<>();
         parametros.put("ID_SALIDAXML", filtroBdDSalidaxml.getIdSalidaxml());
-        parametros.put("BL_SALIDAXML", filtroBdDSalidaxml.getBlSalidaxml());
+        parametros.put("BL_SALIDAXML", filtroBdDSalidaxml.getBlSalidaxml(em));
         parametros.put("ID_DOCUMENTO", filtroBdDSalidaxml.getIdDocumento());
         parametros.put("ID_SITUACIONXML", filtroBdDSalidaxml.getIdSituacionxml());
         parametros.put("DS_RUTA", filtroBdDSalidaxml.getDsRuta());
@@ -67,7 +67,7 @@ public class StDSalidaxml extends StBase {
                 throw new RequiredFieldException("ID_SALIDAXML");
             }
         }
-        if (Validation.isNullOrEmpty(newBdDSalidaxml.getBlSalidaxml())) {
+        if (Validation.isNullOrEmpty(newBdDSalidaxml.getBlSalidaxml(em))) {
             throw new RequiredFieldException("BL_SALIDAXML");
         }
         if (Validation.isNullOrEmpty(newBdDSalidaxml.getIdSituacionxml())) {
@@ -84,7 +84,7 @@ public class StDSalidaxml extends StBase {
 
         HashMap<String, Object> parametros = new HashMap<>();
         parametros.put("ID_SALIDAXML", newBdDSalidaxml.getIdSalidaxml());
-        parametros.put("BL_SALIDAXML", newBdDSalidaxml.getBlSalidaxml());
+        parametros.put("BL_SALIDAXML", newBdDSalidaxml.getBlSalidaxml(em));
         parametros.put("ID_DOCUMENTO", newBdDSalidaxml.getIdDocumento());
         parametros.put("ID_SITUACIONXML", newBdDSalidaxml.getIdSituacionxml());
         parametros.put("DS_RUTA", newBdDSalidaxml.getDsRuta());
@@ -102,7 +102,7 @@ public class StDSalidaxml extends StBase {
         if (Validation.isNullOrEmpty(upBdDSalidaxml.getIdSalidaxml())) {
             throw new RequiredFieldException("ID_SALIDAXML");
         }
-        if (Validation.isNullOrEmpty(upBdDSalidaxml.getBlSalidaxml())) {
+        if (Validation.isNullOrEmpty(upBdDSalidaxml.getBlSalidaxml(em))) {
             throw new RequiredFieldException("BL_SALIDAXML");
         }
         if (Validation.isNullOrEmpty(upBdDSalidaxml.getIdSituacionxml())) {
@@ -119,7 +119,7 @@ public class StDSalidaxml extends StBase {
 
         HashMap<String, Object> parametros = new HashMap<>();
         parametros.put("ID_SALIDAXML", upBdDSalidaxml.getIdSalidaxml());
-        parametros.put("BL_SALIDAXML", upBdDSalidaxml.getBlSalidaxml());
+        parametros.put("BL_SALIDAXML", upBdDSalidaxml.getBlSalidaxml(em));
         parametros.put("ID_DOCUMENTO", upBdDSalidaxml.getIdDocumento());
         parametros.put("ID_SITUACIONXML", upBdDSalidaxml.getIdSituacionxml());
         parametros.put("DS_RUTA", upBdDSalidaxml.getDsRuta());

@@ -3,9 +3,12 @@ package basedatos.tablas;
 import basedatos.InterfazDAO;
 import basedatos.OperacionSQL;
 import init.AppInit;
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.HashMap;
+import tomcat.persistence.EntityManager;
 import utilidades.BaseDatos;
+import utilidades.Ficheros;
 
 /**
  *
@@ -180,7 +183,10 @@ public class BdDSalidaxml extends OperacionSQL implements InterfazDAO {
         this.idSalidaxml = idSalidaxml;
     }
 
-    public byte[] getBlSalidaxml() {
+    public byte[] getBlSalidaxml(EntityManager em) throws SQLException {
+        if (this.idSalidaxml != null && this.blSalidaxml == null) {
+            this.blSalidaxml = new Ficheros().recuperaSalidaXML(this.idSalidaxml, em); 
+        }
         return blSalidaxml;
     }
 

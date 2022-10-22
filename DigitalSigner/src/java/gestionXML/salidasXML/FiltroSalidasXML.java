@@ -1,4 +1,4 @@
-package gestionXML.entradasXML;
+package gestionXML.salidasXML;
 
 import afirma.AfirmaUtils;
 import afirma.ResultadoValidacionFirmas;
@@ -8,8 +8,10 @@ import basedatos.DataSet;
 import basedatos.RowCabecera;
 import basedatos.servicios.StDDocumento;
 import basedatos.servicios.StDEntradaxml;
+import basedatos.servicios.StDSalidaxml;
 import basedatos.tablas.BdDDocumento;
 import basedatos.tablas.BdDEntradaxml;
+import basedatos.tablas.BdDSalidaxml;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -42,10 +44,10 @@ import utilidades.VisorMedia;
  */
 @Named
 @SessionScoped
-public class FiltroEntradasXML implements Serializable {
-    private final Logger LOG = Logger.getLogger(FiltroEntradasXML.class);
+public class FiltroSalidasXML implements Serializable {
+    private final Logger LOG = Logger.getLogger(FiltroSalidasXML.class);
     
-    private CampoWebNumero cIdEntradaXML = null;
+    private CampoWebNumero cIdSalidaXML = null;
     private CampoWebFechaRango cFeAlta = null;
     private CampoWebFechaRango cFeDesactivo = null;
     private CampoWebLupa cSituacionxml = null;
@@ -56,16 +58,16 @@ public class FiltroEntradasXML implements Serializable {
     public void init() {
         Session.limpiarOtrosBeans(this.getClass().getName());
         
-        this.cIdEntradaXML = new CampoWebNumero();
-        this.cIdEntradaXML.setLabel(Msg.getString("lbl_FiltroEntradasXML_IdEntradaXML"));
-        this.cIdEntradaXML.setWidthLabel("100px");
+        this.cIdSalidaXML = new CampoWebNumero();
+        this.cIdSalidaXML.setLabel(Msg.getString("lbl_FiltroSalidasXML_IdSalidaXML"));
+        this.cIdSalidaXML.setWidthLabel("100px");
         
         this.cFeAlta = new CampoWebFechaRango();
-        this.cFeAlta.setLabel(Msg.getString("lbl_FiltroEntradasXML_FeAlta"));
+        this.cFeAlta.setLabel(Msg.getString("lbl_FiltroSalidasXML_FeAlta"));
         this.cFeAlta.setWidthLabel("100px");
 
         this.cSituacionxml = new CampoWebLupa();
-        this.cSituacionxml.setLabel(Msg.getString("lbl_FiltroEntradasXML_Situacionxml"));
+        this.cSituacionxml.setLabel(Msg.getString("lbl_FiltroSalidasXML_Situacionxml"));
         this.cSituacionxml.setWidthLabel("100px");
         String sql = "SELECT ID_SITUACIONXML, CO_SITUACIONXML + ' - ' + DS_SITUACIONXML as Situación FROM BD_T_SITUACIONXML";
         this.cSituacionxml.setConsulta(sql);
@@ -73,18 +75,18 @@ public class FiltroEntradasXML implements Serializable {
         this.cSituacionxml.setColumnaLabel("Situación");
         
         this.cFeDesactivo = new CampoWebFechaRango();
-        this.cFeDesactivo.setLabel(Msg.getString("lbl_FiltroEntradasXML_FeDesactivo"));
+        this.cFeDesactivo.setLabel(Msg.getString("lbl_FiltroSalidasXML_FeDesactivo"));
         this.cFeDesactivo.setWidthLabel("100px");
 
         this.dsResultado = new DataSet();
     }
 
-    public CampoWebNumero getcIdEntradaXML() {
-        return cIdEntradaXML;
+    public CampoWebNumero getcIdSalidaXML() {
+        return cIdSalidaXML;
     }
 
-    public void setcIdEntradaXML(CampoWebNumero cIdEntradaXML) {
-        this.cIdEntradaXML = cIdEntradaXML;
+    public void setcIdSalidaXML(CampoWebNumero cIdSalidaXML) {
+        this.cIdSalidaXML = cIdSalidaXML;
     }
 
     public CampoWebFechaRango getcFeAlta() {
@@ -129,7 +131,7 @@ public class FiltroEntradasXML implements Serializable {
 
     public void limpiar() {
         try {
-            cIdEntradaXML.setValue(null);
+            cIdSalidaXML.setValue(null);
             cFeAlta.setValueIni(null);
             cFeAlta.setValueFin(null);
             cFeDesactivo.setValueIni(null);
@@ -147,23 +149,23 @@ public class FiltroEntradasXML implements Serializable {
         try {
             String sql = """
                         SELECT
-                            exml.ID_ENTRADAXML,
-                            exml.ID_SITUACIONXML,
+                            sxml.ID_SALIDAXML,
+                            sxml.ID_SITUACIONXML,
                             sitxml.CO_SITUACIONXML,
                             sitxml.DS_SITUACIONXML,
-                            exml.FE_ALTA,
-                            exml.FE_DESACTIVO
+                            sxml.FE_ALTA,
+                            sxml.FE_DESACTIVO
                         FROM
-                            BD_D_ENTRADAXML exml
+                            BD_D_SALIDAXML sxml
                         INNER JOIN
-                            BD_T_SITUACIONXML sitxml ON (sitxml.ID_SITUACIONXML = exml.ID_SITUACIONXML)
+                            BD_T_SITUACIONXML sitxml ON (sitxml.ID_SITUACIONXML = sxml.ID_SITUACIONXML)
                         WHERE
                             1 = 1
                         """;
             
             sql = filtros(sql);
 
-            this.dsResultado = new DataSet(sql, "ID_ENTRADAXML");
+            this.dsResultado = new DataSet(sql, "ID_SALIDAXML");
 
             // Establecer formato de salida
             formateaResultado();
@@ -175,32 +177,32 @@ public class FiltroEntradasXML implements Serializable {
     
     private String filtros(String sql) {
         
-        if (cIdEntradaXML.getValueInteger() != null) {
-            sql += " AND exml.ID_ENTRADAXML = " + cIdEntradaXML.getValueInteger() + "";
+        if (cIdSalidaXML.getValueInteger() != null) {
+            sql += " AND sxml.ID_SALIDAXML = " + cIdSalidaXML.getValueInteger() + "";
         }
         if (cFeAlta.getValueIni() != null || cFeAlta.getValueFin() != null) {
             sql += " AND (";
             if (cFeAlta.getValueIni() != null) {
-                sql += "(exml.FE_ALTA >= " + Formateos.dateToSql((Date)cFeAlta.getValueIni()) + ")";
+                sql += "(sxml.FE_ALTA >= " + Formateos.dateToSql((Date)cFeAlta.getValueIni()) + ")";
             }
             if (cFeAlta.getValueFin() != null) {
                 if (cFeAlta.getValueIni() != null) {
                     sql += " AND ";
                 }
-                sql += "(exml.FE_ALTA <= " + Formateos.dateToSql((Date)cFeAlta.getValueFin()) + ")";
+                sql += "(sxml.FE_ALTA <= " + Formateos.dateToSql((Date)cFeAlta.getValueFin()) + ")";
             }
             sql += ")";
         }
         if (cFeDesactivo.getValueIni() != null || cFeDesactivo.getValueFin() != null) {
             sql += " AND (";
             if (cFeDesactivo.getValueIni() != null) {
-                sql += "(exml.FE_DESACTIVO >= " + Formateos.dateToSql((Date)cFeDesactivo.getValueIni()) + ")";
+                sql += "(sxml.FE_DESACTIVO >= " + Formateos.dateToSql((Date)cFeDesactivo.getValueIni()) + ")";
             }
             if (cFeDesactivo.getValueFin() != null) {
                 if (cFeDesactivo.getValueIni() != null) {
                     sql += " AND ";
                 }
-                sql += "(exml.FE_DESACTIVO <= " + Formateos.dateToSql((Date)cFeDesactivo.getValueFin()) + ")";
+                sql += "(sxml.FE_DESACTIVO <= " + Formateos.dateToSql((Date)cFeDesactivo.getValueFin()) + ")";
             }
             sql += ")";
         }
@@ -224,10 +226,10 @@ public class FiltroEntradasXML implements Serializable {
 
     public void verXML() {
         try {
-            Integer idEntradaXML = this.dsResultado.getSelectedRow().getColumnaID().getValueInteger();
-            BdDEntradaxml bdDEntradaxml = new StDEntradaxml().item(idEntradaXML, null);
-            byte[] binDocumento = bdDEntradaxml.getBlEntradaxml(null);
-            Session.grabarAtributo("filename", "ENTRADA_" + idEntradaXML + ".xml");
+            Integer idSalidaXML = this.dsResultado.getSelectedRow().getColumnaID().getValueInteger();
+            BdDSalidaxml bdDSalidaxml = new StDSalidaxml().item(idSalidaXML, null);
+            byte[] binDocumento = bdDSalidaxml.getBlSalidaxml(null);
+            Session.grabarAtributo("filename", "SALIDA_" + idSalidaXML + ".xml");
             Session.grabarAtributo("binDocumento", binDocumento);
         } catch (Exception ex) {
             Mensajes.showException(this.getClass(), ex);
@@ -248,12 +250,12 @@ public class FiltroEntradasXML implements Serializable {
     private void formateaResultado() throws NoSuchMethodException {
 
         this.dsResultado.setSelectable(false);
-        this.dsResultado.setRowSelectColumnaID("ID_ENTRADAXML");
+        this.dsResultado.setRowSelectColumnaID("ID_SALIDAXML");
         
         RowCabecera cabecera = this.dsResultado.getCabecera();
 
-        cabecera.getColumnName("ID_ENTRADAXML")
-                .setTitle("Id Entrada")
+        cabecera.getColumnName("ID_SALIDAXML")
+                .setTitle("Id Salida")
                 .setAlign(ColumnCabecera.ALIGN.RIGHT)
                 .setWidth("10em");
 
