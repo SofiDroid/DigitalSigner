@@ -15,7 +15,8 @@ public class ColumnBase {
         BOTON_EDICION,
         IMAGEN,
         CHECKBOX,
-        MEDIA
+        MEDIA,
+        DESCARGA
     }
     
     protected RowBase parent;

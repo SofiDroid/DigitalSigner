@@ -8,6 +8,7 @@ import afirma.ResultadoValidacionFirmas;
  */
 public class VisorMedia {
     private String filename = "documento.pdf";
+    private String extension = null;
     private String player = "pdf";
     private ResultadoValidacionFirmas resultadoValidacionFirmas = null;
 
@@ -50,5 +51,18 @@ public class VisorMedia {
         else {
             return ((this.resultadoValidacionFirmas.getListaFirmantes().size() * 40) + 60) + "px";
         }
+    }
+
+    public String getExtension() {
+        if (extension == null) {
+            if (this.filename.contains(".")) {
+                extension = this.filename.substring(this.filename.lastIndexOf(".") + 1);
+            }
+        }
+        return extension;
+    }
+
+    public void setExtension(String extension) {
+        this.extension = extension;
     }
 }

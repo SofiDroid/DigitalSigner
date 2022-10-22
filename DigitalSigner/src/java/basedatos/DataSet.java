@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import org.primefaces.model.StreamedContent;
 import tomcat.persistence.ResultData;
 import utilidades.ModoFormulario;
 
@@ -29,6 +30,7 @@ public final class DataSet extends StBase {
     protected String rowSelectColumnaID = null;
     protected Integer rowsPerPage = 20;
     protected ModoFormulario modoFormulario = ModoFormulario.CONSULTA;
+    private StreamedContent fileDownload;
 
     public DataSet() {
     
@@ -305,5 +307,13 @@ public final class DataSet extends StBase {
 
     public void setModoFormulario(ModoFormulario modoFormulario) {
         this.modoFormulario = modoFormulario;
+    }
+
+    public StreamedContent getFileDownload() {
+        return fileDownload;
+    }
+
+    public void setFileDownload(StreamedContent fileDownload) {
+        this.fileDownload = fileDownload;
     }
 }

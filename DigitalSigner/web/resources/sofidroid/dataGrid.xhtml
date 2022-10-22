@@ -11,7 +11,18 @@
     </cc:interface>
 
     <!-- IMPLEMENTATION -->
-    <cc:implementation>        
+    <cc:implementation>    
+        <script>
+            //<![CDATA[
+            function start() {
+                PF('statusDialog').show();
+            }
+
+            function stop() {
+                PF('statusDialog').hide();
+            }
+            //]]>
+        </script>
         <p:dataTable id="#{cc.attrs.id}" widgetVar="#{cc.attrs.id}" var="itemRow" value="#{cc.attrs.dataSet.rows}" 
                      style="width:100%;padding:0.2rem" size="small"
                      selection="#{cc.attrs.dataSet.selectedRows}" rowKey="#{itemRow.id}"
@@ -67,8 +78,20 @@
                             <f:setPropertyActionListener target="#{cc.attrs.dataSet.selectedRow}" value="#{itemRow}" />
                         </p:commandButton>
                     </p:outputPanel>
+                    <p:outputPanel rendered="#{itemColumn.tipo eq 'DESCARGA'}">
+                        <p:commandButton title="#{itemRow.getColumnName(itemColumn.name).tooltip}"
+                                value="#{itemRow.getColumnName(itemColumn.name)[itemColumn.valueString]}"
+                                oncomplete="iniciarDescarga()"
+                                action="#{itemColumn.ejecutarMetodo}" style="height: 1.5rem;width: 1.5rem;margin-left: 0.25rem;"
+                                update="#{itemColumn.update}" icon="#{itemColumn.icon}" styleClass="#{itemColumn.styleClass}">
+                            <f:setPropertyActionListener target="#{cc.attrs.dataSet.selectedRow}" value="#{itemRow}" />
+                        </p:commandButton>
+                    </p:outputPanel>
                 </p:column>
             </p:columns>
         </p:dataTable>
+        <p:remoteCommand name="iniciarDescarga">
+            <p:fileDownload value="#{fileDownloadView.file}" />
+        </p:remoteCommand>
     </cc:implementation>
 </html>

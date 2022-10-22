@@ -16,52 +16,38 @@
                     <p:toolbarGroup align="right">
 
                         <p:commandButton id="btnBuscar" icon="pi pi-search" styleClass="rounded-button ui-button-info" 
-                                         style="height: 2rem;width: 2rem;margin-left:0.3rem" action="#{filtroConsultaDocumentos.buscar}" title="(alt+B) Buscar resultados"
+                                         style="height: 2rem;width: 2rem;margin-left:0.3rem" action="#{filtroEntradasXML.buscar}" title="(alt+B) Buscar resultados"
                                          update="panelResultado,mensaje" accesskey="b" />
 
                         <p:commandButton id="btnLimpiar" icon="pi pi-filter-slash" styleClass="rounded-button ui-button-secondary" 
-                                         style="height: 2rem;width: 2rem;margin-left:0.3rem" action="#{filtroConsultaDocumentos.limpiar}" title="(alt+L) Limpiar formulario"
+                                         style="height: 2rem;width: 2rem;margin-left:0.3rem" action="#{filtroEntradasXML.limpiar}" title="(alt+L) Limpiar formulario"
                                          update="fsFiltros,panelResultado,mensaje" accesskey="l" />
 
                     </p:toolbarGroup>
                 </p:toolbar>
             </p:card>
             <p:card styleClass="card">
-                <p:fieldset id="fsFiltros" legend="#{msg['filtros']}" collapsed="#{!filtroConsultaDocumentos.filtroVisible}" toggleable="true">
+                <p:fieldset id="fsFiltros" legend="#{msg['filtros']}" collapsed="#{!filtroEntradasXML.filtroVisible}" toggleable="true">
                     <p:panelGrid columns="2"
                      columnClasses="col-6,col-6"
                      layout="grid"
                      styleClass="ui-panelgrid-blank ui-fluid"
                      style="border:0px none; background-color:transparent;">
 
-                        <sd:campoWebTexto id="txtCodigo" beanClass="#{filtroConsultaDocumentos.getcCoDocumento()}" />
+                        <sd:campoWebNumero id="txtIdEntradaXML" beanClass="#{filtroEntradasXML.getcIdEntradaXML()}" />
 
-                        <sd:campoWebFechaRango id="txtFeAlta" beanClass="#{filtroConsultaDocumentos.getcFeAlta()}" />
+                        <sd:campoWebFechaRango id="txtFeAlta" beanClass="#{filtroEntradasXML.getcFeAlta()}" />
 
-                        <sd:campoWebTexto id="txtDescripcion" beanClass="#{filtroConsultaDocumentos.getcDsDocumento()}" />
+                        <sd:campoWebLupa id="txtSituacionXML" beanClass="#{filtroEntradasXML.getcSituacionxml()}" />
 
-                        <sd:campoWebFechaRango id="txtFeDesactivo" beanClass="#{filtroConsultaDocumentos.getcFeDesactivo()}" />
+                        <sd:campoWebFechaRango id="txtFeDesactivo" beanClass="#{filtroEntradasXML.getcFeDesactivo()}" />
 
-                        <sd:campoWebLupa id="txtTipoDocumento" beanClass="#{filtroConsultaDocumentos.getcTipodocumento()}" />
-                        
-                        <sd:campoWebLupa id="txtSituacionDoc" beanClass="#{filtroConsultaDocumentos.getcSituaciondoc()}" />
-                        
-                    </p:panelGrid>
-                    <p:panelGrid columns="1"
-                     columnClasses="col-12"
-                     layout="grid"
-                     styleClass="ui-panelgrid-blank ui-fluid"
-                     style="border:0px none; background-color:transparent;">
-
-                        <sd:campoWebLupa id="txtAutoridad" beanClass="#{filtroConsultaDocumentos.getcAutoridad()}" />
-                        
                     </p:panelGrid>
                 </p:fieldset>
             </p:card>
             <p:card id="panelResultado" styleClass="card">
-                <sd:dataGrid id="tblResultados" dataSet="#{filtroConsultaDocumentos.dsResultado}" />
+                <sd:dataGrid id="tblResultados" dataSet="#{filtroEntradasXML.dsResultado}" />
             </p:card>
-            <sd:visorMedia id="visorDocumentos" beanClass="#{filtroConsultaDocumentos.visorDocumentos}" />
         </ui:define>
     </ui:composition>
 </html>
