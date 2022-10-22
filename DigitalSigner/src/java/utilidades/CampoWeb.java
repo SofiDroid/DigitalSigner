@@ -29,6 +29,7 @@ public class CampoWeb {
     private boolean required = false;
     private boolean autocomplete = true;
     private String label = "";
+    private String lang = "es";
 
     public CampoWeb(Tipo tipo) {
         this.tipo = tipo;
@@ -124,5 +125,13 @@ public class CampoWeb {
 
     public void setAutocomplete(boolean autocomplete) {
         this.autocomplete = autocomplete;
+    }
+
+    public String getLang() {
+        return lang;
+    }
+
+    public void setLang(String lang) {
+        this.lang = lang;
     }
 }
