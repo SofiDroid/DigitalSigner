@@ -2,9 +2,7 @@ package servlets.firmaelectronica;
 
 import afirma.AfirmaUtils;
 import afirma.ResultadoValidacionFirmas;
-import basedatos.servicios.StTSituaciondoc;
 import basedatos.tablas.BdDDocumento;
-import basedatos.tablas.BdTSituaciondoc;
 import gestionDocumentos.firmaDocumentos.FiltroFirmaDocumentos;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -22,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.apache.tomcat.util.codec.binary.Base64;
 import seguridad.usuarios.DatosUsuario;
+import utilidades.Configuraciones;
 import utilidades.Session;
 
 /**
@@ -95,12 +94,6 @@ public class BajadaFicheroFirma extends HttpServlet
                     //Traza DEBUG
                     LOG.debug(String.format("Portafirmas: El usuario '%s' baja para firmar el documento con ID_DOCUMENTO = %d", datosUsuario.getBdTUsuario().getCoUsuario(), bdDDocumento.getIdDocumento()));
                     
-                    //FacesContext contexto = m_facesContextFactory.getFacesContext(getServletContext(), request, response, m_lifecycle);
-                    
-//                    UtilPSSDEF util = new UtilPSSDEF();
-//                    
-//                    StEscaner stScanner = new StEscaner(null, contexto);
-//                    String id = doc.getID_DOCEXPTE().toString();
                     String extension = bdDDocumento.getCoExtension().toUpperCase();
                     String fileName = bdDDocumento.getCoFichero();
                     byte[] binDocumento = bdDDocumento.getBlDocumento(null);
@@ -111,8 +104,8 @@ public class BajadaFicheroFirma extends HttpServlet
                     }
                     else
                     {
-                        boolean validarNIF = true;//parsePropiedad("PORTAFIRMAS_VALIDARNIF");
-                        boolean validarFirma = true;//parsePropiedad("PORTAFIRMAS_VALIDARFIRMA");
+                        boolean validarNIF = Boolean.valueOf(new Configuraciones().recuperaConfiguracion("VALIDARNIF"));
+                        boolean validarFirma = Boolean.valueOf(new Configuraciones().recuperaConfiguracion("VALIDARFIRMA"));
 
                         if(validarNIF || validarFirma)
                         {

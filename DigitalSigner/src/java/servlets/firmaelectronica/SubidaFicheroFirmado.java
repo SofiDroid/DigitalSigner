@@ -29,6 +29,7 @@ import jax.client.services.interfaces.Documento;
 import org.apache.log4j.Logger;
 import org.apache.tomcat.util.codec.binary.Base64;
 import tomcat.persistence.EntityManager;
+import utilidades.Configuraciones;
 import utilidades.Session;
 
 /**
@@ -92,16 +93,20 @@ public class SubidaFicheroFirmado extends HttpServlet
                         throw new Exception("- " + bdDDocumento.getCoDocumento() + ": " + msg);
                     }
                     
-                    // INICIO VALIDAR NIF Y FIRMA
-                    AfirmaUtils afirmaUtils = new AfirmaUtils();
-                    ResultadoValidacionFirmas resultadoValidacionFirmas = afirmaUtils.validarFirmas(binDocumentoFirmado, true, true, true, true);
-                    if (!resultadoValidacionFirmas.isBoValid()) {
-                        //"Firma del documento no válida."
-                        String msg = resultadoValidacionFirmas.getDsValidacion();
-                        LOG.error(msg);
-                        throw new Exception("- " + bdDDocumento.getCoDocumento() + ": " + msg);
+                    boolean validarFirma = Boolean.valueOf(new Configuraciones().recuperaConfiguracion("VALIDARFIRMA"));
+
+                    if (validarFirma) {
+                        // INICIO VALIDAR NIF Y FIRMA
+                        AfirmaUtils afirmaUtils = new AfirmaUtils();
+                        ResultadoValidacionFirmas resultadoValidacionFirmas = afirmaUtils.validarFirmas(binDocumentoFirmado, true, true, true, true);
+                        if (!resultadoValidacionFirmas.isBoValid()) {
+                            //"Firma del documento no válida."
+                            String msg = resultadoValidacionFirmas.getDsValidacion();
+                            LOG.error(msg);
+                            throw new Exception("- " + bdDDocumento.getCoDocumento() + ": " + msg);
+                        }
+                        // FIN VALIDAR NIF Y FIRMA
                     }
-                    // FIN VALIDAR NIF Y FIRMA
                     
                     // INICIO TRANSACCION
                     try (EntityManager entityManager = AppInit.getEntityManager()) {
@@ -193,14 +198,18 @@ public class SubidaFicheroFirmado extends HttpServlet
                         StDSalidaxml stDSalidaxml = new StDSalidaxml();
                         Integer idSalidaXML = stDSalidaxml.grabarSalidaXML(xmlString, bdDDocumento.getIdDocumento(), null);
 
-                        String resultado = documentNotification(documentNotificationRequest);
-                        if (resultado.equalsIgnoreCase("OK")) {
-                            stDSalidaxml.actualizarSalidaXML(idSalidaXML, bdDDocumento.getIdDocumento(), "PROCESADO");
-                        }
-                        else {
-                            //Error en la comunicación
-                            LOG.error(resultado);
-                            stDSalidaxml.actualizarSalidaXML(idSalidaXML, bdDDocumento.getIdDocumento(), "ERROR");
+                        boolean boNotificarWebService = Boolean.valueOf(new Configuraciones().recuperaConfiguracion("NOTIFICAWS"));
+                        if (boNotificarWebService) {
+                            String resultado = documentNotification(documentNotificationRequest);
+
+                            if (resultado.equalsIgnoreCase("OK")) {
+                                stDSalidaxml.actualizarSalidaXML(idSalidaXML, bdDDocumento.getIdDocumento(), "PROCESADO");
+                            }
+                            else {
+                                //Error en la comunicación
+                                LOG.error(resultado);
+                                stDSalidaxml.actualizarSalidaXML(idSalidaXML, bdDDocumento.getIdDocumento(), "ERROR");
+                            }
                         }
                     }
                     //Fin Notificacion por WebService
