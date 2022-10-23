@@ -74,6 +74,7 @@
                 <p:dialog id="dlgFirmaFinalizada" widgetVar="dlgFirmaFinalizada" modal="true" draggable="false" closable="true" resizable="false" showHeader="true" header="Firma" closeOnEscape="true">
                     <span>Documentos firmados correctamente!</span>
                 </p:dialog>
+                <p:remoteCommand id="buscarClick" name="buscarClick" action="#{filtroFirmaDocumentos.buscar()}" update="panelResultado,mensaje" />
                 <script type="text/javascript">
                     //<![CDATA[
                     var pbClient = PF('pbClient');
@@ -119,6 +120,7 @@
                         else {
                             PF('dlgFirmaFinalizada').show();
                         }
+                        mandarRefrescarListado();
                     }
 
                     //]]>
@@ -636,7 +638,7 @@
                     {
                         try
                         {
-                            PF('btnBuscar').click();
+                            buscarClick();
                         } catch (e)
                         {
                             alertarError("Refrescar elementos", e);
