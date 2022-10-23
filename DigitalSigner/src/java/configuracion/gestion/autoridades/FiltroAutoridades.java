@@ -156,38 +156,40 @@ public class FiltroAutoridades implements Serializable {
             sql = filtros(sql);
 
             this.dsResultado = new DataSet(sql, "ID_AUTORIDAD");
-
-            if (this.getDsResultado().getRowsCount() > 0) {
-                // Establecer formato de salida
-                RowCabecera cabecera = this.dsResultado.getCabecera();
-
-                cabecera.getColumnName("ID_AUTORIDAD")
-                        .setVisible(false);
-
-                cabecera.getColumnName("CO_AUTORIDAD")
-                        .setTitle("Código")
-                        .setWidth("6rem")
-                        .setTipo(ColumnBase.Tipo.LINK)
-                        .setClase(this)
-                        .setMethod(this.getClass().getMethod("verDetalle"))
-                        .setUpdate("formulario:panelResultado,formulario:mensaje");
-
-                cabecera.getColumnName("DS_AUTORIDAD")
-                        .setTitle("Descripción")
-                        .setWidth("100%");
-
-                cabecera.getColumnName("FE_ALTA")
-                        .setTitle("F. Alta")
-                        .setWidth("6rem");
-
-                cabecera.getColumnName("FE_DESACTIVO")
-                        .setTitle("F. Desactivo")
-                        .setWidth("6rem");
-            }
+            formatearCabceras();
+            
         } catch (NoSuchMethodException | SecurityException | SQLException ex) {
             LOG.error(ex.getMessage(), ex);
             Mensajes.showError("Error al buscar", ex.getMessage());
         }
+    }
+
+    private void formatearCabceras() throws SecurityException, NoSuchMethodException {
+        // Establecer formato de salida
+        RowCabecera cabecera = this.dsResultado.getCabecera();
+
+        cabecera.getColumnName("ID_AUTORIDAD")
+                .setVisible(false);
+
+        cabecera.getColumnName("CO_AUTORIDAD")
+                .setTitle("Código")
+                .setWidth("6rem")
+                .setTipo(ColumnBase.Tipo.LINK)
+                .setClase(this)
+                .setMethod(this.getClass().getMethod("verDetalle"))
+                .setUpdate("formulario:panelResultado,formulario:mensaje");
+
+        cabecera.getColumnName("DS_AUTORIDAD")
+                .setTitle("Descripción")
+                .setWidth("100%");
+
+        cabecera.getColumnName("FE_ALTA")
+                .setTitle("F. Alta")
+                .setWidth("6rem");
+
+        cabecera.getColumnName("FE_DESACTIVO")
+                .setTitle("F. Desactivo")
+                .setWidth("6rem");
     }
     
     private String filtros(String sql) {

@@ -38,11 +38,6 @@
                             <p:confirm header="#{msg['confirmacion']}" message="#{msg['confirmacion_borrado']}" icon="pi pi-info-circle"/>
                         </p:commandButton>
                         
-                        <p:commandButton id="btnLimpiar" icon="pi pi-filter-slash" styleClass="rounded-button ui-button-secondary" 
-                                         style="height: 2rem;width: 2rem;margin-left:0.3rem" action="#{beanEdicion.limpiar}" title="(alt+L) Limpiar formulario"
-                                         update="@form" accesskey="l" immediate="true"
-                                         rendered="#{beanEdicion.modoFormulario eq 'EDICION'}" />
-
                         <p:commandButton id="btnVolver" icon="pi pi-undo" styleClass="rounded-button ui-button-warning" 
                                          style="height: 2rem;width: 2rem;margin-left:0.3rem" action="#{beanEdicion.volver}" title="(alt+V) Volver"
                                          update="@form" accesskey="v" immediate="true" />

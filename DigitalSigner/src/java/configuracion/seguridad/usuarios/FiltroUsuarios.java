@@ -196,53 +196,54 @@ public class FiltroUsuarios implements Serializable {
             sql = filtros(sql);
 
             this.dsResultado = new DataSet(sql, "ID_USUARIO");
-
-            if (this.getDsResultado().getRowsCount() > 0) {
-                // Establecer formato de salida
-                RowCabecera cabecera = this.dsResultado.getCabecera();
-
-                cabecera.getColumnName("ID_USUARIO")
-                        .setVisible(false);
-
-                cabecera.getColumnName("CO_NIF")
-                        .setTitle("NIF")
-                        .setWidth("8em");
-
-                cabecera.getColumnName("CO_USUARIO")
-                        .setTitle("Código")
-                        .setWidth("7em")
-                        .setTipo(ColumnBase.Tipo.LINK)
-                        .setClase(this)
-                        .setMethod(this.getClass().getMethod("verDetalle"))
-                        .setUpdate("formulario:panelResultado,formulario:mensaje");
-
-                cabecera.getColumnName("DS_APELLIDO1")
-                        .setTitle("1º Apellido")
-                        .setWidth("100%");
-
-                cabecera.getColumnName("DS_APELLIDO2")
-                        .setTitle("2º Apellido")
-                        .setWidth("100%");
-
-                cabecera.getColumnName("DS_NOMBRE")
-                        .setTitle("Nombre")
-                        .setWidth("10em");
-
-                cabecera.getColumnName("BO_ADMIN")
-                        .setVisible(false);
-
-                cabecera.getColumnName("FE_ALTA")
-                        .setTitle("F. Alta")
-                        .setWidth("8em");
-
-                cabecera.getColumnName("FE_DESACTIVO")
-                        .setTitle("F. Desactivo")
-                        .setWidth("8em");
-            }
+            formatearCabeceras();
         } catch (NoSuchMethodException | SecurityException | SQLException ex) {
             LOG.error(ex.getMessage(), ex);
             Mensajes.showError("Error al buscar", ex.getMessage());
         }
+    }
+    
+    private void formatearCabeceras() throws SecurityException, NoSuchMethodException {
+        // Establecer formato de salida
+        RowCabecera cabecera = this.dsResultado.getCabecera();
+
+        cabecera.getColumnName("ID_USUARIO")
+                .setVisible(false);
+
+        cabecera.getColumnName("CO_NIF")
+                .setTitle("NIF")
+                .setWidth("8em");
+
+        cabecera.getColumnName("CO_USUARIO")
+                .setTitle("Código")
+                .setWidth("7em")
+                .setTipo(ColumnBase.Tipo.LINK)
+                .setClase(this)
+                .setMethod(this.getClass().getMethod("verDetalle"))
+                .setUpdate("formulario:panelResultado,formulario:mensaje");
+
+        cabecera.getColumnName("DS_APELLIDO1")
+                .setTitle("1º Apellido")
+                .setWidth("100%");
+
+        cabecera.getColumnName("DS_APELLIDO2")
+                .setTitle("2º Apellido")
+                .setWidth("100%");
+
+        cabecera.getColumnName("DS_NOMBRE")
+                .setTitle("Nombre")
+                .setWidth("10em");
+
+        cabecera.getColumnName("BO_ADMIN")
+                .setVisible(false);
+
+        cabecera.getColumnName("FE_ALTA")
+                .setTitle("F. Alta")
+                .setWidth("8em");
+
+        cabecera.getColumnName("FE_DESACTIVO")
+                .setTitle("F. Desactivo")
+                .setWidth("8em");
     }
     
     private String filtros(String sql) {

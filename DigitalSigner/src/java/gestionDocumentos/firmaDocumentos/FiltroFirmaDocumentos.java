@@ -267,7 +267,7 @@ public class FiltroFirmaDocumentos implements Serializable {
             this.dsResultado = new DataSet(sql, "ID_DOCUMENTO");
 
             // Establecer formato de salida
-            formateaResultado();
+            formatearCabeceras();
         } catch (NoSuchMethodException | SecurityException | SQLException ex) {
             LOG.error(ex.getMessage(), ex);
             Mensajes.showError("Error al buscar", ex.getMessage());
@@ -416,7 +416,7 @@ public class FiltroFirmaDocumentos implements Serializable {
         requestContext.getCallbackParams().put("listaTiposFirma", listaTiposFirma);
     }
     
-    private void formateaResultado() throws NoSuchMethodException {
+    private void formatearCabeceras() throws SecurityException, NoSuchMethodException {
 
         this.dsResultado.setSelectable(true);
         this.dsResultado.setRowSelectColumnaID("ID_DOCUMENTO");

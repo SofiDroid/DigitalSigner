@@ -151,7 +151,7 @@ public class FiltroSalidasXML implements Serializable {
             this.dsResultado = new DataSet(sql, "ID_SALIDAXML");
 
             // Establecer formato de salida
-            formateaResultado();
+            formatearCabeceras();
         } catch (NoSuchMethodException | SecurityException | SQLException ex) {
             LOG.error(ex.getMessage(), ex);
             Mensajes.showError("Error al buscar", ex.getMessage());
@@ -230,7 +230,7 @@ public class FiltroSalidasXML implements Serializable {
         return null;
     }
 
-    private void formateaResultado() throws NoSuchMethodException {
+    private void formatearCabeceras() throws SecurityException, NoSuchMethodException {
 
         this.dsResultado.setSelectable(false);
         this.dsResultado.setRowSelectColumnaID("ID_SALIDAXML");
