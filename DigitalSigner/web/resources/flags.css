@@ -15,6 +15,24 @@ img.flag{
     background-size:100%;
     vertical-align: middle;
 }
+.flag-ca{
+    background:url("\/DigitalSigner/resources/images/flags_alt_responsive.png") no-repeat!important;
+    background-size:100%!important;
+    vertical-align: middle!important;
+    background-position:0 0%!important;
+}
+.flag-gl{
+    background:url("\/DigitalSigner/resources/images/flags_alt_responsive.png") no-repeat!important;
+    background-size:100%!important;
+    vertical-align: middle!important;
+    background-position:0 50%!important;
+}
+.flag-eu{
+    background:url("\/DigitalSigner/resources/images/flags_alt_responsive.png") no-repeat!important;
+    background-size:100%!important;
+    vertical-align: middle!important;
+    background-position:0 100%!important;
+}
 .flag-ad{
     background-position:0 .413223%
 }

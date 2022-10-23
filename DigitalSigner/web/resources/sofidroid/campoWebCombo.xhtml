@@ -9,6 +9,7 @@
     <cc:interface>
         <cc:attribute name = "beanClass" />
         <cc:attribute name = "style" />
+        <cc:attribute name = "oncomplete" />
     </cc:interface>
 
     <!-- IMPLEMENTATION -->
@@ -19,7 +20,7 @@
                              value="#{cc.attrs.beanClass.value}" disabled="#{cc.attrs.beanClass.protegido}"
                              required="#{cc.attrs.beanClass.required}" label="#{cc.attrs.beanClass.label}"
                              hideNoSelectionOption="#{not empty cc.attrs.beanClass.value}">
-                <p:ajax update="@this,#{cc.attrs.beanClass.update}" process="@this" listener="#{cc.attrs.beanClass.onSelect}" />
+                <p:ajax update="@this,#{cc.attrs.beanClass.update}" process="@this" listener="#{cc.attrs.beanClass.onSelect}" oncomplete="#{cc.attrs.oncomplete}" />
                     <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" noSelectionOption="true"/>
                     <f:selectItems value="#{cc.attrs.beanClass.options.entrySet()}" var="entry" 
                                     itemValue="#{entry.key}" itemLabel="#{entry.value}" />

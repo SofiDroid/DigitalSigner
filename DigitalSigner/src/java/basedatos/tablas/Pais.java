@@ -56,6 +56,9 @@ public class Pais implements Serializable, Comparable<Pais> {
     }
 
     public String getCode() {
+        if (code.equalsIgnoreCase("ES") && !locale.getLanguage().equalsIgnoreCase("es")) {
+            return locale.getLanguage();
+        }
         return code;
     }
 

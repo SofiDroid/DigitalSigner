@@ -73,7 +73,8 @@
                         <p:toolbar style="margin-right: 10px;margin-top: 50px;border:none;background-color: transparent!important"> 
                             <p:toolbarGroup align="right" styleClass="gridTransparente">
 
-                                <sd:campoWebCombo id="ddlUnidad" beanClass="#{datosUsuario.cUnidad}" style="margin-right: 2em" />
+                                <sd:campoWebCombo id="ddlUnidad" beanClass="#{datosUsuario.cUnidad}" oncomplete="refrescarMain()" style="margin-right: 2em" />
+                                <p:remoteCommand id="refrescarMain" name="refrescarMain" action="/main" update="@form" immediate="true" />
 
                                 <sd:campoWebTexto id="txtCoUsuario" beanClass="#{datosUsuario.cUsuario}" style="margin-right: 1em" /> 
 
