@@ -17,7 +17,7 @@ public class BdADocfirma extends OperacionSQL implements InterfazDAO {
     protected Integer idDocumento;
     protected Integer idAutoridad;
     protected Integer enOrden;
-    protected Integer diTipofirma;
+    protected String diTipofirma;
     protected String dsFirmaposx;
     protected String dsFirmaposy;
     protected Date feFirma;
@@ -240,11 +240,11 @@ public class BdADocfirma extends OperacionSQL implements InterfazDAO {
         this.enOrden = enOrden;
     }
 
-    public Integer getDiTipofirma() {
+    public String getDiTipofirma() {
         return diTipofirma;
     }
 
-    public void setDiTipofirma(Integer diTipofirma) {
+    public void setDiTipofirma(String diTipofirma) {
         this.diTipofirma = diTipofirma;
     }
 

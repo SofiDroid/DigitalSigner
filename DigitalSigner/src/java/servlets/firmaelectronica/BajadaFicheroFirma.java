@@ -1,10 +1,14 @@
 package servlets.firmaelectronica;
 
+import afirma.AfirmaUtils;
+import afirma.ResultadoValidacionFirmas;
 import basedatos.servicios.StTSituaciondoc;
 import basedatos.tablas.BdDDocumento;
 import basedatos.tablas.BdTSituaciondoc;
 import gestionDocumentos.firmaDocumentos.FiltroFirmaDocumentos;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.net.URLConnection;
 import javax.faces.FacesException;
 import javax.faces.FactoryFinder;
 import javax.faces.context.FacesContextFactory;
@@ -64,17 +68,29 @@ public class BajadaFicheroFirma extends HttpServlet
                     //======================================================
                     //Obtener con qué fichero estamos trabajando (su index)
                     String sIndexFicherofichero = (String) request.getParameter("indexFichero");
-                    if(sIndexFicherofichero == null || sIndexFicherofichero.length() == 0) return; //Error falta parámetro
+                    if(sIndexFicherofichero == null || sIndexFicherofichero.length() == 0) {
+                        String msg = "Parámetro fichero no encontrado (¿el archivo firmado es demasiado grande?)";
+                        LOG.error(msg);
+                        throw new Exception("- " + "indexFichero: " + msg);
+                    }
                     Integer idxFichero = Integer.parseInt(sIndexFicherofichero);
                     
                     //Obtener la gestión, donde están los datos de los documentos firmados
                     FiltroFirmaDocumentos filtroFirmaDocumentos = (FiltroFirmaDocumentos)Session.getNamedBean("filtroFirmaDocumentos");
                     DatosUsuario datosUsuario = (DatosUsuario)Session.getNamedBean("datosUsuario");
-                    if(filtroFirmaDocumentos == null) { return; } //Error falta la Gestion
+                    if(filtroFirmaDocumentos == null) { 
+                        String msg = "Bean filtroFirmaDocumentos no encontrado.";
+                        LOG.error(msg);
+                        throw new Exception("- " + msg);
+                    }
 
                     //Obtener el documento que hemos firmados
                     BdDDocumento bdDDocumento = filtroFirmaDocumentos.getDocumentoByIndex(idxFichero);
-                    if(bdDDocumento == null) { return; } //Error falta el documento
+                    if(bdDDocumento == null) {
+                        String msg = "Parámetro documento no encontrado";
+                        LOG.error(msg);
+                        throw new Exception("- " + "idxFichero -> " + idxFichero + ": " + msg);
+                    }
 
                     //Traza DEBUG
                     LOG.debug(String.format("Portafirmas: El usuario '%s' baja para firmar el documento con ID_DOCUMENTO = %d", datosUsuario.getBdTUsuario().getCoUsuario(), bdDDocumento.getIdDocumento()));
@@ -91,7 +107,6 @@ public class BajadaFicheroFirma extends HttpServlet
                     
                     if(binDocumento == null || binDocumento.length == 0)
                     {
-                        //gestion.getListaErroresProcesoFirma().add(doc.getDESCRIPCION() + " - No existe el documento, consulte con soporte");
                         binDocumento = new byte[0];
                     }
                     else
@@ -101,111 +116,85 @@ public class BajadaFicheroFirma extends HttpServlet
 
                         if(validarNIF || validarFirma)
                         {
-                            StTSituaciondoc stTSituaciondoc = new StTSituaciondoc();
-                            BdTSituaciondoc bdTSituaciondoc = stTSituaciondoc.item(bdDDocumento.getIdSituaciondoc(), null);
-                            if(bdTSituaciondoc != null && bdTSituaciondoc.getCoSituaciondoc() != null 
-                                    && bdTSituaciondoc.getCoSituaciondoc().equalsIgnoreCase("FIRMADO"))
-                            {
-                                //Si el documento está firmado, se puede validar que realmente sea un xml
-//                                if(!UtilPSSDEF.validarQueEsXMLFirmado(documento))
-//                                {
-//                                    gestion.getListaErroresProcesoFirma().add(doc.getDESCRIPCION() + " - El documento está firmado, pero no parece ser un xml de firma");
-//                                    documento = new byte[0];
-//                                }
-
-                                // AÑADIR PSSDEF Y CUANDO  SE VEA QUE NO DEVUELVE FIRMAS, MIRAR
-                                // SI LA AUTORIDAD ACTUAL ESTÁ EN LA LISTA DE PERMITIDOS SIN FIRMAS ANTERIORES Y "ret=true;"
-//                                ArrayList<FirmaBean> listaFirmas = null;
-//                                try {
-//                                    listaFirmas = util.verificaXadesByte(documento);
-//                                } catch (Exception ex) {
-//                                    //Si falla la PSSDEF, la lista se quedará vacía y mostrará un error
-//                                    gestion.getListaErroresProcesoFirma().add(doc.getDESCRIPCION() + " - Problema con el servicio PSSDEF: " + ex.getMessage());
-//                                    Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
-//                                }
-//
-//                                if (listaFirmas == null || listaFirmas.isEmpty())
-//                                {
-//                                    //Si no encuentro firmas miro si está en la lista de permitidos la autoridad actual.
-//                                    boolean boAutorizadoExpecial = gestion.getBoAutoridadEspecial();
-//                                    //Solo realizo la validacion especial de autoridades si el documento firmado viene de IRIS.
-//                                    if(!UtilPSSDEF.validarQueEsXMLFirmado(documento))
-//                                        boAutorizadoExpecial = false;
-//
-//                                    if (!boAutorizadoExpecial)
-//                                    {
-//                                        gestion.getListaErroresProcesoFirma().add(doc.getDESCRIPCION() + " - El documento está firmado, pero no se pueden recuperar sus firmas");
-//                                        documento = new byte[0];
-//                                    }
-//                                }
+                            if (bdDDocumento.getCoExtension().equalsIgnoreCase("XSIG")) {
+                                //Si el documento es XSIG, validar las firmas.
+                                
+                                // INICIO VALIDAR NIF Y FIRMA
+                                AfirmaUtils afirmaUtils = new AfirmaUtils();
+                                ResultadoValidacionFirmas resultadoValidacionFirmas = afirmaUtils.validarFirmas(binDocumento, true, true, true, true);
+                                if (!resultadoValidacionFirmas.isBoValid()) {
+                                    String msg = resultadoValidacionFirmas.getDsValidacion();
+                                    LOG.error(msg);
+                                    
+                                    binDocumento = new byte[0];
+                                    throw new Exception("- " + bdDDocumento.getCoDocumento() + ": " + msg);
+                                }
+                                // FIN VALIDAR NIF Y FIRMA
                             }
                         }
                     }
 
-                    if (extension.equals("PDF"))
-                    {
-                        response.setContentType("application/pdf");
-                        response.setHeader("Content-disposition", "inline; filename=salida.pdf");
+                    String mimeType;
+                    try (ByteArrayInputStream bais = new ByteArrayInputStream(binDocumento)) {
+                        mimeType = URLConnection.guessContentTypeFromStream(bais);
                     }
-                    else if (extension.equals("TIFF") || extension.equals("TIF"))
-                    {
-                        response.setContentType("image/tiff");
-                        response.setHeader("Content-disposition", "inline; filename=salida.tiff");
-                    }
-                    else if (extension.equals("DOC"))
-                    {
-                        response.setContentType("mso-application/Word.Document; charset=UTF-8");
-                        response.setHeader("Content-disposition", "inline; filename=salida.xml");
-                    }
-                    else if (extension.equals("XLS"))
-                    {
-                        response.setContentType("application/vnd.ms-excel");
-                        response.setHeader("Content-disposition", "inline; filename=salida.xls");
-                    }
-                    else if (extension.equals("TXT"))
-                    {
-                        response.setContentType("text/html");
-                        response.setHeader("Content-disposition", "inline; filename=salida.txt");
-                    }
-                    else if (extension.equals("XML"))
-                    {
-                        response.setContentType("text/xml");
-                        response.setHeader("Content-disposition", "inline; filename=salida.xml");
-                    }
-                    else if (extension.equals("DOCX"))
-                    {
-                        response.setContentType("application/msword");
-                        response.setHeader("Content-disposition", "inline; filename=salida.docx");
-                    }
-                    else if (extension.equals("XLSX"))
-                    {
-                        response.setContentType("application/vnd.ms-excel");
-                        response.setHeader("Content-disposition", "inline; filename=salida.xlsx");
-                    }
-                    else if (extension.equals("JPG"))
-                    {
-                        response.setContentType("image/jpeg");
-                        response.setHeader("Content-disposition", "inline; filename=salida.jpg");
-                    }
-                    else if (extension.equals("GIF"))
-                    {
-                        response.setContentType("image/gif");
-                        response.setHeader("Content-disposition", "inline; filename=salida.gif");
-                    }
-                    else if (extension.equals("BMP"))
-                    {
-                        response.setContentType("image/bmp");
-                        response.setHeader("Content-dispositi   on", "inline; filename=salida.bmp");
-                    }
-                    else if (extension.equals("PNG"))
-                    {
-                        response.setContentType("image/bmp");
-                        response.setHeader("Content-disposition", "inline; filename=salida.png");
+                    
+                    response.setContentType(mimeType);
+                    switch (extension) {
+                        case "PDF" -> //response.setContentType("application/pdf");
+                            response.setHeader("Content-disposition", "inline; filename=salida.pdf");
+                        case "XSIG" -> //response.setContentType("application/pdf");
+                            response.setHeader("Content-disposition", "inline; filename=salida.xsig");
+                        case "TIFF", "TIF" -> {
+                            response.setContentType("image/tiff");
+                            response.setHeader("Content-disposition", "inline; filename=salida.tiff");
+                        }
+                        case "DOC" -> {
+                            response.setContentType("mso-application/Word.Document; charset=UTF-8");
+                            response.setHeader("Content-disposition", "inline; filename=salida.xml");
+                        }
+                        case "XLS" -> {
+                            response.setContentType("application/vnd.ms-excel");
+                            response.setHeader("Content-disposition", "inline; filename=salida.xls");
+                        }
+                        case "TXT" -> {
+                            response.setContentType("text/html");
+                            response.setHeader("Content-disposition", "inline; filename=salida.txt");
+                        }
+                        case "XML" -> {
+                            response.setContentType("text/xml");
+                            response.setHeader("Content-disposition", "inline; filename=salida.xml");
+                        }
+                        case "DOCX" -> {
+                            response.setContentType("application/msword");
+                            response.setHeader("Content-disposition", "inline; filename=salida.docx");
+                        }
+                        case "XLSX" -> {
+                            response.setContentType("application/vnd.ms-excel");
+                            response.setHeader("Content-disposition", "inline; filename=salida.xlsx");
+                        }
+                        case "JPG" -> {
+                            response.setContentType("image/jpeg");
+                            response.setHeader("Content-disposition", "inline; filename=salida.jpg");
+                        }
+                        case "GIF" -> {
+                            response.setContentType("image/gif");
+                            response.setHeader("Content-disposition", "inline; filename=salida.gif");
+                        }
+                        case "BMP" -> {
+                            response.setContentType("image/bmp");
+                            response.setHeader("Content-dispositi   on", "inline; filename=salida.bmp");
+                        }
+                        case "PNG" -> {
+                            response.setContentType("image/bmp");
+                            response.setHeader("Content-disposition", "inline; filename=salida.png");
+                        }
+                        default -> {
+                        }
                     }
                     
                     Base64 B64E2 = new Base64();
-                    String binDocumentoB64 = "";
-                    binDocumentoB64=B64E2.encodeToString(binDocumento).replace("\n","").replace("\r","");            
+                    String binDocumentoB64 = B64E2.encodeToString(binDocumento).replace("\n","").replace("\r","");            
                     //======================================================
                     
                     // Preparo las cabeceras de salida del response
@@ -226,6 +215,9 @@ public class BajadaFicheroFirma extends HttpServlet
                 catch (Exception ex) 
                 {
                     LOG.error(ex.getMessage(), ex);
+                    if (out != null) {
+                        response.getWriter().write("[ERROR] " + ex.getMessage());
+                    }
                 }
                 finally 
                 {

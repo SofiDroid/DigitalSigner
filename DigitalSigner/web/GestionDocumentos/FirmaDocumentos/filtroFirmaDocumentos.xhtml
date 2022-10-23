@@ -27,7 +27,7 @@
                             <p:confirm header="#{msg['confirmacion']}" message="#{msg['confirmacion_firma']}" icon="pi pi-info-circle"/>
                         </p:commandButton>
 
-                        <p:commandButton id="btnBuscar" icon="pi pi-search" styleClass="rounded-button ui-button-info" 
+                        <p:commandButton id="btnBuscar" widgetVar="btnBuscar" icon="pi pi-search" styleClass="rounded-button ui-button-info" 
                                          style="height: 2rem;width: 2rem;margin-left:0.3rem" action="#{filtroFirmaDocumentos.buscar}" title="(alt+B) Buscar resultados"
                                          update="panelResultado,mensaje" accesskey="b" />
 
@@ -77,7 +77,8 @@
                 <script type="text/javascript">
                     //<![CDATA[
                     var pbClient = PF('pbClient');
-
+                    var mensajeError = '';
+                    
                     function startProgreso() {
                         PF('btnFirmar').disable();
                         PF('dlgProgreso').show();
@@ -90,7 +91,7 @@
                             document.getElementById('formulario:pbLabel').innerHTML = textoLabel;
                         }
                         else {
-                            var porcentaje = Math.round(((actual+1) * 100)/total);
+                            var porcentaje = Math.round(((actual) * 100)/total);
 
                             pbClient.setValue(porcentaje);
                             document.getElementById('formulario:pbLabel').innerHTML = 'Firmando elemento ' + (actual+1) + ' de ' + total + '...(' + porcentaje + '%)';
@@ -110,7 +111,14 @@
                         PF('dlgProgreso').hide();
                         PF('btnFirmar').enable();
 
-                        PF('dlgFirmaFinalizada').show();
+                        if (mensajeError !== '') {
+                            PF('mensaje').renderMessage({"summary":"Error firmando documentos",
+                                                            "detail":mensajeError,
+                                                            "severity":"error"});
+                        }
+                        else {
+                            PF('dlgFirmaFinalizada').show();
+                        }
                     }
 
                     //]]>
@@ -178,8 +186,6 @@
 
                                 PrimeFaces.info('Iniciando aplicación de autoFirma...'); //LOG
                                 refrescarProgreso(0,0,'Iniciando aplicación de autoFirma...');
-                                //refrescarEstado("");
-
                                 iniciarAplicacionAutoFirma(iniciarAutoFirmaOK, iniciarAutoFirmaERROR);
                             }
                         }
@@ -270,7 +276,6 @@
                     {
                         PrimeFaces.info('Iniciando la firma...');
                         refrescarProgreso(0,0,'Iniciando la firma...');
-                        //refrescarEstado("");
 
                         AutoScript.setStickySignatory(true);
 
@@ -284,7 +289,6 @@
                         {
                             //Si estamos reintentando, voy a esperar un poco entre firma y firma
                             refrescarProgreso(elemento, numSeleccionados);
-                            //refrescarEstado(" (Reintentando)");
                             setTimeout(function ()
                             {
                                 firmarAux(elemento);
@@ -310,7 +314,6 @@
                             var xmlHttpReq = false;
                             var self = this;
 
-                            //refrescarEstado(" (Descargando)");
                             PrimeFaces.info('(Descargando)');
 
                             // Mozilla/Safari
@@ -341,15 +344,23 @@
                                         PrimeFaces.error('Error en respuesta de servlet de bajada de documento.');
                                     }
                                     else {
-                                        PrimeFaces.error('Tipo Firma (0-Firma, 1-Contrafirma) =  ' + tipoFirma[elemento]);
-                                        if (tipoFirma[elemento] === "0")
-                                        {
-                                            var respuesta = self.xmlHttpReq.responseText;
-                                            PrimeFaces.error(respuesta);
-                                            endDownloadParaFirma(respuesta, listaDocumentosFirma[elemento], elemento);
-                                        } else if (tipoFirma[elemento] === "1")
-                                        {
-                                            endDownloadParaContraFirma(self.xmlHttpReq.responseText, listaDocumentosFirma[elemento], elemento);
+                                        if (self.xmlHttpReq.responseText.startsWith("[ERROR]")) {ç
+                                            if (mensajeError !== '') {
+                                                mensajeError += "<br />";
+                                            }
+                                            mensajeError += self.xmlHttpReq.responseText;
+                                        }
+                                        else {
+                                            PrimeFaces.error('Tipo Firma (0-Firma, 1-Contrafirma) =  ' + tipoFirma[elemento]);
+                                            if (tipoFirma[elemento] === "0")
+                                            {
+                                                var respuesta = self.xmlHttpReq.responseText;
+                                                PrimeFaces.error(respuesta);
+                                                endDownloadParaFirma(respuesta, listaDocumentosFirma[elemento], elemento);
+                                            } else if (tipoFirma[elemento] === "1")
+                                            {
+                                                endDownloadParaContraFirma(self.xmlHttpReq.responseText, listaDocumentosFirma[elemento], elemento);
+                                            }
                                         }
                                     }
                                 }
@@ -365,7 +376,7 @@
                             posicion = 0;
                             alertarError("Error Firma 2", e);
                             cancelProgreso();
-                            //mandarRefrescarListado();
+                            mandarRefrescarListado();
                         }
                     }
 
@@ -418,7 +429,7 @@
                                 posicion = 0;
                                 alertarError("Firma cancelada: " + AutoScript.getErrorMessage(), e);
                                 cancelProgreso();
-                                //mandarRefrescarListado();
+                                mandarRefrescarListado();
                             }
                         }, 10);
                     }
@@ -431,7 +442,6 @@
                         PrimeFaces.info('elemento = ' + elemento);
                         PrimeFaces.info('i = ' + i);
 
-                        //refrescarEstado(" (Contra-Firmando)");
                         refrescarProgreso(i, numSeleccionados);
                         PrimeFaces.info(' (Contra-Firmando)');
 
@@ -484,7 +494,7 @@
                                 posicion = 0;
                                 alertarError("Contra-Firma cancelada: " + AutoScript.getErrorMessage(), e);
                                 cancelProgreso();
-                                //mandarRefrescarListado();
+                                mandarRefrescarListado();
                             }
                         }, 10);
                     }
@@ -499,7 +509,7 @@
                         posicion = 0;
                         alertarError("Firma cancelada: " + mensaje, null);
                         cancelProgreso();
-                        //mandarRefrescarListado();
+                        mandarRefrescarListado();
                     }
 
                     function subeFirmado(docFirmado, elemento, i)
@@ -560,6 +570,13 @@
                                             refrescarProgreso(0,0, "Error en respuesta de servlet de subida de fichero.");
                                             //refrescarEstado("");
                                         }
+                                        else {
+                                            //PrimeFaces.error('Tipo Firma (0-Firma, 1-Contrafirma) =  ' + tipoFirma[elemento]);
+                                            if (mensajeError !== '') {
+                                                mensajeError += "<br />";
+                                            }
+                                            mensajeError += self.xmlHttpReq.responseText;
+                                        }
 
                                         rellamada();
                                     }
@@ -571,7 +588,7 @@
                                 posicion = 0;
                                 alertarError("Error Firma 3.2", e);
                                 cancelProgreso();
-                                //mandarRefrescarListado();
+                                mandarRefrescarListado();
                             }
                         }, 10);
                     }
@@ -583,8 +600,6 @@
                             firmar(posicion);
                         }
                         else {
-                            //setProgreso(100, "Terminado");
-                            //refrescarEstado(" (actualizando)");
                             PrimeFaces.info(' (actualizando)');
                             setTimeout(finalizarFirma, 10);
                         }
@@ -621,11 +636,10 @@
                     {
                         try
                         {
-                            //toSrvLog(SDElementoPorId("progreso").innerHTML);
-                            //SDElementoPorId('btnActualizarArbol').click();
+                            PF('btnBuscar').click();
                         } catch (e)
                         {
-                            //alertarError("mandarRefrescarListado", e);
+                            alertarError("Refrescar elementos", e);
                         }
                     }
 

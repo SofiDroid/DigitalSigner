@@ -2,9 +2,7 @@ package basedatos;
 
 import init.AppInit;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import tomcat.persistence.EntityManager;
 import tomcat.persistence.ResultData;
 

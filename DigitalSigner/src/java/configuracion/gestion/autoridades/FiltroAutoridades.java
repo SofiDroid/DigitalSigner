@@ -1,6 +1,5 @@
 package configuracion.gestion.autoridades;
 
-import configuracion.seguridad.unidades.*;
 import basedatos.ColumnBase;
 import basedatos.DataSet;
 import basedatos.RowCabecera;

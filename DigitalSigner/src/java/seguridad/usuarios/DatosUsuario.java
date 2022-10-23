@@ -1,15 +1,11 @@
 package seguridad.usuarios;
 
 import java.io.Serializable;
-import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.context.FacesContext;
-import javax.inject.Inject;
 import javax.inject.Named;
-import org.primefaces.event.SelectEvent;
 import basedatos.tablas.Pais;
-import basedatos.servicios.ServicioPaises;
 import basedatos.tablas.BdTUnidad;
 import basedatos.tablas.BdTUsuario;
 import java.util.ArrayList;

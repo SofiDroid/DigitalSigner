@@ -93,8 +93,9 @@ public class StDSalidaxml extends StBase {
         parametros.put("USUARIOBD", newBdDSalidaxml.getUsuariobd());
         parametros.put("TSTBD", newBdDSalidaxml.getTstbd());
 
-
-        return executeNativeQueryParametros(newBdDSalidaxml.getInsert(), parametros, em);
+        newBdDSalidaxml.setIdSalidaxml(executeNativeQueryParametros(newBdDSalidaxml.getInsert(), parametros, em));
+        
+        return newBdDSalidaxml.getIdSalidaxml();
     }
 
     public int actualiza(BdDSalidaxml upBdDSalidaxml, EntityManager em) throws Exception {

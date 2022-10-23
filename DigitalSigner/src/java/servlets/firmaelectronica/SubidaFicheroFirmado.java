@@ -4,31 +4,19 @@ import afirma.AfirmaUtils;
 import afirma.ResultadoValidacionFirmas;
 import basedatos.servicios.StADocfirma;
 import basedatos.servicios.StAHistdoc;
-import basedatos.servicios.StAHistentxml;
-import basedatos.servicios.StAHistsalxml;
 import basedatos.servicios.StDDocumento;
-import basedatos.servicios.StDEntradaxml;
 import basedatos.servicios.StDSalidaxml;
 import basedatos.servicios.StTSituaciondoc;
-import basedatos.servicios.StTSituacionxml;
 import basedatos.servicios.StTTipodocumento;
 import basedatos.tablas.BdADocfirma;
 import basedatos.tablas.BdAHistdoc;
-import basedatos.tablas.BdAHistentxml;
-import basedatos.tablas.BdAHistsalxml;
 import basedatos.tablas.BdDDocumento;
-import basedatos.tablas.BdDEntradaxml;
-import basedatos.tablas.BdDSalidaxml;
 import basedatos.tablas.BdTSituaciondoc;
-import basedatos.tablas.BdTSituacionxml;
 import basedatos.tablas.BdTTipodocumento;
-import excepciones.RegistryNotFoundException;
 import gestionDocumentos.firmaDocumentos.FiltroFirmaDocumentos;
 import init.AppInit;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
 import javax.servlet.http.HttpServlet;
@@ -38,8 +26,6 @@ import javax.xml.bind.JAXB;
 import jax.client.services.interfaces.Cabecera;
 import jax.client.services.interfaces.DocumentNotificationRequest;
 import jax.client.services.interfaces.Documento;
-import jax.client.services.interfaces.NotificationReceiver;
-import jax.client.services.interfaces.NotificationReceiverImpl;
 import org.apache.log4j.Logger;
 import org.apache.tomcat.util.codec.binary.Base64;
 import tomcat.persistence.EntityManager;
@@ -55,6 +41,7 @@ public class SubidaFicheroFirmado extends HttpServlet
     
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
     {
+        FiltroFirmaDocumentos filtroFirmaDocumentos = null;
         try
         {
             // Dejamos solicitar documentos solamente si está logado
@@ -63,9 +50,13 @@ public class SubidaFicheroFirmado extends HttpServlet
                 PrintWriter out=null;
                 
                 //Obtener la gestión, donde están los datos de los documentos firmados
-                FiltroFirmaDocumentos filtroFirmaDocumentos = (FiltroFirmaDocumentos) Session.getNamedBean("filtroFirmaDocumentos");
+                filtroFirmaDocumentos = (FiltroFirmaDocumentos) Session.getNamedBean("filtroFirmaDocumentos");
                 //DatosUsuario datosUsuario = (DatosUsuario)Session.getNamedBean("datosUsuario");
-                if(filtroFirmaDocumentos == null) { return; } //Error falta la Gestion
+                if(filtroFirmaDocumentos == null) { 
+                    String msg = "Bean filtroFirmaDocumentos no encontrado.";
+                    LOG.error(msg);
+                    throw new Exception("- " + msg);
+                }
                 
                 BdDDocumento bdDDocumento;
 
@@ -74,15 +65,12 @@ public class SubidaFicheroFirmado extends HttpServlet
                     out = response.getWriter();
                     request.setCharacterEncoding("UTF-8");
                     
-                    //FacesContext ctx = m_facesContextFactory.getFacesContext(getServletContext(), request, response, m_lifecycle);
-                    
                     //Obtener con qué fichero estamos trabajando (su index)
                     String sIndexFicherofichero = (String) request.getParameter("indexFichero");
                     if(sIndexFicherofichero == null || sIndexFicherofichero.length() == 0) {
                         String msg = "Parámetro fichero no encontrado (¿el archivo firmado es demasiado grande?)";
                         LOG.error(msg);
-                        //gestion.getListaErroresProcesoFirma().add(msg);
-                        return; //Error falta parámetro
+                        throw new Exception("- " + "indexFichero: " + msg);
                     }
                     Integer idxFichero = Integer.parseInt(sIndexFicherofichero);
                     
@@ -91,8 +79,7 @@ public class SubidaFicheroFirmado extends HttpServlet
                     if(bdDDocumento == null) {
                         String msg = "Parámetro documento no encontrado";
                         LOG.error(msg);
-                        //gestion.getListaErroresProcesoFirma().add(msg);
-                        return; //Error falta el documento
+                        throw new Exception("- " + "idxFichero -> " + idxFichero + ": " + msg);
                     } 
 
                     //Obtener los datos que vamos a guardar (el documento firmado)
@@ -102,16 +89,17 @@ public class SubidaFicheroFirmado extends HttpServlet
                     if(binDocumentoFirmado == null || binDocumentoFirmado.length == 0) { 
                         String msg = "Parámetro entrada/data2 no encontrado (¿el archivo firmado es demasiado grande?)";
                         LOG.error(msg);
-                        //gestion.getListaErroresProcesoFirma().add(msg);
-                        return;   //Error faltan los datos
+                        throw new Exception("- " + bdDDocumento.getCoDocumento() + ": " + msg);
                     }
                     
                     // INICIO VALIDAR NIF Y FIRMA
                     AfirmaUtils afirmaUtils = new AfirmaUtils();
                     ResultadoValidacionFirmas resultadoValidacionFirmas = afirmaUtils.validarFirmas(binDocumentoFirmado, true, true, true, true);
                     if (!resultadoValidacionFirmas.isBoValid()) {
-                        LOG.error(resultadoValidacionFirmas.getDsValidacion());
-                        return; //Error en la validación del documento firmado.
+                        //"Firma del documento no válida."
+                        String msg = resultadoValidacionFirmas.getDsValidacion();
+                        LOG.error(msg);
+                        throw new Exception("- " + bdDDocumento.getCoDocumento() + ": " + msg);
                     }
                     // FIN VALIDAR NIF Y FIRMA
                     
@@ -220,9 +208,12 @@ public class SubidaFicheroFirmado extends HttpServlet
                     //FALTA NOTIFICACION POR CORREO
                     //FIN NOTIFICACION POR CORREO
                 }
-                catch(IOException | NumberFormatException ex)
+                catch(Exception ex)
                 {
                     LOG.error(ex.getMessage(), ex);
+                    if (out != null) {
+                        out.write(ex.getMessage());
+                    }
                 }
                 finally 
                 {
@@ -237,7 +228,6 @@ public class SubidaFicheroFirmado extends HttpServlet
         }
         catch(Exception ex)
         {
-            // No se ha logado, le largamos
             LOG.error(ex.getMessage(), ex);
         }
     }

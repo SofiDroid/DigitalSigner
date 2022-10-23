@@ -115,10 +115,10 @@ public class OperacionSQL {
     public void recuperaValorCampo(Object campoJavaClass, String tipoName, String campoBD, HashMap<String,Object> bld) throws Exception {
         Field campo;
         try {
-            campo = campoJavaClass.getClass().getDeclaredField(tipoName);;
+            campo = campoJavaClass.getClass().getDeclaredField(tipoName);
         }
         catch (NoSuchFieldException | SecurityException na) {
-            campo = campoJavaClass.getClass().getSuperclass().getDeclaredField(tipoName);;
+            campo = campoJavaClass.getClass().getSuperclass().getDeclaredField(tipoName);
         }
         campo.setAccessible(true);
         

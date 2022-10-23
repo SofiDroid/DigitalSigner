@@ -7,7 +7,6 @@ package utilidades;
 import java.io.ByteArrayInputStream;
 import java.net.URLConnection;
 import javax.enterprise.context.RequestScoped;
-import javax.faces.context.FacesContext;
 import javax.inject.Named;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;

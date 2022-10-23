@@ -46,6 +46,7 @@ public class FiltroFirmaDocumentos implements Serializable {
     private boolean filtroVisible = true;
     private DataSet dsResultado = null;
     private VisorMedia visorDocumentos = null;
+    private String mensajeError = null;
     //private EdicionDocumento edicionDocumento = null; 
     
     @PostConstruct
@@ -173,6 +174,14 @@ public class FiltroFirmaDocumentos implements Serializable {
 
     public void setFiltroVisible(boolean filtroVisible) {
         this.filtroVisible = filtroVisible;
+    }
+
+    public String getMensajeError() {
+        return mensajeError;
+    }
+
+    public void setMensajeError(String mensajeError) {
+        this.mensajeError = mensajeError;
     }
 /*
     public EdicionUnidades getEdicionUnidades() {

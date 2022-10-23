@@ -1,42 +1,25 @@
 package gestionXML.salidasXML;
 
-import afirma.AfirmaUtils;
-import afirma.ResultadoValidacionFirmas;
 import basedatos.ColumnBase;
 import basedatos.ColumnCabecera;
 import basedatos.DataSet;
 import basedatos.RowCabecera;
-import basedatos.servicios.StDDocumento;
-import basedatos.servicios.StDEntradaxml;
 import basedatos.servicios.StDSalidaxml;
-import basedatos.tablas.BdDDocumento;
-import basedatos.tablas.BdDEntradaxml;
 import basedatos.tablas.BdDSalidaxml;
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.io.Serializable;
-import java.net.URLConnection;
 import java.sql.SQLException;
 import java.util.Date;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
-import javax.faces.context.FacesContext;
 import javax.inject.Named;
 import org.apache.log4j.Logger;
-import org.primefaces.model.DefaultStreamedContent;
-import org.primefaces.model.StreamedContent;
-import utilidades.CampoWebCodigo;
-import utilidades.CampoWebDescripcion;
 import utilidades.CampoWebFechaRango;
 import utilidades.CampoWebLupa;
 import utilidades.CampoWebNumero;
-import utilidades.FileDownloadView;
 import utilidades.Formateos;
 import utilidades.Mensajes;
 import utilidades.Msg;
 import utilidades.Session;
-import utilidades.VisorMedia;
 
 /**
  *
