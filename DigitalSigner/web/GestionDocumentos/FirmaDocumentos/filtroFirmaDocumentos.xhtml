@@ -67,14 +67,10 @@
                     <i class="pi pi-spin pi-spinner" style="font-size: 1em;margin-right: 5px;margin-top: 20px" /><p:outputLabel id="pbLabel"  value="Iniciando AutoFirma..." style="padding-top: 20px"/>
                     <p:progressBar id="progressBarClient" widgetVar="pbClient" style="width:300px;height:20px;margin-top: 5px;" />
                 </p:dialog>
-                <p:dialog id="dlgFirmaFinalizada" widgetVar="dlgFirmaFinalizada" modal="true" draggable="false" closable="true" resizable="false" showHeader="true" header="Firma" closeOnEscape="true">
-                    <span>Documentos firmados correctamente!</span>
-                </p:dialog>
-                <p:remoteCommand id="buscarClick" name="buscarClick" action="#{filtroFirmaDocumentos.buscar()}" update="panelResultado,mensaje" />
+                <p:remoteCommand id="buscarClick" name="buscarClick" action="#{filtroFirmaDocumentos.buscar()}" update="panelResultado,mensaje" oncomplete="EndProgreso()" />
                 <script type="text/javascript">
                     //<![CDATA[
                     var pbClient = PF('pbClient');
-                    var mensajeError = '';
                     
                     function startProgreso() {
                         PF('btnFirmar').disable();
@@ -101,24 +97,6 @@
                         PF('dlgProgreso').hide();
                         PF('btnFirmar').enable();
                     }
-
-                    function EndProgreso() {
-                        pbClient.setValue(0);
-
-                        PF('dlgProgreso').hide();
-                        PF('btnFirmar').enable();
-
-                        if (mensajeError !== '') {
-                            PF('mensaje').renderMessage({"summary":"Error firmando documentos",
-                                                            "detail":mensajeError,
-                                                            "severity":"error"});
-                        }
-                        else {
-                            PF('dlgFirmaFinalizada').show();
-                        }
-                        mandarRefrescarListado();
-                    }
-
                     //]]>
                 </script>
                 <script>
@@ -605,7 +583,7 @@
 
                     function finalizarFirma()
                     {
-                        EndProgreso();
+                        mandarRefrescarListado();
                         PrimeFaces.info('Firma finalizada');
                     }
 
@@ -699,6 +677,28 @@
                     //]]>
                 </script>
             </p:card>
+            <script>
+                //<![CDATA[
+                    var mensajeError = '';
+                    function EndProgreso() {
+                        pbClient.setValue(0);
+
+                        PF('dlgProgreso').hide();
+                        PF('btnFirmar').enable();
+
+                        if (mensajeError !== '') {
+                            PF('mensaje').renderMessage({"summary":"Error firmando documentos",
+                                                            "detail":mensajeError,
+                                                            "severity":"error"});
+                        }
+                        else {
+                            PF('mensaje').renderMessage({"summary":"Firma completada",
+                                                            "detail":"Todos los documentos se firmaron correctamente.",
+                                                            "severity":"info"});
+                        }
+                    }
+                //]]>
+            </script>
             <sd:visorMedia id="visorDocumentos" beanClass="#{filtroFirmaDocumentos.visorDocumentos}" />
             <p:log id="logFirma" widgetVar="logFirma" rendered="false" />
         </ui:define>

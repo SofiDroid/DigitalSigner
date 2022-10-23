@@ -2,17 +2,23 @@ package servlets.firmaelectronica;
 
 import afirma.AfirmaUtils;
 import afirma.ResultadoValidacionFirmas;
+import basedatos.servicios.StAAutusu;
 import basedatos.servicios.StADocfirma;
 import basedatos.servicios.StAHistdoc;
 import basedatos.servicios.StDDocumento;
 import basedatos.servicios.StDSalidaxml;
+import basedatos.servicios.StTAutoridad;
 import basedatos.servicios.StTSituaciondoc;
 import basedatos.servicios.StTTipodocumento;
+import basedatos.servicios.StTUsuario;
+import basedatos.tablas.BdAAutusu;
 import basedatos.tablas.BdADocfirma;
 import basedatos.tablas.BdAHistdoc;
 import basedatos.tablas.BdDDocumento;
+import basedatos.tablas.BdTAutoridad;
 import basedatos.tablas.BdTSituaciondoc;
 import basedatos.tablas.BdTTipodocumento;
+import basedatos.tablas.BdTUsuario;
 import gestionDocumentos.firmaDocumentos.FiltroFirmaDocumentos;
 import init.AppInit;
 import java.io.PrintWriter;
@@ -23,13 +29,16 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXB;
-import jax.client.services.interfaces.Cabecera;
-import jax.client.services.interfaces.DocumentNotificationRequest;
-import jax.client.services.interfaces.Documento;
+import jax.client.services.interfaces.documentnotification.Cabecera;
+import jax.client.services.interfaces.documentnotification.DocumentNotificationRequest;
+import jax.client.services.interfaces.documentnotification.Documento;
+import jax.client.services.interfaces.mailservice.Destinatarios;
+import jax.ws.services.interfaces.DocumentServiceImpl;
 import org.apache.log4j.Logger;
 import org.apache.tomcat.util.codec.binary.Base64;
 import tomcat.persistence.EntityManager;
 import utilidades.Configuraciones;
+import utilidades.Correo;
 import utilidades.Session;
 
 /**
@@ -108,6 +117,9 @@ public class SubidaFicheroFirmado extends HttpServlet
                         // FIN VALIDAR NIF Y FIRMA
                     }
                     
+                    boolean existenFirmasPendientes = false;
+                    BdADocfirma itemBdADocfirmaSiguiente = null;
+                    
                     // INICIO TRANSACCION
                     try (EntityManager entityManager = AppInit.getEntityManager()) {
                         entityManager.getTransaction().begin();
@@ -140,10 +152,10 @@ public class SubidaFicheroFirmado extends HttpServlet
                             BdADocfirma filtroBdADocfirma = new BdADocfirma();
                             filtroBdADocfirma.setIdDocumento(bdDDocumento.getIdDocumento());
                             ArrayList<BdADocfirma> firmasDocumento = stADocfirma.filtro(filtroBdADocfirma, entityManager);
-                            boolean existenFirmasPendientes = false;
                             for (BdADocfirma itemBdADocfirma : firmasDocumento) {
                                 if (itemBdADocfirma.getFeFirma() == null) {
                                     existenFirmasPendientes = true;
+                                    itemBdADocfirmaSiguiente = itemBdADocfirma;
                                     break;
                                 }
                             }
@@ -171,35 +183,35 @@ public class SubidaFicheroFirmado extends HttpServlet
                     // FIN TRANSACCION
                     
                     //Notificacion por WebService de que el documento se ha firmado por el ultimo firmante.
-                    StTTipodocumento stTTipodocumento = new StTTipodocumento();
-                    BdTTipodocumento bdTTipodocumento = stTTipodocumento.item(bdDDocumento.getIdTipodocumento(), null);
+                    boolean boNotificarWebService = Boolean.valueOf(new Configuraciones().recuperaConfiguracion("NOTIFICAWS"));
+                    if (boNotificarWebService) {
+                        StTTipodocumento stTTipodocumento = new StTTipodocumento();
+                        BdTTipodocumento bdTTipodocumento = stTTipodocumento.item(bdDDocumento.getIdTipodocumento(), null);
 
-                    StTSituaciondoc stTSituaciondoc = new StTSituaciondoc();
-                    BdTSituaciondoc bdTSituaciondoc = stTSituaciondoc.item(bdDDocumento.getIdSituaciondoc(), null);
+                        StTSituaciondoc stTSituaciondoc = new StTSituaciondoc();
+                        BdTSituaciondoc bdTSituaciondoc = stTSituaciondoc.item(bdDDocumento.getIdSituaciondoc(), null);
 
-                    if (bdTSituaciondoc.getCoSituaciondoc().equalsIgnoreCase("FIRMADO")) {
-                        DocumentNotificationRequest documentNotificationRequest = new DocumentNotificationRequest();
-                        documentNotificationRequest.setCabecera(new Cabecera());
-                        documentNotificationRequest.getCabecera().setCoUnidad(Session.getDatosUsuario().getBdTUnidad().getCoUnidad());
-                        documentNotificationRequest.setDocumento(new Documento());
-                        documentNotificationRequest.getDocumento().setCoSituacionDoc(bdTSituaciondoc.getCoSituaciondoc());
-                        documentNotificationRequest.getDocumento().setCoTipoDocumento(bdTTipodocumento.getCoTipodocumento());
-                        documentNotificationRequest.getDocumento().setCoFichero(bdDDocumento.getCoFichero());
-                        documentNotificationRequest.getDocumento().setCoExtension(bdDDocumento.getCoExtension());
-                        documentNotificationRequest.getDocumento().setBlDocumento(bdDDocumento.getBlDocumento(null));
-                        documentNotificationRequest.getDocumento().setDsDocumento(bdDDocumento.getDsDocumento());
-                        documentNotificationRequest.getDocumento().setDsObservaciones(null);
+                        if (bdTSituaciondoc.getCoSituaciondoc().equalsIgnoreCase("FIRMADO")) {
+                            DocumentNotificationRequest documentNotificationRequest = new DocumentNotificationRequest();
+                            documentNotificationRequest.setCabecera(new Cabecera());
+                            documentNotificationRequest.getCabecera().setCoUnidad(Session.getDatosUsuario().getBdTUnidad().getCoUnidad());
+                            documentNotificationRequest.setDocumento(new Documento());
+                            documentNotificationRequest.getDocumento().setCoSituacionDoc(bdTSituaciondoc.getCoSituaciondoc());
+                            documentNotificationRequest.getDocumento().setCoTipoDocumento(bdTTipodocumento.getCoTipodocumento());
+                            documentNotificationRequest.getDocumento().setCoFichero(bdDDocumento.getCoFichero());
+                            documentNotificationRequest.getDocumento().setCoExtension(bdDDocumento.getCoExtension());
+                            documentNotificationRequest.getDocumento().setBlDocumento(bdDDocumento.getBlDocumento(null));
+                            documentNotificationRequest.getDocumento().setDsDocumento(bdDDocumento.getDsDocumento());
+                            documentNotificationRequest.getDocumento().setDsObservaciones(null);
 
-                        // DAR DE ALTA EL XML DE SALIRA POR SI FALLA PODER REPROCESAR LA SALIDA
-                        StringWriter sw = new StringWriter();
-                        JAXB.marshal(documentNotificationRequest, sw);
-                        String xmlString = sw.toString();
+                            // DAR DE ALTA EL XML DE SALIRA POR SI FALLA PODER REPROCESAR LA SALIDA
+                            StringWriter sw = new StringWriter();
+                            JAXB.marshal(documentNotificationRequest, sw);
+                            String xmlString = sw.toString();
 
-                        StDSalidaxml stDSalidaxml = new StDSalidaxml();
-                        Integer idSalidaXML = stDSalidaxml.grabarSalidaXML(xmlString, bdDDocumento.getIdDocumento(), null);
+                            StDSalidaxml stDSalidaxml = new StDSalidaxml();
+                            Integer idSalidaXML = stDSalidaxml.grabarSalidaXML(xmlString, bdDDocumento.getIdDocumento(), null);
 
-                        boolean boNotificarWebService = Boolean.valueOf(new Configuraciones().recuperaConfiguracion("NOTIFICAWS"));
-                        if (boNotificarWebService) {
                             String resultado = documentNotification(documentNotificationRequest);
 
                             if (resultado.equalsIgnoreCase("OK")) {
@@ -214,7 +226,47 @@ public class SubidaFicheroFirmado extends HttpServlet
                     }
                     //Fin Notificacion por WebService
                     
-                    //FALTA NOTIFICACION POR CORREO
+                    //NOTIFICACION POR CORREO
+                    boolean enviarCorreoFirmante = Boolean.valueOf(new Configuraciones().recuperaConfiguracion("ENVIOCORREOFIRMANTE"));
+                    if (enviarCorreoFirmante && existenFirmasPendientes && itemBdADocfirmaSiguiente != null) {
+                        String dsAutoridad = null;
+                        ArrayList<Destinatarios> listaDestinatarios = new ArrayList<>();
+                        
+                        Integer idAutoridad = itemBdADocfirmaSiguiente.getIdAutoridad();
+                        StTAutoridad stTAutoridad = new StTAutoridad();
+                        BdTAutoridad itemBdTAutoridad = stTAutoridad.item(idAutoridad, null);
+                        if (itemBdTAutoridad != null) {
+                            dsAutoridad = itemBdTAutoridad.getCoAutoridad() + " - " + itemBdTAutoridad.getDsAutoridad();
+
+                            StAAutusu stAAutusu = new StAAutusu();
+                            BdAAutusu filtroBdAAutusu = new BdAAutusu();
+                            filtroBdAAutusu.setIdAutoridad(idAutoridad);
+                            ArrayList<BdAAutusu> listaBdAAutusu = stAAutusu.filtro(filtroBdAAutusu, null);
+                            if (listaBdAAutusu != null && !listaBdAAutusu.isEmpty()) {
+                                for (BdAAutusu itemBdAAutusu : listaBdAAutusu) {
+                                    BdTUsuario bdTUsuario = new StTUsuario().item(itemBdAAutusu.getIdUsuario(), false, null);
+                                    Destinatarios destinatario = new Destinatarios();
+                                    // TODO: Añadir campo email a los usuarios.
+                                    destinatario.setEmailAddress("fulgore1983@gmail.com"/*bdTUsuario.getEmail()*/);
+                                    /**
+                                     * Tipo de receptor:
+                                     * - TO: Receptor normal (PARA)
+                                     * - CC: Receptor en copia (CC)
+                                     * - BCC: Receptor en copia oculta (CCO)
+                                     */
+                                    destinatario.setRecipientType("TO");
+                                    listaDestinatarios.add(destinatario);
+                                }
+                            }
+                        }
+
+                        boolean resultadoEmail = Correo.enviar("La autoridad " + dsAutoridad + ", tiene documentos pendientes de firma.", 
+                                                            "DigitalSigner: documentos pendientes de firma.", null, "admin@digitalsigner.com", 
+                                                            listaDestinatarios);
+                        if (!resultadoEmail) {
+                            Logger.getLogger(DocumentServiceImpl.class).error("No se ha podido notificar a los firmantes por correo.");
+                        }
+                    }
                     //FIN NOTIFICACION POR CORREO
                 }
                 catch(Exception ex)
@@ -256,9 +308,9 @@ public class SubidaFicheroFirmado extends HttpServlet
         return "Short description";
     }
 
-    private static String documentNotification(jax.client.services.interfaces.DocumentNotificationRequest documentNotificationRequest) {
-        jax.client.services.interfaces.NotificationReceiver service = new jax.client.services.interfaces.NotificationReceiver();
-        jax.client.services.interfaces.NotificationReceiverImpl port = service.getNotificationReceiverImplPort();
+    private static String documentNotification(jax.client.services.interfaces.documentnotification.DocumentNotificationRequest documentNotificationRequest) {
+        jax.client.services.interfaces.documentnotification.NotificationReceiver service = new jax.client.services.interfaces.documentnotification.NotificationReceiver();
+        jax.client.services.interfaces.documentnotification.NotificationReceiverImpl port = service.getNotificationReceiverImplPort();
         return port.documentNotification(documentNotificationRequest);
     }
 }

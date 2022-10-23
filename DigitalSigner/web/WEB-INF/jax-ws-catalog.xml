@@ -2,4 +2,6 @@
 <catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog" prefer="system">
     <system systemId="http://localhost:92/DigitalSignerNotificaciones/NotificationReceiver?WSDL" uri="wsdl/localhost_92/DigitalSignerNotificaciones/NotificationReceiver.wsdl"/>
     <system systemId="http://localhost:92/DigitalSignerNotificaciones/NotificationReceiver?xsd=1" uri="wsdl/localhost_92/DigitalSignerNotificaciones/NotificationReceiver.xsd_1.xsd"/>
+    <system systemId="http://localhost:92/MailServices/MailWebService?wsdl" uri="wsdl/localhost_92/MailServices/MailWebService.wsdl"/>
+    <system systemId="http://localhost:92/MailServices/MailWebService?xsd=1" uri="wsdl/localhost_92/MailServices/MailWebService.xsd_1.xsd"/>
 </catalog>

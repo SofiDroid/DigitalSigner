@@ -1,5 +1,5 @@
 
-package jax.client.services.interfaces;
+package jax.client.services.interfaces.documentnotification;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -17,7 +17,7 @@ import javax.xml.ws.WebServiceFeature;
  * Generated source version: 2.2
  * 
  */
-@WebServiceClient(name = "NotificationReceiver", targetNamespace = "http://interfaces.services.ws.jax/"/*, wsdlLocation = "http://localhost:92/DigitalSignerNotificaciones/NotificationReceiver?WSDL"*/)
+@WebServiceClient(name = "NotificationReceiver", targetNamespace = "http://interfaces.services.ws.jax/", wsdlLocation = "http://localhost:92/DigitalSignerNotificaciones/NotificationReceiver?WSDL")
 public class NotificationReceiver
     extends Service
 {
@@ -30,7 +30,6 @@ public class NotificationReceiver
         URL url = null;
         WebServiceException e = null;
         try {
-            // CAMBIAR URL POR LA PROPIEDAD CORRESPONDIENTE EN FUNCION DE LA CONFIGURACION
             url = new URL("http://localhost:92/DigitalSignerNotificaciones/NotificationReceiver?WSDL");
         } catch (MalformedURLException ex) {
             e = new WebServiceException(ex);

@@ -1,5 +1,5 @@
 
-package jax.client.services.interfaces;
+package jax.client.services.interfaces.documentnotification;
 
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
@@ -32,8 +32,8 @@ public interface NotificationReceiverImpl {
      */
     @WebMethod
     @WebResult(targetNamespace = "")
-    @RequestWrapper(localName = "documentNotification", targetNamespace = "http://interfaces.services.ws.jax/", className = "jax.client.services.interfaces.DocumentNotification")
-    @ResponseWrapper(localName = "documentNotificationResponse", targetNamespace = "http://interfaces.services.ws.jax/", className = "jax.client.services.interfaces.DocumentNotificationResponse")
+    @RequestWrapper(localName = "documentNotification", targetNamespace = "http://interfaces.services.ws.jax/", className = "jax.client.services.interfaces.documentnotification.DocumentNotification")
+    @ResponseWrapper(localName = "documentNotificationResponse", targetNamespace = "http://interfaces.services.ws.jax/", className = "jax.client.services.interfaces.documentnotification.DocumentNotificationResponse")
     @Action(input = "http://interfaces.services.ws.jax/NotificationReceiverImpl/documentNotificationRequest", output = "http://interfaces.services.ws.jax/NotificationReceiverImpl/documentNotificationResponse")
     public String documentNotification(
         @WebParam(name = "documentNotificationRequest", targetNamespace = "")

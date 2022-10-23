@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='UTF-8'?><!-- Published by JAX-WS RI at http://jax-ws.dev.java.net. RI's version is JAX-WS RI 2.2.6-1b01  svn-revision#13094. --><xs:schema xmlns:tns="http://main/" xmlns:xs="http://www.w3.org/2001/XMLSchema" version="1.0" targetNamespace="http://main/">
+
+<xs:element name="enviarMail" type="tns:enviarMail"/>
+
+<xs:element name="enviarMailResponse" type="tns:enviarMailResponse"/>
+
+<xs:complexType name="enviarMail">
+<xs:sequence>
+<xs:element name="textoHTML" type="xs:string" minOccurs="0"/>
+<xs:element name="asunto" type="xs:string" minOccurs="0"/>
+<xs:element name="adjuntos" type="tns:dataFiles" minOccurs="0" maxOccurs="unbounded"/>
+<xs:element name="from" type="xs:string" minOccurs="0"/>
+<xs:element name="destinatarios" type="tns:destinatarios" minOccurs="0" maxOccurs="unbounded"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="dataFiles">
+<xs:sequence>
+<xs:element name="binaryData" type="xs:base64Binary" minOccurs="0"/>
+<xs:element name="fileName" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="destinatarios">
+<xs:sequence>
+<xs:element name="emailAddress" type="xs:string" minOccurs="0"/>
+<xs:element name="recipientType" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="enviarMailResponse">
+<xs:sequence>
+<xs:element name="return" type="tns:respuestaMail" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="respuestaMail">
+<xs:sequence>
+<xs:element name="codigo" type="xs:string" minOccurs="0"/>
+<xs:element name="descripcion" type="xs:string" minOccurs="0"/>
+<xs:element name="observaciones" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+</xs:schema>

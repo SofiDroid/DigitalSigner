@@ -1,5 +1,5 @@
 
-package jax.client.services.interfaces;
+package jax.client.services.interfaces.documentnotification;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

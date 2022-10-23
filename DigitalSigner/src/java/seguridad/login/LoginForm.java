@@ -117,9 +117,10 @@ public class LoginForm implements Serializable {
                     Session.getDatosUsuario().cargarComboUnidades();
                     //Session.getDatosUsuario().setBdTUnidad(Session.getDatosUsuario().getListaBdTUnidad().get(0));
                     Session.getDatosUsuario().getcUnidad().setValue(Session.getDatosUsuario().getListaBdTUnidad().get(0).getIdUnidad().toString());
+                    Session.getDatosUsuario().setPais(this.pais);
+
                     Session.getDatosUsuario().selectOptionUnidad();
 
-                    Session.getDatosUsuario().setPais(this.pais);
                     //Redirecciono al formulario principal
                     return "main";
                 }

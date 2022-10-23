@@ -1,5 +1,6 @@
 package jax.ws.services.interfaces;
 
+import basedatos.servicios.StAAutusu;
 import basedatos.servicios.StAConftipodoc;
 import basedatos.servicios.StADocextra;
 import basedatos.servicios.StADocfirma;
@@ -8,10 +9,12 @@ import basedatos.servicios.StATokenusuario;
 import basedatos.servicios.StAUniusu;
 import basedatos.servicios.StDDocumento;
 import basedatos.servicios.StDEntradaxml;
+import basedatos.servicios.StTAutoridad;
 import basedatos.servicios.StTSituaciondoc;
 import basedatos.servicios.StTTipodocumento;
 import basedatos.servicios.StTUnidad;
 import basedatos.servicios.StTUsuario;
+import basedatos.tablas.BdAAutusu;
 import basedatos.tablas.BdAConftipodoc;
 import basedatos.tablas.BdADocextra;
 import basedatos.tablas.BdADocfirma;
@@ -19,6 +22,7 @@ import basedatos.tablas.BdADocobs;
 import basedatos.tablas.BdATokenusuario;
 import basedatos.tablas.BdAUniusu;
 import basedatos.tablas.BdDDocumento;
+import basedatos.tablas.BdTAutoridad;
 import basedatos.tablas.BdTSituaciondoc;
 import basedatos.tablas.BdTTipodocumento;
 import basedatos.tablas.BdTUnidad;
@@ -36,6 +40,7 @@ import javax.jws.*;
 import javax.xml.bind.JAXB;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.ws.WebServiceContext;
+import jax.client.services.interfaces.mailservice.Destinatarios;
 import jax.ws.services.types.AcuseReciboDocumentResponse;
 import jax.ws.services.types.DocumentRequest;
 import jax.ws.services.types.clases.Cabecera;
@@ -44,6 +49,8 @@ import jax.ws.services.types.clases.Extra;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.log4j.Logger;
 import tomcat.persistence.EntityManager;
+import utilidades.Configuraciones;
+import utilidades.Correo;
 import utilidades.Session;
 
 /**
@@ -106,6 +113,53 @@ public class DocumentServiceImpl {
             }
             // FIN TRANSACCION
             stDEntradaxml.actualizarEntradaXML(idEntradaXML, idDocumento, "PROCESADO");
+            
+            boolean enviarCorreoFirmante = Boolean.valueOf(new Configuraciones().recuperaConfiguracion("ENVIOCORREOFIRMANTE"));
+            if (enviarCorreoFirmante) {
+                String dsAutoridad = null;
+                ArrayList<Destinatarios> listaDestinatarios = new ArrayList<>();
+                BdADocfirma filtroBdADocfirma = new BdADocfirma();
+                filtroBdADocfirma.setIdDocumento(idDocumento);
+                filtroBdADocfirma.setEnOrden(1);
+                StADocfirma stADocfirma = new StADocfirma();
+                ArrayList<BdADocfirma> listaADocfirma = stADocfirma.filtro(filtroBdADocfirma, null);
+                if (listaADocfirma != null && !listaADocfirma.isEmpty()) {
+                    Integer idAutoridad = listaADocfirma.get(0).getIdAutoridad();
+                    StTAutoridad stTAutoridad = new StTAutoridad();
+                    BdTAutoridad itemBdTAutoridad = stTAutoridad.item(idAutoridad, null);
+                    if (itemBdTAutoridad != null) {
+                        dsAutoridad = itemBdTAutoridad.getCoAutoridad() + " - " + itemBdTAutoridad.getDsAutoridad();
+                        
+                        StAAutusu stAAutusu = new StAAutusu();
+                        BdAAutusu filtroBdAAutusu = new BdAAutusu();
+                        filtroBdAAutusu.setIdAutoridad(idAutoridad);
+                        ArrayList<BdAAutusu> listaBdAAutusu = stAAutusu.filtro(filtroBdAAutusu, null);
+                        if (listaBdAAutusu != null && !listaBdAAutusu.isEmpty()) {
+                            for (BdAAutusu itemBdAAutusu : listaBdAAutusu) {
+                                BdTUsuario bdTUsuario = new StTUsuario().item(itemBdAAutusu.getIdUsuario(), false, null);
+                                Destinatarios destinatario = new Destinatarios();
+                                // TODO: Añadir campo email a los usuarios.
+                                destinatario.setEmailAddress("fulgore1983@gmail.com"/*bdTUsuario.getEmail()*/);
+                                /**
+                                 * Tipo de receptor:
+                                 * - TO: Receptor normal (PARA)
+                                 * - CC: Receptor en copia (CC)
+                                 * - BCC: Receptor en copia oculta (CCO)
+                                 */
+                                destinatario.setRecipientType("TO");
+                                listaDestinatarios.add(destinatario);
+                            }
+                        }
+                    }
+                }
+                
+                boolean resultadoEmail = Correo.enviar("La autoridad " + dsAutoridad + ", tiene documentos pendientes de firma.", 
+                                                    "DigitalSigner: documentos pendientes de firma.", null, "admin@digitalsigner.com", 
+                                                    listaDestinatarios);
+                if (!resultadoEmail) {
+                    Logger.getLogger(DocumentServiceImpl.class).error("No se ha podido notificar a los firmantes por correo.");
+                }
+            }
         }
         catch (Exception ex) {
             Logger.getLogger(DocumentServiceImpl.class).error(ex.getMessage(), ex);

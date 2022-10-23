@@ -1,5 +1,5 @@
 
-package jax.client.services.interfaces;
+package jax.client.services.interfaces.mailservice;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -8,16 +8,16 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Clase Java para cabecera complex type.
+ * <p>Clase Java para enviarMailResponse complex type.
  * 
  * <p>El siguiente fragmento de esquema especifica el contenido que se espera que haya en esta clase.
  * 
  * <pre>
- * &lt;complexType name="cabecera"&gt;
+ * &lt;complexType name="enviarMailResponse"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element name="coUnidad" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
+ *         &lt;element name="return" type="{http://main/}respuestaMail" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -27,36 +27,36 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "cabecera", propOrder = {
-    "coUnidad"
+@XmlType(name = "enviarMailResponse", propOrder = {
+    "_return"
 })
-public class Cabecera {
+public class EnviarMailResponse {
 
-    @XmlElement(required = true)
-    protected String coUnidad;
+    @XmlElement(name = "return")
+    protected RespuestaMail _return;
 
     /**
-     * Obtiene el valor de la propiedad coUnidad.
+     * Obtiene el valor de la propiedad return.
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link RespuestaMail }
      *     
      */
-    public String getCoUnidad() {
-        return coUnidad;
+    public RespuestaMail getReturn() {
+        return _return;
     }
 
     /**
-     * Define el valor de la propiedad coUnidad.
+     * Define el valor de la propiedad return.
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link RespuestaMail }
      *     
      */
-    public void setCoUnidad(String value) {
-        this.coUnidad = value;
+    public void setReturn(RespuestaMail value) {
+        this._return = value;
     }
 
 }
