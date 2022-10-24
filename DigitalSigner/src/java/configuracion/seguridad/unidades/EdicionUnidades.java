@@ -16,6 +16,7 @@ import utilidades.CampoWebLupa;
 import utilidades.Mensajes;
 import utilidades.ModoFormulario;
 import utilidades.Msg;
+import utilidades.Session;
 import utilidades.Validation;
 
 /**
@@ -111,7 +112,7 @@ public class EdicionUnidades implements Serializable {
                 this.bdTUnidad.setFeDesactivo(this.cFeDesactivo.getValue());
                 this.bdTUnidad.setIdUnidadpadre(this.cUnidadPadre.getId());
                 
-                StTUnidad stTUnidad = new StTUnidad();
+                StTUnidad stTUnidad = new StTUnidad(Session.getDatosUsuario());
                 stTUnidad.alta(this.bdTUnidad, null);
                 
                 if (this.parent instanceof FiltroUnidades filtroUnidades) {
@@ -129,7 +130,7 @@ public class EdicionUnidades implements Serializable {
                 this.bdTUnidad.setFeDesactivo(this.cFeDesactivo.getValue());
                 this.bdTUnidad.setIdUnidadpadre(this.cUnidadPadre.getId());
                 
-                StTUnidad stTUnidad = new StTUnidad();
+                StTUnidad stTUnidad = new StTUnidad(Session.getDatosUsuario());
                 stTUnidad.actualiza(this.bdTUnidad, null);
                 
                 if (this.parent instanceof FiltroUnidades filtroUnidades) {
@@ -162,7 +163,7 @@ public class EdicionUnidades implements Serializable {
             BdTUnidad filtroBdTUnidad = new BdTUnidad();
             filtroBdTUnidad.setIdUnidadpadre(this.bdTUnidad.getIdUnidad());
             
-            StTUnidad stTUnidad = new StTUnidad();
+            StTUnidad stTUnidad = new StTUnidad(Session.getDatosUsuario());
             ArrayList<BdTUnidad> listaBdTUnidadesHijas = stTUnidad.filtro(filtroBdTUnidad, null);
             if (listaBdTUnidadesHijas != null) {
                 Mensajes.showWarn("No se puede eliminar", "Tiene " + listaBdTUnidadesHijas.size() + " unidades hijas, debe eliminarlas primero para eliminar la actual.");
@@ -249,7 +250,7 @@ public class EdicionUnidades implements Serializable {
     }
     
     private void recuperarRegistro(Integer idUnidad) throws Exception {
-        StTUnidad stTUnidad = new StTUnidad();
+        StTUnidad stTUnidad = new StTUnidad(Session.getDatosUsuario());
         this.bdTUnidad = stTUnidad.item(idUnidad, null);
         if (this.bdTUnidad == null) {
             throw new RegistryNotFoundException();

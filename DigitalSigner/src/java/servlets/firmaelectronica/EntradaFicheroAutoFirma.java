@@ -103,7 +103,7 @@ public class EntradaFicheroAutoFirma extends HttpServlet
 
                         if(validarNIF || validarFirma)
                         {
-                            StTSituaciondoc stTSituaciondoc = new StTSituaciondoc();
+                            StTSituaciondoc stTSituaciondoc = new StTSituaciondoc(Session.getDatosUsuario());
                             BdTSituaciondoc bdTSituaciondoc = stTSituaciondoc.item(bdDDocumento.getIdSituaciondoc(), null);
                             if(bdTSituaciondoc != null && bdTSituaciondoc.getCoSituaciondoc() != null 
                                     && bdTSituaciondoc.getCoSituaciondoc().equalsIgnoreCase("FIRMADO"))

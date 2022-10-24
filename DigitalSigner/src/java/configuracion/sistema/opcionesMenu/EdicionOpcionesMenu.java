@@ -17,6 +17,7 @@ import utilidades.CampoWebNumero;
 import utilidades.Mensajes;
 import utilidades.ModoFormulario;
 import utilidades.Msg;
+import utilidades.Session;
 import utilidades.Validation;
 
 /**
@@ -140,7 +141,7 @@ public class EdicionOpcionesMenu implements Serializable {
                 this.bdTOpcionmenu.setFeAlta(this.cFeAlta.getValue());
                 this.bdTOpcionmenu.setFeDesactivo(this.cFeDesactivo.getValue());
                 
-                StTOpcionmenu stTOpcionmenu = new StTOpcionmenu();
+                StTOpcionmenu stTOpcionmenu = new StTOpcionmenu(Session.getDatosUsuario());
                 stTOpcionmenu.alta(this.bdTOpcionmenu, null);
                 
                 if (this.parent instanceof FiltroOpcionesMenu filtroOpcionesMenu) {
@@ -162,7 +163,7 @@ public class EdicionOpcionesMenu implements Serializable {
                 this.bdTOpcionmenu.setFeAlta(this.cFeAlta.getValue());
                 this.bdTOpcionmenu.setFeDesactivo(this.cFeDesactivo.getValue());
                 
-                StTOpcionmenu stTOpcionmenu = new StTOpcionmenu();
+                StTOpcionmenu stTOpcionmenu = new StTOpcionmenu(Session.getDatosUsuario());
                 stTOpcionmenu.actualiza(this.bdTOpcionmenu, null);
                 
                 if (this.parent instanceof FiltroOpcionesMenu filtroOpcionesMenu) {
@@ -195,7 +196,7 @@ public class EdicionOpcionesMenu implements Serializable {
             BdTOpcionmenu filtroBdTOpcionmenu = new BdTOpcionmenu();
             filtroBdTOpcionmenu.setIdOpcionmenu(this.bdTOpcionmenu.getIdOpcionmenupadre());
             
-            StTOpcionmenu stTOpcionmenu = new StTOpcionmenu();
+            StTOpcionmenu stTOpcionmenu = new StTOpcionmenu(Session.getDatosUsuario());
             ArrayList<BdTOpcionmenu> listaBdTOpcionmenuHijas = stTOpcionmenu.filtro(filtroBdTOpcionmenu, null);
             if (listaBdTOpcionmenuHijas != null) {
                 Mensajes.showWarn("No se puede eliminar", "Tiene " + listaBdTOpcionmenuHijas.size() + " opciones de menú hijas, debe eliminarlas primero para eliminar la actual.");
@@ -301,7 +302,7 @@ public class EdicionOpcionesMenu implements Serializable {
     }
     
     private void recuperarRegistro(Integer idOpcionmenu) throws Exception {
-        StTOpcionmenu stTOpcionmenu = new StTOpcionmenu();
+        StTOpcionmenu stTOpcionmenu = new StTOpcionmenu(Session.getDatosUsuario());
         this.bdTOpcionmenu = stTOpcionmenu.item(idOpcionmenu, null);
         if (this.bdTOpcionmenu == null) {
             throw new RegistryNotFoundException();

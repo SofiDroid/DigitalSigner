@@ -8,11 +8,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import tomcat.persistence.EntityManager;
-import utilidades.Session;
 import utilidades.Validation;
 import init.AppInit;
 import utilidades.BaseDatos;
 import basedatos.tablas.BdTUnidad;
+import seguridad.usuarios.DatosUsuario;
 
 /**
  *
@@ -20,8 +20,10 @@ import basedatos.tablas.BdTUnidad;
  */
 public class StTUnidad extends StBase {
     
-    public StTUnidad() {
-        //NADA
+    private DatosUsuario datosUsuario = null;
+    
+    public StTUnidad(DatosUsuario datosUsuario) {
+        this.datosUsuario = datosUsuario;
     }
     
     public ArrayList<BdTUnidad> filtro(BdTUnidad filtroBdTUnidad, EntityManager em) throws Exception {
@@ -73,7 +75,7 @@ public class StTUnidad extends StBase {
         }
    
 
-        newBdTUnidad.setUsuariobd(Session.getCoUsuario());
+        newBdTUnidad.setUsuariobd(this.datosUsuario.getBdTUsuario().getCoUsuario());
 
         newBdTUnidad.setTstbd(new Date());
 
@@ -107,7 +109,7 @@ public class StTUnidad extends StBase {
         }
 
 
-        upBdTUnidad.setUsuariobd(Session.getCoUsuario());
+        upBdTUnidad.setUsuariobd(this.datosUsuario.getBdTUsuario().getCoUsuario());
 
         upBdTUnidad.setTstbd(new Date());
 

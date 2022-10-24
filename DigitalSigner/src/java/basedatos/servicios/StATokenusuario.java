@@ -13,6 +13,7 @@ import utilidades.Validation;
 import init.AppInit;
 import utilidades.BaseDatos;
 import basedatos.tablas.BdATokenusuario;
+import seguridad.usuarios.DatosUsuario;
 
 /**
  *
@@ -20,8 +21,10 @@ import basedatos.tablas.BdATokenusuario;
  */
 public class StATokenusuario extends StBase {
     
-    public StATokenusuario() {
-        //NADA
+    private DatosUsuario datosUsuario = null;
+    
+    public StATokenusuario(DatosUsuario datosUsuario) {
+        this.datosUsuario = datosUsuario;
     }
     
     public ArrayList<BdATokenusuario> filtro(BdATokenusuario filtroBdATokenusuario, EntityManager em) throws Exception {
@@ -72,7 +75,7 @@ public class StATokenusuario extends StBase {
         }
    
 
-        newBdATokenusuario.setUsuariobd(Session.getCoUsuario());
+        newBdATokenusuario.setUsuariobd(datosUsuario.getBdTUsuario().getCoUsuario());
 
         newBdATokenusuario.setTstbd(new Date());
 
@@ -105,7 +108,7 @@ public class StATokenusuario extends StBase {
         }
 
 
-        upBdATokenusuario.setUsuariobd(Session.getCoUsuario());
+        upBdATokenusuario.setUsuariobd(datosUsuario.getBdTUsuario().getCoUsuario());
 
         upBdATokenusuario.setTstbd(new Date());
 

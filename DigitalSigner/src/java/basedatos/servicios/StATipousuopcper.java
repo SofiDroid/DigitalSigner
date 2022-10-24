@@ -8,11 +8,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import tomcat.persistence.EntityManager;
-import utilidades.Session;
 import utilidades.Validation;
 import init.AppInit;
 import utilidades.BaseDatos;
 import basedatos.tablas.BdATipousuopcper;
+import seguridad.usuarios.DatosUsuario;
 
 /**
  *
@@ -20,8 +20,10 @@ import basedatos.tablas.BdATipousuopcper;
  */
 public class StATipousuopcper extends StBase {
     
-    public StATipousuopcper() {
-        //NADA
+    private DatosUsuario datosUsuario = null;
+    
+    public StATipousuopcper(DatosUsuario datosUsuario) {
+        this.datosUsuario = datosUsuario;
     }
     
     public ArrayList<BdATipousuopcper> filtro(BdATipousuopcper filtroBdATipousuopcper, EntityManager em) throws Exception {
@@ -74,7 +76,7 @@ public class StATipousuopcper extends StBase {
         }
    
 
-        newBdATipousuopcper.setUsuariobd(Session.getCoUsuario());
+        newBdATipousuopcper.setUsuariobd(datosUsuario.getBdTUsuario().getCoUsuario());
 
         newBdATipousuopcper.setTstbd(new Date());
 
@@ -107,7 +109,7 @@ public class StATipousuopcper extends StBase {
         }
 
 
-        upBdATipousuopcper.setUsuariobd(Session.getCoUsuario());
+        upBdATipousuopcper.setUsuariobd(datosUsuario.getBdTUsuario().getCoUsuario());
 
         upBdATipousuopcper.setTstbd(new Date());
 

@@ -9,7 +9,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import tomcat.persistence.EntityManager;
-import utilidades.Session;
 import utilidades.Validation;
 import init.AppInit;
 import utilidades.BaseDatos;
@@ -17,6 +16,7 @@ import basedatos.tablas.BdDEntradaxml;
 import basedatos.tablas.BdTSituacionxml;
 import excepciones.RegistryNotFoundException;
 import java.nio.charset.StandardCharsets;
+import seguridad.usuarios.DatosUsuario;
 
 /**
  *
@@ -24,8 +24,10 @@ import java.nio.charset.StandardCharsets;
  */
 public class StDEntradaxml extends StBase {
     
-    public StDEntradaxml() {
-        //NADA
+    private DatosUsuario datosUsuario = null;
+    
+    public StDEntradaxml(DatosUsuario datosUsuario) {
+        this.datosUsuario = datosUsuario;
     }
     
     public ArrayList<BdDEntradaxml> filtro(BdDEntradaxml filtroBdDEntradaxml, EntityManager em) throws Exception {
@@ -74,7 +76,7 @@ public class StDEntradaxml extends StBase {
         }
    
 
-        newBdDEntradaxml.setUsuariobd(Session.getCoUsuario());
+        newBdDEntradaxml.setUsuariobd(datosUsuario.getBdTUsuario().getCoUsuario());
 
         newBdDEntradaxml.setTstbd(new Date());
 
@@ -107,7 +109,7 @@ public class StDEntradaxml extends StBase {
         }
 
 
-        upBdDEntradaxml.setUsuariobd(Session.getCoUsuario());
+        upBdDEntradaxml.setUsuariobd(datosUsuario.getBdTUsuario().getCoUsuario());
 
         upBdDEntradaxml.setTstbd(new Date());
 
@@ -145,7 +147,7 @@ public class StDEntradaxml extends StBase {
         filtroBdTSituacionxml.setCoSituacionxml("NUEVO");
         filtroBdTSituacionxml.setFeAlta(new Date());
         filtroBdTSituacionxml.setFeDesactivo(new Date());
-        StTSituacionxml stTSituacionxml = new StTSituacionxml();
+        StTSituacionxml stTSituacionxml = new StTSituacionxml(datosUsuario);
         ArrayList<BdTSituacionxml> listaBdTSituacionxml = stTSituacionxml.filtro(filtroBdTSituacionxml, null);
         if (listaBdTSituacionxml == null || listaBdTSituacionxml.isEmpty()) {
             throw new RegistryNotFoundException();
@@ -155,7 +157,7 @@ public class StDEntradaxml extends StBase {
         bdDEntradaxml.setBlEntradaxml(xmlString.getBytes(StandardCharsets.UTF_8));
         bdDEntradaxml.setFeAlta(new Date());
         bdDEntradaxml.setIdSituacionxml(listaBdTSituacionxml.get(0).getIdSituacionxml());
-        StDEntradaxml stDEntradaxml = new StDEntradaxml();
+        StDEntradaxml stDEntradaxml = new StDEntradaxml(datosUsuario);
         stDEntradaxml.alta(bdDEntradaxml, null);
 
         return bdDEntradaxml.getIdEntradaxml();
@@ -170,13 +172,13 @@ public class StDEntradaxml extends StBase {
                 filtroBdTSituacionxml.setCoSituacionxml(coSituacionxml);
                 filtroBdTSituacionxml.setFeAlta(new Date());
                 filtroBdTSituacionxml.setFeDesactivo(new Date());
-                StTSituacionxml stTSituacionxml = new StTSituacionxml();
+                StTSituacionxml stTSituacionxml = new StTSituacionxml(datosUsuario);
                 ArrayList<BdTSituacionxml> listaBdTSituacionxml = stTSituacionxml.filtro(filtroBdTSituacionxml, entityManager);
                 if (listaBdTSituacionxml == null || listaBdTSituacionxml.isEmpty()) {
                     throw new RegistryNotFoundException();
                 }
 
-                StDEntradaxml stDEntradaxml = new StDEntradaxml();
+                StDEntradaxml stDEntradaxml = new StDEntradaxml(datosUsuario);
                 BdDEntradaxml bdDEntradaxml = stDEntradaxml.item(idEntradaXML, entityManager);
                 bdDEntradaxml.setIdDocumento(idDocumento);
                 stDEntradaxml.actualiza(bdDEntradaxml, entityManager);
@@ -185,7 +187,7 @@ public class StDEntradaxml extends StBase {
                 bdAHistentxml.setIdEntradaxml(bdDEntradaxml.getIdEntradaxml());
                 bdAHistentxml.setIdSituacionxml(bdDEntradaxml.getIdSituacionxml());
                 bdAHistentxml.setFeAlta(new Date());
-                StAHistentxml stAHistentxml = new StAHistentxml();
+                StAHistentxml stAHistentxml = new StAHistentxml(datosUsuario);
                 stAHistentxml.alta(bdAHistentxml, entityManager);
 
                 bdDEntradaxml.setIdSituacionxml(listaBdTSituacionxml.get(0).getIdSituacionxml());

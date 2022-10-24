@@ -210,7 +210,7 @@ public class FiltroEntradasXML implements Serializable {
     public void verXML() {
         try {
             Integer idEntradaXML = this.dsResultado.getSelectedRow().getColumnaID().getValueInteger();
-            BdDEntradaxml bdDEntradaxml = new StDEntradaxml().item(idEntradaXML, null);
+            BdDEntradaxml bdDEntradaxml = new StDEntradaxml(Session.getDatosUsuario()).item(idEntradaXML, null);
             byte[] binDocumento = bdDEntradaxml.getBlEntradaxml(null);
             Session.grabarAtributo("filename", "ENTRADA_" + idEntradaXML + ".xml");
             Session.grabarAtributo("binDocumento", binDocumento);

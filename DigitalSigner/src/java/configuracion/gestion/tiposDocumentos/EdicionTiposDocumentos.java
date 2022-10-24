@@ -29,6 +29,7 @@ import utilidades.CampoWebNumero;
 import utilidades.Mensajes;
 import utilidades.ModoFormulario;
 import utilidades.Msg;
+import utilidades.Session;
 import utilidades.Validation;
 
 /**
@@ -181,7 +182,7 @@ public class EdicionTiposDocumentos implements Serializable {
                         this.bdTTipodocumento.setFeAlta(this.cFeAlta.getValue());
                         this.bdTTipodocumento.setFeDesactivo(this.cFeDesactivo.getValue());
 
-                        StTTipodocumento stTTipodocumento = new StTTipodocumento();
+                        StTTipodocumento stTTipodocumento = new StTTipodocumento(Session.getDatosUsuario());
                         stTTipodocumento.alta(this.bdTTipodocumento, entityManager);
 
                         if (this.dsFirmas != null) {
@@ -196,7 +197,7 @@ public class EdicionTiposDocumentos implements Serializable {
                                 newBdAConftipodoc.setFeAlta((Date)itemRow.getColumnName("FE_ALTA").getValue());
                                 newBdAConftipodoc.setFeDesactivo((Date)itemRow.getColumnName("FE_DESACTIVO").getValue());
 
-                                StAConftipodoc stAConftipodoc = new StAConftipodoc();
+                                StAConftipodoc stAConftipodoc = new StAConftipodoc(Session.getDatosUsuario());
                                 stAConftipodoc.alta(newBdAConftipodoc, entityManager);
                             }
                         }
@@ -217,14 +218,14 @@ public class EdicionTiposDocumentos implements Serializable {
                         this.bdTTipodocumento.setFeAlta(this.cFeAlta.getValue());
                         this.bdTTipodocumento.setFeDesactivo(this.cFeDesactivo.getValue());
 
-                        StTTipodocumento stTTipodocumento = new StTTipodocumento();
+                        StTTipodocumento stTTipodocumento = new StTTipodocumento(Session.getDatosUsuario());
                         stTTipodocumento.actualiza(this.bdTTipodocumento, entityManager);
 
                         for (Integer idConftipodoc : listaFirmasEliminadasId) {
                             BdAConftipodoc delBdAConftipodoc = new BdAConftipodoc();
                             delBdAConftipodoc.setIdConftipodoc(idConftipodoc);
                             
-                            StAConftipodoc stAConftipodoc = new StAConftipodoc();
+                            StAConftipodoc stAConftipodoc = new StAConftipodoc(Session.getDatosUsuario());
                             stAConftipodoc.baja(delBdAConftipodoc, entityManager);
                         }
                         
@@ -242,7 +243,7 @@ public class EdicionTiposDocumentos implements Serializable {
                                     newBdAConftipodoc.setFeAlta((Date)itemRow.getColumnName("FE_ALTA").getValue());
                                     newBdAConftipodoc.setFeDesactivo((Date)itemRow.getColumnName("FE_DESACTIVO").getValue());
 
-                                    StAConftipodoc stAConftipodoc = new StAConftipodoc();
+                                    StAConftipodoc stAConftipodoc = new StAConftipodoc(Session.getDatosUsuario());
                                     stAConftipodoc.alta(newBdAConftipodoc, entityManager);
                                 }
                                 else {
@@ -258,7 +259,7 @@ public class EdicionTiposDocumentos implements Serializable {
                                     upBdAConftipodoc.setFeAlta((Date)itemRow.getColumnName("FE_ALTA").getValue());
                                     upBdAConftipodoc.setFeDesactivo((Date)itemRow.getColumnName("FE_DESACTIVO").getValue());
 
-                                    StAConftipodoc stAConftipodoc = new StAConftipodoc();
+                                    StAConftipodoc stAConftipodoc = new StAConftipodoc(Session.getDatosUsuario());
                                     stAConftipodoc.actualiza(upBdAConftipodoc, entityManager);
                                 }
                             }
@@ -306,7 +307,7 @@ public class EdicionTiposDocumentos implements Serializable {
                 try {
                     BdAConftipodoc filtroBdAConftipodoc = new BdAConftipodoc();
                     filtroBdAConftipodoc.setIdTipodocumento(this.bdTTipodocumento.getIdTipodocumento());
-                    StAConftipodoc stAConftipodoc = new StAConftipodoc();
+                    StAConftipodoc stAConftipodoc = new StAConftipodoc(Session.getDatosUsuario());
                     ArrayList<BdAConftipodoc> listaAConftipodoc = stAConftipodoc.filtro(filtroBdAConftipodoc, entityManager);
                     if (listaAConftipodoc != null && !listaAConftipodoc.isEmpty()) {
                         for (BdAConftipodoc itemBdAConftipodoc : listaAConftipodoc) {
@@ -314,7 +315,7 @@ public class EdicionTiposDocumentos implements Serializable {
                         }
                     }
                     
-                    StTTipodocumento stTTipodocumento = new StTTipodocumento();
+                    StTTipodocumento stTTipodocumento = new StTTipodocumento(Session.getDatosUsuario());
                     stTTipodocumento.baja(this.bdTTipodocumento, entityManager);
 
                     entityManager.getTransaction().commit();
@@ -459,7 +460,7 @@ public class EdicionTiposDocumentos implements Serializable {
     }
     
     private void recuperarRegistro(Integer idTipodocumento) throws Exception {
-        StTTipodocumento stTTipodocumento = new StTTipodocumento();
+        StTTipodocumento stTTipodocumento = new StTTipodocumento(Session.getDatosUsuario());
         this.bdTTipodocumento = stTTipodocumento.item(idTipodocumento, null);
         if (this.bdTTipodocumento == null) {
             throw new RegistryNotFoundException();

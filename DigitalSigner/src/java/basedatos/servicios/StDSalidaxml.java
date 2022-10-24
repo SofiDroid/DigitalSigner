@@ -9,7 +9,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import tomcat.persistence.EntityManager;
-import utilidades.Session;
 import utilidades.Validation;
 import init.AppInit;
 import utilidades.BaseDatos;
@@ -17,6 +16,7 @@ import basedatos.tablas.BdDSalidaxml;
 import basedatos.tablas.BdTSituacionxml;
 import excepciones.RegistryNotFoundException;
 import java.nio.charset.StandardCharsets;
+import seguridad.usuarios.DatosUsuario;
 
 /**
  *
@@ -24,8 +24,10 @@ import java.nio.charset.StandardCharsets;
  */
 public class StDSalidaxml extends StBase {
     
-    public StDSalidaxml() {
-        //NADA
+    private DatosUsuario datosUsuario = null;
+    
+    public StDSalidaxml(DatosUsuario datosUsuario) {
+        this.datosUsuario = datosUsuario;
     }
     
     public ArrayList<BdDSalidaxml> filtro(BdDSalidaxml filtroBdDSalidaxml, EntityManager em) throws Exception {
@@ -78,7 +80,7 @@ public class StDSalidaxml extends StBase {
         }
    
 
-        newBdDSalidaxml.setUsuariobd(Session.getCoUsuario());
+        newBdDSalidaxml.setUsuariobd(datosUsuario.getBdTUsuario().getCoUsuario());
 
         newBdDSalidaxml.setTstbd(new Date());
 
@@ -114,7 +116,7 @@ public class StDSalidaxml extends StBase {
         }
 
 
-        upBdDSalidaxml.setUsuariobd(Session.getCoUsuario());
+        upBdDSalidaxml.setUsuariobd(datosUsuario.getBdTUsuario().getCoUsuario());
 
         upBdDSalidaxml.setTstbd(new Date());
 
@@ -152,7 +154,7 @@ public class StDSalidaxml extends StBase {
         filtroBdTSituacionxml.setCoSituacionxml("NUEVO");
         filtroBdTSituacionxml.setFeAlta(new Date());
         filtroBdTSituacionxml.setFeDesactivo(new Date());
-        StTSituacionxml stTSituacionxml = new StTSituacionxml();
+        StTSituacionxml stTSituacionxml = new StTSituacionxml(datosUsuario);
         ArrayList<BdTSituacionxml> listaBdTSituacionxml = stTSituacionxml.filtro(filtroBdTSituacionxml, entityManager);
         if (listaBdTSituacionxml == null || listaBdTSituacionxml.isEmpty()) {
             throw new RegistryNotFoundException();
@@ -172,7 +174,7 @@ public class StDSalidaxml extends StBase {
         filtroBdTSituacionxml.setCoSituacionxml(coSituacionxml);
         filtroBdTSituacionxml.setFeAlta(new Date());
         filtroBdTSituacionxml.setFeDesactivo(new Date());
-        StTSituacionxml stTSituacionxml = new StTSituacionxml();
+        StTSituacionxml stTSituacionxml = new StTSituacionxml(datosUsuario);
         ArrayList<BdTSituacionxml> listaBdTSituacionxml = stTSituacionxml.filtro(filtroBdTSituacionxml, null);
         if (listaBdTSituacionxml == null || listaBdTSituacionxml.isEmpty()) {
             throw new RegistryNotFoundException();
@@ -190,7 +192,7 @@ public class StDSalidaxml extends StBase {
                 bdAHistsalxml.setIdSalidaxml(bdDSalidaxml.getIdSalidaxml());
                 bdAHistsalxml.setIdSituacionxml(bdDSalidaxml.getIdSituacionxml());
                 bdAHistsalxml.setFeAlta(new Date());
-                StAHistsalxml stAHistsalxml = new StAHistsalxml();
+                StAHistsalxml stAHistsalxml = new StAHistsalxml(datosUsuario);
                 stAHistsalxml.alta(bdAHistsalxml, entityManager);
 
                 bdDSalidaxml.setIdSituacionxml(listaBdTSituacionxml.get(0).getIdSituacionxml());

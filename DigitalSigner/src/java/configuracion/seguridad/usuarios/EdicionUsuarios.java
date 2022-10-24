@@ -24,6 +24,7 @@ import utilidades.CampoWebPassword;
 import utilidades.Mensajes;
 import utilidades.ModoFormulario;
 import utilidades.Msg;
+import utilidades.Session;
 import utilidades.Validation;
 
 /**
@@ -193,7 +194,7 @@ public class EdicionUsuarios implements Serializable {
                         this.bdTUsuario.setFeAlta(this.cFeAlta.getValue());
                         this.bdTUsuario.setFeDesactivo(this.cFeDesactivo.getValue());
 
-                        StTUsuario stTUsuario = new StTUsuario();
+                        StTUsuario stTUsuario = new StTUsuario(Session.getDatosUsuario());
                         stTUsuario.alta(this.bdTUsuario, entityManager);
 
                         //GUARDAR TOKEN GENERADO
@@ -203,7 +204,7 @@ public class EdicionUsuarios implements Serializable {
                             newBdATokenusuario.setDsToken(this.cToken.getValue());
                             newBdATokenusuario.setFeAlta(new Date());
 
-                            StATokenusuario stATokenusuario = new StATokenusuario();
+                            StATokenusuario stATokenusuario = new StATokenusuario(Session.getDatosUsuario());
                             stATokenusuario.alta(newBdATokenusuario, entityManager);
                         }
                         
@@ -230,7 +231,7 @@ public class EdicionUsuarios implements Serializable {
                         this.bdTUsuario.setFeAlta(this.cFeAlta.getValue());
                         this.bdTUsuario.setFeDesactivo(this.cFeDesactivo.getValue());
 
-                        StTUsuario stTUsuario = new StTUsuario();
+                        StTUsuario stTUsuario = new StTUsuario(Session.getDatosUsuario());
                         stTUsuario.actualiza(this.bdTUsuario, entityManager);
 
                         //GUARDAR TOKEN GENERADO
@@ -238,7 +239,7 @@ public class EdicionUsuarios implements Serializable {
                             BdATokenusuario filtroBdATokenusuario = new BdATokenusuario();
                             filtroBdATokenusuario.setIdUsuario(this.bdTUsuario.getIdUsuario());
                             filtroBdATokenusuario.setDsToken(this.cToken.getValue());
-                            StATokenusuario stATokenusuario = new StATokenusuario();
+                            StATokenusuario stATokenusuario = new StATokenusuario(Session.getDatosUsuario());
                             ArrayList<BdATokenusuario> listaBdATokenusuario = stATokenusuario.filtro(filtroBdATokenusuario, entityManager);
                             //Solo si ha cambiado el token de ese usuario lo guardo
                             if (listaBdATokenusuario == null || listaBdATokenusuario.isEmpty()) {
@@ -288,7 +289,7 @@ public class EdicionUsuarios implements Serializable {
     
     public void eliminar() {
         try {
-            StTUsuario stTUsuario = new StTUsuario();
+            StTUsuario stTUsuario = new StTUsuario(Session.getDatosUsuario());
             stTUsuario.baja(this.bdTUsuario, null);
             
             if (this.parent instanceof FiltroUsuarios filtroUsuarios) {
@@ -424,7 +425,7 @@ public class EdicionUsuarios implements Serializable {
     }
     
     private void recuperarRegistro(Integer idUsuario) throws Exception {
-        StTUsuario stTUsuario = new StTUsuario();
+        StTUsuario stTUsuario = new StTUsuario(Session.getDatosUsuario());
         this.bdTUsuario = stTUsuario.item(idUsuario, false, null);
         if (this.bdTUsuario == null) {
             throw new RegistryNotFoundException();
@@ -448,7 +449,7 @@ public class EdicionUsuarios implements Serializable {
         filtroBdATokenusuario.setFeAlta(new Date());
         filtroBdATokenusuario.setFeDesactivo(new Date());
         
-        StATokenusuario stATokenusuario = new StATokenusuario();
+        StATokenusuario stATokenusuario = new StATokenusuario(Session.getDatosUsuario());
         ArrayList<BdATokenusuario> listaBdATokenusuario = stATokenusuario.filtro(filtroBdATokenusuario, null);
         if (listaBdATokenusuario != null && !listaBdATokenusuario.isEmpty()) {
             this.cToken.setValue(listaBdATokenusuario.get(0).getDsToken());

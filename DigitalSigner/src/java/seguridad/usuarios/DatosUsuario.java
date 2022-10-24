@@ -8,10 +8,7 @@ import javax.inject.Named;
 import basedatos.tablas.Pais;
 import basedatos.tablas.BdTUnidad;
 import basedatos.tablas.BdTUsuario;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import utilidades.CampoWebCodigo;
 import utilidades.CampoWebCombo;
@@ -69,7 +66,9 @@ public class DatosUsuario implements Serializable {
 
     public void setBdTUsuario(BdTUsuario bdTUsuario) {
         this.bdTUsuario = bdTUsuario;
-        this.cUsuario.setValue(this.bdTUsuario.getCoUsuario());
+        if (this.cUsuario != null) {
+            this.cUsuario.setValue(this.bdTUsuario.getCoUsuario());
+        }
     }
     
     public String getModoFirma() {

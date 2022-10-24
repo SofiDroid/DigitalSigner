@@ -84,7 +84,7 @@ public class LoginForm implements Serializable {
     public String login() {
         try {
             Session.limpiarOtrosBeans(this.getClass().getName(), true, true);
-            StTUsuario stTUsuario = new StTUsuario();
+            StTUsuario stTUsuario = new StTUsuario(Session.getDatosUsuario());
             BdTUsuario filtroBdTUsuario = new BdTUsuario();
             filtroBdTUsuario.setCoUsuario(this.usuario);
             filtroBdTUsuario.setFeAlta(new Date());
@@ -101,14 +101,14 @@ public class LoginForm implements Serializable {
                     filtroBdAUniusu.setIdUsuario(listaBdTUsuario.get(0).getIdUsuario());
                     filtroBdAUniusu.setFeAlta(new Date());
                     filtroBdAUniusu.setFeDesactivo(new Date());
-                    StAUniusu stAUniusu = new StAUniusu();
+                    StAUniusu stAUniusu = new StAUniusu(Session.getDatosUsuario());
                     ArrayList<BdAUniusu> listaBdAUniusu = stAUniusu.filtro(filtroBdAUniusu, null);
                     for(BdAUniusu itemBdAUniusu : listaBdAUniusu) {
                         BdTUnidad filtroBdTUnidad = new BdTUnidad();
                         filtroBdTUnidad.setIdUnidad(itemBdAUniusu.getIdUnidad());
                         filtroBdAUniusu.setFeAlta(new Date());
                         filtroBdAUniusu.setFeDesactivo(new Date());
-                        StTUnidad stTUnidad = new StTUnidad();
+                        StTUnidad stTUnidad = new StTUnidad(Session.getDatosUsuario());
                         ArrayList<BdTUnidad> listaBdTUnidad = stTUnidad.filtro(filtroBdTUnidad, null);
                         if (listaBdTUnidad != null && !listaBdTUnidad.isEmpty()) {
                             Session.getDatosUsuario().getListaBdTUnidad().addAll(listaBdTUnidad);

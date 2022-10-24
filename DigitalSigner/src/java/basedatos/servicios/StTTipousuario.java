@@ -8,11 +8,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import tomcat.persistence.EntityManager;
-import utilidades.Session;
 import utilidades.Validation;
 import init.AppInit;
 import utilidades.BaseDatos;
 import basedatos.tablas.BdTTipousuario;
+import seguridad.usuarios.DatosUsuario;
 
 /**
  *
@@ -20,8 +20,10 @@ import basedatos.tablas.BdTTipousuario;
  */
 public class StTTipousuario extends StBase {
     
-    public StTTipousuario() {
-        //NADA
+    private DatosUsuario datosUsuario = null;
+    
+    public StTTipousuario(DatosUsuario datosUsuario) {
+        this.datosUsuario = datosUsuario;
     }
     
     public ArrayList<BdTTipousuario> filtro(BdTTipousuario filtroBdTTipousuario, EntityManager em) throws Exception {
@@ -73,7 +75,7 @@ public class StTTipousuario extends StBase {
         }
    
 
-        newBdTTipousuario.setUsuariobd(Session.getCoUsuario());
+        newBdTTipousuario.setUsuariobd(datosUsuario.getBdTUsuario().getCoUsuario());
 
         newBdTTipousuario.setTstbd(new Date());
 
@@ -110,7 +112,7 @@ public class StTTipousuario extends StBase {
         }
 
 
-        upBdTTipousuario.setUsuariobd(Session.getCoUsuario());
+        upBdTTipousuario.setUsuariobd(datosUsuario.getBdTUsuario().getCoUsuario());
 
         upBdTTipousuario.setTstbd(new Date());
 

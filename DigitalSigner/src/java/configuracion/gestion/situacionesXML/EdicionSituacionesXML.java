@@ -14,6 +14,7 @@ import utilidades.CampoWebFecha;
 import utilidades.Mensajes;
 import utilidades.ModoFormulario;
 import utilidades.Msg;
+import utilidades.Session;
 import utilidades.Validation;
 
 /**
@@ -96,7 +97,7 @@ public class EdicionSituacionesXML implements Serializable {
                 this.bdTSituacionXML.setFeAlta(this.cFeAlta.getValue());
                 this.bdTSituacionXML.setFeDesactivo(this.cFeDesactivo.getValue());
                 
-                StTSituacionxml stTSituacionXML = new StTSituacionxml();
+                StTSituacionxml stTSituacionXML = new StTSituacionxml(Session.getDatosUsuario());
                 stTSituacionXML.alta(this.bdTSituacionXML, null);
                 
                 if (this.parent instanceof FiltroSituacionesXML filtroSituacionesXML) {
@@ -113,7 +114,7 @@ public class EdicionSituacionesXML implements Serializable {
                 this.bdTSituacionXML.setFeAlta(this.cFeAlta.getValue());
                 this.bdTSituacionXML.setFeDesactivo(this.cFeDesactivo.getValue());
                 
-                StTSituacionxml stTSituacionXML = new StTSituacionxml();
+                StTSituacionxml stTSituacionXML = new StTSituacionxml(Session.getDatosUsuario());
                 stTSituacionXML.actualiza(this.bdTSituacionXML, null);
                 
                 if (this.parent instanceof FiltroSituacionesXML filtroSituacionesXML) {
@@ -143,7 +144,7 @@ public class EdicionSituacionesXML implements Serializable {
     
     public void eliminar() {
         try {
-            StTSituacionxml stTSituacionXML = new StTSituacionxml();
+            StTSituacionxml stTSituacionXML = new StTSituacionxml(Session.getDatosUsuario());
             stTSituacionXML.baja(this.bdTSituacionXML, null);
             
             if (this.parent instanceof FiltroSituacionesXML filtroSituacionesXML) {
@@ -220,7 +221,7 @@ public class EdicionSituacionesXML implements Serializable {
     }
     
     private void recuperarRegistro(Integer idSituacionXML) throws Exception {
-        StTSituacionxml stTSituacionXML = new StTSituacionxml();
+        StTSituacionxml stTSituacionXML = new StTSituacionxml(Session.getDatosUsuario());
         this.bdTSituacionXML = stTSituacionXML.item(idSituacionXML, null);
         if (this.bdTSituacionXML == null) {
             throw new RegistryNotFoundException();

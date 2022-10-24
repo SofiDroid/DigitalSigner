@@ -23,6 +23,8 @@ import gestionDocumentos.firmaDocumentos.FiltroFirmaDocumentos;
 import init.AppInit;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
 import javax.servlet.http.HttpServlet;
@@ -34,6 +36,7 @@ import jax.client.services.interfaces.documentnotification.DocumentNotificationR
 import jax.client.services.interfaces.documentnotification.Documento;
 import jax.client.services.interfaces.mailservice.Destinatarios;
 import jax.ws.services.interfaces.DocumentServiceImpl;
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.apache.tomcat.util.codec.binary.Base64;
 import tomcat.persistence.EntityManager;
@@ -102,7 +105,7 @@ public class SubidaFicheroFirmado extends HttpServlet
                         throw new Exception("- " + bdDDocumento.getCoDocumento() + ": " + msg);
                     }
                     
-                    boolean validarFirma = Boolean.valueOf(new Configuraciones().recuperaConfiguracion("VALIDARFIRMA"));
+                    boolean validarFirma = Boolean.valueOf(new Configuraciones(Session.getDatosUsuario()).recuperaConfiguracion("VALIDARFIRMA"));
 
                     if (validarFirma) {
                         // INICIO VALIDAR NIF Y FIRMA
@@ -125,14 +128,14 @@ public class SubidaFicheroFirmado extends HttpServlet
                         entityManager.getTransaction().begin();
                         try {
                             //Actualizar la fecha de firma en BD_A_DOCFIRMA
-                            StADocfirma stADocfirma = new StADocfirma();
+                            StADocfirma stADocfirma = new StADocfirma(Session.getDatosUsuario());
                             Integer idDocfirma = filtroFirmaDocumentos.getDsResultado().getRows().get(idxFichero).getColumnName("ID_DOCFIRMA").getValueInteger();
                             BdADocfirma bdADocfirma = stADocfirma.item(idDocfirma, entityManager);
                             bdADocfirma.setFeFirma(new Date());
                             stADocfirma.actualiza(bdADocfirma, entityManager);
                             
                             //Insertar el documento original (el del ID_DOCUMENTO) en BD_A_HISTDOC
-                            StAHistdoc stAHistdoc = new StAHistdoc();
+                            StAHistdoc stAHistdoc = new StAHistdoc(Session.getDatosUsuario());
                             BdAHistdoc bdAHistdoc = new BdAHistdoc();
                             bdAHistdoc.setIdDocumento(bdDDocumento.getIdDocumento());
                             bdAHistdoc.setIdSituaciondoc(bdDDocumento.getIdSituaciondoc());
@@ -143,7 +146,7 @@ public class SubidaFicheroFirmado extends HttpServlet
                             stAHistdoc.alta(bdAHistdoc, entityManager);
 
                             //Actualizar el documento en BD_D_DOCUMENTOS
-                            StDDocumento stDDocumento = new StDDocumento();
+                            StDDocumento stDDocumento = new StDDocumento(Session.getDatosUsuario());
                             bdDDocumento.setBlDocumento(binDocumentoFirmado); // BL_DOCUMENTO: con el firmado
                             bdDDocumento.setCoExtension("XSIG"); // CO_EXTENSION: "XSIG"
                             bdDDocumento.setCoFichero(bdDDocumento.getCoFichero() + ".xsig"); // CO_FICHERO: el que habia reemplazando la extension a ".xsig"
@@ -161,7 +164,7 @@ public class SubidaFicheroFirmado extends HttpServlet
                             }
                             
                             // ID_SITUACION: FIRMADO si no hay mas firmantes y PENDIENTE_FIRMA si hay mas firmantes
-                            StTSituaciondoc stTSituaciondoc = new StTSituaciondoc();
+                            StTSituaciondoc stTSituaciondoc = new StTSituaciondoc(Session.getDatosUsuario());
                             BdTSituaciondoc filtroBdTSituaciondoc = new BdTSituaciondoc();
                             if (existenFirmasPendientes) {
                                 filtroBdTSituaciondoc.setCoSituaciondoc("PENDIENTE_FIRMA");
@@ -182,35 +185,36 @@ public class SubidaFicheroFirmado extends HttpServlet
                     }
                     // FIN TRANSACCION
                     
-                    //Notificacion por WebService de que el documento se ha firmado por el ultimo firmante.
-                    boolean boNotificarWebService = Boolean.valueOf(new Configuraciones().recuperaConfiguracion("NOTIFICAWS"));
-                    if (boNotificarWebService) {
-                        StTTipodocumento stTTipodocumento = new StTTipodocumento();
-                        BdTTipodocumento bdTTipodocumento = stTTipodocumento.item(bdDDocumento.getIdTipodocumento(), null);
+                    StTTipodocumento stTTipodocumento = new StTTipodocumento(Session.getDatosUsuario());
+                    BdTTipodocumento bdTTipodocumento = stTTipodocumento.item(bdDDocumento.getIdTipodocumento(), null);
 
-                        StTSituaciondoc stTSituaciondoc = new StTSituaciondoc();
-                        BdTSituaciondoc bdTSituaciondoc = stTSituaciondoc.item(bdDDocumento.getIdSituaciondoc(), null);
+                    StTSituaciondoc stTSituaciondoc = new StTSituaciondoc(Session.getDatosUsuario());
+                    BdTSituaciondoc bdTSituaciondoc = stTSituaciondoc.item(bdDDocumento.getIdSituaciondoc(), null);
 
-                        if (bdTSituaciondoc.getCoSituaciondoc().equalsIgnoreCase("FIRMADO")) {
-                            DocumentNotificationRequest documentNotificationRequest = new DocumentNotificationRequest();
-                            documentNotificationRequest.setCabecera(new Cabecera());
-                            documentNotificationRequest.getCabecera().setCoUnidad(Session.getDatosUsuario().getBdTUnidad().getCoUnidad());
-                            documentNotificationRequest.setDocumento(new Documento());
-                            documentNotificationRequest.getDocumento().setCoSituacionDoc(bdTSituaciondoc.getCoSituaciondoc());
-                            documentNotificationRequest.getDocumento().setCoTipoDocumento(bdTTipodocumento.getCoTipodocumento());
-                            documentNotificationRequest.getDocumento().setCoFichero(bdDDocumento.getCoFichero());
-                            documentNotificationRequest.getDocumento().setCoExtension(bdDDocumento.getCoExtension());
-                            documentNotificationRequest.getDocumento().setBlDocumento(bdDDocumento.getBlDocumento(null));
-                            documentNotificationRequest.getDocumento().setDsDocumento(bdDDocumento.getDsDocumento());
-                            documentNotificationRequest.getDocumento().setDsObservaciones(null);
+                    if (bdTSituaciondoc.getCoSituaciondoc().equalsIgnoreCase("FIRMADO")) {
+                        DocumentNotificationRequest documentNotificationRequest = new DocumentNotificationRequest();
+                        documentNotificationRequest.setCabecera(new Cabecera());
+                        documentNotificationRequest.getCabecera().setCoUnidad(Session.getDatosUsuario().getBdTUnidad().getCoUnidad());
+                        documentNotificationRequest.setDocumento(new Documento());
+                        documentNotificationRequest.getDocumento().setCoSituacionDoc(bdTSituaciondoc.getCoSituaciondoc());
+                        documentNotificationRequest.getDocumento().setCoTipoDocumento(bdTTipodocumento.getCoTipodocumento());
+                        documentNotificationRequest.getDocumento().setCoFichero(bdDDocumento.getCoFichero());
+                        documentNotificationRequest.getDocumento().setCoExtension(bdDDocumento.getCoExtension());
+                        documentNotificationRequest.getDocumento().setBlDocumento(bdDDocumento.getBlDocumento(null));
+                        documentNotificationRequest.getDocumento().setDsDocumento(bdDDocumento.getDsDocumento());
+                        documentNotificationRequest.getDocumento().setDsObservaciones(null);
 
-                            // DAR DE ALTA EL XML DE SALIRA POR SI FALLA PODER REPROCESAR LA SALIDA
-                            StringWriter sw = new StringWriter();
-                            JAXB.marshal(documentNotificationRequest, sw);
-                            String xmlString = sw.toString();
+                        // DAR DE ALTA EL XML DE SALIRA POR SI FALLA PODER REPROCESAR LA SALIDA
+                        StringWriter sw = new StringWriter();
+                        JAXB.marshal(documentNotificationRequest, sw);
+                        String xmlString = sw.toString();
 
-                            StDSalidaxml stDSalidaxml = new StDSalidaxml();
-                            Integer idSalidaXML = stDSalidaxml.grabarSalidaXML(xmlString, bdDDocumento.getIdDocumento(), null);
+                        StDSalidaxml stDSalidaxml = new StDSalidaxml(Session.getDatosUsuario());
+                        Integer idSalidaXML = stDSalidaxml.grabarSalidaXML(xmlString, bdDDocumento.getIdDocumento(), null);
+
+                        //Notificacion por WebService de que el documento se ha firmado por el ultimo firmante.
+                        boolean boNotificarWebService = Boolean.valueOf(new Configuraciones(Session.getDatosUsuario()).recuperaConfiguracion("NOTIFICAWS"));
+                        if (boNotificarWebService) {
 
                             String resultado = documentNotification(documentNotificationRequest);
 
@@ -223,28 +227,51 @@ public class SubidaFicheroFirmado extends HttpServlet
                                 stDSalidaxml.actualizarSalidaXML(idSalidaXML, bdDDocumento.getIdDocumento(), "ERROR");
                             }
                         }
+                        //Fin Notificacion por WebService
+                        
+                        //Notificacion por fichero XML en carpeta local/NFS
+                        boolean boHiloGestorXML = Boolean.valueOf(new Configuraciones(Session.getDatosUsuario()).recuperaConfiguracion("HILOGESTORXML"));
+                        if (boHiloGestorXML) {
+                            try {
+                                String sHiloGestorXML_Path = new Configuraciones(Session.getDatosUsuario()).recuperaConfiguracion("HILOGESTORXML_PATH");
+                                if (sHiloGestorXML_Path == null || sHiloGestorXML_Path.isBlank()) {
+                                    LOG.error("No se ha establecido el path de busqueda de XML, 'HILOGESTORXML_PATH'.");
+                                    stDSalidaxml.actualizarSalidaXML(idSalidaXML, bdDDocumento.getIdDocumento(), "ERROR");
+                                    return;
+                                }
+
+                                FileUtils.writeStringToFile(Paths.get(sHiloGestorXML_Path, "SALIDA", "SALIDA_" + idSalidaXML + ".xml").toFile(), xmlString, StandardCharsets.UTF_8);
+
+                                stDSalidaxml.actualizarSalidaXML(idSalidaXML, bdDDocumento.getIdDocumento(), "PROCESADO");
+                            }
+                            catch (Exception ex) {
+                                LOG.error(ex.getMessage(), ex);
+                                stDSalidaxml.actualizarSalidaXML(idSalidaXML, bdDDocumento.getIdDocumento(), "ERROR");
+                            }
+                        }
+                        //Fin Notificacion por fichero XML en carpeta local/NFS
                     }
-                    //Fin Notificacion por WebService
+                    
                     
                     //NOTIFICACION POR CORREO
-                    boolean enviarCorreoFirmante = Boolean.valueOf(new Configuraciones().recuperaConfiguracion("ENVIOCORREOFIRMANTE"));
+                    boolean enviarCorreoFirmante = Boolean.valueOf(new Configuraciones(Session.getDatosUsuario()).recuperaConfiguracion("ENVIOCORREOFIRMANTE"));
                     if (enviarCorreoFirmante && existenFirmasPendientes && itemBdADocfirmaSiguiente != null) {
                         String dsAutoridad = null;
                         ArrayList<Destinatarios> listaDestinatarios = new ArrayList<>();
                         
                         Integer idAutoridad = itemBdADocfirmaSiguiente.getIdAutoridad();
-                        StTAutoridad stTAutoridad = new StTAutoridad();
+                        StTAutoridad stTAutoridad = new StTAutoridad(Session.getDatosUsuario());
                         BdTAutoridad itemBdTAutoridad = stTAutoridad.item(idAutoridad, null);
                         if (itemBdTAutoridad != null) {
                             dsAutoridad = itemBdTAutoridad.getCoAutoridad() + " - " + itemBdTAutoridad.getDsAutoridad();
 
-                            StAAutusu stAAutusu = new StAAutusu();
+                            StAAutusu stAAutusu = new StAAutusu(Session.getDatosUsuario());
                             BdAAutusu filtroBdAAutusu = new BdAAutusu();
                             filtroBdAAutusu.setIdAutoridad(idAutoridad);
                             ArrayList<BdAAutusu> listaBdAAutusu = stAAutusu.filtro(filtroBdAAutusu, null);
                             if (listaBdAAutusu != null && !listaBdAAutusu.isEmpty()) {
                                 for (BdAAutusu itemBdAAutusu : listaBdAAutusu) {
-                                    BdTUsuario bdTUsuario = new StTUsuario().item(itemBdAAutusu.getIdUsuario(), false, null);
+                                    BdTUsuario bdTUsuario = new StTUsuario(Session.getDatosUsuario()).item(itemBdAAutusu.getIdUsuario(), false, null);
                                     Destinatarios destinatario = new Destinatarios();
                                     // TODO: Añadir campo email a los usuarios.
                                     destinatario.setEmailAddress("fulgore1983@gmail.com"/*bdTUsuario.getEmail()*/);

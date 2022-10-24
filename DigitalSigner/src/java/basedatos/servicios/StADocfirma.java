@@ -8,11 +8,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import tomcat.persistence.EntityManager;
-import utilidades.Session;
 import utilidades.Validation;
 import init.AppInit;
 import utilidades.BaseDatos;
 import basedatos.tablas.BdADocfirma;
+import seguridad.usuarios.DatosUsuario;
 
 /**
  *
@@ -20,8 +20,10 @@ import basedatos.tablas.BdADocfirma;
  */
 public class StADocfirma extends StBase {
     
-    public StADocfirma() {
-        //NADA
+    private DatosUsuario datosUsuario = null;
+    
+    public StADocfirma(DatosUsuario datosUsuario) {
+        this.datosUsuario = datosUsuario;
     }
     
     public ArrayList<BdADocfirma> filtro(BdADocfirma filtroBdADocfirma, EntityManager em) throws Exception {
@@ -89,7 +91,7 @@ public class StADocfirma extends StBase {
         }
    
 
-        newBdADocfirma.setUsuariobd(Session.getCoUsuario());
+        newBdADocfirma.setUsuariobd(datosUsuario.getBdTUsuario().getCoUsuario());
 
         newBdADocfirma.setTstbd(new Date());
 
@@ -139,7 +141,7 @@ public class StADocfirma extends StBase {
         }
 
 
-        upBdADocfirma.setUsuariobd(Session.getCoUsuario());
+        upBdADocfirma.setUsuariobd(datosUsuario.getBdTUsuario().getCoUsuario());
 
         upBdADocfirma.setTstbd(new Date());
 

@@ -104,8 +104,8 @@ public class BajadaFicheroFirma extends HttpServlet
                     }
                     else
                     {
-                        boolean validarNIF = Boolean.valueOf(new Configuraciones().recuperaConfiguracion("VALIDARNIF"));
-                        boolean validarFirma = Boolean.valueOf(new Configuraciones().recuperaConfiguracion("VALIDARFIRMA"));
+                        boolean validarNIF = Boolean.valueOf(new Configuraciones(Session.getDatosUsuario()).recuperaConfiguracion("VALIDARNIF"));
+                        boolean validarFirma = Boolean.valueOf(new Configuraciones(Session.getDatosUsuario()).recuperaConfiguracion("VALIDARFIRMA"));
 
                         if(validarNIF || validarFirma)
                         {

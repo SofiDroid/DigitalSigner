@@ -335,7 +335,7 @@ public class FiltroFirmaDocumentos implements Serializable {
     public String verDocumento() {
         try {
             Integer idDocumento = this.dsResultado.getSelectedRow().getColumnaID().getValueInteger();
-            BdDDocumento bdDDocumento = new StDDocumento().item(idDocumento, null);
+            BdDDocumento bdDDocumento = new StDDocumento(Session.getDatosUsuario()).item(idDocumento, null);
             byte[] binDocumento = bdDDocumento.getBlDocumento(null);
             ResultadoValidacionFirmas resultadoValidacionFirmas = null;
             if (bdDDocumento.getCoExtension().equalsIgnoreCase("xsig")) {
@@ -385,16 +385,16 @@ public class FiltroFirmaDocumentos implements Serializable {
      * 
      */
     public String getCertificadosAdmitidos() {
-        return new Configuraciones().recuperaConfiguracion("CERT-ADMITIDOS");
+        return new Configuraciones(Session.getDatosUsuario()).recuperaConfiguracion("CERT-ADMITIDOS");
     }
     
     public String getHostServlets() {
-        return new Configuraciones().recuperaConfiguracion("HOST-TRIFASE");
+        return new Configuraciones(Session.getDatosUsuario()).recuperaConfiguracion("HOST-TRIFASE");
     }
     
     public BdDDocumento getDocumentoByIndex(Integer idxFichero) throws Exception {
         Integer idDocumento = this.dsResultado.getRows().get(idxFichero).getColumnName("ID_DOCUMENTO").getValueInteger();
-        return new StDDocumento().item(idDocumento, null);
+        return new StDDocumento(Session.getDatosUsuario()).item(idDocumento, null);
     }
     
     public void prepararListaDocumentos() {

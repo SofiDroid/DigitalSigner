@@ -14,6 +14,7 @@ import utilidades.CampoWebFecha;
 import utilidades.Mensajes;
 import utilidades.ModoFormulario;
 import utilidades.Msg;
+import utilidades.Session;
 import utilidades.Validation;
 
 /**
@@ -96,7 +97,7 @@ public class EdicionSituacionesDocumentos implements Serializable {
                 this.bdTSituaciondoc.setFeAlta(this.cFeAlta.getValue());
                 this.bdTSituaciondoc.setFeDesactivo(this.cFeDesactivo.getValue());
                 
-                StTSituaciondoc stTSituaciondoc = new StTSituaciondoc();
+                StTSituaciondoc stTSituaciondoc = new StTSituaciondoc(Session.getDatosUsuario());
                 stTSituaciondoc.alta(this.bdTSituaciondoc, null);
                 
                 if (this.parent instanceof FiltroSituacionesDocumentos filtroSituacionesDocumentos) {
@@ -113,7 +114,7 @@ public class EdicionSituacionesDocumentos implements Serializable {
                 this.bdTSituaciondoc.setFeAlta(this.cFeAlta.getValue());
                 this.bdTSituaciondoc.setFeDesactivo(this.cFeDesactivo.getValue());
                 
-                StTSituaciondoc stTSituaciondoc = new StTSituaciondoc();
+                StTSituaciondoc stTSituaciondoc = new StTSituaciondoc(Session.getDatosUsuario());
                 stTSituaciondoc.actualiza(this.bdTSituaciondoc, null);
                 
                 if (this.parent instanceof FiltroSituacionesDocumentos filtroSituacionesDocumentos) {
@@ -143,7 +144,7 @@ public class EdicionSituacionesDocumentos implements Serializable {
     
     public void eliminar() {
         try {
-            StTSituaciondoc stTSituaciondoc = new StTSituaciondoc();
+            StTSituaciondoc stTSituaciondoc = new StTSituaciondoc(Session.getDatosUsuario());
             stTSituaciondoc.baja(this.bdTSituaciondoc, null);
             
             if (this.parent instanceof FiltroSituacionesDocumentos filtroSituacionesDocumentos) {
@@ -220,7 +221,7 @@ public class EdicionSituacionesDocumentos implements Serializable {
     }
     
     private void recuperarRegistro(Integer idSituaciondoc) throws Exception {
-        StTSituaciondoc stTSituaciondoc = new StTSituaciondoc();
+        StTSituaciondoc stTSituaciondoc = new StTSituaciondoc(Session.getDatosUsuario());
         this.bdTSituaciondoc = stTSituaciondoc.item(idSituaciondoc, null);
         if (this.bdTSituaciondoc == null) {
             throw new RegistryNotFoundException();

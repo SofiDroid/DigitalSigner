@@ -28,6 +28,7 @@ import utilidades.CampoWebLupa;
 import utilidades.Mensajes;
 import utilidades.ModoFormulario;
 import utilidades.Msg;
+import utilidades.Session;
 import utilidades.Validation;
 
 /**
@@ -243,7 +244,7 @@ public class EdicionAutoridades implements Serializable {
                         this.bdTAutoridad.setFeDesactivo(this.cFeDesactivo.getValue());
                         this.bdTAutoridad.setIdUnidad(this.cUnidad.getId());
 
-                        StTAutoridad stTAutoridad = new StTAutoridad();
+                        StTAutoridad stTAutoridad = new StTAutoridad(Session.getDatosUsuario());
                         stTAutoridad.alta(this.bdTAutoridad, entityManager);
 
                         if (this.dsUsuarios != null) {
@@ -254,7 +255,7 @@ public class EdicionAutoridades implements Serializable {
                                 newBdAAutusu.setFeAlta((Date)itemRow.getColumnName("FE_ALTA").getValue());
                                 newBdAAutusu.setFeDesactivo((Date)itemRow.getColumnName("FE_DESACTIVO").getValue());
 
-                                StAAutusu stAAutusu = new StAAutusu();
+                                StAAutusu stAAutusu = new StAAutusu(Session.getDatosUsuario());
                                 stAAutusu.alta(newBdAAutusu, entityManager);
                             }
                         }
@@ -276,7 +277,7 @@ public class EdicionAutoridades implements Serializable {
                         this.bdTAutoridad.setFeDesactivo(this.cFeDesactivo.getValue());
                         this.bdTAutoridad.setIdUnidad(this.cUnidad.getId());
 
-                        StTAutoridad stTAutoridad = new StTAutoridad();
+                        StTAutoridad stTAutoridad = new StTAutoridad(Session.getDatosUsuario());
                         stTAutoridad.actualiza(this.bdTAutoridad, entityManager);
 
                         for (Integer idUsuario : listaUsuariosEliminadosId) {
@@ -284,7 +285,7 @@ public class EdicionAutoridades implements Serializable {
                             delBdAAutusu.setIdAutoridad(this.bdTAutoridad.getIdAutoridad());
                             delBdAAutusu.setIdUsuario(idUsuario);
                             
-                            StAAutusu stAAutusu = new StAAutusu();
+                            StAAutusu stAAutusu = new StAAutusu(Session.getDatosUsuario());
                             stAAutusu.baja(delBdAAutusu, entityManager);
                         }
                         
@@ -294,7 +295,7 @@ public class EdicionAutoridades implements Serializable {
                                 newBdAAutusu.setIdAutoridad(this.bdTAutoridad.getIdAutoridad());
                                 newBdAAutusu.setIdUsuario(itemRow.getColumnName("ID_USUARIO").getValueInteger());
 
-                                StAAutusu stAAutusu = new StAAutusu();
+                                StAAutusu stAAutusu = new StAAutusu(Session.getDatosUsuario());
                                 ArrayList<BdAAutusu> listaBdAAutusu = stAAutusu.filtro(newBdAAutusu, entityManager);
                                 if (listaBdAAutusu == null || listaBdAAutusu.isEmpty()) {
                                     newBdAAutusu.setFeAlta((Date)itemRow.getColumnName("FE_ALTA").getValue());
@@ -347,7 +348,7 @@ public class EdicionAutoridades implements Serializable {
                 try {
                     BdAAutusu filtroBdAAutusu = new BdAAutusu();
                     filtroBdAAutusu.setIdAutoridad(this.bdTAutoridad.getIdAutoridad());
-                    StAAutusu stAAutusu = new StAAutusu();
+                    StAAutusu stAAutusu = new StAAutusu(Session.getDatosUsuario());
                     ArrayList<BdAAutusu> listaBdAAutusu = stAAutusu.filtro(filtroBdAAutusu, entityManager);
                     if (listaBdAAutusu != null && !listaBdAAutusu.isEmpty()) {
                         for (BdAAutusu itemBdAAutusu : listaBdAAutusu) {
@@ -355,7 +356,7 @@ public class EdicionAutoridades implements Serializable {
                         }
                     }
 
-                    StTAutoridad stTAutoridad = new StTAutoridad();
+                    StTAutoridad stTAutoridad = new StTAutoridad(Session.getDatosUsuario());
                     stTAutoridad.baja(this.bdTAutoridad, entityManager);
 
                     entityManager.getTransaction().commit();
@@ -466,7 +467,7 @@ public class EdicionAutoridades implements Serializable {
     }
     
     private void recuperarRegistro(Integer idAutoridad) throws Exception {
-        StTAutoridad stTAutoridad = new StTAutoridad();
+        StTAutoridad stTAutoridad = new StTAutoridad(Session.getDatosUsuario());
         this.bdTAutoridad = stTAutoridad.item(idAutoridad, null);
         if (this.bdTAutoridad == null) {
             throw new RegistryNotFoundException();

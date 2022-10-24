@@ -25,6 +25,7 @@ import utilidades.CampoWebLupa;
 import utilidades.Mensajes;
 import utilidades.ModoFormulario;
 import utilidades.Msg;
+import utilidades.Session;
 import utilidades.Validation;
 
 /**
@@ -202,7 +203,7 @@ public class EdicionPerfiles implements Serializable {
                         this.bdTTipousuario.setFeDesactivo(this.cFeDesactivo.getValue());
                         this.bdTTipousuario.setIdUnidad(this.cUnidad.getId());
 
-                        StTTipousuario stTTipousuario = new StTTipousuario();
+                        StTTipousuario stTTipousuario = new StTTipousuario(Session.getDatosUsuario());
                         stTTipousuario.alta(this.bdTTipousuario, entityManager);
 
                         grabarCambiosOpcionesMenu(this.treeOpcionesMenu, this.bdTTipousuario, entityManager);
@@ -224,7 +225,7 @@ public class EdicionPerfiles implements Serializable {
                         this.bdTTipousuario.setFeDesactivo(this.cFeDesactivo.getValue());
                         this.bdTTipousuario.setIdUnidad(this.cUnidad.getId());
 
-                        StTTipousuario stTTipousuario = new StTTipousuario();
+                        StTTipousuario stTTipousuario = new StTTipousuario(Session.getDatosUsuario());
                         stTTipousuario.actualiza(this.bdTTipousuario, entityManager);
 
                         grabarCambiosOpcionesMenu(this.treeOpcionesMenu, this.bdTTipousuario, entityManager);
@@ -265,7 +266,7 @@ public class EdicionPerfiles implements Serializable {
             filtroBdATipousuopcper.setIdTipousuario(this.bdTTipousuario.getIdTipousuario());
             filtroBdATipousuopcper.setIdOpcionmenu(treeNode.getData().getIdOpcionMenu());
 
-            StATipousuopcper stATipousuopcper = new StATipousuopcper();
+            StATipousuopcper stATipousuopcper = new StATipousuopcper(Session.getDatosUsuario());
             ArrayList<BdATipousuopcper> listaBdATipousuopcper = stATipousuopcper.filtro(filtroBdATipousuopcper, entityManager);
             if (listaBdATipousuopcper != null) {
                 //Si existe el registro, se modifica
@@ -313,7 +314,7 @@ public class EdicionPerfiles implements Serializable {
                     BdATipousuopcper filtroBdATipousuopcper = new BdATipousuopcper();
                     filtroBdATipousuopcper.setIdTipousuario(this.bdTTipousuario.getIdTipousuario());
                     
-                    StATipousuopcper stATipousuopcper = new StATipousuopcper();
+                    StATipousuopcper stATipousuopcper = new StATipousuopcper(Session.getDatosUsuario());
                     ArrayList<BdATipousuopcper> listaBdATipousuopcper = stATipousuopcper.filtro(filtroBdATipousuopcper, entityManager);
                     if (listaBdATipousuopcper != null) {
                         for (BdATipousuopcper itemBdATipousuopcper : listaBdATipousuopcper) {
@@ -321,7 +322,7 @@ public class EdicionPerfiles implements Serializable {
                         }
                     }
                                         
-                    StTTipousuario stTTipousuario = new StTTipousuario();
+                    StTTipousuario stTTipousuario = new StTTipousuario(Session.getDatosUsuario());
                     stTTipousuario.baja(this.bdTTipousuario, entityManager);
 
                     entityManager.getTransaction().commit();
@@ -414,7 +415,7 @@ public class EdicionPerfiles implements Serializable {
     }
     
     private void recuperarRegistro(Integer idTipousuario) throws Exception {
-        StTTipousuario stTTipousuario = new StTTipousuario();
+        StTTipousuario stTTipousuario = new StTTipousuario(Session.getDatosUsuario());
         this.bdTTipousuario = stTTipousuario.item(idTipousuario, null);
         if (this.bdTTipousuario == null) {
             throw new RegistryNotFoundException();

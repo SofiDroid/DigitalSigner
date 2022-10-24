@@ -340,7 +340,7 @@ public class FiltroConsultaDocumentos implements Serializable {
     public String verDocumento() {
         try {
             Integer idDocumento = this.dsResultado.getSelectedRow().getColumnaID().getValueInteger();
-            BdDDocumento bdDDocumento = new StDDocumento().item(idDocumento, null);
+            BdDDocumento bdDDocumento = new StDDocumento(Session.getDatosUsuario()).item(idDocumento, null);
             byte[] binDocumento = bdDDocumento.getBlDocumento(null);
             ResultadoValidacionFirmas resultadoValidacionFirmas = null;
             if (bdDDocumento.getCoExtension().equalsIgnoreCase("xsig")) {

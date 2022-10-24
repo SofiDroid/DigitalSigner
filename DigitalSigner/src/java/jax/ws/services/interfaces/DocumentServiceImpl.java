@@ -35,11 +35,9 @@ import init.AppInit;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Date;
-import javax.annotation.Resource;
 import javax.jws.*;
 import javax.xml.bind.JAXB;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.ws.WebServiceContext;
 import jax.client.services.interfaces.mailservice.Destinatarios;
 import jax.ws.services.types.AcuseReciboDocumentResponse;
 import jax.ws.services.types.DocumentRequest;
@@ -48,10 +46,10 @@ import jax.ws.services.types.clases.Documento;
 import jax.ws.services.types.clases.Extra;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.log4j.Logger;
+import seguridad.usuarios.DatosUsuario;
 import tomcat.persistence.EntityManager;
 import utilidades.Configuraciones;
 import utilidades.Correo;
-import utilidades.Session;
 
 /**
  *
@@ -59,10 +57,8 @@ import utilidades.Session;
  */
 @WebService(serviceName = "DocumentService")
 public class DocumentServiceImpl {
-
-    @Resource
-    private WebServiceContext context;
     
+    private DatosUsuario datosUsuario = null;
     /**
      * Web service operation
      * @param documentRequest
@@ -74,92 +70,7 @@ public class DocumentServiceImpl {
         AcuseReciboDocumentResponse acuseReciboDocumentResponse = new AcuseReciboDocumentResponse();
         
         try {
-            validarCampos(documentRequest);
-            
-            validarToken(documentRequest.getCabecera(), context);
-            
-            StringWriter sw = new StringWriter();
-            JAXB.marshal(documentRequest, sw);
-            String xmlString = sw.toString();
-
-            StDEntradaxml stDEntradaxml = new StDEntradaxml();
-            Integer idEntradaXML = stDEntradaxml.grabarEntradaXML(xmlString);
-            String md5Hex = DigestUtils.md5Hex(xmlString).toUpperCase();
-            
-            acuseReciboDocumentResponse.getAcuseReciboDocument().setIdEntradaXML(idEntradaXML);
-            acuseReciboDocumentResponse.getAcuseReciboDocument().setHash(md5Hex);
-            
-            // INICIO TRANSACCION
-            Integer idDocumento = null;
-            try (EntityManager entityManager = AppInit.getEntityManager())
-            {
-                entityManager.getTransaction().begin();
-                try {
-                    idDocumento = grabarDocumento(documentRequest.getDocumento(), entityManager);
-
-                    grabarExtras(documentRequest.getExtras(), idDocumento, entityManager);
-
-                    entityManager.getTransaction().commit();
-                }
-                catch (Exception ex) {
-                    entityManager.getTransaction().rollback();
-                    throw ex;
-                }
-            }
-            catch (Exception ex) {
-                Logger.getLogger(DocumentServiceImpl.class).error(ex.getMessage(), ex);
-                stDEntradaxml.actualizarEntradaXML(idEntradaXML, idDocumento, "ERROR");
-                throw ex;
-            }
-            // FIN TRANSACCION
-            stDEntradaxml.actualizarEntradaXML(idEntradaXML, idDocumento, "PROCESADO");
-            
-            boolean enviarCorreoFirmante = Boolean.valueOf(new Configuraciones().recuperaConfiguracion("ENVIOCORREOFIRMANTE"));
-            if (enviarCorreoFirmante) {
-                String dsAutoridad = null;
-                ArrayList<Destinatarios> listaDestinatarios = new ArrayList<>();
-                BdADocfirma filtroBdADocfirma = new BdADocfirma();
-                filtroBdADocfirma.setIdDocumento(idDocumento);
-                filtroBdADocfirma.setEnOrden(1);
-                StADocfirma stADocfirma = new StADocfirma();
-                ArrayList<BdADocfirma> listaADocfirma = stADocfirma.filtro(filtroBdADocfirma, null);
-                if (listaADocfirma != null && !listaADocfirma.isEmpty()) {
-                    Integer idAutoridad = listaADocfirma.get(0).getIdAutoridad();
-                    StTAutoridad stTAutoridad = new StTAutoridad();
-                    BdTAutoridad itemBdTAutoridad = stTAutoridad.item(idAutoridad, null);
-                    if (itemBdTAutoridad != null) {
-                        dsAutoridad = itemBdTAutoridad.getCoAutoridad() + " - " + itemBdTAutoridad.getDsAutoridad();
-                        
-                        StAAutusu stAAutusu = new StAAutusu();
-                        BdAAutusu filtroBdAAutusu = new BdAAutusu();
-                        filtroBdAAutusu.setIdAutoridad(idAutoridad);
-                        ArrayList<BdAAutusu> listaBdAAutusu = stAAutusu.filtro(filtroBdAAutusu, null);
-                        if (listaBdAAutusu != null && !listaBdAAutusu.isEmpty()) {
-                            for (BdAAutusu itemBdAAutusu : listaBdAAutusu) {
-                                BdTUsuario bdTUsuario = new StTUsuario().item(itemBdAAutusu.getIdUsuario(), false, null);
-                                Destinatarios destinatario = new Destinatarios();
-                                // TODO: Añadir campo email a los usuarios.
-                                destinatario.setEmailAddress("fulgore1983@gmail.com"/*bdTUsuario.getEmail()*/);
-                                /**
-                                 * Tipo de receptor:
-                                 * - TO: Receptor normal (PARA)
-                                 * - CC: Receptor en copia (CC)
-                                 * - BCC: Receptor en copia oculta (CCO)
-                                 */
-                                destinatario.setRecipientType("TO");
-                                listaDestinatarios.add(destinatario);
-                            }
-                        }
-                    }
-                }
-                
-                boolean resultadoEmail = Correo.enviar("La autoridad " + dsAutoridad + ", tiene documentos pendientes de firma.", 
-                                                    "DigitalSigner: documentos pendientes de firma.", null, "admin@digitalsigner.com", 
-                                                    listaDestinatarios);
-                if (!resultadoEmail) {
-                    Logger.getLogger(DocumentServiceImpl.class).error("No se ha podido notificar a los firmantes por correo.");
-                }
-            }
+            acuseReciboDocumentResponse = procesar(documentRequest);
         }
         catch (Exception ex) {
             Logger.getLogger(DocumentServiceImpl.class).error(ex.getMessage(), ex);
@@ -169,7 +80,100 @@ public class DocumentServiceImpl {
         return acuseReciboDocumentResponse;
     }
     
-    private void validarToken(Cabecera cabecera, WebServiceContext context) throws Exception {
+    public AcuseReciboDocumentResponse procesar(DocumentRequest documentRequest) throws Exception {
+        AcuseReciboDocumentResponse acuseReciboDocumentResponse = new AcuseReciboDocumentResponse();
+
+        validarCampos(documentRequest);
+            
+        validarToken(documentRequest.getCabecera());
+
+        StringWriter sw = new StringWriter();
+        JAXB.marshal(documentRequest, sw);
+        String xmlString = sw.toString();
+
+        StDEntradaxml stDEntradaxml = new StDEntradaxml(datosUsuario);
+        Integer idEntradaXML = stDEntradaxml.grabarEntradaXML(xmlString);
+        String md5Hex = DigestUtils.md5Hex(xmlString).toUpperCase();
+
+        acuseReciboDocumentResponse.getAcuseReciboDocument().setIdEntradaXML(idEntradaXML);
+        acuseReciboDocumentResponse.getAcuseReciboDocument().setHash(md5Hex);
+
+        // INICIO TRANSACCION
+        Integer idDocumento = null;
+        try (EntityManager entityManager = AppInit.getEntityManager())
+        {
+            entityManager.getTransaction().begin();
+            try {
+                idDocumento = grabarDocumento(documentRequest.getDocumento(), entityManager);
+
+                grabarExtras(documentRequest.getExtras(), idDocumento, entityManager);
+
+                entityManager.getTransaction().commit();
+            }
+            catch (Exception ex) {
+                entityManager.getTransaction().rollback();
+                throw ex;
+            }
+        }
+        catch (Exception ex) {
+            Logger.getLogger(DocumentServiceImpl.class).error(ex.getMessage(), ex);
+            stDEntradaxml.actualizarEntradaXML(idEntradaXML, idDocumento, "ERROR");
+            throw ex;
+        }
+        // FIN TRANSACCION
+        stDEntradaxml.actualizarEntradaXML(idEntradaXML, idDocumento, "PROCESADO");
+
+        boolean enviarCorreoFirmante = Boolean.valueOf(new Configuraciones(datosUsuario).recuperaConfiguracion("ENVIOCORREOFIRMANTE"));
+        if (enviarCorreoFirmante) {
+            String dsAutoridad = null;
+            ArrayList<Destinatarios> listaDestinatarios = new ArrayList<>();
+            BdADocfirma filtroBdADocfirma = new BdADocfirma();
+            filtroBdADocfirma.setIdDocumento(idDocumento);
+            filtroBdADocfirma.setEnOrden(1);
+            StADocfirma stADocfirma = new StADocfirma(datosUsuario);
+            ArrayList<BdADocfirma> listaADocfirma = stADocfirma.filtro(filtroBdADocfirma, null);
+            if (listaADocfirma != null && !listaADocfirma.isEmpty()) {
+                Integer idAutoridad = listaADocfirma.get(0).getIdAutoridad();
+                StTAutoridad stTAutoridad = new StTAutoridad(datosUsuario);
+                BdTAutoridad itemBdTAutoridad = stTAutoridad.item(idAutoridad, null);
+                if (itemBdTAutoridad != null) {
+                    dsAutoridad = itemBdTAutoridad.getCoAutoridad() + " - " + itemBdTAutoridad.getDsAutoridad();
+
+                    StAAutusu stAAutusu = new StAAutusu(datosUsuario);
+                    BdAAutusu filtroBdAAutusu = new BdAAutusu();
+                    filtroBdAAutusu.setIdAutoridad(idAutoridad);
+                    ArrayList<BdAAutusu> listaBdAAutusu = stAAutusu.filtro(filtroBdAAutusu, null);
+                    if (listaBdAAutusu != null && !listaBdAAutusu.isEmpty()) {
+                        for (BdAAutusu itemBdAAutusu : listaBdAAutusu) {
+                            BdTUsuario bdTUsuario = new StTUsuario(datosUsuario).item(itemBdAAutusu.getIdUsuario(), false, null);
+                            Destinatarios destinatario = new Destinatarios();
+                            // TODO: Añadir campo email a los usuarios.
+                            destinatario.setEmailAddress("fulgore1983@gmail.com"/*bdTUsuario.getEmail()*/);
+                            /**
+                             * Tipo de receptor:
+                             * - TO: Receptor normal (PARA)
+                             * - CC: Receptor en copia (CC)
+                             * - BCC: Receptor en copia oculta (CCO)
+                             */
+                            destinatario.setRecipientType("TO");
+                            listaDestinatarios.add(destinatario);
+                        }
+                    }
+                }
+            }
+
+            boolean resultadoEmail = Correo.enviar("La autoridad " + dsAutoridad + ", tiene documentos pendientes de firma.", 
+                                                "DigitalSigner: documentos pendientes de firma.", null, "admin@digitalsigner.com", 
+                                                listaDestinatarios);
+            if (!resultadoEmail) {
+                Logger.getLogger(DocumentServiceImpl.class).error("No se ha podido notificar a los firmantes por correo.");
+            }
+        }
+        
+        return acuseReciboDocumentResponse;
+    }
+    
+    private void validarToken(Cabecera cabecera) throws Exception {
         
         String tokenUsuario = cabecera.getTokenUsuario();
         String coUnidad = cabecera.getCoUnidad();
@@ -179,28 +183,22 @@ public class DocumentServiceImpl {
         filtroBdATokenusuario.setDsToken(tokenUsuario);
         filtroBdATokenusuario.setFeAlta(new Date());
         filtroBdATokenusuario.setFeDesactivo(new Date());
-        StATokenusuario stATokenusuario = new StATokenusuario();
+        StATokenusuario stATokenusuario = new StATokenusuario(this.datosUsuario);
         ArrayList<BdATokenusuario> listaBdATokenusuario = stATokenusuario.filtro(filtroBdATokenusuario, null);
         if (listaBdATokenusuario == null || listaBdATokenusuario.isEmpty()) {
             throw new InvalidTokenException();
         }
-        BdTUsuario itemBdTUsuario = new StTUsuario().item(listaBdATokenusuario.get(0).getIdUsuario(), true, null);
+        BdTUsuario itemBdTUsuario = new StTUsuario(this.datosUsuario).item(listaBdATokenusuario.get(0).getIdUsuario(), true, null);
         if (itemBdTUsuario == null) {
             throw new InvalidTokenException();
         }
-        
-        Session session = new Session();
-        session.setContext(context);
-        session.crearDatosUsuario();
-        
-        Session.getDatosUsuario().setBdTUsuario(itemBdTUsuario);
         
         // Validar y obtener la unidad del usuario
         BdTUnidad filtroBdTUnidad = new BdTUnidad();
         filtroBdTUnidad.setCoUnidad(coUnidad);
         filtroBdTUnidad.setFeAlta(new Date());
         filtroBdTUnidad.setFeDesactivo(new Date());
-        StTUnidad stTUnidad = new StTUnidad();
+        StTUnidad stTUnidad = new StTUnidad(datosUsuario);
         ArrayList<BdTUnidad> listaBdTUnidad = stTUnidad.filtro(filtroBdTUnidad, null);
         if (listaBdTUnidad == null || listaBdTUnidad.isEmpty()) {
             throw new InvalidUnitException();
@@ -210,12 +208,15 @@ public class DocumentServiceImpl {
         filtroBdAUniusu.setIdUnidad(listaBdTUnidad.get(0).getIdUnidad());
         filtroBdAUniusu.setFeAlta(new Date());
         filtroBdAUniusu.setFeDesactivo(new Date());
-        StAUniusu stAUniusu = new StAUniusu();
+        StAUniusu stAUniusu = new StAUniusu(datosUsuario);
         ArrayList<BdAUniusu> listaBdAUniusu = stAUniusu.filtro(filtroBdAUniusu, null);
         if (listaBdAUniusu == null || listaBdAUniusu.isEmpty()) {
             throw new InvalidUnitException();
         }
-        Session.getDatosUsuario().setBdTUnidad(listaBdTUnidad.get(0));
+        
+        datosUsuario = new DatosUsuario();
+        datosUsuario.setBdTUsuario(itemBdTUsuario);
+        datosUsuario.setBdTUnidad(listaBdTUnidad.get(0));
     }
 
     private Integer grabarDocumento(Documento documento, EntityManager entityManager) throws Exception {
@@ -223,7 +224,7 @@ public class DocumentServiceImpl {
         filtroBdTTipodocumento.setCoTipodocumento(documento.getCoTipoDocumento());
         filtroBdTTipodocumento.setFeAlta(new Date());
         filtroBdTTipodocumento.setFeDesactivo(new Date());
-        StTTipodocumento stTTipodocumento = new StTTipodocumento();
+        StTTipodocumento stTTipodocumento = new StTTipodocumento(datosUsuario);
         ArrayList<BdTTipodocumento> listaBdTTipodocumento = stTTipodocumento.filtro(filtroBdTTipodocumento, entityManager);
         if (listaBdTTipodocumento == null || listaBdTTipodocumento.isEmpty()) {
             throw new RegistryNotFoundException();
@@ -233,7 +234,7 @@ public class DocumentServiceImpl {
         filtroBdTSituaciondoc.setCoSituaciondoc("NUEVO");
         filtroBdTSituaciondoc.setFeAlta(new Date());
         filtroBdTSituaciondoc.setFeDesactivo(new Date());
-        StTSituaciondoc stTSituaciondoc = new StTSituaciondoc();
+        StTSituaciondoc stTSituaciondoc = new StTSituaciondoc(datosUsuario);
         ArrayList<BdTSituaciondoc> listaBdTSituaciondoc = stTSituaciondoc.filtro(filtroBdTSituaciondoc, entityManager);
         if (listaBdTSituaciondoc == null || listaBdTSituaciondoc.isEmpty()) {
             throw new RegistryNotFoundException();
@@ -248,14 +249,14 @@ public class DocumentServiceImpl {
         bdDDocumento.setIdSituaciondoc(listaBdTSituaciondoc.get(0).getIdSituaciondoc());
         bdDDocumento.setIdTipodocumento(listaBdTTipodocumento.get(0).getIdTipodocumento());
         
-        StDDocumento stDDocumento = new StDDocumento();
+        StDDocumento stDDocumento = new StDDocumento(datosUsuario);
         stDDocumento.alta(bdDDocumento, entityManager);
         
         BdAConftipodoc filtroBdAConftipodoc = new BdAConftipodoc();
         filtroBdAConftipodoc.setIdTipodocumento(listaBdTTipodocumento.get(0).getIdTipodocumento());
         filtroBdAConftipodoc.setFeAlta(new Date());
         filtroBdAConftipodoc.setFeDesactivo(new Date());
-        StAConftipodoc stAConftipodoc = new StAConftipodoc();
+        StAConftipodoc stAConftipodoc = new StAConftipodoc(datosUsuario);
         ArrayList<BdAConftipodoc> listaBdAConftipodoc = stAConftipodoc.filtro(filtroBdAConftipodoc, entityManager);
         if (listaBdAConftipodoc == null || listaBdAConftipodoc.isEmpty()) {
             throw new RegistryNotFoundException();
@@ -272,7 +273,7 @@ public class DocumentServiceImpl {
             bdADocfirma.setDsFirmaposy(itemBdAConftipodoc.getDsFirmaposy());
             bdADocfirma.setFeAlta(new Date());
             
-            StADocfirma stADocfirma = new StADocfirma();
+            StADocfirma stADocfirma = new StADocfirma(datosUsuario);
             stADocfirma.alta(bdADocfirma, entityManager);
             boTieneFirmas = true;
         }
@@ -295,10 +296,10 @@ public class DocumentServiceImpl {
             BdADocobs bdADocobs = new BdADocobs();
             bdADocobs.setDsObservaciones(documento.getDsObservaciones());
             bdADocobs.setIdDocumento(bdDDocumento.getIdDocumento());
-            bdADocobs.setIdUsuario(Session.getDatosUsuario().getBdTUsuario().getIdUsuario());
+            bdADocobs.setIdUsuario(datosUsuario.getBdTUsuario().getIdUsuario());
             bdADocobs.setFeAlta(new Date());
             
-            StADocobs stADocobs = new StADocobs();
+            StADocobs stADocobs = new StADocobs(datosUsuario);
             stADocobs.alta(bdADocobs, entityManager);
             
         }
@@ -316,7 +317,7 @@ public class DocumentServiceImpl {
                 bdADocextra.setBlFichero(itemExtra.getBlFichero());
                 bdADocextra.setFeAlta(new Date());
                 
-                StADocextra stADocextra = new StADocextra();
+                StADocextra stADocextra = new StADocextra(datosUsuario);
                 stADocextra.alta(bdADocextra, entityManager);
             }
         }
@@ -341,5 +342,13 @@ public class DocumentServiceImpl {
             }
         }
         
+    }
+
+    public DatosUsuario getDatosUsuario() {
+        return datosUsuario;
+    }
+
+    public void setDatosUsuario(DatosUsuario datosUsuario) {
+        this.datosUsuario = datosUsuario;
     }
 }

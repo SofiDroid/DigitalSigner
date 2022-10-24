@@ -8,11 +8,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import tomcat.persistence.EntityManager;
-import utilidades.Session;
 import utilidades.Validation;
 import init.AppInit;
 import utilidades.BaseDatos;
 import basedatos.tablas.BdDLogon;
+import seguridad.usuarios.DatosUsuario;
 
 /**
  *
@@ -20,8 +20,10 @@ import basedatos.tablas.BdDLogon;
  */
 public class StDLogon extends StBase {
     
-    public StDLogon() {
-        //NADA
+    private DatosUsuario datosUsuario = null;
+    
+    public StDLogon(DatosUsuario datosUsuario) {
+        this.datosUsuario = datosUsuario;
     }
     
     public ArrayList<BdDLogon> filtro(BdDLogon filtroBdDLogon, EntityManager em) throws Exception {
@@ -72,7 +74,7 @@ public class StDLogon extends StBase {
         }
    
 
-        newBdDLogon.setUsuariobd(Session.getCoUsuario());
+        newBdDLogon.setUsuariobd(datosUsuario.getBdTUsuario().getCoUsuario());
 
         newBdDLogon.setTstbd(new Date());
 
@@ -105,7 +107,7 @@ public class StDLogon extends StBase {
         }
 
 
-        upBdDLogon.setUsuariobd(Session.getCoUsuario());
+        upBdDLogon.setUsuariobd(datosUsuario.getBdTUsuario().getCoUsuario());
 
         upBdDLogon.setTstbd(new Date());
 

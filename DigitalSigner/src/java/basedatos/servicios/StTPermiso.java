@@ -8,11 +8,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import tomcat.persistence.EntityManager;
-import utilidades.Session;
 import utilidades.Validation;
 import init.AppInit;
 import utilidades.BaseDatos;
 import basedatos.tablas.BdTPermiso;
+import seguridad.usuarios.DatosUsuario;
 
 /**
  *
@@ -20,8 +20,10 @@ import basedatos.tablas.BdTPermiso;
  */
 public class StTPermiso extends StBase {
     
+    private DatosUsuario datosUsuario = null;
+    
     public StTPermiso() {
-        //NADA
+        this.datosUsuario = datosUsuario;
     }
     
     public ArrayList<BdTPermiso> filtro(BdTPermiso filtroBdTPermiso, EntityManager em) throws Exception {
@@ -72,7 +74,7 @@ public class StTPermiso extends StBase {
         }
    
 
-        newBdTPermiso.setUsuariobd(Session.getCoUsuario());
+        newBdTPermiso.setUsuariobd(datosUsuario.getBdTUsuario().getCoUsuario());
 
         newBdTPermiso.setTstbd(new Date());
 
@@ -105,7 +107,7 @@ public class StTPermiso extends StBase {
         }
 
 
-        upBdTPermiso.setUsuariobd(Session.getCoUsuario());
+        upBdTPermiso.setUsuariobd(datosUsuario.getBdTUsuario().getCoUsuario());
 
         upBdTPermiso.setTstbd(new Date());
 

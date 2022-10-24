@@ -8,11 +8,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import tomcat.persistence.EntityManager;
-import utilidades.Session;
 import utilidades.Validation;
 import init.AppInit;
 import utilidades.BaseDatos;
 import basedatos.tablas.BdADocrechazo;
+import seguridad.usuarios.DatosUsuario;
 
 /**
  *
@@ -20,8 +20,10 @@ import basedatos.tablas.BdADocrechazo;
  */
 public class StADocrechazo extends StBase {
     
-    public StADocrechazo() {
-        //NADA
+    private DatosUsuario datosUsuario = null;
+    
+    public StADocrechazo(DatosUsuario datosUsuario) {
+        this.datosUsuario = datosUsuario;
     }
     
     public ArrayList<BdADocrechazo> filtro(BdADocrechazo filtroBdADocrechazo, EntityManager em) throws Exception {
@@ -72,7 +74,7 @@ public class StADocrechazo extends StBase {
         }
    
 
-        newBdADocrechazo.setUsuariobd(Session.getCoUsuario());
+        newBdADocrechazo.setUsuariobd(datosUsuario.getBdTUsuario().getCoUsuario());
 
         newBdADocrechazo.setTstbd(new Date());
 
@@ -105,7 +107,7 @@ public class StADocrechazo extends StBase {
         }
 
 
-        upBdADocrechazo.setUsuariobd(Session.getCoUsuario());
+        upBdADocrechazo.setUsuariobd(datosUsuario.getBdTUsuario().getCoUsuario());
 
         upBdADocrechazo.setTstbd(new Date());
 
