@@ -87,6 +87,20 @@
                     
                 </p:panelGrid>
             </p:card>
+            <p:card id="panelUnidades" styleClass="card">
+                <p:toolbar rendered="#{beanEdicion.modoFormulario eq 'EDICION' or beanEdicion.modoFormulario eq 'ALTA'}">
+                    <p:toolbarGroup align="right" styleClass="gridTransparente letrasBlancasNegrita">
+
+                            <sd:campoWebLupa id="txtUnidad" beanClass="#{beanEdicion.getcUnidad()}" />
+                            
+                            <p:commandButton id="btnAddUnidad" icon="pi pi-plus-circle" styleClass="rounded-button ui-button-success" 
+                                             style="height: 2rem;width: 2rem;margin-left:0.3rem" action="#{beanEdicion.addUnidad}" title="(alt+N) Nuevo"
+                                             update="panelUnidades,mensaje" accesskey="n" />
+
+                    </p:toolbarGroup>
+                </p:toolbar>
+                <sd:dataGrid id="tblUnidades" dataSet="#{beanEdicion.dsUnidades}" />
+            </p:card>
         </ui:define>
     </ui:composition>
 </html>

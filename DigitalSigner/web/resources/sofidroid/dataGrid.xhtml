@@ -34,7 +34,7 @@
             <p:columns value="#{cc.attrs.dataSet.cabecera.columns}" columnIndexVar="indexCol" var="itemColumn"
                        headerText="#{itemColumn.title}" visible="#{itemColumn.visible}" width="#{itemColumn.width}"
                        style="text-align: #{itemColumn.align}"
-                       sortable="true" sortBy="#{itemRow.getColumnName(itemColumn.name)[itemColumn.valueProperty]}">
+                       sortable="#{itemColumn.tipo eq 'TEXTO' or itemColumn.tipo eq 'LINK'}" sortBy="#{itemRow.getColumnName(itemColumn.name)[itemColumn.valueProperty]}">
                 <p:column>
                     <p:outputPanel rendered="#{itemColumn.tipo eq 'TEXTO'}">
                         <span title="#{itemRow.getColumnName(itemColumn.name).tooltip}">
@@ -52,7 +52,7 @@
                         </p:commandLink>
                     </p:outputPanel>
                     <p:outputPanel rendered="#{itemColumn.tipo eq 'BOTON_EDICION'}">
-                        <p:commandButton title="#{itemRow.getColumnName(itemColumn.name).tooltip}"
+                        <p:commandButton title="#{itemColumn.tooltip}"
                                 value="#{itemRow.getColumnName(itemColumn.name)[itemColumn.valueString]}"
                                 action="#{itemColumn.ejecutarMetodo}" style="height: 1.5rem;width: 1.5rem;margin-left: 0.25rem;"
                                 update="#{itemColumn.update}" rendered="#{cc.attrs.dataSet.modoFormulario eq 'EDICION' or cc.attrs.dataSet.modoFormulario eq 'ALTA'}"
@@ -61,7 +61,7 @@
                         </p:commandButton>
                     </p:outputPanel>
                     <p:outputPanel rendered="#{itemColumn.tipo eq 'BOTON'}">
-                        <p:commandButton title="#{itemRow.getColumnName(itemColumn.name).tooltip}"
+                        <p:commandButton title="#{itemColumn.tooltip}"
                                 value="#{itemRow.getColumnName(itemColumn.name)[itemColumn.valueString]}"
                                 action="#{itemColumn.ejecutarMetodo}" style="height: 1.5rem;width: 1.5rem;margin-left: 0.25rem;"
                                 update="#{itemColumn.update}" rendered="#{itemColumn.rendered}"
@@ -70,7 +70,7 @@
                         </p:commandButton>
                     </p:outputPanel>
                     <p:outputPanel rendered="#{itemColumn.tipo eq 'MEDIA'}">
-                        <p:commandButton title="#{itemRow.getColumnName(itemColumn.name).tooltip}"
+                        <p:commandButton title="#{itemColumn.tooltip}"
                                 value="#{itemRow.getColumnName(itemColumn.name)[itemColumn.valueString]}"
                                 action="#{itemColumn.ejecutarMetodo}" style="height: 1.5rem;width: 1.5rem;margin-left: 0.25rem;"
                                 update="@widgetVar(#{itemColumn.idVisorMedia}_visorMedia),#{itemColumn.update}" oncomplete="PF('#{itemColumn.idVisorMedia}_visorMedia').show()"
@@ -79,7 +79,7 @@
                         </p:commandButton>
                     </p:outputPanel>
                     <p:outputPanel rendered="#{itemColumn.tipo eq 'DESCARGA'}">
-                        <p:commandButton title="#{itemRow.getColumnName(itemColumn.name).tooltip}"
+                        <p:commandButton title="#{itemColumn.tooltip}"
                                 value="#{itemRow.getColumnName(itemColumn.name)[itemColumn.valueString]}"
                                 oncomplete="iniciarDescarga()"
                                 action="#{itemColumn.ejecutarMetodo}" style="height: 1.5rem;width: 1.5rem;margin-left: 0.25rem;"

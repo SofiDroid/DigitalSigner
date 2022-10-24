@@ -43,7 +43,7 @@ public class ServicioPaises {
         locales.add(new Pais(i++, new Locale("ca","ES")));
         locales.add(new Pais(i++, new Locale("gl","ES")));
         locales.add(new Pais(i++, new Locale("eu","ES")));
-        locales.add(new Pais(i++, Locale.US));
+        //locales.add(new Pais(i++, Locale.US));
         locales.add(new Pais(i++, new Locale("en","UK")));
 //        locales.add(new Country(i++, Locale.FRANCE));
 //        locales.add(new Country(i++, Locale.GERMANY));

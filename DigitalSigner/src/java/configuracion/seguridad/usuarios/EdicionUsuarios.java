@@ -1,8 +1,17 @@
 package configuracion.seguridad.usuarios;
 
+import basedatos.ColumnBase;
+import basedatos.ColumnCabecera;
+import basedatos.DataSet;
+import basedatos.Row;
+import basedatos.RowCabecera;
+import basedatos.servicios.StAAutusu;
 import basedatos.servicios.StATokenusuario;
+import basedatos.servicios.StAUniusu;
 import basedatos.servicios.StTUsuario;
+import basedatos.tablas.BdAAutusu;
 import basedatos.tablas.BdATokenusuario;
+import basedatos.tablas.BdAUniusu;
 import basedatos.tablas.BdTUsuario;
 import excepciones.FormModeException;
 import excepciones.RegistryNotFoundException;
@@ -11,14 +20,17 @@ import init.AppInit;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import javax.el.ELContext;
 import javax.faces.context.FacesContext;
 import seguridad.utils.SegUtils;
 import tomcat.persistence.EntityManager;
+import tomcat.persistence.exceptions.SQLReferenceException;
 import utilidades.CampoWebCheck;
 import utilidades.CampoWebCodigo;
 import utilidades.CampoWebDescripcion;
 import utilidades.CampoWebFecha;
+import utilidades.CampoWebLupa;
 import utilidades.CampoWebNumero;
 import utilidades.CampoWebPassword;
 import utilidades.Mensajes;
@@ -49,7 +61,11 @@ public class EdicionUsuarios implements Serializable {
     private CampoWebFecha cFeDesactivo = null;
     private CampoWebDescripcion cToken = null;
     
-    BdTUsuario bdTUsuario = null;
+    private CampoWebLupa cUnidad = null;
+    private DataSet dsUnidades = null;
+    
+    private BdTUsuario bdTUsuario = null;
+    private ArrayList<Integer> listaUnidadesEliminadasId = null;
 
     private ModoFormulario modoFormulario = ModoFormulario.CONSULTA;
     
@@ -149,15 +165,29 @@ public class EdicionUsuarios implements Serializable {
             this.cToken.setMaxlength("64");
             this.cToken.setProtegido(true);
             
+            this.cUnidad = new CampoWebLupa();
+            this.cUnidad.setLabel(Msg.getString("lbl_EdicionUsuarios_Unidad"));
+            this.cUnidad.setWidthLabel("100px");
+            String sql = "SELECT ID_UNIDAD, CO_UNIDAD + ' - ' + DS_UNIDAD as Unidad FROM BD_T_UNIDAD";
+            this.cUnidad.setConsulta(sql);
+            this.cUnidad.setColumnaID("ID_UNIDAD");
+            this.cUnidad.setColumnaLabel("Unidad");
+            this.cUnidad.setWidth("20em");
+            this.cUnidad.setRequired(false);
+
+            this.dsUnidades = new DataSet();
+            this.listaUnidadesEliminadasId = new ArrayList<>();
             
             this.setModoFormulario(ModoFormulario.CONSULTA);
 
             if (idUsuario != null) {
                 recuperarRegistro(idUsuario);
+                inicializarDataSetUnidades(idUsuario);
             }
             else {
                 this.setModoFormulario(ModoFormulario.ALTA);
                 this.cToken.setValue("");
+                inicializarDataSetUnidades(idUsuario);
             }
         }
         catch (Exception ex) {
@@ -171,6 +201,128 @@ public class EdicionUsuarios implements Serializable {
         }
     }
 
+    private void inicializarDataSetUnidades(Integer idUsuario) throws Exception {
+        String sql = """
+            SELECT 
+                T1.ID_UNIDAD,
+                T1.ID_USUARIO,
+                uni.CO_UNIDAD + ' - ' + uni.DS_UNIDAD as Unidad,
+                T1.FE_ALTA,
+                T1.FE_DESACTIVO
+            FROM 
+                BD_A_UNIUSU T1
+            INNER JOIN
+                BD_T_UNIDAD uni ON (uni.ID_UNIDAD = T1.ID_UNIDAD)
+            WHERE 1 = 1
+            AND T1.ID_USUARIO = :ID_USUARIO
+            """;
+        HashMap<String, Object> parametros = new HashMap<>();
+        parametros.put("ID_USUARIO", idUsuario);
+
+        this.dsUnidades = new DataSet(sql, parametros, "ID_UNIDAD");
+        
+        this.cUnidad.setListaNotIN_Clear();
+        if (this.dsUnidades.getRowsCount() > 0) {
+            for (Row itemRow : this.dsUnidades.getRows()) {
+                this.cUnidad.setListaNotIN_Add(itemRow.getColumnaID().getValueString());
+            }
+        }
+        
+        // Establecer formato de salida
+        RowCabecera cabecera = this.getDsUnidades().getCabecera();
+
+        cabecera.getColumnName("ID_UNIDAD")
+                .setVisible(false);
+
+        cabecera.getColumnName("ID_USUARIO")
+                .setVisible(false);
+
+        cabecera.getColumnName("Unidad")
+                .setTitle("Unidad")
+                .setWidth("100%");
+
+        cabecera.getColumnName("FE_ALTA")
+                .setTitle("F. Alta")
+                .setWidth("6rem");
+
+        cabecera.getColumnName("FE_DESACTIVO")
+                .setTitle("F. Desactivo")
+                .setWidth("6rem");
+        
+        this.dsUnidades.newColumn("btnEditar");
+        cabecera.getColumnName("btnEditar")
+                .setTitle("")
+                .setTooltip("Editar")
+                .setAlign(ColumnCabecera.ALIGN.CENTER)
+                .setWidth("21px")
+                .setTipo(ColumnBase.Tipo.BOTON_EDICION)
+                .setClase(this)
+                .setIcon("pi pi-pencil")
+                .setStyleClass("ui-button-info")
+                .setMethod(this.getClass().getMethod("editarUnidad"))
+                .setUpdate("formulario:panelUnidades,formulario:mensaje");
+
+        this.dsUnidades.newColumn("btnEliminar");
+        cabecera.getColumnName("btnEliminar")
+                .setTitle("")
+                .setTooltip("Eliminar")
+                .setAlign(ColumnCabecera.ALIGN.CENTER)
+                .setWidth("30px")
+                .setTipo(ColumnBase.Tipo.BOTON_EDICION)
+                .setClase(this)
+                .setIcon("pi pi-times-circle")
+                .setStyleClass("ui-button-danger")
+                .setMethod(this.getClass().getMethod("eliminarUnidad"))
+                .setUpdate("formulario:panelUnidades,formulario:mensaje");
+    }
+    
+    public void editarUnidad() {
+        try {
+            //TODO: EDICION DE UNIDAD, AGREGAR PERFILES A LA UNIDAD DEL USUARIO.
+        } catch (Exception ex) {
+            Mensajes.showException(this.getClass(), ex);
+        }
+    }
+    
+    public void eliminarUnidad() {
+        try {
+            Integer idUnidad = this.dsUnidades.getSelectedRow().getColumnaID().getValueInteger();
+            if (idUnidad != null) {
+                listaUnidadesEliminadasId.add(this.dsUnidades.getSelectedRow().getColumnaID().getValueInteger());
+                this.cUnidad.setListaNotIN_Remove(idUnidad.toString());
+            }
+            this.dsUnidades.getRows().remove(this.dsUnidades.getSelectedRow());
+            if (this.dsUnidades != null) {
+                for (int i = 0; i < this.dsUnidades.getRowsCount(); i++) {
+                    Row itemRow = this.dsUnidades.getRows().get(i);
+                    itemRow.setIndex(i);
+                }
+            }
+        } catch (Exception ex) {
+            Mensajes.showException(this.getClass(), ex);
+        }
+    }
+    
+    public void addUnidad() {
+        try {
+            if (this.cUnidad.getValue() != null) {
+                //ALTA
+                Row newRow = this.dsUnidades.newRow();
+                newRow.getColumnName("ID_USUARIO").setValue(null);
+                newRow.getColumnName("ID_UNIDAD").setValue(this.cUnidad.getId());
+                newRow.getColumnName("Unidad").setValue(this.cUnidad.getValue().getLabel());
+                newRow.getColumnName("FE_ALTA").setValue(new Date());
+                newRow.getColumnName("FE_DESACTIVO").setValue(null);
+
+                this.dsUnidades.getRows().add(newRow);
+                this.cUnidad.setListaNotIN_Add(this.cUnidad.getId().toString());
+                this.cUnidad.setId(null);
+            }
+        } catch (Exception ex) {
+            Mensajes.showException(this.getClass(), ex);
+        }
+    }
+    
     public void guardar() {
         try {
             validarCampos();
@@ -206,6 +358,19 @@ public class EdicionUsuarios implements Serializable {
 
                             StATokenusuario stATokenusuario = new StATokenusuario(Session.getDatosUsuario());
                             stATokenusuario.alta(newBdATokenusuario, entityManager);
+                        }
+                        
+                        if (this.dsUnidades != null) {
+                            for (Row itemRow : this.dsUnidades.getRows()) {
+                                BdAUniusu newBdAUniusu = new BdAUniusu();
+                                newBdAUniusu.setIdUsuario(this.bdTUsuario.getIdUsuario());
+                                newBdAUniusu.setIdUsuario(itemRow.getColumnName("ID_UNIDAD").getValueInteger());
+                                newBdAUniusu.setFeAlta((Date)itemRow.getColumnName("FE_ALTA").getValue());
+                                newBdAUniusu.setFeDesactivo((Date)itemRow.getColumnName("FE_DESACTIVO").getValue());
+
+                                StAUniusu stAUniusu = new StAUniusu(Session.getDatosUsuario());
+                                stAUniusu.alta(newBdAUniusu, entityManager);
+                            }
                         }
                         
                         entityManager.getTransaction().commit();
@@ -254,6 +419,32 @@ public class EdicionUsuarios implements Serializable {
                             }
                         }
 
+                        for (Integer idUnidad : listaUnidadesEliminadasId) {
+                            BdAUniusu delBdAUniusu = new BdAUniusu();
+                            delBdAUniusu.setIdUsuario(this.bdTUsuario.getIdUsuario());
+                            delBdAUniusu.setIdUnidad(idUnidad);
+                            
+                            StAUniusu stAUniusu = new StAUniusu(Session.getDatosUsuario());
+                            stAUniusu.baja(delBdAUniusu, entityManager);
+                        }
+                        
+                        if (this.dsUnidades != null) {
+                            for (Row itemRow : this.dsUnidades.getRows()) {
+                                BdAUniusu newBdAUniusu = new BdAUniusu();
+                                newBdAUniusu.setIdUsuario(this.bdTUsuario.getIdUsuario());
+                                newBdAUniusu.setIdUnidad(itemRow.getColumnName("ID_UNIDAD").getValueInteger());
+
+                                StAUniusu stAUniusu = new StAUniusu(Session.getDatosUsuario());
+                                ArrayList<BdAUniusu> listaBdAUniusu = stAUniusu.filtro(newBdAUniusu, entityManager);
+                                if (listaBdAUniusu == null || listaBdAUniusu.isEmpty()) {
+                                    newBdAUniusu.setFeAlta((Date)itemRow.getColumnName("FE_ALTA").getValue());
+                                    newBdAUniusu.setFeDesactivo((Date)itemRow.getColumnName("FE_DESACTIVO").getValue());
+
+                                    stAUniusu.alta(newBdAUniusu, entityManager);
+                                }
+                            }
+                        }
+                        
                         entityManager.getTransaction().commit();
 
                         if (this.parent instanceof FiltroUsuarios filtroUsuarios) {
@@ -289,15 +480,43 @@ public class EdicionUsuarios implements Serializable {
     
     public void eliminar() {
         try {
-            StTUsuario stTUsuario = new StTUsuario(Session.getDatosUsuario());
-            stTUsuario.baja(this.bdTUsuario, null);
-            
-            if (this.parent instanceof FiltroUsuarios filtroUsuarios) {
-                filtroUsuarios.getDsResultado().eliminarFilaSeleccionada();
-            }
+            // INICIO TRANSACCION
+            try (EntityManager entityManager = AppInit.getEntityManager())
+            {
+                entityManager.getTransaction().begin();
+                try {
+                    BdAUniusu filtroBdAUniusu = new BdAUniusu();
+                    filtroBdAUniusu.setIdUsuario(this.bdTUsuario.getIdUsuario());
+                    StAUniusu stAUniusu = new StAUniusu(Session.getDatosUsuario());
+                    ArrayList<BdAUniusu> listaBdAUniusu = stAUniusu.filtro(filtroBdAUniusu, entityManager);
+                    if (listaBdAUniusu != null && !listaBdAUniusu.isEmpty()) {
+                        for (BdAUniusu itemBdAUniusu : listaBdAUniusu) {
+                            stAUniusu.baja(itemBdAUniusu, entityManager);
+                        }
+                    }
+                    
+                    StTUsuario stTUsuario = new StTUsuario(Session.getDatosUsuario());
+                    stTUsuario.baja(this.bdTUsuario, entityManager);
 
-            Mensajes.showInfo("Información", "Registro eliminado correctamente!");
-            
+                    entityManager.getTransaction().commit();
+                    
+                    if (this.parent instanceof FiltroUsuarios filtroUsuarios) {
+                        filtroUsuarios.getDsResultado().eliminarFilaSeleccionada();
+                    }
+
+                    Mensajes.showInfo("Información", "Registro eliminado correctamente!");
+                }
+                catch (SQLReferenceException rex) {
+                    entityManager.getTransaction().rollback();
+                    Mensajes.showWarn("No se pudo eliminar", "El registro está siendo utilizado en otro apartado del programa. Elimine toda relación con este registro para poder eliminarlo.");
+                    return;
+                }
+                catch (Exception ex) {
+                    entityManager.getTransaction().rollback();
+                    throw ex;
+                }
+            }
+            // FIN TRANSACCION
             this.setModoFormulario(ModoFormulario.ELIMINADO);
         }
         catch (Exception ex) {
@@ -327,12 +546,23 @@ public class EdicionUsuarios implements Serializable {
         this.cBoAdmin.setValue(null);
         this.cFeAlta.setValue(null);
         this.cFeDesactivo.setValue(null);
+        this.cUnidad.setId(null);
+        
+        listaUnidadesEliminadasId.clear();
+        if (this.dsUnidades != null) {
+            for (Row itemRow : this.dsUnidades.getRows()) {
+                listaUnidadesEliminadasId.add(itemRow.getColumnaID().getValueInteger());
+            }
+            this.dsUnidades.clear();
+            this.cUnidad.setListaNotIN_Clear();
+        }
     }
     
     public String volver() {
         try {
             if (this.modoFormulario == ModoFormulario.EDICION) {
                 recuperarRegistro(this.bdTUsuario.getIdUsuario());
+                inicializarDataSetUnidades(this.bdTUsuario.getIdUsuario());
                 this.setModoFormulario(ModoFormulario.CONSULTA);
             }
             else {
@@ -390,6 +620,7 @@ public class EdicionUsuarios implements Serializable {
                 this.cBoAdmin.setProtegido(true);
                 this.cFeAlta.setProtegido(true);
                 this.cFeDesactivo.setProtegido(true);
+                this.cUnidad.setProtegido(true);
             }
             case EDICION -> {
                 this.cCoNIF.setProtegido(false);
@@ -404,6 +635,7 @@ public class EdicionUsuarios implements Serializable {
                 this.cBoAdmin.setProtegido(false);
                 this.cFeAlta.setProtegido(false);
                 this.cFeDesactivo.setProtegido(false);
+                this.cUnidad.setProtegido(false);
             }
             case ALTA -> {
                 limpiar();
@@ -419,6 +651,7 @@ public class EdicionUsuarios implements Serializable {
                 this.cBoAdmin.setProtegido(false);
                 this.cFeAlta.setProtegido(false);
                 this.cFeDesactivo.setProtegido(false);
+                this.cUnidad.setProtegido(false);
             }
             default -> throw new FormModeException();
         }
@@ -473,6 +706,9 @@ public class EdicionUsuarios implements Serializable {
 
     public void setModoFormulario(ModoFormulario modoFormulario) throws Exception {
         this.modoFormulario = modoFormulario;
+        if (this.dsUnidades != null) {
+            this.dsUnidades.setModoFormulario(modoFormulario);
+        }
         protegerCampos();
     }
 
@@ -594,5 +830,21 @@ public class EdicionUsuarios implements Serializable {
 
     public void setBdTUsuario(BdTUsuario bdTUsuario) {
         this.bdTUsuario = bdTUsuario;
+    }
+
+    public CampoWebLupa getcUnidad() {
+        return cUnidad;
+    }
+
+    public void setcUnidad(CampoWebLupa cUnidad) {
+        this.cUnidad = cUnidad;
+    }
+
+    public DataSet getDsUnidades() {
+        return dsUnidades;
+    }
+
+    public void setDsUnidades(DataSet dsUnidades) {
+        this.dsUnidades = dsUnidades;
     }
 }

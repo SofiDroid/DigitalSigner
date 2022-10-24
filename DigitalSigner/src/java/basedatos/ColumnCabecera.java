@@ -98,6 +98,12 @@ public class ColumnCabecera extends ColumnBase {
         return this;
     }
 
+    @Override
+    public ColumnCabecera setTooltip(String tooltip) {
+        super.setTooltip(tooltip);
+        return this;
+    }
+
     public String getAlign() {
         return align.getValue();
     }

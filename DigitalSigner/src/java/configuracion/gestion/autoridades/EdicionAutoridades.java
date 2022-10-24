@@ -47,8 +47,8 @@ public class EdicionAutoridades implements Serializable {
     private CampoWebLupa cUsuario = null;
     private DataSet dsUsuarios = null;
     
-    BdTAutoridad bdTAutoridad = null;
-    ArrayList<Integer> listaUsuariosEliminadosId = null;
+    private BdTAutoridad bdTAutoridad = null;
+    private ArrayList<Integer> listaUsuariosEliminadosId = null;
 
     private ModoFormulario modoFormulario = ModoFormulario.CONSULTA;
     

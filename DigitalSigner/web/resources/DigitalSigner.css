@@ -332,3 +332,7 @@ body .ui-datatable thead th {
 body .ui-datatable thead th.ui-state-hover {
     background-color: #59a4c2!important;
 }
+
+.ui-autocomplete-input {
+    width: inherit;
+}
