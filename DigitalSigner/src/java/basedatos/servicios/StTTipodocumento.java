@@ -31,6 +31,7 @@ public class StTTipodocumento extends StBase {
         parametros.put("ID_TIPODOCUMENTO", filtroBdTTipodocumento.getIdTipodocumento());
         parametros.put("CO_TIPODOCUMENTO", filtroBdTTipodocumento.getCoTipodocumento());
         parametros.put("DS_TIPODOCUMENTO", filtroBdTTipodocumento.getDsTipodocumento());
+        parametros.put("DI_FORMATOFIRMA", filtroBdTTipodocumento.getDiFormatofirma());
         parametros.put("FE_ALTA", filtroBdTTipodocumento.getFeAlta());
         parametros.put("FE_DESACTIVO", filtroBdTTipodocumento.getFeDesactivo());
         parametros.put("USUARIOBD", filtroBdTTipodocumento.getUsuariobd());
@@ -69,6 +70,9 @@ public class StTTipodocumento extends StBase {
         if (Validation.isNullOrEmpty(newBdTTipodocumento.getDsTipodocumento())) {
             throw new RequiredFieldException("DS_TIPODOCUMENTO");
         }
+        if (Validation.isNullOrEmpty(newBdTTipodocumento.getDiFormatofirma())) {
+            throw new RequiredFieldException("DI_FORMATOFIRMA");
+        }
         if (Validation.isNullOrEmpty(newBdTTipodocumento.getFeAlta())) {
             throw new RequiredFieldException("FE_ALTA");
         }
@@ -82,6 +86,7 @@ public class StTTipodocumento extends StBase {
         parametros.put("ID_TIPODOCUMENTO", newBdTTipodocumento.getIdTipodocumento());
         parametros.put("CO_TIPODOCUMENTO", newBdTTipodocumento.getCoTipodocumento());
         parametros.put("DS_TIPODOCUMENTO", newBdTTipodocumento.getDsTipodocumento());
+        parametros.put("DI_FORMATOFIRMA", newBdTTipodocumento.getDiFormatofirma());
         parametros.put("FE_ALTA", newBdTTipodocumento.getFeAlta());
         parametros.put("FE_DESACTIVO", newBdTTipodocumento.getFeDesactivo());
         parametros.put("USUARIOBD", newBdTTipodocumento.getUsuariobd());
@@ -104,6 +109,9 @@ public class StTTipodocumento extends StBase {
         if (Validation.isNullOrEmpty(upBdTTipodocumento.getDsTipodocumento())) {
             throw new RequiredFieldException("DS_TIPODOCUMENTO");
         }
+        if (Validation.isNullOrEmpty(upBdTTipodocumento.getDiFormatofirma())) {
+            throw new RequiredFieldException("DI_FORMATOFIRMA");
+        }
         if (Validation.isNullOrEmpty(upBdTTipodocumento.getFeAlta())) {
             throw new RequiredFieldException("FE_ALTA");
         }
@@ -117,6 +125,7 @@ public class StTTipodocumento extends StBase {
         parametros.put("ID_TIPODOCUMENTO", upBdTTipodocumento.getIdTipodocumento());
         parametros.put("CO_TIPODOCUMENTO", upBdTTipodocumento.getCoTipodocumento());
         parametros.put("DS_TIPODOCUMENTO", upBdTTipodocumento.getDsTipodocumento());
+        parametros.put("DI_FORMATOFIRMA", upBdTTipodocumento.getDiFormatofirma());
         parametros.put("FE_ALTA", upBdTTipodocumento.getFeAlta());
         parametros.put("FE_DESACTIVO", upBdTTipodocumento.getFeDesactivo());
         parametros.put("USUARIOBD", upBdTTipodocumento.getUsuariobd());

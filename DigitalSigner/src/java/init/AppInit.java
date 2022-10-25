@@ -51,6 +51,6 @@ public final class AppInit extends HttpServlet {
     }
     
     public static String getRutaTempFicherosFirmados() {
-        return "";
+        return "C:\\pruebas";
     }
 }

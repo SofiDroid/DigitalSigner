@@ -22,6 +22,7 @@
                     <p:toolbarGroup align="right">
 
                         <p:commandButton id="btnFirmar" widgetVar="btnFirmar" icon="pi pi-user-edit" styleClass="rounded-button ui-button-danger"
+                                         onstart="if (AutoScript.isAndroid()) { alert('Atención: Está firmando desde Android, solo se firmará el primer elemento seleccionado.') }"
                                          style="height: 2rem;width: 2rem;margin-left:0.3rem" title="(alt+F) Firmar" action="#{filtroFirmaDocumentos.prepararListaDocumentos}"
                                          update="panelResultado,mensaje" process="@this,tblResultados" accesskey="f" oncomplete="recuperarListaFromBackBean(xhr, status, args)">
                             <p:confirm header="#{msg['confirmacion']}" message="#{msg['confirmacion_firma']}" icon="pi pi-info-circle"/>
@@ -68,615 +69,687 @@
                     <p:progressBar id="progressBarClient" widgetVar="pbClient" style="width:300px;height:20px;margin-top: 5px;" />
                 </p:dialog>
                 <p:remoteCommand id="buscarClick" name="buscarClick" action="#{filtroFirmaDocumentos.buscar()}" update="panelResultado,mensaje" oncomplete="EndProgreso()" />
-                <script type="text/javascript">
-                    //<![CDATA[
-                    var pbClient = PF('pbClient');
-                    
-                    function startProgreso() {
-                        PF('btnFirmar').disable();
-                        PF('dlgProgreso').show();
+            </p:card>
+            <script type="text/javascript">
+                //<![CDATA[
+                var pbClient = PF('pbClient');
 
-                        pbClient.setValue(0);
+                function startProgreso() {
+                    PF('btnFirmar').disable();
+                    PF('dlgProgreso').show();
+
+                    pbClient.setValue(0);
+                }
+
+                function refrescarProgreso(actual, total, textoLabel) {
+                    if (actual === 0 && total === 0) {
+                        document.getElementById('formulario:pbLabel').innerHTML = textoLabel;
                     }
+                    else {
+                        var porcentaje = Math.round(((actual) * 100)/total);
 
-                    function refrescarProgreso(actual, total, textoLabel) {
-                        if (actual === 0 && total === 0) {
-                            document.getElementById('formulario:pbLabel').innerHTML = textoLabel;
-                        }
-                        else {
-                            var porcentaje = Math.round(((actual) * 100)/total);
+                        pbClient.setValue(porcentaje);
+                        document.getElementById('formulario:pbLabel').innerHTML = 'Firmando elemento ' + (actual+1) + ' de ' + total + '...(' + porcentaje + '%)';
+                    }
+                }
 
-                            pbClient.setValue(porcentaje);
-                            document.getElementById('formulario:pbLabel').innerHTML = 'Firmando elemento ' + (actual+1) + ' de ' + total + '...(' + porcentaje + '%)';
+                function cancelProgreso() {
+                    pbClient.setValue(0);
+
+                    PF('dlgProgreso').hide();
+                    PF('btnFirmar').enable();
+                }
+                //]]>
+            </script>
+            <script>
+                    var listaDocumentosFirma;
+                    var tipoFirma;
+                    var formatoFirma;
+                    function recuperarListaFromBackBean(xhr, status, args) {
+                        listaDocumentosFirma = args.listaDocumentos;
+                        tipoFirma = args.listaTiposFirma;
+                        formatoFirma = args.listaFormatosFirma;
+                        PrimeFaces.info("formatoFirma: " + formatoFirma);
+                        if (listaDocumentosFirma !== '') {
+                            listaDocumentosFirma = listaDocumentosFirma.split(";");
+                            tipoFirma = tipoFirma.split(";");
+                            formatoFirma = formatoFirma.split(";");
+
+                            firmarDocumentos();
+                        } else {
+                            PF('mensaje').renderMessage({"summary":"Información",
+                                                         "detail":"Debe seleccionar al menos un documento a firmar.",
+                                                         "severity":"warn"});
                         }
                     }
+            </script>
+            <script type="text/javascript">
+                //<![CDATA[
+                var data = "";
+                var params = "";
+                var boUsarServlets = true;
 
-                    function cancelProgreso() {
-                        pbClient.setValue(0);
+                // URL de los servlets de subida y bajada del documento y el trifase
+                var urlServiciosIntermedios = "#{filtroFirmaDocumentos.getHostServlets()}";
+                //var urlServiciosIntermedios = "http://localhost:92/";
 
-                        PF('dlgProgreso').hide();
-                        PF('btnFirmar').enable();
-                    }
-                    //]]>
-                </script>
-                <script>
-                        var listaDocumentosFirma;
-                        var tipoFirma;
-                        function recuperarListaFromBackBean(xhr, status, args) {
-                            listaDocumentosFirma = args.listaDocumentos;
-                            tipoFirma = args.listaTiposFirma;
-                            
-                            if (listaDocumentosFirma !== '') {
-                                listaDocumentosFirma = listaDocumentosFirma.split(";");
-                                tipoFirma = tipoFirma.split(";");
 
-                                firmarDocumentos();
-                            } else {
-                                PF('mensaje').renderMessage({"summary":"Información",
-                                                             "detail":"Debe seleccionar al menos un documento a firmar.",
-                                                             "severity":"warn"});
-                            }
+                var paramsInit = "";
+                paramsInit = paramsInit + "policyIdentifier=urn:oid:2.16.724.1.3.1.1.2.1.9\n";
+                paramsInit = paramsInit + "policyIdentifierHash=G7roucf600+f03r/o0bAOQ6WAs0=\n";
+                paramsInit = paramsInit + "policyIdentifierHashAlgorithm=http://www.w3.org/2000/09/xmldsig#sha1\n";
+                paramsInit = paramsInit + "referencesDigestMethod=http://www.w3.org/2001/04/xmlenc#sha256\n";
+                paramsInit = paramsInit + "policyQualifier=https://sede.060.gob.es/politica_de_firma_anexo_1.pdf\n";
+                //paramsInit = paramsInit + "serverUrl=" + urlServiciosIntermedios + "trifase/SignatureService\n";
+                paramsInit = paramsInit + "format=XAdES Detached\n";
+                paramsInit = paramsInit + "mode=implicit\n";
+                paramsInit = paramsInit + "headless=true\n";
+                paramsInit = paramsInit + "#{filtroFirmaDocumentos.certificadosAdmitidos}";
+                params = paramsInit;
+
+                var SN = "";
+                var numSeleccionados = 0;
+
+                var maxSize = 10485760;
+
+                var aplicacionFirmaIniciada = false;
+                var boReintentar = false;
+
+                function firmarDocumentos()
+                {
+                    try {
+                        if (listaDocumentosFirma !== "")
+                        {
+                            startProgreso();
+
+                            numSeleccionados = (listaDocumentosFirma === undefined || listaDocumentosFirma === null ? 0 : listaDocumentosFirma.length);
+
+
+                            PrimeFaces.info('Iniciando aplicación de autoFirma...'); //LOG
+                            refrescarProgreso(0,0,'Iniciando aplicación de autoFirma...');
+                            iniciarAplicacionAutoFirma(iniciarAutoFirmaOK, iniciarAutoFirmaERROR);
                         }
-                </script>
-                <script type="text/javascript">
-                    //<![CDATA[
-                    var data = "";
-                    var params = "";
-                    var boUsarServlets = true;
+                    }
+                    catch (e) {
+                        cancelProgreso();
+                    }
+                }
 
-                    // URL de los servlets de subida y bajada del documento y el trifase
-                    var urlServiciosIntermedios = "#{filtroFirmaDocumentos.getHostServlets()}";
-                    //var urlServiciosIntermedios = "http://localhost:92/firmaServlets/";
+                function iniciarAplicacionAutoFirma(functionOK, functionERROR)
+                {
+                    if (aplicacionFirmaIniciada) {
+                        functionOK();
+                    }
+                    else {
+                        iniciarAutoFirma(functionOK, functionERROR);
+                    }
+                    aplicacionFirmaIniciada = true;
+                }
 
-
-                    var paramsInit = "";
-                    paramsInit = paramsInit + "policyIdentifier=urn:oid:2.16.724.1.3.1.1.2.1.9\n";
-                    paramsInit = paramsInit + "policyIdentifierHash=G7roucf600+f03r/o0bAOQ6WAs0=\n";
-                    paramsInit = paramsInit + "policyIdentifierHashAlgorithm=http://www.w3.org/2000/09/xmldsig#sha1\n";
-                    paramsInit = paramsInit + "referencesDigestMethod=http://www.w3.org/2001/04/xmlenc#sha256\n";
-                    paramsInit = paramsInit + "policyQualifier=https://sede.060.gob.es/politica_de_firma_anexo_1.pdf\n";
-                    //paramsInit = paramsInit + "serverUrl=" + urlServiciosIntermedios + "trifase/SignatureService\n";
-                    paramsInit = paramsInit + "format=XAdES Detached\n";
-                    paramsInit = paramsInit + "mode=implicit\n";
-                    paramsInit = paramsInit + "headless=true\n";
-                    paramsInit = paramsInit + "#{filtroFirmaDocumentos.certificadosAdmitidos}";
-                    params = paramsInit;
-
-                    var SN = "";
-                    var numSeleccionados = 0;
-
-                    var maxSize = 10485760;
-
-                    var aplicacionFirmaIniciada = false;
-                    var boReintentar = false;
-
-                    function firmarDocumentos()
+                function iniciarAutoFirma(functionOK, functionERROR)
+                {
+                    try
                     {
-                        try {
-                            if (listaDocumentosFirma !== "")
-                            {
-                                startProgreso();
+                        PrimeFaces.info('iniciarAutoFirma');
+                        var sModoFirma = "#{datosUsuario.getModoFirma()}";
+                        PrimeFaces.info('Modo Firma: ' + sModoFirma);
+                        PrimeFaces.info('AutoFirma (Trifasico/WebSockets)');
 
-                                numSeleccionados = (listaDocumentosFirma === undefined || listaDocumentosFirma === null ? 0 : listaDocumentosFirma.length);
+                        AutoScript.cargarAppAfirma('./');
 
+                        var ipClient = "#{datosUsuario.getIpRemota()}";
+                        var ipExtranet = "#{datosUsuario.getIpExtranet()}";
 
-                                PrimeFaces.info('Iniciando aplicación de autoFirma...'); //LOG
-                                refrescarProgreso(0,0,'Iniciando aplicación de autoFirma...');
-                                iniciarAplicacionAutoFirma(iniciarAutoFirmaOK, iniciarAutoFirmaERROR);
-                            }
-                        }
-                        catch (e) {
-                            cancelProgreso();
-                        }
-                    }
+                        PrimeFaces.info('IP Local: ' + ipClient);
+                        PrimeFaces.info('IP Extranet: ' + ipExtranet);
+                        PrimeFaces.info('Extranet: ' + !((ipClient.indexOf('10.')) === 0 && (ipClient !== ipExtranet)));
+                        if (sModoFirma === '2' || sModoFirma === '3')
+                        {
+                            PrimeFaces.info('Firma Trifasica: ERROR (Forzado a Sockets monofase)');
+                            boUsarServlets = false;
 
-                    function iniciarAplicacionAutoFirma(functionOK, functionERROR)
-                    {
-                        if (aplicacionFirmaIniciada) {
                             functionOK();
-                        }
-                        else {
-                            iniciarAutoFirma(functionOK, functionERROR);
-                        }
-                        aplicacionFirmaIniciada = true;
-                    }
-
-                    function iniciarAutoFirma(functionOK, functionERROR)
-                    {
-                        try
-                        {
-                            PrimeFaces.info('iniciarAutoFirma');
-                            var sModoFirma = "#{datosUsuario.getModoFirma()}";
-                            PrimeFaces.info('Modo Firma: ' + sModoFirma);
-                            PrimeFaces.info('AutoFirma (Trifasico/WebSockets)');
-
-                            AutoScript.cargarAppAfirma('./');
-
-                            var ipClient = "#{datosUsuario.getIpRemota()}";
-                            var ipExtranet = "#{datosUsuario.getIpExtranet()}";
-
-                            PrimeFaces.info('IP Local: ' + ipClient);
-                            PrimeFaces.info('IP Extranet: ' + ipExtranet);
-                            PrimeFaces.info('Extranet: ' + !((ipClient.indexOf('10.')) === 0 && (ipClient !== ipExtranet)));
-                            if (sModoFirma === '2' || sModoFirma === '3')
-                            {
-                                PrimeFaces.info('Firma Trifasica: ERROR (Forzado a Sockets monofase)');
-                                boUsarServlets = false;
-
-                                functionOK();
-                            } else
-                            {
-                                if ((ipClient.indexOf('10.')) === 0 && (ipClient !== ipExtranet))
-                                {
-                                    // prueba a llamar al servlet trifase
-                                    probarDisponibilidadServlets(functionOK, functionERROR, urlServiciosIntermedios + "trifase/SignatureService");
-                                } else
-                                {
-                                    disponibleERROR(functionOK, functionERROR);
-                                }
-                            }
-                        } catch (ex)
-                        {
-                            alertarError('en iniciarAutoFirma', ex);
-                            functionERROR(ex);
-                        }
-                    }
-
-                    function disponibleOK(functionOK, functionERROR)
-                    {
-                        PrimeFaces.info('Firma Trifasica: OK');
-                        boUsarServlets = true;
-
-                        // URL del servlet StorageService
-                        var storageService = urlServiciosIntermedios + 'guardar/StorageService';
-
-                        // URL del servlet RetrieveService
-                        var retrieveService = urlServiciosIntermedios + 'recuperar/RetrieveService';
-
-                        AutoScript.setServlets(storageService, retrieveService);
-                        PrimeFaces.info('Servlets de intercambio Trifasico: ');
-                        PrimeFaces.info('Servlets Recuperar: ' + urlServiciosIntermedios + 'recuperar/RetrieveService');
-                        PrimeFaces.info('Servlets Guardar: ' + urlServiciosIntermedios + 'guardar/StorageService');
-
-                        functionOK();
-                    }
-
-                    function disponibleERROR(functionOK, functionERROR) {
-                        PrimeFaces.info('Firma Trifasica: ERROR (se usarán Sockets monofase)');
-                        boUsarServlets = false;
-
-                        functionOK();
-                    }
-
-                    function iniciarAutoFirmaOK()
-                    {
-                        PrimeFaces.info('Iniciando la firma...');
-                        refrescarProgreso(0,0,'Iniciando la firma...');
-
-                        AutoScript.setStickySignatory(true);
-
-                        posicion = 0;
-                        firmar(posicion);
-                    }
-
-                    function firmar(elemento)
-                    {
-                        if (boReintentar)
-                        {
-                            //Si estamos reintentando, voy a esperar un poco entre firma y firma
-                            refrescarProgreso(elemento, numSeleccionados);
-                            setTimeout(function ()
-                            {
-                                firmarAux(elemento);
-                            }, tiempoEspera);
                         } else
                         {
-                            firmarAux(elemento);
+                            /*if ((ipClient.indexOf('10.')) === 0 && (ipClient !== ipExtranet))
+                            {*/
+                                // prueba a llamar al servlet trifase
+                                probarDisponibilidadServlets(functionOK, functionERROR, urlServiciosIntermedios + "trifase/SignatureService");
+                            /*} else
+                            {
+                                disponibleERROR(functionOK, functionERROR);
+                            }*/
                         }
-                    }
-
-                    function firmarAux(elemento)
+                    } catch (ex)
                     {
+                        alertarError('en iniciarAutoFirma', ex);
+                        functionERROR(ex);
+                    }
+                }
 
-                        PrimeFaces.info('Elemento = ' + elemento);
-                        PrimeFaces.info('listaDocumentosFirma.size() => ' + listaDocumentosFirma.length);
-                        PrimeFaces.info('listaDocumentosFirma[elemento] = ' + listaDocumentosFirma[elemento]);
+                function disponibleOK(functionOK, functionERROR)
+                {
+                    PrimeFaces.info('Firma Trifasica: OK');
+                    boUsarServlets = true;
 
-                        PrimeFaces.info('Descargando: ' + listaDocumentosFirma[elemento]);
-                        refrescarProgreso(0,0,'Descargando elemento: ' + listaDocumentosFirma[elemento]);
+                    // URL del servlet StorageService
+                    var storageService = urlServiciosIntermedios + 'guardar/StorageService';
 
+                    // URL del servlet RetrieveService
+                    var retrieveService = urlServiciosIntermedios + 'recuperar/RetrieveService';
+
+                    AutoScript.setServlets(storageService, retrieveService);
+                    PrimeFaces.info('Servlets de intercambio Trifasico: ');
+                    PrimeFaces.info('Servlets Recuperar: ' + urlServiciosIntermedios + 'recuperar/RetrieveService');
+                    PrimeFaces.info('Servlets Guardar: ' + urlServiciosIntermedios + 'guardar/StorageService');
+
+                    functionOK();
+                }
+
+                function disponibleERROR(functionOK, functionERROR) {
+                    PrimeFaces.info('Firma Trifasica: ERROR (se usarán Sockets monofase)');
+                    boUsarServlets = false;
+
+                    functionOK();
+                }
+
+                function iniciarAutoFirmaOK()
+                {
+                    PrimeFaces.info('Iniciando la firma...');
+                    refrescarProgreso(0,0,'Iniciando la firma...');
+
+                    AutoScript.setStickySignatory(true);
+
+                    posicion = 0;
+                    firmar(posicion);
+                }
+
+                function firmar(elemento)
+                {
+                    if (boReintentar)
+                    {
+                        //Si estamos reintentando, voy a esperar un poco entre firma y firma
+                        refrescarProgreso(elemento, numSeleccionados);
+                        setTimeout(function ()
+                        {
+                            firmarAux(elemento);
+                        }, tiempoEspera);
+                    } else
+                    {
+                        firmarAux(elemento);
+                    }
+                }
+
+                function firmarAux(elemento)
+                {
+
+                    PrimeFaces.info('Elemento = ' + elemento);
+                    PrimeFaces.info('listaDocumentosFirma.size() => ' + listaDocumentosFirma.length);
+                    PrimeFaces.info('listaDocumentosFirma[elemento] = ' + listaDocumentosFirma[elemento]);
+
+                    PrimeFaces.info('Descargando: ' + listaDocumentosFirma[elemento]);
+                    refrescarProgreso(0,0,'Descargando elemento: ' + listaDocumentosFirma[elemento]);
+
+                    try
+                    {
+                        var xmlHttpReq = false;
+                        var self = this;
+
+                        PrimeFaces.info('(Descargando)');
+
+                        // Mozilla/Safari
+                        if (window.XMLHttpRequest)
+                        {
+                            self.xmlHttpReq = new XMLHttpRequest();
+                        } else if (window.ActiveXObject) // IE
+                        {
+                            self.xmlHttpReq = new ActiveXObject("Microsoft.XMLHTTP");
+                        }
+
+                        if (boUsarServlets) {
+                            //SERVLET PARA TRIFASICO
+                            self.xmlHttpReq.open('POST', "entradaFicheroAutoFirma", true);
+                        } else
+                        {
+                            //SERVLET PARA MONOFASICO
+                            self.xmlHttpReq.open('POST', "bajadaFicheroFirma", true);
+                        }
+
+                        self.xmlHttpReq.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+                        self.xmlHttpReq.onreadystatechange = function ()
+                        {
+                            if (self.xmlHttpReq.readyState === 4)
+                            {
+                                if (self.xmlHttpReq.status !== 200) {
+                                    PrimeFaces.error('Error en respuesta de servlet de bajada de documento.');
+                                }
+                                else {
+                                    var respuesta = self.xmlHttpReq.responseText;
+                                    if (respuesta.startsWith("[ERROR]")) {
+                                        if (mensajeError !== '') {
+                                            mensajeError += "<br />";
+                                        }
+                                        mensajeError += respuesta;
+                                    }
+                                    else {
+                                        PrimeFaces.error('Tipo Firma (F-Firma, CO-Confirma, CT-Contrafirma) =  ' + tipoFirma[elemento]);
+                                        if (tipoFirma[elemento] === "F")
+                                        {
+                                            PrimeFaces.error(respuesta);
+                                            endDownloadParaFirma(respuesta, listaDocumentosFirma[elemento], elemento);
+                                        } else if (tipoFirma[elemento] === "CO")
+                                        {
+                                            endDownloadParaCofirma(respuesta, listaDocumentosFirma[elemento], elemento);
+                                        } else if (tipoFirma[elemento] === "CT")
+                                        {
+                                            endDownloadParaContraFirma(respuesta, listaDocumentosFirma[elemento], elemento);
+                                        }
+                                    }
+                                }
+                            }
+                        };
+
+                        PrimeFaces.info('Envio paramero fichero a servlet de descarga del documento: ' + 'fichero=' + listaDocumentosFirma[elemento]);
+                        self.xmlHttpReq.send('indexFichero=' + listaDocumentosFirma[elemento]);
+
+                        return 0;
+
+                    } catch (e)
+                    {
+                        posicion = 0;
+                        alertarError("Error Firma 2", e);
+                        cancelProgreso();
+                        mandarRefrescarListado();
+                    }
+                }
+
+                // Firma
+                function endDownloadParaFirma(str, elemento, i)
+                {
+                    refrescarProgreso(i, numSeleccionados);
+                    PrimeFaces.info('(Firmando)');
+
+                    setTimeout(function ()
+                    {
                         try
                         {
-                            var xmlHttpReq = false;
+                            PrimeFaces.info("Firmando: " + elemento);
+
+                            if (str !== undefined && str !== null && str !== "")
+                            {
+                                configuraParams();
+                                PrimeFaces.info("Formato firma elemento: " + formatoFirma[elemento]);
+
+                                if (boUsarServlets) {
+                                    PrimeFaces.info('El hash del fichero ' + elemento + ' es: ' + str);
+                                    PrimeFaces.info('Tipo Firma: ' + formatoFirma[elemento] + "tri");
+                                    AutoScript.sign(str, "SHA256withRSA", formatoFirma[elemento] + "tri", params, 
+                                        function prefirmaNotificacionSuccess(firmaBase64, certificadoB64)
+                                        {
+                                            firmaNotificacionSuccess(firmaBase64, certificadoB64, elemento, i);
+                                        }, 
+                                        firmaNotificacionError
+                                    );
+                                } else {
+                                    PrimeFaces.info('El fichero ' + elemento + ' pesa: ' + bytesToString(str.length, false) + ' (' + str.length + ')');
+                                    PrimeFaces.info('Tipo Firma: ' + formatoFirma[elemento]);
+                                    AutoScript.sign(str, "SHA256withRSA", formatoFirma[elemento], params, 
+                                        function prefirmaNotificacionSuccess(firmaBase64, certificadoB64)
+                                        {
+                                            firmaNotificacionSuccess(firmaBase64, certificadoB64, elemento, i);
+                                        }, 
+                                        firmaNotificacionError
+                                    );
+                                }
+                            } 
+                            else 
+                            {
+                                //Si no viene documento, paso al siguiente
+                                PrimeFaces.info('endDownloadParaFirma: No viene documento, str vacío. Rellamada.');
+                                rellamada();
+                            }
+                        } catch (e)
+                        {
+                            posicion = 0;
+                            alertarError("Firma cancelada: " + AutoScript.getErrorMessage(), e);
+                            cancelProgreso();
+                            mandarRefrescarListado();
+                        }
+                    }, 10);
+                }
+
+                // CoFirma
+                function endDownloadParaCoFirma(str, elemento, i)
+                {
+                    PrimeFaces.info('llamada a endDownloadParaCoFirma(str, elemento, i)');
+                    PrimeFaces.info('str lenght = ' + str.length);
+                    PrimeFaces.info('elemento = ' + elemento);
+                    PrimeFaces.info('i = ' + i);
+
+                    refrescarProgreso(i, numSeleccionados);
+                    PrimeFaces.info(' (Co-Firmando)');
+
+                    setTimeout(function ()
+                    {
+                        try
+                        {
+                            PrimeFaces.info('Co Firmando: ' + elemento);
+
+                            if (str !== undefined && str !== null && str !== "")
+                            {
+                                configuraParams();
+
+                                if (boUsarServlets) {
+                                    PrimeFaces.info('El hash del fichero ' + elemento + ' es: ' + str);
+
+                                    PrimeFaces.info('Tipo Co-Firma: ' + formatoFirma[elemento] + "tri");
+                                    PrimeFaces.info('llamando a AutoScript.coSign(...)');
+                                    AutoScript.coSign(str, "SHA256withRSA", formatoFirma[elemento]+"tri", params, 
+                                        function prefirmaNotificacionSuccess(firmaBase64, certificadoB64)
+                                        {
+                                            PrimeFaces.info('La cofirma devuelve:');
+                                            PrimeFaces.info('firmaBase64 lenght = ' + firmaBase64.length);
+                                            PrimeFaces.info('certificadoB64  lenght = ' + certificadoB64.length);
+
+                                            firmaNotificacionSuccess(firmaBase64, certificadoB64, elemento, i);
+                                        }, 
+                                        firmaNotificacionError
+                                    );
+                                } else {
+                                    PrimeFaces.info('El fichero ' + elemento + ' su pesa ' + bytesToString(str.length, false) + ' (' + str.length + ')');
+
+                                    PrimeFaces.info('Tipo Co-Firma: ' + formatoFirma[elemento]);
+                                    AutoScript.counterSign(str, "SHA256withRSA", formatoFirma[elemento], params, 
+                                        function prefirmaNotificacionSuccess(firmaBase64, certificadoB64)
+                                        {
+                                            firmaNotificacionSuccess(firmaBase64, certificadoB64, elemento, i);
+                                        }, 
+                                        firmaNotificacionError
+                                    );
+                                }
+                            } 
+                            else
+                            {
+                                //Si no viene documento, paso al siguiente
+                                rellamada();
+                            }
+                        } catch (e)
+                        {
+                            posicion = 0;
+                            alertarError("Co-Firma cancelada: " + AutoScript.getErrorMessage(), e);
+                            cancelProgreso();
+                            mandarRefrescarListado();
+                        }
+                    }, 10);
+                }
+
+                // CoFirma
+                function endDownloadParaContraFirma(str, elemento, i)
+                {
+                    PrimeFaces.info('llamada a endDownloadParaContraFirma(str, elemento, i)');
+                    PrimeFaces.info('str lenght = ' + str.length);
+                    PrimeFaces.info('elemento = ' + elemento);
+                    PrimeFaces.info('i = ' + i);
+
+                    refrescarProgreso(i, numSeleccionados);
+                    PrimeFaces.info(' (Contra-Firmando)');
+
+                    setTimeout(function ()
+                    {
+                        try
+                        {
+                            PrimeFaces.info('Contra Firmando: ' + elemento);
+
+                            if (str !== undefined && str !== null && str !== "")
+                            {
+                                configuraParams();
+
+                                if (boUsarServlets) {
+                                    PrimeFaces.info('El hash del fichero ' + elemento + ' es: ' + str);
+
+                                    PrimeFaces.info('Tipo Contra-Firma: ' + formatoFirma[elemento]+"tri");
+                                    PrimeFaces.info('llamando a AutoScript.counterSign(...)');
+                                    AutoScript.counterSign(str, "SHA256withRSA", formatoFirma[elemento]+"tri", params, 
+                                        function prefirmaNotificacionSuccess(firmaBase64, certificadoB64)
+                                        {
+                                            PrimeFaces.info('La contrafirma devuelve:');
+                                            PrimeFaces.info('firmaBase64 lenght = ' + firmaBase64.length);
+                                            PrimeFaces.info('certificadoB64  lenght = ' + certificadoB64.length);
+
+                                            firmaNotificacionSuccess(firmaBase64, certificadoB64, elemento, i);
+                                        }, 
+                                        firmaNotificacionError
+                                    );
+                                } else {
+                                    PrimeFaces.info('El fichero ' + elemento + ' su pesa ' + bytesToString(str.length, false) + ' (' + str.length + ')');
+
+                                    PrimeFaces.info('Tipo Contra-Firma: ' + formatoFirma[elemento]);
+                                    AutoScript.counterSign(str, "SHA256withRSA", formatoFirma[elemento], params, 
+                                        function prefirmaNotificacionSuccess(firmaBase64, certificadoB64)
+                                        {
+                                            firmaNotificacionSuccess(firmaBase64, certificadoB64, elemento, i);
+                                        }, 
+                                        firmaNotificacionError
+                                    );
+                                }
+                            } 
+                            else
+                            {
+                                //Si no viene documento, paso al siguiente
+                                rellamada();
+                            }
+                        } catch (e)
+                        {
+                            posicion = 0;
+                            alertarError("Contra-Firma cancelada: " + AutoScript.getErrorMessage(), e);
+                            cancelProgreso();
+                            mandarRefrescarListado();
+                        }
+                    }, 10);
+                }
+
+                function firmaNotificacionSuccess(firmaBase64, certificadoB64, elemento, i)
+                {
+                    subeFirmado(firmaBase64, elemento, i);
+                }
+
+                function firmaNotificacionError(tipoError, mensaje)
+                {
+                    posicion = 0;
+                    alertarError("Firma cancelada: " + mensaje, null);
+                    cancelProgreso();
+                    mandarRefrescarListado();
+                }
+
+                function subeFirmado(docFirmado, elemento, i)
+                {
+                    refrescarProgreso(i + 1, numSeleccionados);
+                    PrimeFaces.info(' (Subiendo)');
+
+                    setTimeout(function ()
+                    {
+                        try
+                        {
+                            PrimeFaces.info('Subiendo: ' + elemento);
+                            if (boUsarServlets) {
+                                if (docFirmado.length < 255) {
+                                    nombreFirmado = AutoScript.getTextFromBase64(docFirmado);
+                                }
+                                else {
+                                    nombreFirmado = AutoScript.getTextFromBase64(docFirmado).substring(1,255);
+                                }
+                                PrimeFaces.info('El fichero a subir ' + elemento + ' tiene el nombre de fichero: ' + nombreFirmado);
+                            }
+                            else {
+                                PrimeFaces.info('El fichero a subir ' + elemento + ' pesa ' + bytesToString(docFirmado.length, false) + ' (' + docFirmado.length + ')');
+                            }
                             var self = this;
-
-                            PrimeFaces.info('(Descargando)');
-
                             // Mozilla/Safari
                             if (window.XMLHttpRequest)
                             {
                                 self.xmlHttpReq = new XMLHttpRequest();
-                            } else if (window.ActiveXObject) // IE
+                            }
+                            // IE
+                            else if (window.ActiveXObject)
                             {
                                 self.xmlHttpReq = new ActiveXObject("Microsoft.XMLHTTP");
                             }
 
                             if (boUsarServlets) {
-                                //SERVLET PARA TRIFASICO
-                                self.xmlHttpReq.open('POST', "entradaFicheroAutoFirma", true);
-                            } else
-                            {
-                                //SERVLET PARA MONOFASICO
-                                self.xmlHttpReq.open('POST', "bajadaFicheroFirma", true);
+                                // SERVLET PARA TRIFASICO
+                                PrimeFaces.info('Servlet de salida trifasico: ' + 'salidaFicheroAutoFirma');
+                                self.xmlHttpReq.open('POST', "salidaFicheroAutoFirma", true);
+                            } else {
+                                // SERVLET PARA MONOFASICO
+                                PrimeFaces.info('Servlet de salida monofasico: ' + 'subidaFicheroFirmado');
+                                self.xmlHttpReq.open('POST', "subidaFicheroFirmado", true);
                             }
 
                             self.xmlHttpReq.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-
                             self.xmlHttpReq.onreadystatechange = function ()
                             {
                                 if (self.xmlHttpReq.readyState === 4)
                                 {
-                                    if (self.xmlHttpReq.status !== 200) {
-                                        PrimeFaces.error('Error en respuesta de servlet de bajada de documento.');
+                                    if (self.xmlHttpReq.status !== 200)
+                                    {
+                                        PrimeFaces.Error('Error en respuesta servlet de subida de fichero.');
+                                        //Si la respuesta es de error, termino el proceso
+                                        posicion = listaDocumentosFirma.length;
+
+                                        refrescarProgreso(0,0, "Error en respuesta de servlet de subida de fichero.");
+                                        //refrescarEstado("");
                                     }
                                     else {
-                                        if (self.xmlHttpReq.responseText.startsWith("[ERROR]")) {ç
-                                            if (mensajeError !== '') {
-                                                mensajeError += "<br />";
-                                            }
-                                            mensajeError += self.xmlHttpReq.responseText;
+                                        //PrimeFaces.error('Tipo Firma (0-Firma, 1-Contrafirma) =  ' + tipoFirma[elemento]);
+                                        if (mensajeError !== '') {
+                                            mensajeError += "<br />";
                                         }
-                                        else {
-                                            PrimeFaces.error('Tipo Firma (0-Firma, 1-Contrafirma) =  ' + tipoFirma[elemento]);
-                                            if (tipoFirma[elemento] === "0")
-                                            {
-                                                var respuesta = self.xmlHttpReq.responseText;
-                                                PrimeFaces.error(respuesta);
-                                                endDownloadParaFirma(respuesta, listaDocumentosFirma[elemento], elemento);
-                                            } else if (tipoFirma[elemento] === "1")
-                                            {
-                                                endDownloadParaContraFirma(self.xmlHttpReq.responseText, listaDocumentosFirma[elemento], elemento);
-                                            }
-                                        }
+                                        mensajeError += self.xmlHttpReq.responseText;
                                     }
+
+                                    rellamada();
                                 }
                             };
-
-                            PrimeFaces.info('Envio paramero fichero a servlet de descarga del documento: ' + 'fichero=' + listaDocumentosFirma[elemento]);
-                            self.xmlHttpReq.send('indexFichero=' + listaDocumentosFirma[elemento]);
-
-                            return 0;
-
+                            PrimeFaces.info('encodeURIComponent(docFirmado): ' + encodeURIComponent(docFirmado));
+                            self.xmlHttpReq.send("indexFichero=" + elemento + "&data2=" + encodeURIComponent(docFirmado));
                         } catch (e)
                         {
                             posicion = 0;
-                            alertarError("Error Firma 2", e);
+                            alertarError("Error Firma 3.2", e);
                             cancelProgreso();
                             mandarRefrescarListado();
                         }
+                    }, 10);
+                }
+
+                function rellamada()
+                {
+                    posicion = posicion + 1;
+                    if (posicion < listaDocumentosFirma.length) {
+                        firmar(posicion);
                     }
-
-                    // Firma
-                    function endDownloadParaFirma(str, elemento, i)
-                    {
-                        refrescarProgreso(i, numSeleccionados);
-                        PrimeFaces.info('(Firmando)');
-
-                        setTimeout(function ()
-                        {
-                            try
-                            {
-                                PrimeFaces.info("Firmando: " + elemento);
-
-                                if (str !== undefined && str !== null && str !== "")
-                                {
-                                    configuraParams();
-
-                                    if (boUsarServlets) {
-                                        PrimeFaces.info('El hash del fichero ' + elemento + ' es: ' + str);
-                                        PrimeFaces.info('Tipo Firma: XAdEStri');
-                                        AutoScript.sign(str, "SHA256withRSA", "XAdEStri", params, 
-                                            function prefirmaNotificacionSuccess(firmaBase64, certificadoB64)
-                                            {
-                                                firmaNotificacionSuccess(firmaBase64, certificadoB64, elemento, i);
-                                            }, 
-                                            firmaNotificacionError
-                                        );
-                                    } else {
-                                        PrimeFaces.info('El fichero ' + elemento + ' pesa: ' + bytesToString(str.length, false) + ' (' + str.length + ')');
-                                        PrimeFaces.info('Tipo Firma: XAdES');
-                                        AutoScript.sign(str, "SHA256withRSA", "XAdES", params, 
-                                            function prefirmaNotificacionSuccess(firmaBase64, certificadoB64)
-                                            {
-                                                firmaNotificacionSuccess(firmaBase64, certificadoB64, elemento, i);
-                                            }, 
-                                            firmaNotificacionError
-                                        );
-                                    }
-                                } 
-                                else 
-                                {
-                                    //Si no viene documento, paso al siguiente
-                                    PrimeFaces.info('endDownloadParaFirma: No viene documento, str vacío. Rellamada.');
-                                    rellamada();
-                                }
-                            } catch (e)
-                            {
-                                posicion = 0;
-                                alertarError("Firma cancelada: " + AutoScript.getErrorMessage(), e);
-                                cancelProgreso();
-                                mandarRefrescarListado();
-                            }
-                        }, 10);
+                    else {
+                        PrimeFaces.info(' (actualizando)');
+                        setTimeout(finalizarFirma, 10);
                     }
+                }
 
-                    // CoFirma
-                    function endDownloadParaContraFirma(str, elemento, i)
+                function finalizarFirma()
+                {
+                    mandarRefrescarListado();
+                    PrimeFaces.info('Firma finalizada');
+                }
+
+                function iniciarAutoFirmaERROR(e)
+                {
+                    posicion = 0;
+
+                    if (errorAutofirma === true)
                     {
-                        PrimeFaces.info('llamada a endDownloadParaContraFirma(str, elemento, i)');
-                        PrimeFaces.info('str lenght = ' + str.length);
-                        PrimeFaces.info('elemento = ' + elemento);
-                        PrimeFaces.info('i = ' + i);
+                        var errorMensaje = "Error en el arranque de Autofirma. Compruebe que no se está bloqueando la aplicación y que la versión de java está correctamente instalada.";
+                        PF('mensaje').renderMessage({"summary":"Error",
+                                                     "detail":errorMensaje,
+                                                     "severity":"error"});
+                    }
+                    alertarError("Error Firma 1", e);
+                    cancelProgreso();
 
-                        refrescarProgreso(i, numSeleccionados);
-                        PrimeFaces.info(' (Contra-Firmando)');
+                    try {
+                       iniciarAplicacionFirma(iniciarAutoFirmaOK, iniciarAutoFirmaERROR);
+                    } catch (e2) {
+                        alertarError("Error Firma 1.1: Imposible reiniciar la aplicación de firma", e2);
+                    }
+                }
 
-                        setTimeout(function ()
+                function mandarRefrescarListado()
+                {
+                    try
+                    {
+                        buscarClick();
+                    } catch (e)
+                    {
+                        alertarError("Refrescar elementos", e);
+                    }
+                }
+
+                function configuraParams()
+                {
+                    if (boUsarServlets) {
+                        paramsInit = paramsInit + "serverUrl=" + urlServiciosIntermedios + "trifase/SignatureService\n";
+                    }
+                    params = paramsInit;
+                }
+
+                function bytesToString(bytes, si) {
+                    var thresh = si ? 1000 : 1024;
+                    if (Math.abs(bytes) < thresh) {
+                        return bytes + ' B';
+                    }
+                    var units = si
+                            ? ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
+                            : ['KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
+                    var u = -1;
+                    do {
+                        bytes /= thresh;
+                        ++u;
+                    } while (Math.abs(bytes) >= thresh && u < units.length - 1);
+                    return bytes.toFixed(1) + ' ' + units[u];
+                }
+
+                function alertarError(msg, ex)
+                {
+                    try
+                    {
+                        try
                         {
-                            try
+                            if (ex !== undefined && ex !== null)
                             {
-                                PrimeFaces.info('Contra Firmando: ' + elemento);
-
-                                if (str !== undefined && str !== null && str !== "")
-                                {
-                                    configuraParams();
-
-                                    if (boUsarServlets) {
-                                        PrimeFaces.info('El hash del fichero ' + elemento + ' es: ' + str);
-
-                                        PrimeFaces.info('Tipo Contra-Firma: XAdEStri');
-                                        PrimeFaces.info('llamando a AutoScript.counterSign(...)');
-                                        AutoScript.counterSign(str, "SHA256withRSA", "XAdEStri", params, 
-                                            function prefirmaNotificacionSuccess(firmaBase64, certificadoB64)
-                                            {
-                                                PrimeFaces.info('La contrafirma devuelve:');
-                                                PrimeFaces.info('firmaBase64 lenght = ' + firmaBase64.length);
-                                                PrimeFaces.info('certificadoB64  lenght = ' + certificadoB64.length);
-
-                                                firmaNotificacionSuccess(firmaBase64, certificadoB64, elemento, i);
-                                            }, 
-                                            firmaNotificacionError
-                                        );
-                                    } else {
-                                        PrimeFaces.info('El fichero ' + elemento + ' su pesa ' + bytesToString(str.length, false) + ' (' + str.length + ')');
-
-                                        PrimeFaces.info('Tipo Contra-Firma: XAdES');
-                                        AutoScript.counterSign(str, "SHA256withRSA", "XAdES", params, 
-                                            function prefirmaNotificacionSuccess(firmaBase64, certificadoB64)
-                                            {
-                                                firmaNotificacionSuccess(firmaBase64, certificadoB64, elemento, i);
-                                            }, 
-                                            firmaNotificacionError
-                                        );
-                                    }
-                                } 
+                                if (ex.message !== undefined && ex.message !== null)
+                                    msg = msg + "\r\n(" + ex.message + ")";
                                 else
-                                {
-                                    //Si no viene documento, paso al siguiente
-                                    rellamada();
-                                }
-                            } catch (e)
-                            {
-                                posicion = 0;
-                                alertarError("Contra-Firma cancelada: " + AutoScript.getErrorMessage(), e);
-                                cancelProgreso();
-                                mandarRefrescarListado();
+                                    msg = msg + "\r\n(" + ex.toString() + ")";
+
+                                if (ex.stack !== undefined && ex.stack !== null)
+                                    msg = msg + "\r\n" + ex.stack;
                             }
-                        }, 10);
-                    }
+                        } catch (e) {
+                        } //Vacío
 
-                    function firmaNotificacionSuccess(firmaBase64, certificadoB64, elemento, i)
+                        PrimeFaces.info(msg);
+                        PF('mensaje').renderMessage({"summary":"Error",
+                                                     "detail":msg,
+                                                     "severity":"error"});
+                    } catch (e2)
                     {
-                        subeFirmado(firmaBase64, elemento, i);
+                        PrimeFaces.info(msg + e2.toString());
+                        PF('mensaje').renderMessage({"summary":"Error",
+                                                     "detail":msg + e2.toString(),
+                                                     "severity":"error"});
                     }
-
-                    function firmaNotificacionError(tipoError, mensaje)
-                    {
-                        posicion = 0;
-                        alertarError("Firma cancelada: " + mensaje, null);
-                        cancelProgreso();
-                        mandarRefrescarListado();
-                    }
-
-                    function subeFirmado(docFirmado, elemento, i)
-                    {
-                        refrescarProgreso(i + 1, numSeleccionados);
-                        PrimeFaces.info(' (Subiendo)');
-
-                        setTimeout(function ()
-                        {
-                            try
-                            {
-                                PrimeFaces.info('Subiendo: ' + elemento);
-                                if (boUsarServlets) {
-                                    if (docFirmado.length < 255) {
-                                        nombreFirmado = Base64.decode(docFirmado);
-                                    }
-                                    else {
-                                        nombreFirmado = Base64.decode(docFirmado).substring(1,255);
-                                    }
-                                    PrimeFaces.info('El fichero a subir ' + elemento + ' tiene el nombre de fichero: ' + nombreFirmado);
-                                }
-                                else {
-                                    PrimeFaces.info('El fichero a subir ' + elemento + ' pesa ' + bytesToString(docFirmado.length, false) + ' (' + docFirmado.length + ')');
-                                }
-                                var self = this;
-                                // Mozilla/Safari
-                                if (window.XMLHttpRequest)
-                                {
-                                    self.xmlHttpReq = new XMLHttpRequest();
-                                }
-                                // IE
-                                else if (window.ActiveXObject)
-                                {
-                                    self.xmlHttpReq = new ActiveXObject("Microsoft.XMLHTTP");
-                                }
-
-                                if (boUsarServlets) {
-                                    // SERVLET PARA TRIFASICO
-                                    PrimeFaces.info('Servlet de salida trifasico: ' + 'salidaFicheroAutoFirma');
-                                    self.xmlHttpReq.open('POST', "salidaFicheroAutoFirma", true);
-                                } else {
-                                    // SERVLET PARA MONOFASICO
-                                    PrimeFaces.info('Servlet de salida monofasico: ' + 'subidaFicheroFirmado');
-                                    self.xmlHttpReq.open('POST', "subidaFicheroFirmado", true);
-                                }
-
-                                self.xmlHttpReq.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-                                self.xmlHttpReq.onreadystatechange = function ()
-                                {
-                                    if (self.xmlHttpReq.readyState === 4)
-                                    {
-                                        if (self.xmlHttpReq.status !== 200)
-                                        {
-                                            PrimeFaces.Error('Error en respuesta servlet de subida de fichero.');
-                                            //Si la respuesta es de error, termino el proceso
-                                            posicion = listaDocumentosFirma.length;
-
-                                            refrescarProgreso(0,0, "Error en respuesta de servlet de subida de fichero.");
-                                            //refrescarEstado("");
-                                        }
-                                        else {
-                                            //PrimeFaces.error('Tipo Firma (0-Firma, 1-Contrafirma) =  ' + tipoFirma[elemento]);
-                                            if (mensajeError !== '') {
-                                                mensajeError += "<br />";
-                                            }
-                                            mensajeError += self.xmlHttpReq.responseText;
-                                        }
-
-                                        rellamada();
-                                    }
-                                };
-                                PrimeFaces.info('encodeURIComponent(docFirmado): ' + encodeURIComponent(docFirmado));
-                                self.xmlHttpReq.send("indexFichero=" + elemento + "&data2=" + encodeURIComponent(docFirmado));
-                            } catch (e)
-                            {
-                                posicion = 0;
-                                alertarError("Error Firma 3.2", e);
-                                cancelProgreso();
-                                mandarRefrescarListado();
-                            }
-                        }, 10);
-                    }
-
-                    function rellamada()
-                    {
-                        posicion = posicion + 1;
-                        if (posicion < listaDocumentosFirma.length) {
-                            firmar(posicion);
-                        }
-                        else {
-                            PrimeFaces.info(' (actualizando)');
-                            setTimeout(finalizarFirma, 10);
-                        }
-                    }
-
-                    function finalizarFirma()
-                    {
-                        mandarRefrescarListado();
-                        PrimeFaces.info('Firma finalizada');
-                    }
-
-                    function iniciarAutoFirmaERROR(e)
-                    {
-                        posicion = 0;
-
-                        if (errorAutofirma === true)
-                        {
-                            var errorMensaje = "Error en el arranque de Autofirma. Compruebe que no se está bloqueando la aplicación y que la versión de java está correctamente instalada.";
-                            PF('mensaje').renderMessage({"summary":"Error",
-                                                         "detail":errorMensaje,
-                                                         "severity":"error"});
-                        }
-                        alertarError("Error Firma 1", e);
-                        cancelProgreso();
-
-                        try {
-                           iniciarAplicacionFirma(iniciarAutoFirmaOK, iniciarAutoFirmaERROR);
-                        } catch (e2) {
-                            alertarError("Error Firma 1.1: Imposible reiniciar la aplicación de firma", e2);
-                        }
-                    }
-
-                    function mandarRefrescarListado()
-                    {
-                        try
-                        {
-                            buscarClick();
-                        } catch (e)
-                        {
-                            alertarError("Refrescar elementos", e);
-                        }
-                    }
-
-                    function configuraParams()
-                    {
-                        if (boUsarServlets) {
-                            paramsInit = paramsInit + "serverUrl=" + urlServiciosIntermedios + "trifase/SignatureService\n";
-                        }
-                        params = paramsInit;
-                    }
-
-                    function bytesToString(bytes, si) {
-                        var thresh = si ? 1000 : 1024;
-                        if (Math.abs(bytes) < thresh) {
-                            return bytes + ' B';
-                        }
-                        var units = si
-                                ? ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
-                                : ['KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
-                        var u = -1;
-                        do {
-                            bytes /= thresh;
-                            ++u;
-                        } while (Math.abs(bytes) >= thresh && u < units.length - 1);
-                        return bytes.toFixed(1) + ' ' + units[u];
-                    }
-
-                    function alertarError(msg, ex)
-                    {
-                        try
-                        {
-                            try
-                            {
-                                if (ex !== undefined && ex !== null)
-                                {
-                                    if (ex.message !== undefined && ex.message !== null)
-                                        msg = msg + "\r\n(" + ex.message + ")";
-                                    else
-                                        msg = msg + "\r\n(" + ex.toString() + ")";
-
-                                    if (ex.stack !== undefined && ex.stack !== null)
-                                        msg = msg + "\r\n" + ex.stack;
-                                }
-                            } catch (e) {
-                            } //Vacío
-
-                            PrimeFaces.info(msg);
-                            PF('mensaje').renderMessage({"summary":"Error",
-                                                         "detail":msg,
-                                                         "severity":"error"});
-                        } catch (e2)
-                        {
-                            PrimeFaces.info(msg + e2.toString());
-                            PF('mensaje').renderMessage({"summary":"Error",
-                                                         "detail":msg + e2.toString(),
-                                                         "severity":"error"});
-                        }
-                    }
-                    //]]>
-                </script>
-            </p:card>
+                }
+                //]]>
+            </script>
             <script>
                 //<![CDATA[
                     var mensajeError = '';
@@ -700,7 +773,7 @@
                 //]]>
             </script>
             <sd:visorMedia id="visorDocumentos" beanClass="#{filtroFirmaDocumentos.visorDocumentos}" />
-            <p:log id="logFirma" widgetVar="logFirma" rendered="false" />
+            <p:log id="logFirma" widgetVar="logFirma" rendered="true" />
         </ui:define>
     </ui:composition>
 </html>

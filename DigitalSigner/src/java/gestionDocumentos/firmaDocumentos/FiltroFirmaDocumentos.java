@@ -8,10 +8,13 @@ import basedatos.DataSet;
 import basedatos.Row;
 import basedatos.RowCabecera;
 import basedatos.servicios.StDDocumento;
+import basedatos.servicios.StTTipodocumento;
 import basedatos.tablas.BdDDocumento;
+import basedatos.tablas.BdTTipodocumento;
 import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.Date;
+import java.util.logging.Level;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
@@ -223,11 +226,13 @@ public class FiltroFirmaDocumentos implements Serializable {
                              tipodoc.ID_TIPODOCUMENTO,
                              tipodoc.CO_TIPODOCUMENTO,
                              tipodoc.DS_TIPODOCUMENTO,
+                             tipodoc.DI_FORMATOFIRMA,
                              situaciondoc.ID_SITUACIONDOC,
                              situaciondoc.CO_SITUACIONDOC,
                              situaciondoc.DS_SITUACIONDOC,
                              docfirma.ID_DOCFIRMA,
                              docfirma.EN_ORDEN,
+                             docfirma.DI_TIPOFIRMA,
                              (SELECT count(*) FROM BD_A_DOCFIRMA aux WHERE aux.ID_DOCUMENTO = doc.ID_DOCUMENTO
                                  AND (aux.FE_ALTA <= CONVERT (date, SYSDATETIME())) AND (aux.FE_DESACTIVO IS NULL OR docfirma.FE_DESACTIVO >= CONVERT (date, SYSDATETIME()))) as TOTAL_FIRMAS,
                              docfirma.FE_FIRMA,
@@ -400,20 +405,25 @@ public class FiltroFirmaDocumentos implements Serializable {
     public void prepararListaDocumentos() {
         String listaDocumento = "";
         String listaTiposFirma = "";
+        String listaFormatosFirma = "";
         if (this.dsResultado.getSelectedRows() != null && !this.dsResultado.getSelectedRows().isEmpty()) {
             for (Row itemSelectedRow : this.dsResultado.getSelectedRows()) {
                 if (!listaDocumento.isBlank()) {
                     listaDocumento += ";";
                     listaTiposFirma += ";";
+                    listaFormatosFirma += ";";
                 }
                 listaDocumento += itemSelectedRow.getIndex();
-                listaTiposFirma += (itemSelectedRow.getColumnName("EN_ORDEN").getValueInteger() > 1 ? "1" : "0");
+                listaTiposFirma += itemSelectedRow.getColumnName("DI_TIPOFIRMA").getValueString();
+                //listaTiposFirma += (itemSelectedRow.getColumnName("EN_ORDEN").getValueInteger() > 1 ? "1" : "0");
+                listaFormatosFirma += itemSelectedRow.getColumnName("DI_FORMATOFIRMA").getValueString();
             }
         }
         
         PrimeRequestContext requestContext = PrimeRequestContext.getCurrentInstance();
         requestContext.getCallbackParams().put("listaDocumentos", listaDocumento);
         requestContext.getCallbackParams().put("listaTiposFirma", listaTiposFirma);
+        requestContext.getCallbackParams().put("listaFormatosFirma", listaFormatosFirma);
     }
     
     private void formatearCabeceras() throws SecurityException, NoSuchMethodException {
@@ -459,6 +469,10 @@ public class FiltroFirmaDocumentos implements Serializable {
         cabecera.getColumnName("DS_TIPODOCUMENTO")
                 .setVisible(false);
 
+        cabecera.getColumnName("DI_FORMATOFIRMA")
+                .setTitle("Formato")
+                .setWidth("6em");
+
         cabecera.getColumnName("ID_SITUACIONDOC")
                 .setVisible(false);
 
@@ -471,6 +485,9 @@ public class FiltroFirmaDocumentos implements Serializable {
                 .setVisible(false);
 
         cabecera.getColumnName("ID_DOCFIRMA")
+                .setVisible(false);
+
+        cabecera.getColumnName("DI_TIPOFIRMA")
                 .setVisible(false);
 
         cabecera.getColumnName("EN_ORDEN")

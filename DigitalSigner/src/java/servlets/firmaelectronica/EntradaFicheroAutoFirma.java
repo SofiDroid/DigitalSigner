@@ -1,5 +1,7 @@
 package servlets.firmaelectronica;
 
+import afirma.AfirmaUtils;
+import afirma.ResultadoValidacionFirmas;
 import basedatos.servicios.StTSituaciondoc;
 import basedatos.tablas.BdDDocumento;
 import basedatos.tablas.BdTSituaciondoc;
@@ -103,49 +105,30 @@ public class EntradaFicheroAutoFirma extends HttpServlet
 
                         if(validarNIF || validarFirma)
                         {
-                            StTSituaciondoc stTSituaciondoc = new StTSituaciondoc(Session.getDatosUsuario());
-                            BdTSituaciondoc bdTSituaciondoc = stTSituaciondoc.item(bdDDocumento.getIdSituaciondoc(), null);
-                            if(bdTSituaciondoc != null && bdTSituaciondoc.getCoSituaciondoc() != null 
-                                    && bdTSituaciondoc.getCoSituaciondoc().equalsIgnoreCase("FIRMADO"))
-                            {
-                                //Si el documento está firmado, se puede validar que realmente sea un xml
-//                                if(!UtilPSSDEF.validarQueEsXMLFirmado(documento))
-//                                {
-//                                    gestion.getListaErroresProcesoFirma().add(doc.getDESCRIPCION() + " - El documento está firmado, pero no parece ser un xml de firma");
-//                                    documento = new byte[0];
-//                                }
-
-                                // AÑADIR PSSDEF Y CUANDO  SE VEA QUE NO DEVUELVE FIRMAS, MIRAR
-                                // SI LA AUTORIDAD ACTUAL ESTÁ EN LA LISTA DE PERMITIDOS SIN FIRMAS ANTERIORES Y "ret=true;"
-//                                ArrayList<FirmaBean> listaFirmas = null;
-//                                try {
-//                                    listaFirmas = util.verificaXadesByte(documento);
-//                                } catch (Exception ex) {
-//                                    //Si falla la PSSDEF, la lista se quedará vacía y mostrará un error
-//                                    gestion.getListaErroresProcesoFirma().add(doc.getDESCRIPCION() + " - Problema con el servicio PSSDEF: " + ex.getMessage());
-//                                    Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
-//                                }
-
-//                                if (listaFirmas == null || listaFirmas.isEmpty())
-//                                {
-//                                    //Si no encuentro firmas miro si está en la lista de permitidos la autoridad actual.
-//                                    boolean boAutorizadoExpecial = gestion.getBoAutoridadEspecial();
-//                                    //Solo realizo la validacion especial de autoridades si el documento firmado viene de IRIS.
-//                                    if(!UtilPSSDEF.validarQueEsXMLFirmado(documento))
-//                                        boAutorizadoExpecial = false;
-//
-//                                    if (!boAutorizadoExpecial)
-//                                    {
-//                                        gestion.getListaErroresProcesoFirma().add(doc.getDESCRIPCION() + " - El documento está firmado, pero no se pueden recuperar sus firmas");
-//                                        documento = new byte[0];
-//                                    }
-//                                }
+                            if (bdDDocumento.getCoExtension().equalsIgnoreCase("XSIG")) {
+                                //Si el documento es XSIG, validar las firmas.
+                                
+                                // INICIO VALIDAR NIF Y FIRMA
+                                AfirmaUtils afirmaUtils = new AfirmaUtils();
+                                ResultadoValidacionFirmas resultadoValidacionFirmas = afirmaUtils.validarFirmas(binDocumento, true, true, true, true);
+                                if (!resultadoValidacionFirmas.isBoValid()) {
+                                    String msg = resultadoValidacionFirmas.getDsValidacion();
+                                    LOG.error(msg);
+                                    
+                                    binDocumento = new byte[0];
+                                    throw new Exception("- " + bdDDocumento.getCoDocumento() + ": " + msg);
+                                }
+                                // FIN VALIDAR NIF Y FIRMA
                             }
                         }
                     }
 
                     Base64 B64E2 = new Base64();
-                    String idDocumentoOriginal = datosUsuario.getBdTUsuario().getCoUsuario() + "_" + datosUsuario.getIpRemota().replace(".", "_") + "_" + bdDDocumento.getIdDocumento();
+                    String ipAddress = request.getHeader("X-FORWARDED-FOR");
+                    if (ipAddress == null) {
+                        ipAddress = request.getRemoteAddr();
+                    }
+                    String idDocumentoOriginal = datosUsuario.getBdTUsuario().getCoUsuario() + "_" + ipAddress.replace(".", "_").replace(":", "_") + "_" + bdDDocumento.getIdDocumento();
                     String idDocumentoB64 = B64E2.encodeToString(idDocumentoOriginal.getBytes("UTF-8")).replace("\n","").replace("\r","");
                     //======================================================
 

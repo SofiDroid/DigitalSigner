@@ -43,6 +43,7 @@ public class EdicionTiposDocumentos implements Serializable {
     // TIPO DOCUMENTO
     private CampoWebCodigo cCoTipodocumento = null;
     private CampoWebDescripcion cDsTipodocumento = null;
+    private CampoWebCombo cDiFormatofirma = null;
     private CampoWebFecha cFeAlta = null;
     private CampoWebFecha cFeDesactivo = null;
     private DataSet dsFirmas = null;
@@ -83,6 +84,14 @@ public class EdicionTiposDocumentos implements Serializable {
             this.cDsTipodocumento.setLabel(Msg.getString("lbl_EdicionTiposDocumentos_DsTipodocumento"));
             this.cDsTipodocumento.setWidthLabel("100px");
             this.cDsTipodocumento.setRequired(true);
+            
+            this.cDiFormatofirma = new CampoWebCombo();
+            this.cDiFormatofirma.setLabel("Formato firma");
+            this.cDiFormatofirma.setWidthLabel("100px");
+            this.cDiFormatofirma.setWidth("6em");
+            this.cDiFormatofirma.getOptions().put("XAdES","XAdES");
+            this.cDiFormatofirma.getOptions().put("PAdES","PAdES");
+            this.cDiFormatofirma.setRequired(true);
             
             this.cFeAlta = new CampoWebFecha();
             this.cFeAlta.setLabel(Msg.getString("lbl_EdicionTiposDocumentos_FeAlta"));
@@ -179,6 +188,7 @@ public class EdicionTiposDocumentos implements Serializable {
                         this.bdTTipodocumento = new BdTTipodocumento();
                         this.bdTTipodocumento.setCoTipodocumento(this.cCoTipodocumento.getValue());
                         this.bdTTipodocumento.setDsTipodocumento(this.cDsTipodocumento.getValue());
+                        this.bdTTipodocumento.setDiFormatofirma((String)this.cDiFormatofirma.getValue());
                         this.bdTTipodocumento.setFeAlta(this.cFeAlta.getValue());
                         this.bdTTipodocumento.setFeDesactivo(this.cFeDesactivo.getValue());
 
@@ -215,6 +225,7 @@ public class EdicionTiposDocumentos implements Serializable {
                     if (this.modoFormulario == ModoFormulario.EDICION) {
                         this.bdTTipodocumento.setCoTipodocumento(this.cCoTipodocumento.getValue());
                         this.bdTTipodocumento.setDsTipodocumento(this.cDsTipodocumento.getValue());
+                        this.bdTTipodocumento.setDiFormatofirma((String)this.cDiFormatofirma.getValue());
                         this.bdTTipodocumento.setFeAlta(this.cFeAlta.getValue());
                         this.bdTTipodocumento.setFeDesactivo(this.cFeDesactivo.getValue());
 
@@ -342,6 +353,7 @@ public class EdicionTiposDocumentos implements Serializable {
     public void limpiar() {
         this.cCoTipodocumento.setValue(null);
         this.cDsTipodocumento.setValue(null);
+        this.cDiFormatofirma.setValue(null);
         this.cFeAlta.setValue(null);
         this.cFeDesactivo.setValue(null);
         
@@ -386,6 +398,9 @@ public class EdicionTiposDocumentos implements Serializable {
         if (Validation.isNullOrEmpty(this.cDsTipodocumento.getValue())) {
             throw new RequiredFieldException(this.cDsTipodocumento.getLabel());
         }
+        if (Validation.isNullOrEmpty(this.cDiFormatofirma.getValue())) {
+            throw new RequiredFieldException(this.cDiFormatofirma.getLabel());
+        }
         if (Validation.isNullOrEmpty(this.cFeAlta.getValue())) {
             throw new RequiredFieldException(this.cFeAlta.getLabel());
         }
@@ -418,6 +433,7 @@ public class EdicionTiposDocumentos implements Serializable {
             case CONSULTA, ELIMINADO -> {
                 this.cCoTipodocumento.setProtegido(true);
                 this.cDsTipodocumento.setProtegido(true);
+                this.cDiFormatofirma.setProtegido(true);
                 this.cFeAlta.setProtegido(true);
                 this.cFeDesactivo.setProtegido(true);
                 
@@ -431,6 +447,7 @@ public class EdicionTiposDocumentos implements Serializable {
             case EDICION -> {
                 this.cCoTipodocumento.setProtegido(false);
                 this.cDsTipodocumento.setProtegido(false);
+                this.cDiFormatofirma.setProtegido(false);
                 this.cFeAlta.setProtegido(false);
                 this.cFeDesactivo.setProtegido(false);
                 
@@ -445,6 +462,7 @@ public class EdicionTiposDocumentos implements Serializable {
                 limpiar();
                 this.cCoTipodocumento.setProtegido(false);
                 this.cDsTipodocumento.setProtegido(false);
+                this.cDiFormatofirma.setProtegido(false);
                 this.cFeAlta.setProtegido(false);
                 this.cFeDesactivo.setProtegido(false);
                 
@@ -468,6 +486,7 @@ public class EdicionTiposDocumentos implements Serializable {
         
         cCoTipodocumento.setValue(this.bdTTipodocumento.getCoTipodocumento());
         cDsTipodocumento.setValue(this.bdTTipodocumento.getDsTipodocumento());
+        cDiFormatofirma.setValue(this.bdTTipodocumento.getDiFormatofirma());
         cFeAlta.setValue(this.bdTTipodocumento.getFeAlta());
         cFeDesactivo.setValue(this.bdTTipodocumento.getFeDesactivo());
     }
@@ -676,6 +695,14 @@ public class EdicionTiposDocumentos implements Serializable {
 
     public CampoWebDescripcion getcDsTipodocumento() {
         return cDsTipodocumento;
+    }
+
+    public CampoWebCombo getcDiFormatofirma() {
+        return cDiFormatofirma;
+    }
+
+    public void setcDiFormatofirma(CampoWebCombo cDiFormatofirma) {
+        this.cDiFormatofirma = cDiFormatofirma;
     }
 
     public void setcDsTipodocumento(CampoWebDescripcion cDsTipodocumento) {

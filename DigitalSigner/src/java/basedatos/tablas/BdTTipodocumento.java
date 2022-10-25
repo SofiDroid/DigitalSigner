@@ -16,6 +16,7 @@ public class BdTTipodocumento extends OperacionSQL implements InterfazDAO {
     protected Integer idTipodocumento;
     protected String coTipodocumento;
     protected String dsTipodocumento;
+    protected String diFormatofirma;
     protected Date feAlta;
     protected Date feDesactivo;
     protected String usuariobd;
@@ -30,6 +31,7 @@ public class BdTTipodocumento extends OperacionSQL implements InterfazDAO {
         recuperaValorCampo(this, "idTipodocumento", "ID_TIPODOCUMENTO", bld);
         recuperaValorCampo(this, "coTipodocumento", "CO_TIPODOCUMENTO", bld);
         recuperaValorCampo(this, "dsTipodocumento", "DS_TIPODOCUMENTO", bld);
+        recuperaValorCampo(this, "diFormatofirma", "DI_FORMATOFIRMA", bld);
         recuperaValorCampo(this, "feAlta", "FE_ALTA", bld);
         recuperaValorCampo(this, "feDesactivo", "FE_DESACTIVO", bld);
         recuperaValorCampo(this, "usuariobd", "USUARIOBD", bld);
@@ -43,6 +45,7 @@ public class BdTTipodocumento extends OperacionSQL implements InterfazDAO {
         sb_sql.append("ID_TIPODOCUMENTO");
         sb_sql.append(",CO_TIPODOCUMENTO");
         sb_sql.append(",DS_TIPODOCUMENTO");
+        sb_sql.append(",DI_FORMATOFIRMA");
         sb_sql.append(",FE_ALTA");
         sb_sql.append(",FE_DESACTIVO");
         sb_sql.append(",USUARIOBD");
@@ -57,6 +60,9 @@ public class BdTTipodocumento extends OperacionSQL implements InterfazDAO {
         }
         if (dsTipodocumento != null) {
             sb_sql.append(" AND UPPER(DS_TIPODOCUMENTO) = UPPER(:DS_TIPODOCUMENTO)");
+        }
+        if (diFormatofirma != null) {
+            sb_sql.append(" AND DI_FORMATOFIRMA = :DI_FORMATOFIRMA");
         }
         if (feAlta != null) {
             sb_sql.append(" AND (FE_ALTA <= :FE_ALTA)");
@@ -87,6 +93,7 @@ public class BdTTipodocumento extends OperacionSQL implements InterfazDAO {
         }
         sb_sql.append("CO_TIPODOCUMENTO");
         sb_sql.append(",DS_TIPODOCUMENTO");
+        sb_sql.append(",DI_FORMATOFIRMA");
         sb_sql.append(",FE_ALTA");
         sb_sql.append(",FE_DESACTIVO");
         sb_sql.append(",USUARIOBD");
@@ -101,6 +108,7 @@ public class BdTTipodocumento extends OperacionSQL implements InterfazDAO {
             }
             sb_sql.append(",").append("DECODE(:CO_TIPODOCUMENTO, null, NULL, :CO_TIPODOCUMENTO)");
             sb_sql.append(",").append("DECODE(:DS_TIPODOCUMENTO, null, NULL, :DS_TIPODOCUMENTO)");
+            sb_sql.append(",").append("DECODE(:DI_FORMATOFIRMA, null, NULL, :DI_FORMATOFIRMA)");
             sb_sql.append(",").append("DECODE(:FE_ALTA, null, NULL, :FE_ALTA)");
             sb_sql.append(",").append("DECODE(:FE_DESACTIVO, null, NULL, :FE_DESACTIVO)");
             sb_sql.append(",").append("DECODE(:USUARIOBD, null, NULL, :USUARIOBD)");
@@ -109,6 +117,7 @@ public class BdTTipodocumento extends OperacionSQL implements InterfazDAO {
         else {
             sb_sql.append(":CO_TIPODOCUMENTO");
             sb_sql.append(",").append(":DS_TIPODOCUMENTO");
+            sb_sql.append(",").append(":DI_FORMATOFIRMA");
             sb_sql.append(",").append(":FE_ALTA");
             sb_sql.append(",").append(":FE_DESACTIVO");
             sb_sql.append(",").append(":USUARIOBD");
@@ -125,6 +134,7 @@ public class BdTTipodocumento extends OperacionSQL implements InterfazDAO {
         if (AppInit.TIPO_BASEDATOS == BaseDatos.ORACLE) {
             sb_sql.append("CO_TIPODOCUMENTO = ").append("DECODE(:CO_TIPODOCUMENTO, null, NULL, :CO_TIPODOCUMENTO)");
             sb_sql.append(",DS_TIPODOCUMENTO = ").append("DECODE(:DS_TIPODOCUMENTO, null, NULL, :DS_TIPODOCUMENTO)");
+            sb_sql.append(",DI_FORMATOFIRMA = ").append("DECODE(:DI_FORMATOFIRMA, null, NULL, :DI_FORMATOFIRMA)");
             sb_sql.append(",FE_ALTA = ").append("DECODE(:FE_ALTA, null, NULL, :FE_ALTA)");
             sb_sql.append(",FE_DESACTIVO = ").append("DECODE(:FE_DESACTIVO, null, NULL, :FE_DESACTIVO)");
             sb_sql.append(",USUARIOBD = ").append("DECODE(:USUARIOBD, null, NULL, :USUARIOBD)");
@@ -133,6 +143,7 @@ public class BdTTipodocumento extends OperacionSQL implements InterfazDAO {
         else {
             sb_sql.append("CO_TIPODOCUMENTO = :CO_TIPODOCUMENTO");
             sb_sql.append(",DS_TIPODOCUMENTO = :DS_TIPODOCUMENTO");
+            sb_sql.append(",DI_FORMATOFIRMA = :DI_FORMATOFIRMA");
             sb_sql.append(",FE_ALTA = :FE_ALTA");
             sb_sql.append(",FE_DESACTIVO = :FE_DESACTIVO");
             sb_sql.append(",USUARIOBD = :USUARIOBD");
@@ -175,6 +186,14 @@ public class BdTTipodocumento extends OperacionSQL implements InterfazDAO {
 
     public void setDsTipodocumento(String dsTipodocumento) {
         this.dsTipodocumento = dsTipodocumento;
+    }
+
+    public String getDiFormatofirma() {
+        return diFormatofirma;
+    }
+
+    public void setDiFormatofirma(String diFormatofirma) {
+        this.diFormatofirma = diFormatofirma;
     }
 
     public Date getFeAlta() {

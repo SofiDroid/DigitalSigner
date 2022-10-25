@@ -101,8 +101,11 @@ public class SalidaFicheroAutoFirma extends HttpServlet
                     //============================================================
                     //byte[] entrada = Files.readAllBytes(Paths.get(AppInit.getPropiedad("PORTAFIRMAS_RUTAFICHEROS", 0), "salida", new String(idEntrada, "UTF-8")));
                     byte[] binDocumentoFirmado = Files.readAllBytes(Paths.get(AppInit.getRutaTempFicherosFirmados(), "salida", new String(idDocumentoEntrada, "UTF-8")));
-                    
-                    String idDocumentoOriginal = datosUsuario.getBdTUsuario().getCoUsuario() + "_" + datosUsuario.getIpRemota().replace(".", "_") + "_" + bdDDocumento.getIdDocumento();
+                    String ipAddress = request.getHeader("X-FORWARDED-FOR");
+                    if (ipAddress == null) {
+                        ipAddress = request.getRemoteAddr();
+                    }
+                    String idDocumentoOriginal = datosUsuario.getBdTUsuario().getCoUsuario() + "_" + ipAddress.replace(".", "_").replace(":", "_") + "_" + bdDDocumento.getIdDocumento();
                     try
                     {
                         //Files.deleteIfExists(Paths.get(AppInit.getPropiedad("PORTAFIRMAS_RUTAFICHEROS", 0), "entrada", idDocumentoOriginal));
@@ -154,7 +157,7 @@ public class SalidaFicheroAutoFirma extends HttpServlet
 //                            gestion.getListaErroresProcesoFirma().add(doc.getDESCRIPCION());
 //                        }
 //                    }
-                    Files.write(Paths.get("C:\\GIT\\DigitalSigner\\Documentos", idDocumentoOriginal), binDocumentoFirmado);
+                    Files.write(Paths.get("C:\\pruebas\\firmados", idDocumentoOriginal), binDocumentoFirmado);
                 }
                 catch(IOException | NumberFormatException ex)
                 {

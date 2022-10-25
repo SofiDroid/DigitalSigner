@@ -133,7 +133,18 @@ public class FiltroTiposDocumentos implements Serializable {
     
     public void buscar() {
         try {
-            String sql = "SELECT ID_TIPODOCUMENTO, CO_TIPODOCUMENTO, DS_TIPODOCUMENTO, FE_ALTA, FE_DESACTIVO FROM BD_T_TIPODOCUMENTO WHERE 1 = 1";
+            String sql = """
+                         SELECT 
+                            ID_TIPODOCUMENTO,
+                            CO_TIPODOCUMENTO, 
+                            DS_TIPODOCUMENTO, 
+                            DI_FORMATOFIRMA, 
+                            FE_ALTA, 
+                            FE_DESACTIVO 
+                         FROM 
+                            BD_T_TIPODOCUMENTO 
+                         WHERE 1 = 1
+                         """;
             sql = filtros(sql);
 
             this.dsResultado = new DataSet(sql, "ID_TIPODOCUMENTO");
@@ -162,6 +173,10 @@ public class FiltroTiposDocumentos implements Serializable {
         cabecera.getColumnName("DS_TIPODOCUMENTO")
                 .setTitle("Descripción")
                 .setWidth("100%");
+
+        cabecera.getColumnName("DI_FORMATOFIRMA")
+                .setTitle("Formato Firma")
+                .setWidth("8rem");
 
         cabecera.getColumnName("FE_ALTA")
                 .setTitle("F. Alta")
