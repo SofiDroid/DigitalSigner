@@ -191,17 +191,17 @@
                     try
                     {
                         PrimeFaces.info('iniciarAutoFirma');
-                        var sModoFirma = "#{datosUsuario.getModoFirma()}";
-                        PrimeFaces.info('Modo Firma: ' + sModoFirma);
+                        //var sModoFirma = "#{datosUsuario.getModoFirma()}";
+                        //PrimeFaces.info('Modo Firma: ' + sModoFirma);
                         PrimeFaces.info('AutoFirma (Trifasico/WebSockets)');
 
                         AutoScript.cargarAppAfirma('./');
 
                         var ipClient = "#{datosUsuario.getIpRemota()}";
-                        var ipExtranet = "#{datosUsuario.getIpExtranet()}";
+                        //var ipExtranet = "#{datosUsuario.getIpExtranet()}";
 
                         PrimeFaces.info('IP Local: ' + ipClient);
-                        PrimeFaces.info('IP Extranet: ' + ipExtranet);
+                        /*PrimeFaces.info('IP Extranet: ' + ipExtranet);
                         PrimeFaces.info('Extranet: ' + !((ipClient.indexOf('10.')) === 0 && (ipClient !== ipExtranet)));
                         if (sModoFirma === '2' || sModoFirma === '3')
                         {
@@ -211,15 +211,15 @@
                             functionOK();
                         } else
                         {
-                            /*if ((ipClient.indexOf('10.')) === 0 && (ipClient !== ipExtranet))
+                            if ((ipClient.indexOf('10.')) === 0 && (ipClient !== ipExtranet))
                             {*/
                                 // prueba a llamar al servlet trifase
                                 probarDisponibilidadServlets(functionOK, functionERROR, urlServiciosIntermedios + "trifase/SignatureService");
                             /*} else
                             {
                                 disponibleERROR(functionOK, functionERROR);
-                            }*/
-                        }
+                            }
+                        }*/
                     } catch (ex)
                     {
                         alertarError('en iniciarAutoFirma', ex);
@@ -337,13 +337,13 @@
                                         if (tipoFirma[elemento] === "F")
                                         {
                                             PrimeFaces.error(respuesta);
-                                            endDownloadParaFirma(respuesta, listaDocumentosFirma[elemento], elemento);
+                                            endDownloadParaFirma(respuesta, listaDocumentosFirma[elemento], elemento, formatoFirma[elemento]);
                                         } else if (tipoFirma[elemento] === "CO")
                                         {
-                                            endDownloadParaCofirma(respuesta, listaDocumentosFirma[elemento], elemento);
+                                            endDownloadParaCofirma(respuesta, listaDocumentosFirma[elemento], elemento, formatoFirma[elemento]);
                                         } else if (tipoFirma[elemento] === "CT")
                                         {
-                                            endDownloadParaContraFirma(respuesta, listaDocumentosFirma[elemento], elemento);
+                                            endDownloadParaContraFirma(respuesta, listaDocumentosFirma[elemento], elemento, formatoFirma[elemento]);
                                         }
                                     }
                                 }
@@ -365,7 +365,7 @@
                 }
 
                 // Firma
-                function endDownloadParaFirma(str, elemento, i)
+                function endDownloadParaFirma(str, elemento, i, formato)
                 {
                     refrescarProgreso(i, numSeleccionados);
                     PrimeFaces.info('(Firmando)');
@@ -379,12 +379,12 @@
                             if (str !== undefined && str !== null && str !== "")
                             {
                                 configuraParams();
-                                PrimeFaces.info("Formato firma elemento: " + formatoFirma[elemento]);
+                                PrimeFaces.info("Formato firma elemento: " + formato);
 
                                 if (boUsarServlets) {
                                     PrimeFaces.info('El hash del fichero ' + elemento + ' es: ' + str);
-                                    PrimeFaces.info('Tipo Firma: ' + formatoFirma[elemento] + "tri");
-                                    AutoScript.sign(str, "SHA256withRSA", formatoFirma[elemento] + "tri", params, 
+                                    PrimeFaces.info('Tipo Firma: ' + formato + "tri");
+                                    AutoScript.sign(str, "SHA256withRSA", formato + "tri", params, 
                                         function prefirmaNotificacionSuccess(firmaBase64, certificadoB64)
                                         {
                                             firmaNotificacionSuccess(firmaBase64, certificadoB64, elemento, i);
@@ -393,8 +393,8 @@
                                     );
                                 } else {
                                     PrimeFaces.info('El fichero ' + elemento + ' pesa: ' + bytesToString(str.length, false) + ' (' + str.length + ')');
-                                    PrimeFaces.info('Tipo Firma: ' + formatoFirma[elemento]);
-                                    AutoScript.sign(str, "SHA256withRSA", formatoFirma[elemento], params, 
+                                    PrimeFaces.info('Tipo Firma: ' + formato);
+                                    AutoScript.sign(str, "SHA256withRSA", formato, params, 
                                         function prefirmaNotificacionSuccess(firmaBase64, certificadoB64)
                                         {
                                             firmaNotificacionSuccess(firmaBase64, certificadoB64, elemento, i);
@@ -420,7 +420,7 @@
                 }
 
                 // CoFirma
-                function endDownloadParaCoFirma(str, elemento, i)
+                function endDownloadParaCoFirma(str, elemento, i, formato)
                 {
                     PrimeFaces.info('llamada a endDownloadParaCoFirma(str, elemento, i)');
                     PrimeFaces.info('str lenght = ' + str.length);
@@ -443,9 +443,9 @@
                                 if (boUsarServlets) {
                                     PrimeFaces.info('El hash del fichero ' + elemento + ' es: ' + str);
 
-                                    PrimeFaces.info('Tipo Co-Firma: ' + formatoFirma[elemento] + "tri");
+                                    PrimeFaces.info('Tipo Co-Firma: ' + formato + "tri");
                                     PrimeFaces.info('llamando a AutoScript.coSign(...)');
-                                    AutoScript.coSign(str, "SHA256withRSA", formatoFirma[elemento]+"tri", params, 
+                                    AutoScript.coSign(str, "SHA256withRSA", formato + "tri", params, 
                                         function prefirmaNotificacionSuccess(firmaBase64, certificadoB64)
                                         {
                                             PrimeFaces.info('La cofirma devuelve:');
@@ -459,8 +459,8 @@
                                 } else {
                                     PrimeFaces.info('El fichero ' + elemento + ' su pesa ' + bytesToString(str.length, false) + ' (' + str.length + ')');
 
-                                    PrimeFaces.info('Tipo Co-Firma: ' + formatoFirma[elemento]);
-                                    AutoScript.counterSign(str, "SHA256withRSA", formatoFirma[elemento], params, 
+                                    PrimeFaces.info('Tipo Co-Firma: ' + formato);
+                                    AutoScript.counterSign(str, "SHA256withRSA", formato, params, 
                                         function prefirmaNotificacionSuccess(firmaBase64, certificadoB64)
                                         {
                                             firmaNotificacionSuccess(firmaBase64, certificadoB64, elemento, i);
@@ -485,7 +485,7 @@
                 }
 
                 // CoFirma
-                function endDownloadParaContraFirma(str, elemento, i)
+                function endDownloadParaContraFirma(str, elemento, i, formato)
                 {
                     PrimeFaces.info('llamada a endDownloadParaContraFirma(str, elemento, i)');
                     PrimeFaces.info('str lenght = ' + str.length);
@@ -508,9 +508,9 @@
                                 if (boUsarServlets) {
                                     PrimeFaces.info('El hash del fichero ' + elemento + ' es: ' + str);
 
-                                    PrimeFaces.info('Tipo Contra-Firma: ' + formatoFirma[elemento]+"tri");
+                                    PrimeFaces.info('Tipo Contra-Firma: ' + formato + "tri");
                                     PrimeFaces.info('llamando a AutoScript.counterSign(...)');
-                                    AutoScript.counterSign(str, "SHA256withRSA", formatoFirma[elemento]+"tri", params, 
+                                    AutoScript.counterSign(str, "SHA256withRSA", formato + "tri", params, 
                                         function prefirmaNotificacionSuccess(firmaBase64, certificadoB64)
                                         {
                                             PrimeFaces.info('La contrafirma devuelve:');
@@ -524,8 +524,8 @@
                                 } else {
                                     PrimeFaces.info('El fichero ' + elemento + ' su pesa ' + bytesToString(str.length, false) + ' (' + str.length + ')');
 
-                                    PrimeFaces.info('Tipo Contra-Firma: ' + formatoFirma[elemento]);
-                                    AutoScript.counterSign(str, "SHA256withRSA", formatoFirma[elemento], params, 
+                                    PrimeFaces.info('Tipo Contra-Firma: ' + formato);
+                                    AutoScript.counterSign(str, "SHA256withRSA", formato, params, 
                                         function prefirmaNotificacionSuccess(firmaBase64, certificadoB64)
                                         {
                                             firmaNotificacionSuccess(firmaBase64, certificadoB64, elemento, i);
@@ -773,7 +773,7 @@
                 //]]>
             </script>
             <sd:visorMedia id="visorDocumentos" beanClass="#{filtroFirmaDocumentos.visorDocumentos}" />
-            <p:log id="logFirma" widgetVar="logFirma" rendered="true" />
+            <p:log id="logFirma" widgetVar="logFirma" rendered="false" />
         </ui:define>
     </ui:composition>
 </html>

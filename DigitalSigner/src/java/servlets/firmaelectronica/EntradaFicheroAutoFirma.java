@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.apache.tomcat.util.codec.binary.Base64;
 import seguridad.usuarios.DatosUsuario;
+import utilidades.Configuraciones;
 import utilidades.Session;
 
 /**
@@ -75,21 +76,22 @@ public class EntradaFicheroAutoFirma extends HttpServlet
                     //Obtener la gestión, donde están los datos de los documentos firmados
                     FiltroFirmaDocumentos filtroFirmaDocumentos = (FiltroFirmaDocumentos)Session.getNamedBean("filtroFirmaDocumentos");
                     DatosUsuario datosUsuario = (DatosUsuario)Session.getNamedBean("datosUsuario");
-                    if(filtroFirmaDocumentos == null) { return; } //Error falta la Gestion
-
+                    if(filtroFirmaDocumentos == null) { 
+                        String msg = "Bean filtroFirmaDocumentos no encontrado.";
+                        LOG.error(msg);
+                        throw new Exception("- " + msg);
+                    }
+                    
                     //Obtener el documento que hemos firmados
                     BdDDocumento bdDDocumento = filtroFirmaDocumentos.getDocumentoByIndex(idxFichero);
-                    if(bdDDocumento == null) { return; } //Error falta el documento
-
+                    if(bdDDocumento == null) {
+                        String msg = "Parámetro documento no encontrado";
+                        LOG.error(msg);
+                        throw new Exception("- " + "idxFichero -> " + idxFichero + ": " + msg);
+                    }
+                    
                     //Traza DEBUG
                     LOG.debug(String.format("Portafirmas: El usuario '%s' baja para firmar el documento con ID_DOCUMENTO = %d", datosUsuario.getBdTUsuario().getCoUsuario(), bdDDocumento.getIdDocumento()));
-                    
-                    //FacesContext contexto = m_facesContextFactory.getFacesContext(getServletContext(), request, response, m_lifecycle);
-                    
-                    //UtilPSSDEF util = new UtilPSSDEF();
-                    
-                    //StEscaner stScanner = new StEscaner(null, contexto);
-                    //String id = doc.getID_DOCEXPTE().toString();
 
                     byte[] binDocumento = bdDDocumento.getBlDocumento(null);
 
@@ -100,8 +102,8 @@ public class EntradaFicheroAutoFirma extends HttpServlet
                     }
                     else
                     {
-                        boolean validarNIF = true;//parsePropiedad("PORTAFIRMAS_VALIDARNIF");
-                        boolean validarFirma = true;//parsePropiedad("PORTAFIRMAS_VALIDARFIRMA");
+                        boolean validarNIF = Boolean.valueOf(new Configuraciones(Session.getDatosUsuario()).recuperaConfiguracion("VALIDARNIF"));
+                        boolean validarFirma = Boolean.valueOf(new Configuraciones(Session.getDatosUsuario()).recuperaConfiguracion("VALIDARFIRMA"));
 
                         if(validarNIF || validarFirma)
                         {
@@ -134,7 +136,6 @@ public class EntradaFicheroAutoFirma extends HttpServlet
 
                     // Grabo en temp/entrada el fichero con el nombre idOriginal
                     //======================================================
-                    //Files.write(Paths.get(AppInit.getPropiedad("PORTAFIRMAS_RUTAFICHEROS", 0), "entrada", idOriginal), documento);
                     Files.write(Paths.get(AppInit.getRutaTempFicherosFirmados(), "entrada", idDocumentoOriginal), binDocumento);
                     //======================================================
 
@@ -147,6 +148,9 @@ public class EntradaFicheroAutoFirma extends HttpServlet
                 catch (Exception ex) 
                 {
                     LOG.error(ex.getMessage(), ex);
+                    if (out != null) {
+                        response.getWriter().write("[ERROR] " + ex.getMessage());
+                    }
                 }
                 finally 
                 {
