@@ -5,7 +5,8 @@
       xmlns:p="http://primefaces.org/ui"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:sd="http://xmlns.jcp.org/jsf/composite/sofidroid"
-      lang="es" xml:lang="es">
+      lang="es" xml:lang="es"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
     <h:head>
 <!--        <meta http-equiv="cache-control" content="max-age=0" />
         <meta http-equiv="cache-control" content="no-cache" />
@@ -89,6 +90,7 @@
                             <p:splitterPanel id="spMenu" size="15" style="background-color: transparent;min-width: 250px!important;overflow-y: auto">
                                 <p:panelMenu id="mnuPrincipal" style="width:100%;max-height: calc(100vh - 125px)!important" model="#{menu.model}" stateful="true">
                                 </p:panelMenu>
+                                <p:remoteCommand id="SeleccionarMenu" name="SeleccionarMenu" actionListener="#{menu.obtenerPermisosMenu}" />
                             </p:splitterPanel>
                             <p:splitterPanel id="spFormularios" size="85" minSize="70">
                                 <div style="height: 100%;background-color: transparent;padding: 0.2rem">

@@ -5,6 +5,7 @@ import basedatos.Row;
 import java.io.Serializable;
 import java.util.MissingResourceException;
 import javax.enterprise.context.SessionScoped;
+import javax.faces.context.FacesContext;
 import javax.inject.Named;
 import org.primefaces.model.menu.DefaultMenuItem;
 import org.primefaces.model.menu.DefaultMenuModel;
@@ -23,7 +24,8 @@ import utilidades.Session;
 @SessionScoped
 public class Menu implements Serializable {
     private MenuModel model;
-    
+    private DataSet dsMenu;
+    private Permisos permisos;
     public Menu() {
         this.model = new DefaultMenuModel();
         cargarMenuUsuarioUnidad(Session.getDatosUsuario().getBdTUsuario().getIdUsuario(),
@@ -110,9 +112,9 @@ public class Menu implements Serializable {
                          """;
             sql = sql.replaceAll("(?i):ID_USUARIO", idUsuario.toString());
             sql = sql.replaceAll("(?i):ID_UNIDAD", idUnidad.toString());
-            DataSet dsResultado = new DataSet(sql, "ID_OPCIONMENU");
-            if (dsResultado.getRowsCount() > 0) {
-                for (Row itemRow : dsResultado.getRows()) {
+            dsMenu = new DataSet(sql, "ID_OPCIONMENU");
+            if (dsMenu.getRowsCount() > 0) {
+                for (Row itemRow : dsMenu.getRows()) {
                     Boolean boConsulta = (Boolean)itemRow.getColumnName("BO_CONSULTA").getValue();
                     Boolean boAlta = (Boolean)itemRow.getColumnName("BO_CONSULTA").getValue();
                     Boolean boEdicion = (Boolean)itemRow.getColumnName("BO_CONSULTA").getValue();
@@ -161,6 +163,7 @@ public class Menu implements Serializable {
                                 .id(idOpcionesMenu)
                                 .value(dsTitulo)
                                 /*.icon("pi pi-save")*/
+                                .onclick("SeleccionarMenu([{name: 'idOpcionesMenu', value: '" + idOpcionesMenu + "'}]);")
                                 .command(dsRuta)
                                 .build();
                         if (!model.getElements().isEmpty()) {
@@ -233,5 +236,33 @@ public class Menu implements Serializable {
                 }
             }
         }
+    }
+    
+    public Permisos obtenerPermisosMenu() {
+        String idOpcionesMenu = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("idOpcionesMenu");
+        permisos = new Permisos();
+        permisos.setIdOpcionesMenu(idOpcionesMenu);
+        try {
+            for (Row itemRow : this.dsMenu.getRows()) {
+                if (idOpcionesMenu.equalsIgnoreCase(itemRow.getColumnName("ID_OPCIONMENU").getValueString())) {
+                    permisos.setBoConsulta((Boolean)itemRow.getColumnName("BO_CONSULTA").getValue());
+                    permisos.setBoAlta((Boolean)itemRow.getColumnName("BO_CONSULTA").getValue());
+                    permisos.setBoEdicion((Boolean)itemRow.getColumnName("BO_CONSULTA").getValue());
+                    permisos.setBoBorrado((Boolean)itemRow.getColumnName("BO_CONSULTA").getValue());
+                }
+            }
+        }
+        catch (Exception ex) {
+            Mensajes.showException(Menu.class, ex);
+        }
+        return permisos;
+    }
+
+    public Permisos getPermisos() {
+        return permisos;
+    }
+
+    public void setPermisos(Permisos permisos) {
+        this.permisos = permisos;
     }
 }

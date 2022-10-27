@@ -11,20 +11,23 @@
             <p:card id="filtroCard" styleClass="card">
                 <p:toolbar>
                     <p:toolbarGroup align="left">
-                        <p:outputLabel value="Mantenimiento de Autoridades" style="font-size: large; font-weight: bold" /> 
+                        <p:outputLabel value="Mantenimiento de Autoridades - #{menu.permisos.leyenda}" style="font-size: large; font-weight: bold" /> 
                     </p:toolbarGroup>
                     <p:toolbarGroup align="right">
 
-                        <p:commandButton id="btnBuscar" icon="pi pi-search" styleClass="rounded-button ui-button-info" 
+                        <p:commandButton id="btnBuscar" icon="pi pi-search" styleClass="rounded-button ui-button-info"
                                          style="height: 2rem;width: 2rem;margin-left:0.3rem" action="#{filtroAutoridades.buscar}" title="(alt+B) Buscar resultados"
+                                         rendered="#{menu.permisos.boConsulta}"
                                          update="panelResultado,mensaje" accesskey="b" />
 
                         <p:commandButton id="btnLimpiar" icon="pi pi-filter-slash" styleClass="rounded-button ui-button-secondary" 
                                          style="height: 2rem;width: 2rem;margin-left:0.3rem" action="#{filtroAutoridades.limpiar}" title="(alt+L) Limpiar formulario"
+                                         rendered="#{menu.permisos.boConsulta}"
                                          update="fsFiltros,panelResultado,mensaje" accesskey="l" />
 
                         <p:commandButton id="btnNuevo" icon="pi pi-plus-circle" styleClass="rounded-button ui-button-success" 
                                          style="height: 2rem;width: 2rem;margin-left:0.3rem" action="#{filtroAutoridades.nuevo}" title="(alt+N) Nuevo"
+                                         rendered="#{menu.permisos.boAlta}"
                                          update="panelResultado,mensaje" accesskey="n" />
 
                     </p:toolbarGroup>
