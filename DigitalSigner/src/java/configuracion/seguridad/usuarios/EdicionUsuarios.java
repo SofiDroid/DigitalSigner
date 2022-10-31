@@ -8,10 +8,12 @@ import basedatos.RowCabecera;
 import basedatos.servicios.StAAutusu;
 import basedatos.servicios.StATokenusuario;
 import basedatos.servicios.StAUniusu;
+import basedatos.servicios.StAUsutipousu;
 import basedatos.servicios.StTUsuario;
 import basedatos.tablas.BdAAutusu;
 import basedatos.tablas.BdATokenusuario;
 import basedatos.tablas.BdAUniusu;
+import basedatos.tablas.BdAUsutipousu;
 import basedatos.tablas.BdTUsuario;
 import excepciones.FormModeException;
 import excepciones.RegistryNotFoundException;
@@ -64,8 +66,12 @@ public class EdicionUsuarios implements Serializable {
     private CampoWebLupa cUnidad = null;
     private DataSet dsUnidades = null;
     
+    private CampoWebLupa cPerfil = null;
+    private DataSet dsPerfiles = null;
+    
     private BdTUsuario bdTUsuario = null;
     private ArrayList<Integer> listaUnidadesEliminadasId = null;
+    private ArrayList<Integer> listaPerfilesEliminadosId = null;
 
     private ModoFormulario modoFormulario = ModoFormulario.CONSULTA;
     
@@ -178,6 +184,19 @@ public class EdicionUsuarios implements Serializable {
             this.dsUnidades = new DataSet();
             this.listaUnidadesEliminadasId = new ArrayList<>();
             
+            this.cPerfil = new CampoWebLupa();
+            this.cPerfil.setLabel(Msg.getString("lbl_EdicionUsuarios_Perfil"));
+            this.cPerfil.setWidthLabel("100px");
+            sql = "SELECT ID_TIPOUSUARIO, CO_TIPOUSUARIO + ' - ' + DS_TIPOUSUARIO as Perfil FROM BD_T_TIPOUSUARIO";
+            this.cPerfil.setConsulta(sql);
+            this.cPerfil.setColumnaID("ID_TIPOUSUARIO");
+            this.cPerfil.setColumnaLabel("Perfil");
+            this.cPerfil.setWidth("20em");
+            this.cPerfil.setRequired(false);
+
+            this.dsPerfiles = new DataSet();
+            this.listaPerfilesEliminadosId = new ArrayList<>();
+            
             this.setModoFormulario(ModoFormulario.CONSULTA);
 
             if (idUsuario != null) {
@@ -255,11 +274,13 @@ public class EdicionUsuarios implements Serializable {
                 .setTooltip("Editar")
                 .setAlign(ColumnCabecera.ALIGN.CENTER)
                 .setWidth("21px")
-                .setTipo(ColumnBase.Tipo.BOTON_EDICION)
+                .setTipo(ColumnBase.Tipo.BOTON)
+                .setRendered(true)
                 .setClase(this)
                 .setIcon("pi pi-pencil")
                 .setStyleClass("ui-button-info")
                 .setMethod(this.getClass().getMethod("editarUnidad"))
+                .setOncomplete("PF('dlgPerfiles').show()")
                 .setUpdate("formulario:panelUnidades,formulario:mensaje");
 
         this.dsUnidades.newColumn("btnEliminar");
@@ -276,9 +297,92 @@ public class EdicionUsuarios implements Serializable {
                 .setUpdate("formulario:panelUnidades,formulario:mensaje");
     }
     
+    private void inicializarDataSetPerfiles(Integer idUsuario, Integer idUnidad) throws Exception {
+        String sql = """
+            SELECT 
+                T1.ID_TIPOUSUARIO,
+                tipousu.ID_UNIDAD,
+                T1.ID_USUARIO,
+                tipousu.CO_TIPOUSUARIO + ' - ' + tipousu.DS_TIPOUSUARIO as Perfil,
+                T1.FE_ALTA,
+                T1.FE_DESACTIVO
+            FROM 
+                BD_A_USUTIPOUSU T1
+            INNER JOIN
+                BD_T_TIPOUSUARIO tipousu ON (tipousu.ID_TIPOUSUARIO = T1.ID_TIPOUSUARIO)
+            WHERE 1 = 1
+            AND T1.ID_USUARIO = :ID_USUARIO
+            AND tipousu.ID_UNIDAD = :ID_UNIDAD
+            """;
+        HashMap<String, Object> parametros = new HashMap<>();
+        parametros.put("ID_USUARIO", idUsuario);
+        parametros.put("ID_UNIDAD", idUnidad);
+
+        this.dsPerfiles = new DataSet(sql, parametros, "ID_TIPOUSUARIO");
+        
+        this.cPerfil.setListaNotIN_Clear();
+        if (this.dsPerfiles.getRowsCount() > 0) {
+            for (Row itemRow : this.dsPerfiles.getRows()) {
+                this.cPerfil.setListaNotIN_Add(itemRow.getColumnaID().getValueString());
+            }
+        }
+        
+        // Establecer formato de salida
+        RowCabecera cabecera = this.getDsPerfiles().getCabecera();
+
+        cabecera.getColumnName("ID_TIPOUSUARIO")
+                .setVisible(false);
+
+        cabecera.getColumnName("ID_UNIDAD")
+                .setVisible(false);
+
+        cabecera.getColumnName("ID_USUARIO")
+                .setVisible(false);
+
+        cabecera.getColumnName("Perfil")
+                .setTitle("Perfil")
+                .setWidth("100%");
+
+        cabecera.getColumnName("FE_ALTA")
+                .setTitle("F. Alta")
+                .setWidth("6rem");
+
+        cabecera.getColumnName("FE_DESACTIVO")
+                .setTitle("F. Desactivo")
+                .setWidth("6rem");
+        
+        this.dsPerfiles.newColumn("btnEliminar");
+        cabecera.getColumnName("btnEliminar")
+                .setTitle("")
+                .setTooltip("Eliminar")
+                .setAlign(ColumnCabecera.ALIGN.CENTER)
+                .setWidth("30px")
+                .setTipo(ColumnBase.Tipo.BOTON_EDICION)
+                .setClase(this)
+                .setIcon("pi pi-times-circle")
+                .setStyleClass("ui-button-danger")
+                .setMethod(this.getClass().getMethod("eliminarPerfil"))
+                .setUpdate("formulario:panelPerfil,formulario:tblPefiles:tblPefiles,formulario:mensaje");
+    }
+    
     public void editarUnidad() {
         try {
-            //TODO: EDICION DE UNIDAD, AGREGAR PERFILES A LA UNIDAD DEL USUARIO.
+            this.cPerfil.setListaNotIN_Clear();
+            inicializarDataSetPerfiles(this.bdTUsuario.getIdUsuario(), this.dsUnidades.getSelectedRow().getColumnaID().getValueInteger());
+            if (this.dsPerfiles != null) {
+                this.dsPerfiles.setModoFormulario(modoFormulario);
+            }
+            String sql = """
+                         SELECT 
+                            ID_TIPOUSUARIO, 
+                            CO_TIPOUSUARIO + ' - ' + DS_TIPOUSUARIO as Perfil 
+                         FROM 
+                            BD_T_TIPOUSUARIO
+                         WHERE
+                            ID_UNIDAD = :ID_UNIDAD
+                         """;
+            sql = sql.replace(":ID_UNIDAD", this.dsUnidades.getSelectedRow().getColumnaID().getValueString());
+            this.cPerfil.setConsulta(sql);
         } catch (Exception ex) {
             Mensajes.showException(this.getClass(), ex);
         }
@@ -303,6 +407,25 @@ public class EdicionUsuarios implements Serializable {
         }
     }
     
+    public void eliminarPerfil() {
+        try {
+            Integer idTipousuario = this.dsPerfiles.getSelectedRow().getColumnaID().getValueInteger();
+            if (idTipousuario != null) {
+                listaPerfilesEliminadosId.add(this.dsPerfiles.getSelectedRow().getColumnaID().getValueInteger());
+                this.cPerfil.setListaNotIN_Remove(idTipousuario.toString());
+            }
+            this.dsPerfiles.getRows().remove(this.dsPerfiles.getSelectedRow());
+            if (this.dsPerfiles != null) {
+                for (int i = 0; i < this.dsPerfiles.getRowsCount(); i++) {
+                    Row itemRow = this.dsPerfiles.getRows().get(i);
+                    itemRow.setIndex(i);
+                }
+            }
+        } catch (Exception ex) {
+            Mensajes.showException(this.getClass(), ex);
+        }
+    }
+    
     public void addUnidad() {
         try {
             if (this.cUnidad.getValue() != null) {
@@ -318,6 +441,76 @@ public class EdicionUsuarios implements Serializable {
                 this.cUnidad.setListaNotIN_Add(this.cUnidad.getId().toString());
                 this.cUnidad.setId(null);
             }
+        } catch (Exception ex) {
+            Mensajes.showException(this.getClass(), ex);
+        }
+    }
+    
+    public void addPerfil() {
+        try {
+            if (this.cPerfil.getValue() != null) {
+                //ALTA
+                Row newRow = this.dsPerfiles.newRow();
+                newRow.getColumnName("ID_TIPOUSUARIO").setValue(this.cPerfil.getId());
+                newRow.getColumnName("ID_USUARIO").setValue(this.bdTUsuario.getIdUsuario());
+                newRow.getColumnName("ID_UNIDAD").setValue(this.dsUnidades.getSelectedRow().getColumnaID().getValueInteger());
+                newRow.getColumnName("Perfil").setValue(this.cPerfil.getValue().getLabel());
+                newRow.getColumnName("FE_ALTA").setValue(new Date());
+                newRow.getColumnName("FE_DESACTIVO").setValue(null);
+
+                this.dsPerfiles.getRows().add(newRow);
+                this.cPerfil.setListaNotIN_Add(this.cPerfil.getId().toString());
+                this.cPerfil.setId(null);
+            }
+        } catch (Exception ex) {
+            Mensajes.showException(this.getClass(), ex);
+        }
+    }
+    
+    public void guardarPerfil() {
+        try {
+            // INICIO TRANSACCION
+            try (EntityManager entityManager = AppInit.getEntityManager())
+            {
+                entityManager.getTransaction().begin();
+                try {
+                    
+                    for (Integer idTipousuario : listaPerfilesEliminadosId) {
+                        BdAUsutipousu delBdAUsutipousu = new BdAUsutipousu();
+                        delBdAUsutipousu.setIdUsuario(this.bdTUsuario.getIdUsuario());
+                        delBdAUsutipousu.setIdTipousuario(idTipousuario);
+
+                        StAUsutipousu stAUsutipousu = new StAUsutipousu(Session.getDatosUsuario());
+                        stAUsutipousu.baja(delBdAUsutipousu, entityManager);
+                    }
+
+                    if (this.dsPerfiles != null) {
+                        for (Row itemRow : this.dsPerfiles.getRows()) {
+                            BdAUsutipousu newBdAUsutipousu = new BdAUsutipousu();
+                            newBdAUsutipousu.setIdUsuario(this.bdTUsuario.getIdUsuario());
+                            newBdAUsutipousu.setIdTipousuario(itemRow.getColumnaID().getValueInteger());
+
+                            StAUsutipousu stAUsutipousu = new StAUsutipousu(Session.getDatosUsuario());
+                            ArrayList<BdAUsutipousu> listaBdAUsutipousu = stAUsutipousu.filtro(newBdAUsutipousu, entityManager);
+                            if (listaBdAUsutipousu == null || listaBdAUsutipousu.isEmpty()) {
+                                newBdAUsutipousu.setFeAlta((Date)itemRow.getColumnName("FE_ALTA").getValue());
+                                newBdAUsutipousu.setFeDesactivo((Date)itemRow.getColumnName("FE_DESACTIVO").getValue());
+
+                                stAUsutipousu.alta(newBdAUsutipousu, entityManager);
+                            }
+                        }
+                    }
+                    
+                    entityManager.getTransaction().commit();
+                    
+                    Mensajes.showInfo("Información", "Actualización realizada correctamente!");
+                }
+                catch (Exception ex) {
+                    entityManager.getTransaction().rollback();
+                    throw ex;
+                }
+            }
+            // FIN TRANSACCION
         } catch (Exception ex) {
             Mensajes.showException(this.getClass(), ex);
         }
@@ -419,7 +612,46 @@ public class EdicionUsuarios implements Serializable {
                             }
                         }
 
+                        if (!listaUnidadesEliminadasId.isEmpty()) {
+                            String inUnidad = "";
+                            for (Integer idUnidad : listaUnidadesEliminadasId) {
+                                if (!inUnidad.isEmpty()) {
+                                    inUnidad += ",";
+                                }
+                                inUnidad += idUnidad + "";
+                            }
+                            //BAJA DE PERFILES ASOCIADOS A SU UNIDAD
+                            String sql = """
+                                         SELECT DISTINCT
+                                            T3.ID_UNIDAD,
+                                            T3.CO_UNIDAD + ' - ' + T3.DS_UNIDAD as Unidad
+                                         FROM 
+                                            BD_A_USUTIPOUSU T1
+                                         INNER JOIN 
+                                            BD_T_TIPOUSUARIO T2 ON (T2.ID_TIPOUSUARIO = T1.ID_TIPOUSUARIO)
+                                         INNER JOIN
+                                            BD_T_UNIDAD T3 ON (T3.ID_UNIDAD = T2.ID_UNIDAD)
+                                         WHERE
+                                            T1.ID_USUARIO = :ID_USUARIO
+                                         AND T2.ID_UNIDAD IN (:IN_UNIDAD)
+                                         """;
+                            sql = sql.replace(":ID_USUARIO", "" + this.bdTUsuario.getIdUsuario());
+                            sql = sql.replace(":IN_UNIDAD", "" + inUnidad);
+
+                            DataSet dsPerfilesAsociados = new DataSet(sql, "ID_UNIDAD");
+                            if (dsPerfilesAsociados.getRowsCount() > 0) {
+                                String sPerfilesAsociados = "No se pueden eliminar las siguientes unidades por tener perfiles asociados:<br/>";
+                                for (Row itemRow : dsPerfilesAsociados.getRows()) {
+                                    sPerfilesAsociados += " - " + itemRow.getColumnName("Unidad").getValueString() + "<br/>";
+                                }
+                                entityManager.getTransaction().rollback();
+                                Mensajes.showWarn("No se puede eliminar", sPerfilesAsociados);
+                                return;
+                            }
+                        }
+                        
                         for (Integer idUnidad : listaUnidadesEliminadasId) {
+                            // BADA DE UNIDAD
                             BdAUniusu delBdAUniusu = new BdAUniusu();
                             delBdAUniusu.setIdUsuario(this.bdTUsuario.getIdUsuario());
                             delBdAUniusu.setIdUnidad(idUnidad);
@@ -455,7 +687,7 @@ public class EdicionUsuarios implements Serializable {
 
                         Mensajes.showInfo("Información", "Actualización realizada correctamente!");
                     }
-            }
+                }
                 catch (Exception ex) {
                     entityManager.getTransaction().rollback();
                     throw ex;
@@ -485,6 +717,33 @@ public class EdicionUsuarios implements Serializable {
             {
                 entityManager.getTransaction().begin();
                 try {
+                    //BAJA DE PERFILES ASOCIADOS A SU UNIDAD
+                    String sql = """
+                                 SELECT DISTINCT
+                                    T3.ID_UNIDAD,
+                                    T3.CO_UNIDAD + ' - ' + T3.DS_UNIDAD as Unidad
+                                 FROM 
+                                    BD_A_USUTIPOUSU T1
+                                 INNER JOIN 
+                                    BD_T_TIPOUSUARIO T2 ON (T2.ID_TIPOUSUARIO = T1.ID_TIPOUSUARIO)
+                                 INNER JOIN
+                                    BD_T_UNIDAD T3 ON (T3.ID_UNIDAD = T2.ID_UNIDAD)
+                                 WHERE
+                                    T1.ID_USUARIO = :ID_USUARIO
+                                 """;
+                    sql = sql.replace(":ID_USUARIO", "" + this.bdTUsuario.getIdUsuario());
+
+                    DataSet dsPerfilesAsociados = new DataSet(sql, "ID_UNIDAD");
+                    if (dsPerfilesAsociados.getRowsCount() > 0) {
+                        String sPerfilesAsociados = "No se pueden eliminar las siguientes unidades por tener perfiles asociados:<br/>";
+                        for (Row itemRow : dsPerfilesAsociados.getRows()) {
+                            sPerfilesAsociados += " - " + itemRow.getColumnName("Unidad").getValueString() + "<br/>";
+                        }
+                        entityManager.getTransaction().rollback();
+                        Mensajes.showWarn("No se puede eliminar", sPerfilesAsociados);
+                        return;
+                    }
+                    
                     BdAUniusu filtroBdAUniusu = new BdAUniusu();
                     filtroBdAUniusu.setIdUsuario(this.bdTUsuario.getIdUsuario());
                     StAUniusu stAUniusu = new StAUniusu(Session.getDatosUsuario());
@@ -846,5 +1105,21 @@ public class EdicionUsuarios implements Serializable {
 
     public void setDsUnidades(DataSet dsUnidades) {
         this.dsUnidades = dsUnidades;
+    }
+
+    public CampoWebLupa getcPerfil() {
+        return cPerfil;
+    }
+
+    public void setcPerfil(CampoWebLupa cPerfil) {
+        this.cPerfil = cPerfil;
+    }
+
+    public DataSet getDsPerfiles() {
+        return dsPerfiles;
+    }
+
+    public void setDsPerfiles(DataSet dsPerfiles) {
+        this.dsPerfiles = dsPerfiles;
     }
 }

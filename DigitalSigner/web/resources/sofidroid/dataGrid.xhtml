@@ -52,7 +52,7 @@
                         </p:commandLink>
                     </p:outputPanel>
                     <p:outputPanel rendered="#{itemColumn.tipo eq 'BOTON_EDICION'}">
-                        <p:commandButton title="#{itemColumn.tooltip}"
+                        <p:commandButton title="#{itemColumn.tooltip}" oncomplete="#{itemColumn.oncomplete}"
                                 value="#{itemRow.getColumnName(itemColumn.name)[itemColumn.valueString]}"
                                 action="#{itemColumn.ejecutarMetodo}" style="height: 1.5rem;width: 1.5rem;margin-left: 0.25rem;"
                                 update="#{itemColumn.update}" rendered="#{cc.attrs.dataSet.modoFormulario eq 'EDICION' or cc.attrs.dataSet.modoFormulario eq 'ALTA'}"
@@ -61,7 +61,7 @@
                         </p:commandButton>
                     </p:outputPanel>
                     <p:outputPanel rendered="#{itemColumn.tipo eq 'BOTON'}">
-                        <p:commandButton title="#{itemColumn.tooltip}"
+                        <p:commandButton title="#{itemColumn.tooltip}" oncomplete="#{itemColumn.oncomplete}"
                                 value="#{itemRow.getColumnName(itemColumn.name)[itemColumn.valueString]}"
                                 action="#{itemColumn.ejecutarMetodo}" style="height: 1.5rem;width: 1.5rem;margin-left: 0.25rem;"
                                 update="#{itemColumn.update}" rendered="#{itemColumn.rendered}"

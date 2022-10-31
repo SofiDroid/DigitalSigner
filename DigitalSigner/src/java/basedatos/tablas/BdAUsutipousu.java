@@ -73,7 +73,7 @@ public class BdAUsutipousu extends OperacionSQL implements InterfazDAO {
         StringBuilder sb_sql = new StringBuilder("INSERT INTO BD_A_USUTIPOUSU (");
 
         sb_sql.append("ID_USUARIO,");
-        sb_sql.append("ID_TIPOUSUARIO,");
+        sb_sql.append("ID_TIPOUSUARIO");
         sb_sql.append(",FE_ALTA");
         sb_sql.append(",FE_DESACTIVO");
         sb_sql.append(",USUARIOBD");
@@ -117,7 +117,7 @@ public class BdAUsutipousu extends OperacionSQL implements InterfazDAO {
             sb_sql.append(",TSTBD = :TSTBD");
         }
         sb_sql.append(" WHERE ");
-        sb_sql.append("ID_USUARIO = ").append(":ID_USUARIO");
+        sb_sql.append(" ID_USUARIO = ").append(":ID_USUARIO");
         sb_sql.append(" AND ID_TIPOUSUARIO = ").append(":ID_TIPOUSUARIO");
         
         return sb_sql.toString();
@@ -127,7 +127,7 @@ public class BdAUsutipousu extends OperacionSQL implements InterfazDAO {
     {
         StringBuilder sb_sql = new StringBuilder("DELETE BD_A_USUTIPOUSU ");
         sb_sql.append(" WHERE ");
-        sb_sql.append("ID_USUARIO = ").append(":ID_USUARIO");
+        sb_sql.append(" ID_USUARIO = ").append(":ID_USUARIO");
         sb_sql.append(" AND ID_TIPOUSUARIO = ").append(":ID_TIPOUSUARIO");
         
         return sb_sql.toString();
