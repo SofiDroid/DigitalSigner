@@ -152,7 +152,20 @@ public class FiltroPerfiles implements Serializable {
     
     public void buscar() {
         try {
-            String sql = "SELECT ID_TIPOUSUARIO, CO_TIPOUSUARIO, DS_TIPOUSUARIO, FE_ALTA, FE_DESACTIVO FROM BD_T_TIPOUSUARIO WHERE 1 = 1";
+            String sql = """
+                         SELECT 
+                            T1.ID_TIPOUSUARIO, 
+                            T1.CO_TIPOUSUARIO, 
+                            T1.DS_TIPOUSUARIO, 
+                            T2.CO_UNIDAD + ' - ' + T2.DS_UNIDAD as Unidad,
+                            T1.FE_ALTA, 
+                            T1.FE_DESACTIVO 
+                         FROM 
+                            BD_T_TIPOUSUARIO T1
+                         INNER JOIN
+                            BD_T_UNIDAD T2 ON (T2.ID_UNIDAD = T1.ID_UNIDAD)
+                         WHERE 1 = 1
+                         """;
             sql = filtros(sql);
 
             this.dsResultado = new DataSet(sql, "ID_TIPOUSUARIO");
@@ -182,6 +195,10 @@ public class FiltroPerfiles implements Serializable {
                 .setTitle("Descripción")
                 .setWidth("100%");
 
+        cabecera.getColumnName("Unidad")
+                .setTitle("Unidad")
+                .setWidth("100%");
+
         cabecera.getColumnName("FE_ALTA")
                 .setTitle("F. Alta")
                 .setWidth("6rem");
@@ -193,39 +210,39 @@ public class FiltroPerfiles implements Serializable {
     
     private String filtros(String sql) {
         if (cCoTipousuario.getValue() != null) {
-            sql += " AND UPPER(CO_TIPOUSUARIO) LIKE '%" + cCoTipousuario.getValue().toUpperCase() + "%'";
+            sql += " AND UPPER(T1.CO_TIPOUSUARIO) LIKE '%" + cCoTipousuario.getValue().toUpperCase() + "%'";
         }
         if (cDsTipousuario.getValue() != null) {
-            sql += " AND UPPER(DS_TIPOUSUARIO) LIKE '%" + cDsTipousuario.getValue().toUpperCase() + "%'";
+            sql += " AND UPPER(T1.DS_TIPOUSUARIO) LIKE '%" + cDsTipousuario.getValue().toUpperCase() + "%'";
         }
         if (cFeAlta.getValueIni() != null || cFeAlta.getValueFin() != null) {
             sql += " AND (";
             if (cFeAlta.getValueIni() != null) {
-                sql += "(FE_ALTA >= " + Formateos.dateToSql((Date)cFeAlta.getValueIni()) + ")";
+                sql += "(T1.FE_ALTA >= " + Formateos.dateToSql((Date)cFeAlta.getValueIni()) + ")";
             }
             if (cFeAlta.getValueFin() != null) {
                 if (cFeAlta.getValueIni() != null) {
                     sql += " AND ";
                 }
-                sql += "(FE_ALTA <= " + Formateos.dateToSql((Date)cFeAlta.getValueFin()) + ")";
+                sql += "(T1.FE_ALTA <= " + Formateos.dateToSql((Date)cFeAlta.getValueFin()) + ")";
             }
             sql += ")";
         }
         if (cFeDesactivo.getValueIni() != null || cFeDesactivo.getValueFin() != null) {
             sql += " AND (";
             if (cFeDesactivo.getValueIni() != null) {
-                sql += "(FE_DESACTIVO >= " + Formateos.dateToSql((Date)cFeDesactivo.getValueIni()) + ")";
+                sql += "(T1.FE_DESACTIVO >= " + Formateos.dateToSql((Date)cFeDesactivo.getValueIni()) + ")";
             }
             if (cFeDesactivo.getValueFin() != null) {
                 if (cFeDesactivo.getValueIni() != null) {
                     sql += " AND ";
                 }
-                sql += "(FE_DESACTIVO <= " + Formateos.dateToSql((Date)cFeDesactivo.getValueFin()) + ")";
+                sql += "(T1.FE_DESACTIVO <= " + Formateos.dateToSql((Date)cFeDesactivo.getValueFin()) + ")";
             }
             sql += ")";
         }
         if (cUnidad.getId() != null) {
-            sql += " AND ID_UNIDAD = " + cUnidad.getId();
+            sql += " AND T1.ID_UNIDAD = " + cUnidad.getId();
         }
         
         return sql;

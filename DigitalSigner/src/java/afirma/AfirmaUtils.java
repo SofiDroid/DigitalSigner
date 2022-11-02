@@ -39,6 +39,7 @@ import org.apache.tomcat.util.codec.binary.Base64;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import utilidades.Msg;
 
 /**
  *
@@ -97,11 +98,11 @@ public class AfirmaUtils {
         }
 
         resultadoValidacionFirmas.setBoValid(true);
-        resultadoValidacionFirmas.setDsValidacion("Documento válido según las especificaciones establecidas.");
+        resultadoValidacionFirmas.setDsValidacion(Msg.getString("Afirma_valido"));
         for (Firmante itemFirmante : resultadoValidacionFirmas.getListaFirmantes()) {
             if (!itemFirmante.isValid()) {
                 resultadoValidacionFirmas.setBoValid(false);
-                resultadoValidacionFirmas.setDsValidacion("Documento no válido según las especificaciones establecidas.");
+                resultadoValidacionFirmas.setDsValidacion(Msg.getString("Afirma_no_valido"));
                 break;
             }
         }
@@ -123,12 +124,12 @@ public class AfirmaUtils {
                 try {
                     if (!signature.validate(valContext)) {
                         firmante.setSignValid(false);
-                        firmante.setDsSignValidacion("La firma es invalida");
+                        firmante.setDsSignValidacion(Msg.getString("firma_invalida"));
                     }
                 } catch (Exception na) {
                     if (!signature.getSignatureValue().validate(valContext)) {
                         firmante.setSignValid(false);
-                        firmante.setDsSignValidacion("El valor de la firma es inválido");
+                        firmante.setDsSignValidacion(Msg.getString("valor_firma_invalido"));
                     }
                 }
             }
@@ -149,11 +150,11 @@ public class AfirmaUtils {
                                     certImpl.checkValidity();
                                 } catch (final CertificateExpiredException expiredEx) {
                                     firmante.setCertValid(false);
-                                    firmante.setDsCertValidacion("Certificado caducado: " + expiredEx.getMessage());
+                                    firmante.setDsCertValidacion(Msg.getString("certificado_caducado") + ": " + expiredEx.getMessage());
                                     break;
                                 } catch (final CertificateNotYetValidException notYetValidEx) {
                                     firmante.setCertValid(false);
-                                    firmante.setDsCertValidacion("El certificado ya no es válido: " + notYetValidEx.getMessage());
+                                    firmante.setDsCertValidacion(Msg.getString("certificado_no_valido") + ": " + notYetValidEx.getMessage());
                                     break;
                                 }
                             }
@@ -177,11 +178,11 @@ public class AfirmaUtils {
 
             if (firmante.isSignValid() && firmante.isCertValid() && firmante.isRefValid()) {
                 firmante.setValid(true);
-                firmante.setDsValidacion("Firma válida según las especificaciones establecidas.");
+                firmante.setDsValidacion(Msg.getString("Afirma_valido"));
             }
             else {
                 firmante.setValid(false);
-                firmante.setDsValidacion("Firma no válida según las especificaciones establecidas.");
+                firmante.setDsValidacion(Msg.getString("Afirma_no_valido"));
             }
         } catch (final MarshalException | XMLSignatureException e) {
             firmante.setValid(false);

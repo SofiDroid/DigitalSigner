@@ -214,7 +214,7 @@ public class EdicionPerfiles implements Serializable {
                             filtroPerfiles.getDsResultado().refrescarDatos();
                         }
 
-                        Mensajes.showInfo("Información", "Alta realizada correctamente!");
+                        Mensajes.showInfo(Msg.getString("Informacion"), Msg.getString("alta_OK"));
                     }
 
                     //ACTUALIZACION
@@ -238,7 +238,7 @@ public class EdicionPerfiles implements Serializable {
                             filtroPerfiles.getDsResultado().actualizarFilaSeleccionada();
                         }
 
-                        Mensajes.showInfo("Información", "Actualización realizada correctamente!");
+                        Mensajes.showInfo(Msg.getString("Informacion"), Msg.getString("update_OK"));
                     }
                 }
                 catch (Exception ex) {
@@ -337,7 +337,7 @@ public class EdicionPerfiles implements Serializable {
                 }
             }
             // FIN TRANSACCION
-            Mensajes.showInfo("Información", "Registro eliminado correctamente!");
+            Mensajes.showInfo(Msg.getString("Informacion"), "Registro eliminado correctamente!");
             
             this.setModoFormulario(ModoFormulario.ELIMINADO);
         }

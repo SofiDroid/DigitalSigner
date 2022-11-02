@@ -104,7 +104,7 @@ public class EdicionSituacionesDocumentos implements Serializable {
                     filtroSituacionesDocumentos.getDsResultado().refrescarDatos();
                 }
                 
-                Mensajes.showInfo("Información", "Alta realizada correctamente!");
+                Mensajes.showInfo(Msg.getString("Informacion"), Msg.getString("alta_OK"));
             }
             
             //ACTUALIZACION
@@ -123,7 +123,7 @@ public class EdicionSituacionesDocumentos implements Serializable {
                     filtroSituacionesDocumentos.getDsResultado().actualizarFilaSeleccionada();
                 }
                 
-                Mensajes.showInfo("Información", "Actualización realizada correctamente!");
+                Mensajes.showInfo(Msg.getString("Informacion"), Msg.getString("update_OK"));
             }
             
             this.setModoFormulario(ModoFormulario.CONSULTA);
@@ -151,7 +151,7 @@ public class EdicionSituacionesDocumentos implements Serializable {
                 filtroSituacionesDocumentos.getDsResultado().eliminarFilaSeleccionada();
             }
 
-            Mensajes.showInfo("Información", "Registro eliminado correctamente!");
+            Mensajes.showInfo(Msg.getString("Informacion"), "Registro eliminado correctamente!");
             
             this.setModoFormulario(ModoFormulario.ELIMINADO);
         }

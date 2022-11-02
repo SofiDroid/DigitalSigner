@@ -503,7 +503,7 @@ public class EdicionUsuarios implements Serializable {
                     
                     entityManager.getTransaction().commit();
                     
-                    Mensajes.showInfo("Información", "Actualización realizada correctamente!");
+                    Mensajes.showInfo(Msg.getString("Informacion"), Msg.getString("update_OK"));
                 }
                 catch (Exception ex) {
                     entityManager.getTransaction().rollback();
@@ -572,7 +572,7 @@ public class EdicionUsuarios implements Serializable {
                             filtroUsuarios.getDsResultado().refrescarDatos();
                         }
 
-                        Mensajes.showInfo("Información", "Alta realizada correctamente!");
+                        Mensajes.showInfo(Msg.getString("Informacion"), Msg.getString("alta_OK"));
                     }
 
                     //ACTUALIZACION
@@ -685,7 +685,7 @@ public class EdicionUsuarios implements Serializable {
                             filtroUsuarios.getDsResultado().actualizarFilaSeleccionada();
                         }
 
-                        Mensajes.showInfo("Información", "Actualización realizada correctamente!");
+                        Mensajes.showInfo(Msg.getString("Informacion"), Msg.getString("update_OK"));
                     }
                 }
                 catch (Exception ex) {
@@ -763,7 +763,7 @@ public class EdicionUsuarios implements Serializable {
                         filtroUsuarios.getDsResultado().eliminarFilaSeleccionada();
                     }
 
-                    Mensajes.showInfo("Información", "Registro eliminado correctamente!");
+                    Mensajes.showInfo(Msg.getString("Informacion"), "Registro eliminado correctamente!");
                 }
                 catch (SQLReferenceException rex) {
                     entityManager.getTransaction().rollback();

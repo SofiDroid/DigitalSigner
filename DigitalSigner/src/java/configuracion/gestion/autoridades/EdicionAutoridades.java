@@ -98,7 +98,7 @@ public class EdicionAutoridades implements Serializable {
             sql = "SELECT ID_USUARIO, '(' + ISNULL(CO_NIF,'') + ') ' + ISNULL(CO_USUARIO,'') + ' - ' + ISNULL(DS_APELLIDO1,'') + ' ' + ISNULL(DS_APELLIDO2,'') + ', ' + ISNULL(DS_NOMBRE,'') as Usuario FROM BD_T_USUARIO";
             this.cUsuario.setConsulta(sql);
             this.cUsuario.setColumnaID("ID_USUARIO");
-            this.cUsuario.setColumnaLabel("Usuario");
+            this.cUsuario.setColumnaLabel(Msg.getString("Usuario"));
             this.cUsuario.setRequired(false);
 
             // LISTADO USUARIOS
@@ -164,20 +164,20 @@ public class EdicionAutoridades implements Serializable {
                 .setVisible(false);
 
         cabecera.getColumnName("Usuario")
-                .setTitle("Usuario")
+                .setTitle(Msg.getString("Usuario"))
                 .setWidth("100%");
 
         cabecera.getColumnName("FE_ALTA")
-                .setTitle("F. Alta")
+                .setTitle(Msg.getString("F_Alta"))
                 .setWidth("6rem");
 
         cabecera.getColumnName("FE_DESACTIVO")
-                .setTitle("F. Desactivo")
+                .setTitle(Msg.getString("F_Desactivo"))
                 .setWidth("6rem");
         
         this.dsUsuarios.newColumn("btnEliminar");
         cabecera.getColumnName("btnEliminar")
-                .setTitle("Eliminar")
+                .setTitle(Msg.getString("Eliminar"))
                 .setAlign(ColumnCabecera.ALIGN.CENTER)
                 .setWidth("10em")
                 .setTipo(ColumnBase.Tipo.BOTON_EDICION)
@@ -266,7 +266,7 @@ public class EdicionAutoridades implements Serializable {
                             filtroAutoridades.getDsResultado().refrescarDatos();
                         }
 
-                        Mensajes.showInfo("Información", "Alta realizada correctamente!");
+                        Mensajes.showInfo(Msg.getString("Informacion"), Msg.getString("alta_OK"));
                     }
 
                     //ACTUALIZACION
@@ -314,7 +314,7 @@ public class EdicionAutoridades implements Serializable {
                             filtroAutoridades.getDsResultado().actualizarFilaSeleccionada();
                         }
 
-                        Mensajes.showInfo("Información", "Actualización realizada correctamente!");
+                        Mensajes.showInfo(Msg.getString("Informacion"), Msg.getString("update_OK"));
                     }
                 }
                 catch (Exception ex) {
@@ -365,7 +365,7 @@ public class EdicionAutoridades implements Serializable {
                         filtroAutoridades.getDsResultado().eliminarFilaSeleccionada();
                     }
 
-                    Mensajes.showInfo("Información", "Registro eliminado correctamente!");
+                    Mensajes.showInfo(Msg.getString("Informacion"), Msg.getString("delete_OK"));
                 }
                 catch (SQLReferenceException rex) {
                     entityManager.getTransaction().rollback();
