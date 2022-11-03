@@ -29,6 +29,59 @@ public class Formateos {
             return this.formato;
         }
     }
+
+    public static String[] separarNombre(String nombreApellidos) {
+        String nombre = "";
+        String apellido1 = "";
+        String apellido2 = "";
+
+        String[] _name = nombreApellidos.split(" ");
+        
+        if (_name.length == 1) {
+            // NOMBRE
+            nombre = _name[0];
+        }
+        else if (_name.length == 2) {
+            // APELLIDO1 NOMBRE
+            apellido1 = _name[0];
+            nombre = _name[1];
+        }
+        else if (_name.length == 3) {
+            // APELLIDO1 APELLIDO2 NOMBRE
+            apellido1 = _name[0];
+            apellido2 = _name[1];
+            nombre = _name[2];
+        }
+        else if (_name.length >= 4) {
+            // APELLIDO1 APELLIDO2 NOMBRE (Con compuestos)
+            int i = 0;
+            apellido1 += _name[i];
+            if (" EL LA LOS DEL DE ".contains(" " + _name[i] + " ")) {
+                apellido1 += _name[++i];
+                if (" EL LA LOS DEL DE ".contains(" " + _name[i] + " ")) {
+                    apellido1 += _name[++i];
+                }
+            }
+            
+            apellido2 = _name[++i];
+            if (" EL LA LOS DEL DE ".contains(" " + _name[i+1] + " ")) {
+                apellido2 += _name[++i];
+                if (" EL LA LOS DEL DE ".contains(" " + _name[i+1] + " ")) {
+                    apellido2 += _name[++i];
+                }
+                apellido2 += _name[++i];
+            }
+            
+            while (i < _name.length) {
+                nombre += _name[++i];
+            }
+            if (nombre.isBlank()) {
+                nombre = "NOMBRE";
+            }
+        }
+        
+        return new String[] {nombre, apellido1, apellido2};
+    }
     
     public static String dateToString(Date fecha, TipoFecha tipo) {
 

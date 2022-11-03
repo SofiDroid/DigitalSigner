@@ -1,23 +1,46 @@
 package init.filtros;
 
+import basedatos.servicios.StAUniusu;
+import basedatos.servicios.StAUsutipousu;
+import basedatos.servicios.StTTipousuario;
+import basedatos.servicios.StTUnidad;
+import basedatos.servicios.StTUsuario;
+import basedatos.tablas.BdAUniusu;
+import basedatos.tablas.BdAUsutipousu;
+import basedatos.tablas.BdTTipodocumento;
+import basedatos.tablas.BdTTipousuario;
+import basedatos.tablas.BdTUnidad;
+import basedatos.tablas.BdTUsuario;
+import excepciones.RegistryNotFoundException;
+import init.AppInit;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
-import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.Enumeration;
+import java.util.ArrayList;
+import java.util.Date;
+import javax.enterprise.context.SessionScoped;
+import javax.enterprise.inject.spi.CDI;
+import javax.faces.FactoryFinder;
+import javax.faces.context.FacesContextFactory;
+import javax.faces.lifecycle.Lifecycle;
+import javax.faces.lifecycle.LifecycleFactory;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.log4j.Logger;
-import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
+import javax.xml.ws.handler.MessageContext;
+import seguridad.usuarios.DatosUsuario;
+import tomcat.persistence.EntityManager;
+import utilidades.Formateos;
+import utilidades.Session;
 
 /**
  *
@@ -26,7 +49,7 @@ import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 public class AuthenticationFilter implements Filter {
 //    Logger logger = Logger.getLogger(AuthenticationFilter.class);
     
-    private static final boolean debug = true;
+    private static final boolean debug = false;
 
     // The filter configuration object we are associated with.  If
     // this value is null, this filter instance is not currently
@@ -35,68 +58,6 @@ public class AuthenticationFilter implements Filter {
     
     public AuthenticationFilter() {
     }    
-    
-    //Método que evalúa si se debe ejecutar la lógica de cada condición/caso
-//    private boolean requiresAuthentication(HttpServletRequest req, boolean isAPI) {
-//        if (!isAPI) {
-//                    //Si no es una API REST
-//            return !req.getServletPath().startsWith(LOGOUT_PREFIX) 
-//                           &&  req.getHeader(CERT_HEADER) != null
-//                           && SecurityContextHolder.getContext().getAuthentication() == null;
-//        } else {
-//                    //Si es una API REST
-//            return req.getServletPath().startsWith(API_PREFIX) 
-//                           && req.getHeader(CERT_HEADER) != null;
-//        }
-//    }
-
-    //Método que devuelve el objeto autenticación con el usuario actual, haciendo uso del
-    //servicio creado anteriormente y del UserDetailsService para cargar los detalles del 
-    //usuario extraido del certificado
-//    private Authentication prepareX509Authentication(HttpServletRequest req)
-//        throws CertificateException, UnsupportedEncodingException, Exception {
-//            x509Service.extractUserNameFromCert(req.getHeader(CERT_HEADER)).ifPresent(id -> 
-//            {
-//                final UserDetails details = detailsService.loadUserByUsername(id);
-//                if (details != null) {
-//                    final Authentication auth = new UsernamePasswordAuthenticationToken(details, details.getPassword(),details.getAuthorities());
-//                               //Setea el contexto de seguridad de Spring
-//                    InterceptorCommon.setContexts(auth);
-//                    log.debug("Loaded authentication for user {}", auth.getName());
-//            }
-//        });
-//        return SecurityContextHolder.getContext().getAuthentication();
-//
-//    }
-    
-//    private void autenticacion(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-//        final HttpServletRequest req = (HttpServletRequest) request;
-//        if (requiresAuthentication(req, true)) {
-//            logger.debug("Detected header {} in API request, loading temp autenthication");//, CERT_HEADER);
-//            try {
-//                prepareX509Authentication(req);
-//                chain.doFilter(request, response);
-//
-//            } catch (final Exception e) {
-//                        logger.error("Error on X509 REST authentication", e);
-//            } finally {
-//                logger.debug("Clearing authentication contexts");
-//                InterceptorCommon.clearContexts();
-//            }
-//        } else if (requiresAuthentication(req, false)) {
-//            logger.debug("Detected header {} in Non API request, loading autenthication & session", CERT_HEADER);
-//            try {
-//                final Authentication auth = prepareX509Authentication(req);
-//                if (auth != null)
-//                    successHandler.onAuthenticationSuccess(req, (HttpServletResponse) response, auth);
-//                chain.doFilter(request, response);
-//            } catch (final Exception e) {
-//                logger.error("Error on X509 authentication", e);
-//            }
-//        } else {
-//            chain.doFilter(request, response);
-//        }
-//    }
     
     private void doBeforeProcessing(ServletRequest request, ServletResponse response)
             throws IOException, ServletException {
@@ -115,27 +76,6 @@ public class AuthenticationFilter implements Filter {
                 log("No se ha encontrado el certificado.");
             }
         }
-
-        // Write code here to process the request and/or response before
-        // the rest of the filter chain is invoked.
-        // For example, a logging filter might log items on the request object,
-        // such as the parameters.
-        /*
-	for (Enumeration en = request.getParameterNames(); en.hasMoreElements(); ) {
-	    String name = (String)en.nextElement();
-	    String values[] = request.getParameterValues(name);
-	    int n = values.length;
-	    StringBuilder buf = new StringBuilder();
-	    buf.append(name);
-	    buf.append("=");
-	    for(int i=0; i < n; i++) {
-	        buf.append(values[i]);
-	        if (i < n-1)
-	            buf.append(",");
-	    }
-	    log(buf.toString());
-	}
-         */
     }    
     
     private void doAfterProcessing(ServletRequest request, ServletResponse response)
@@ -143,24 +83,6 @@ public class AuthenticationFilter implements Filter {
         if (debug) {
             log("AuthenticationFilter:DoAfterProcessing");
         }
-
-        // Write code here to process the request and/or response after
-        // the rest of the filter chain is invoked.
-        // For example, a logging filter might log the attributes on the
-        // request object after the request has been processed. 
-        /*
-	for (Enumeration en = request.getAttributeNames(); en.hasMoreElements(); ) {
-	    String name = (String)en.nextElement();
-	    Object value = request.getAttribute(name);
-	    log("attribute: " + name + "=" + value.toString());
-
-	}
-         */
-        // For example, a filter might append something to the response.
-        /*
-	PrintWriter respOut = new PrintWriter(response.getWriter());
-	respOut.println("<P><B>This has been appended by an intrusive filter.</B>");
-         */
     }
 
     /**
@@ -182,10 +104,9 @@ public class AuthenticationFilter implements Filter {
         
         doBeforeProcessing(request, response);
         
-//        autenticacion(request, response, chain);
-        
         Throwable problem = null;
         try {
+            autenticacion(request, response, chain);
             chain.doFilter(request, response);
         } catch (Throwable t) {
             // If an exception is thrown somewhere down the filter chain,
@@ -305,5 +226,153 @@ public class AuthenticationFilter implements Filter {
     public void log(String msg) {
         filterConfig.getServletContext().log(msg);        
     }
+
+    public void crearDatosUsuario(HttpServletRequest httpRequest, HttpServletResponse httpResponse, ServletContext servletContext) {
+        LifecycleFactory lifecycleFactory = (LifecycleFactory) FactoryFinder.getFactory(FactoryFinder.LIFECYCLE_FACTORY);
+        FacesContextFactory m_facesContextFactory = (FacesContextFactory) FactoryFinder.getFactory(FactoryFinder.FACES_CONTEXT_FACTORY);
+        Lifecycle m_lifecycle = lifecycleFactory.getLifecycle(LifecycleFactory.DEFAULT_LIFECYCLE);
+
+        m_facesContextFactory.getFacesContext(servletContext, httpRequest, httpResponse, m_lifecycle);
+
+        CDI.current().getBeanManager().getContext(SessionScoped.class).get(CDI.current().getBeanManager().getBeans("datosUsuario").iterator().next());
+    }
     
+    private void login(BdTUsuario bdTUsuario, DatosUsuario datosUsuarioSystem) throws Exception {
+        
+        Session.getDatosUsuario().setBdTUsuario(bdTUsuario);
+
+        BdAUniusu filtroBdAUniusu = new BdAUniusu();
+        filtroBdAUniusu.setIdUsuario(bdTUsuario.getIdUsuario());
+        filtroBdAUniusu.setFeAlta(new Date());
+        filtroBdAUniusu.setFeDesactivo(new Date());
+        StAUniusu stAUniusu = new StAUniusu(datosUsuarioSystem);
+        ArrayList<BdAUniusu> listaBdAUniusu = stAUniusu.filtro(filtroBdAUniusu, null);
+        for(BdAUniusu itemBdAUniusu : listaBdAUniusu) {
+            BdTUnidad filtroBdTUnidad = new BdTUnidad();
+            filtroBdTUnidad.setIdUnidad(itemBdAUniusu.getIdUnidad());
+            filtroBdAUniusu.setFeAlta(new Date());
+            filtroBdAUniusu.setFeDesactivo(new Date());
+            StTUnidad stTUnidad = new StTUnidad(datosUsuarioSystem);
+            ArrayList<BdTUnidad> listaBdTUnidad = stTUnidad.filtro(filtroBdTUnidad, null);
+            if (listaBdTUnidad != null && !listaBdTUnidad.isEmpty()) {
+                Session.getDatosUsuario().getListaBdTUnidad().addAll(listaBdTUnidad);
+            }
+        }
+        Session.getDatosUsuario().cargarComboUnidades();
+        //Session.getDatosUsuario().setBdTUnidad(Session.getDatosUsuario().getListaBdTUnidad().get(0));
+        Session.getDatosUsuario().getcUnidad().setValue(Session.getDatosUsuario().getListaBdTUnidad().get(0).getIdUnidad().toString());
+        Session.getDatosUsuario().setPais(null); //El idioma por defecto, no pasamos por la selección.
+
+        Session.getDatosUsuario().selectOptionUnidad();
+    }
+    
+    private void autenticacion(ServletRequest request, ServletResponse response, FilterChain chain) throws Exception {
+        Object[] certs = (Object[])request.getAttribute("javax.servlet.request.X509Certificate");
+        if (certs != null && certs.length > 0) {
+            X509Certificate certificado = ((X509Certificate)certs[0]);
+            String cn = certificado.getSubjectX500Principal().getName().split(",")[0].substring(3);
+            String nombre = cn.split("\\|")[0];
+            String nif = cn.split("\\|")[1];
+            
+            DatosUsuario datosUsuarioSystem = new DatosUsuario();
+            BdTUsuario bdTUsuarioSystem = new BdTUsuario();
+            bdTUsuarioSystem.setCoUsuario("SYSTEM");
+            datosUsuarioSystem.setBdTUsuario(bdTUsuarioSystem);
+            
+            StTUsuario stTUsuario = new StTUsuario(datosUsuarioSystem);
+            BdTUsuario filtroBdTUsuario = new BdTUsuario();
+            filtroBdTUsuario.setCoNIF(nif);
+            filtroBdTUsuario.setFeAlta(new Date());
+            filtroBdTUsuario.setFeDesactivo(new Date());
+            ArrayList<BdTUsuario> listaBdTUsuario = stTUsuario.filtro(filtroBdTUsuario, null);
+            
+            if (listaBdTUsuario != null && !listaBdTUsuario.isEmpty()) {
+                // ACCESO CONCEDIDO - Existe el usuario
+                // Cargar datos del usuario en sesion.
+                crearDatosUsuario((HttpServletRequest) request, (HttpServletResponse) response, request.getServletContext());
+                login(listaBdTUsuario.get(0), datosUsuarioSystem);
+            }
+            else {
+                // ACCESO CONCEDIDO - No existe el usuario, 
+                // lo damos de alta como firmante solo...
+                BdTUsuario newBdTUsuario = new BdTUsuario();
+                newBdTUsuario.setCoNIF(nif);
+                newBdTUsuario.setCoUsuario(nif);
+                String[] nombreApellidos = Formateos.separarNombre(nombre);
+                newBdTUsuario.setDsNombre(nombreApellidos[0]);
+                newBdTUsuario.setDsApellido1(nombreApellidos[1]);
+                newBdTUsuario.setDsApellido2(nombreApellidos[2]);
+                newBdTUsuario.setCoPassword(null);
+                newBdTUsuario.setBoAdmin(false);
+                newBdTUsuario.setEnIntentos(0);
+                newBdTUsuario.setEnIntentosmax(0);
+                newBdTUsuario.setFeAlta(new Date());
+                newBdTUsuario.setFeDesactivo(null);
+                newBdTUsuario.setUsuariobd("SYSTEM");
+                // INICIO TRANSACCION
+                try (EntityManager entityManager = AppInit.getEntityManager()) {
+                    entityManager.getTransaction().begin();
+                    try {
+                        stTUsuario.alta(newBdTUsuario, entityManager);
+                        
+                        StTUnidad stTUnidad = new StTUnidad(datosUsuarioSystem);
+                        BdTUnidad filtroBdTUnidad = new BdTUnidad();
+                        filtroBdTUnidad.setCoUnidad("UGF");
+                        filtroBdTUnidad.setFeAlta(new Date());
+                        filtroBdTUnidad.setFeDesactivo(new Date());
+                        ArrayList<BdTUnidad> listaBdTUnidad = stTUnidad.filtro(filtroBdTUnidad, entityManager);
+                        if (listaBdTUnidad == null || listaBdTUnidad.isEmpty()) {
+                            throw new RegistryNotFoundException();
+                        }
+                        
+                        StAUniusu stAUniusu = new StAUniusu(datosUsuarioSystem);
+                        BdAUniusu newBdAUniusu = new BdAUniusu();
+                        newBdAUniusu.setIdUnidad(listaBdTUnidad.get(0).getIdUnidad());
+                        newBdAUniusu.setIdUsuario(newBdTUsuario.getIdUsuario());
+                        newBdAUniusu.setFeAlta(new Date());
+                        newBdAUniusu.setFeDesactivo(null);
+                        
+                        stAUniusu.alta(newBdAUniusu, entityManager);
+                        
+                        StTTipousuario stTTipousuario = new StTTipousuario(datosUsuarioSystem);
+                        BdTTipousuario filtroBdTTipousuario = new BdTTipousuario();
+                        filtroBdTTipousuario.setCoTipousuario("FIRMANTE");
+                        filtroBdTTipousuario.setIdUnidad(newBdAUniusu.getIdUnidad());
+                        filtroBdTTipousuario.setFeAlta(new Date());
+                        filtroBdTTipousuario.setFeDesactivo(new Date());
+                        
+                        ArrayList<BdTTipousuario> listaBdTTipousuario = stTTipousuario.filtro(filtroBdTTipousuario, entityManager);
+                        if (listaBdTTipousuario == null || listaBdTTipousuario.isEmpty()) {
+                            throw new RegistryNotFoundException();
+                        }
+                        
+                        StAUsutipousu stAUsutipousu = new StAUsutipousu(datosUsuarioSystem);
+                        BdAUsutipousu newBdAUsutipousu = new BdAUsutipousu();
+                        newBdAUsutipousu.setIdUsuario(newBdTUsuario.getIdUsuario());
+                        newBdAUsutipousu.setIdTipousuario(listaBdTTipousuario.get(0).getIdTipousuario());
+                        newBdAUsutipousu.setFeAlta(new Date());
+                        newBdAUsutipousu.setFeDesactivo(null);
+                        
+                        stAUsutipousu.alta(newBdAUsutipousu, entityManager);
+                    }
+                    catch (Exception ex) {
+                        entityManager.getTransaction().rollback();
+                        throw ex;
+                    }
+                }
+                // FIN TRANSACCION
+
+                crearDatosUsuario((HttpServletRequest) request, (HttpServletResponse) response, request.getServletContext());
+                login(newBdTUsuario, datosUsuarioSystem);
+            }
+            
+            // Redirecciono al formulario principal
+            ((HttpServletResponse)response).sendRedirect(request.getServletContext() + "/main");
+            //RequestDispatcher dispatcher = request.getServletContext().getRequestDispatcher("/main");
+            //dispatcher.forward(request, response);
+        }
+        else {
+            log("No se ha encontrado el certificado.");
+        }
+    }
 }

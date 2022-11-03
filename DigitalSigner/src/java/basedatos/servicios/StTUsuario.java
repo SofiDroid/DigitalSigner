@@ -123,7 +123,10 @@ public class StTUsuario extends StBase {
         parametros.put("TSTBD", newBdTUsuario.getTstbd());
 
 
-        return executeNativeQueryParametros(newBdTUsuario.getInsert(), parametros, em);
+        int result = executeNativeQueryParametros(newBdTUsuario.getInsert(), parametros, em);
+        newBdTUsuario.setIdUsuario(result);
+        
+        return result;
     }
 
     public int actualiza(BdTUsuario upBdTUsuario, EntityManager em) throws Exception {
