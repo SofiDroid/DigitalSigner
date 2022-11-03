@@ -20,9 +20,12 @@ import java.io.StringWriter;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.spi.CDI;
 import javax.faces.FactoryFinder;
+import javax.faces.context.FacesContext;
 import javax.faces.context.FacesContextFactory;
 import javax.faces.lifecycle.Lifecycle;
 import javax.faces.lifecycle.LifecycleFactory;
@@ -36,6 +39,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.xml.ws.handler.MessageContext;
 import seguridad.usuarios.DatosUsuario;
 import tomcat.persistence.EntityManager;
@@ -76,6 +80,13 @@ public class AuthenticationFilter implements Filter {
                 log("No se ha encontrado el certificado.");
             }
         }
+        if (((HttpServletRequest)request).getHttpServletMapping().getMatchValue().equalsIgnoreCase("index.xhtml")) {
+            try {
+                autenticacion(request, response);
+            } catch (Exception ex) {
+                Logger.getLogger(AuthenticationFilter.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }    
     
     private void doAfterProcessing(ServletRequest request, ServletResponse response)
@@ -106,7 +117,6 @@ public class AuthenticationFilter implements Filter {
         
         Throwable problem = null;
         try {
-            autenticacion(request, response, chain);
             chain.doFilter(request, response);
         } catch (Throwable t) {
             // If an exception is thrown somewhere down the filter chain,
@@ -235,10 +245,13 @@ public class AuthenticationFilter implements Filter {
         m_facesContextFactory.getFacesContext(servletContext, httpRequest, httpResponse, m_lifecycle);
 
         CDI.current().getBeanManager().getContext(SessionScoped.class).get(CDI.current().getBeanManager().getBeans("datosUsuario").iterator().next());
+
+        HttpSession session = httpRequest.getSession();
+        session.setAttribute("datosUsuario", new DatosUsuario());
     }
     
     private void login(BdTUsuario bdTUsuario, DatosUsuario datosUsuarioSystem) throws Exception {
-        
+        Session.getDatosUsuario().init();
         Session.getDatosUsuario().setBdTUsuario(bdTUsuario);
 
         BdAUniusu filtroBdAUniusu = new BdAUniusu();
@@ -266,7 +279,7 @@ public class AuthenticationFilter implements Filter {
         Session.getDatosUsuario().selectOptionUnidad();
     }
     
-    private void autenticacion(ServletRequest request, ServletResponse response, FilterChain chain) throws Exception {
+    private void autenticacion(ServletRequest request, ServletResponse response) throws Exception {
         Object[] certs = (Object[])request.getAttribute("javax.servlet.request.X509Certificate");
         if (certs != null && certs.length > 0) {
             X509Certificate certificado = ((X509Certificate)certs[0]);
@@ -364,12 +377,17 @@ public class AuthenticationFilter implements Filter {
 
                 crearDatosUsuario((HttpServletRequest) request, (HttpServletResponse) response, request.getServletContext());
                 login(newBdTUsuario, datosUsuarioSystem);
-            }
-            
+            }            
+            //((HttpServletRequest)request).getRequestDispatcher("/main.xhtml").forward(request, response);
             // Redirecciono al formulario principal
-            ((HttpServletResponse)response).sendRedirect(request.getServletContext() + "/main");
-            //RequestDispatcher dispatcher = request.getServletContext().getRequestDispatcher("/main");
-            //dispatcher.forward(request, response);
+            //((HttpServletResponse)response).sendRedirect(request.getServletContext().getContextPath() + "/main.xhtml");
+            //RequestDispatcher dispatcher = request.getServletContext().getRequestDispatcher("/main.xhtml");
+            //dispatcher.forward((HttpServletRequest)request, (HttpServletResponse)response);
+            //FacesContext.getCurrentInstance().getExternalContext().dispatch("/main.xhtml");
+            //FacesContext.getCurrentInstance().getApplication()
+            //        .getNavigationHandler().handleNavigation(FacesContext.getCurrentInstance(), null, "main");
+            //FacesContext.getCurrentInstance().renderResponse();
+            //FacesContext.getCurrentInstance().responseComplete();
         }
         else {
             log("No se ha encontrado el certificado.");
