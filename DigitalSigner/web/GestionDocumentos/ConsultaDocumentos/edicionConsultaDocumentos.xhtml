@@ -1,0 +1,121 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+      xmlns:sd="http://xmlns.jcp.org/jsf/composite/sofidroid"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/main.xhtml">
+        <ui:define id="tmpPrincipal" name="tmpPrincipal">
+            <c:if test="#{filtroConsultaDocumentos.edicionConsultaDocumentos ne null}">
+                <c:set var="beanEdicion" value="#{filtroConsultaDocumentos.edicionConsultaDocumentos}"/>
+            </c:if>
+            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" width="350">
+                <p:commandButton value="#{msg['No']}" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
+                <p:commandButton value="#{msg['Si']}" type="button" styleClass="ui-confirmdialog-yes" />
+            </p:confirmDialog>
+            <p:card styleClass="card">
+                <p:toolbar>
+                    <p:toolbarGroup align="left">
+                        <p:outputLabel value="Alta de documentos" style="font-size: large; font-weight: bold" /> 
+                    </p:toolbarGroup>
+                    <p:toolbarGroup align="right">
+                        <p:commandButton id="btnGuardar" icon="pi pi-save" styleClass="rounded-button ui-button-success" 
+                                         style="height: 2rem;width: 2rem;margin-left:0.3rem" action="#{beanEdicion.guardar}" title="(alt+S) Guardar"
+                                         update="@form" accesskey="s" 
+                                         rendered="#{(beanEdicion.modoFormulario eq 'EDICION' and menu.permisos.boEdicion) or (beanEdicion.modoFormulario eq 'ALTA' and menu.permisos.boAlta)}" />
+
+                        <p:commandButton id="btnModificar" icon="pi pi-pencil" styleClass="rounded-button ui-button-primary" 
+                                         style="height: 2rem;width: 2rem;margin-left:0.3rem" action="#{beanEdicion.modificar}" title="(alt+M) Modifcar"
+                                         update="@form" accesskey="m" immediate="true"
+                                         rendered="#{beanEdicion.modoFormulario eq 'CONSULTA' and menu.permisos.boEdicion}" />
+
+                        <p:commandButton id="btnEliminar" icon="pi pi-trash" styleClass="rounded-button ui-button-danger" 
+                                         style="height: 2rem;width: 2rem;margin-left:0.3rem" action="#{beanEdicion.eliminar}" title="(alt+E) Eliminar"
+                                         update="@form" accesskey="e" immediate="true"
+                                         rendered="#{beanEdicion.modoFormulario eq 'CONSULTA' and menu.permisos.boBorrado}">
+                            <p:confirm header="#{msg['confirmacion']}" message="#{msg['confirmacion_borrado']}" icon="pi pi-info-circle"/>
+                        </p:commandButton>
+                        
+                        <p:commandButton id="btnVolver" icon="pi pi-undo" styleClass="rounded-button ui-button-warning" 
+                                         style="height: 2rem;width: 2rem;margin-left:0.3rem" action="#{beanEdicion.volver}" title="(alt+V) Volver"
+                                         update="@form" accesskey="v" immediate="true" />
+                    </p:toolbarGroup>
+                </p:toolbar>
+            </p:card>
+            <p:focus context="cardEdicion"/>
+            <p:card id="cardEdicion" styleClass="card">
+                <p:panelGrid columns="1"
+                     columnClasses="col-12"
+                     layout="grid"
+                     styleClass="ui-panelgrid-blank ui-fluid"
+                     style="border:0px none;background-color:transparent;">
+
+                    <sd:campoWebTexto id="txtCodigoDocumento" beanClass="#{beanEdicion.getcCoDocumento()}" />
+
+                    <sd:campoWebTexto id="txtDescripcionDocumento" beanClass="#{beanEdicion.getcDsDocumento()}" />
+
+                    <sd:campoWebFecha id="txtFeAlta" beanClass="#{beanEdicion.getcFeAlta()}" />
+
+                    <sd:campoWebFecha id="txtFeDesactivo" beanClass="#{beanEdicion.getcFeDesactivo()}" />
+
+                    <sd:campoWebLupa id="txtTipoDocumento" beanClass="#{beanEdicion.getcTipoDocumento()}" />
+
+                    <p:fileUpload id="fuDocumento" />
+                    
+                    <sd:campoWebTexto id="txtCodigoFichero" beanClass="#{beanEdicion.getcCoFichero()}" />
+                    
+                    <sd:campoWebTexto id="txtCodigoExtension" beanClass="#{beanEdicion.getcCoExtension()}" />
+
+                    <sd:campoWebCombo id="txtSituacionDoc" beanClass="#{beanEdicion.getcSituacionDoc()}" />
+                    
+                </p:panelGrid>
+            </p:card>
+            <p:card id="panelFirmas" styleClass="card">
+                <p:toolbar rendered="#{beanEdicion.modoFormulario eq 'EDICION' or beanEdicion.modoFormulario eq 'ALTA'}">
+                    <p:toolbarGroup align="right">
+                        <p:commandButton id="btnNuevaFirma" icon="pi pi-plus-circle" styleClass="rounded-button ui-button-success" 
+                                         style="height: 2rem;width: 2rem;margin-left:0.3rem" action="#{beanEdicion.nuevaFirma}" title="(alt+N) Nuevo"
+                                         update="panelFirmas,mensaje" accesskey="n" oncomplete="PF('dlgFirmas').show()" />
+                    </p:toolbarGroup>
+                </p:toolbar>
+                <sd:dataGrid id="tblFirmas" dataSet="#{beanEdicion.dsFirmas}" />
+                <p:dialog widgetVar="dlgFirmas" minHeight="40" width="50%" showEffect="fade" modal="true">
+                    <p:ajax event="close" listener="#{beanEdicion.cerrarEdicionCamposFirma}" update="mensaje" />
+                    <f:facet name="header">
+                        <p:commandButton id="btnGuardarFirma" icon="pi pi-save" styleClass="rounded-button ui-button-success" 
+                                         style="height: 2rem;width: 2rem;margin-left:0.3rem" action="#{beanEdicion.guardarFirma}" title="(alt+S) Guardar"
+                                         oncomplete="if (args &amp;&amp; args.validationFailed) PF('dlgFirmas').show()" update="panelFirmas,mensaje"
+                                         rendered="#{beanEdicion.modoFormulario eq 'EDICION' or beanEdicion.modoFormulario eq 'ALTA'}" />
+                    </f:facet>
+                    <p:panelGrid columns="1"
+                        columnClasses="col-12"
+                        layout="grid"
+                        styleClass="ui-panelgrid-blank ui-fluid"
+                        style="border:0px none;background-color:transparent;">
+
+                       <sd:campoWebNumero id="txtOrden" beanClass="#{beanEdicion.getcEnOrden()}" />
+
+                       <sd:campoWebCombo id="txtTipo" beanClass="#{beanEdicion.getcDiTipoFirma()}" />
+
+                       <sd:campoWebLupa id="txtAutoridad" beanClass="#{beanEdicion.getcAutoridad()}" />
+                       
+                       <sd:campoWebChips id="txtFirmantes" beanClass="#{beanEdicion.getcFirmantes()}" />
+
+                       <sd:campoWebNumero id="txtFirmaPosX" beanClass="#{beanEdicion.getcDsFirmaPosX()}" />
+
+                       <sd:campoWebNumero id="txtFirmaPosY" beanClass="#{beanEdicion.getcDsFirmaPosY()}" />
+
+                       <sd:campoWebFecha id="txtFeAltaFirma" beanClass="#{beanEdicion.getcFeAltaFirma()}" />
+
+                       <sd:campoWebFecha id="txtFeDesactivoFirma" beanClass="#{beanEdicion.getcFeDesactivoFirma()}" />
+
+                    </p:panelGrid>
+                </p:dialog>
+            </p:card>
+        </ui:define>
+    </ui:composition>
+</html>
+

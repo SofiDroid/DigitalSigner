@@ -44,7 +44,7 @@ public class FiltroConsultaDocumentos implements Serializable {
     private boolean filtroVisible = true;
     private DataSet dsResultado = null;
     private VisorMedia visorDocumentos = null;
-    //private EdicionDocumento edicionDocumento = null; 
+    private EdicionConsultaDocumentos edicionConsultaDocumentos = null; 
     
     @PostConstruct
     public void init() {
@@ -448,5 +448,13 @@ public class FiltroConsultaDocumentos implements Serializable {
                 .setMethod(this.getClass().getMethod("verDocumento"))
                 .setIdVisorMedia("visorDocumentos")
                 .setUpdate("formulario:panelResultado,formulario:mensaje");
+    }
+
+    public EdicionConsultaDocumentos getEdicionConsultaDocumentos() {
+        return edicionConsultaDocumentos;
+    }
+
+    public void setEdicionConsultaDocumentos(EdicionConsultaDocumentos edicionConsultaDocumentos) {
+        this.edicionConsultaDocumentos = edicionConsultaDocumentos;
     }
 }
