@@ -151,6 +151,6 @@ public class DatosUsuario implements Serializable {
         Session.limpiarOtrosBeans(null, true, true);
         
         //Retorno a la pagina de login
-        return "/index";
+        return "/logout";
     }
 }

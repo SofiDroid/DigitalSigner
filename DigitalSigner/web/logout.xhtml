@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      lang="es" xml:lang="es">
+    <h:head>
+        <meta http-equiv="cache-control" content="max-age=0" />
+        <meta http-equiv="cache-control" content="no-cache" />
+        <meta http-equiv="expires" content="0" />
+        <meta http-equiv="pragma" content="no-cache" />
+
+        <title>Digital Signer</title>
+        <link href="/DigitalSigner/resources/DigitalSigner.css" rel="stylesheet" type="text/css"/>
+        <link href="/DigitalSigner/resources/flags.css" rel="stylesheet" type="text/css"/>
+    </h:head>
+    <h:body style="background-color: darkgray">
+        <h:form id="login">
+            <p:focus context="cardLogout"/>
+            
+            <p:card id="cardLogout" style="width: 25rem; margin-bottom: 2em;" class="centerScreen">
+                <f:facet name="title">
+                    #{msg['logout']}
+                </f:facet>
+                <div class="grid">
+                    <div class="col flex align-items-center justify-content-center">
+                        <div class="ui-fluid">
+                            <div class="field">
+                                <p:outputLabel value="#{msg['logout_message']}" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </p:card>
+
+        </h:form>
+    </h:body>
+</html>

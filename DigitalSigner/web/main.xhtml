@@ -79,7 +79,7 @@
 
                                 <sd:campoWebTexto id="txtCoUsuario" beanClass="#{datosUsuario.cUsuario}" style="margin-right: 1em" /> 
 
-                                <p:commandButton id="btnLogout" icon="pi pi-sign-out" styleClass="rounded-button ui-button-danger ui-button-outlined" 
+                                <p:commandButton ajax="false" id="btnLogout" icon="pi pi-sign-out" styleClass="rounded-button ui-button-danger ui-button-outlined" 
                                              style="height: 2rem;width: 2rem;margin-left:0.3rem" action="#{datosUsuario.logout}" title="Salir"
                                              update="mensaje" immediate="true" />
                             </p:toolbarGroup>

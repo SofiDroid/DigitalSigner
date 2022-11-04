@@ -7,7 +7,6 @@ import basedatos.servicios.StTUnidad;
 import basedatos.servicios.StTUsuario;
 import basedatos.tablas.BdAUniusu;
 import basedatos.tablas.BdAUsutipousu;
-import basedatos.tablas.BdTTipodocumento;
 import basedatos.tablas.BdTTipousuario;
 import basedatos.tablas.BdTUnidad;
 import basedatos.tablas.BdTUsuario;
@@ -25,14 +24,13 @@ import java.util.logging.Logger;
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.spi.CDI;
 import javax.faces.FactoryFinder;
-import javax.faces.context.FacesContext;
+import javax.faces.application.ResourceHandler;
 import javax.faces.context.FacesContextFactory;
 import javax.faces.lifecycle.Lifecycle;
 import javax.faces.lifecycle.LifecycleFactory;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -40,7 +38,6 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.xml.ws.handler.MessageContext;
 import seguridad.usuarios.DatosUsuario;
 import tomcat.persistence.EntityManager;
 import utilidades.Formateos;
@@ -51,9 +48,8 @@ import utilidades.Session;
  * @author ihuegal
  */
 public class AuthenticationFilter implements Filter {
-//    Logger logger = Logger.getLogger(AuthenticationFilter.class);
-    
-    private static final boolean debug = false;
+  
+    private static final boolean DEBUG = false;
 
     // The filter configuration object we are associated with.  If
     // this value is null, this filter instance is not currently
@@ -62,39 +58,6 @@ public class AuthenticationFilter implements Filter {
     
     public AuthenticationFilter() {
     }    
-    
-    private void doBeforeProcessing(ServletRequest request, ServletResponse response)
-            throws IOException, ServletException {
-        if (debug) {
-            log("AuthenticationFilter:DoBeforeProcessing");
-            log("request.isSecure() -> " + request.isSecure());
-            Object[] certs = (Object[])request.getAttribute("javax.servlet.request.X509Certificate");
-            if (certs != null && certs.length > 0) {
-                X509Certificate certificado = ((X509Certificate)certs[0]);
-                String cn = certificado.getSubjectX500Principal().getName().split(",")[0].substring(3);
-                String nombre = cn.split("\\|")[0];
-                String nif = cn.split("\\|")[1];
-                log("Certificado -> Nombre: " + nombre + ", NIF: " + nif);
-            }
-            else {
-                log("No se ha encontrado el certificado.");
-            }
-        }
-        if (((HttpServletRequest)request).getHttpServletMapping().getMatchValue().equalsIgnoreCase("index.xhtml")) {
-            try {
-                autenticacion(request, response);
-            } catch (Exception ex) {
-                Logger.getLogger(AuthenticationFilter.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-    }    
-    
-    private void doAfterProcessing(ServletRequest request, ServletResponse response)
-            throws IOException, ServletException {
-        if (debug) {
-            log("AuthenticationFilter:DoAfterProcessing");
-        }
-    }
 
     /**
      *
@@ -105,44 +68,60 @@ public class AuthenticationFilter implements Filter {
      * @exception IOException if an input/output error occurs
      * @exception ServletException if a servlet error occurs
      */
+    @Override
     public void doFilter(ServletRequest request, ServletResponse response,
             FilterChain chain)
             throws IOException, ServletException {
         
-        if (debug) {
+        if (DEBUG) {
             log("AuthenticationFilter:doFilter()");
         }
         
-        doBeforeProcessing(request, response);
+        //doBeforeProcessing(request, response);
         
         Throwable problem = null;
         try {
-            chain.doFilter(request, response);
-        } catch (Throwable t) {
+            boolean redirect = false;
+            //Resources
+            boolean isResource = ((HttpServletRequest)request).getRequestURI().startsWith(((HttpServletRequest)request).getContextPath() + ResourceHandler.RESOURCE_IDENTIFIER + "/");
+
+            if (!isResource && ((HttpServletRequest)request).getHttpServletMapping().getMatchValue().equalsIgnoreCase("index.xhtml")) {
+                try {
+                    redirect = autenticacion(request, response);
+                } catch (Exception ex) {
+                    Logger.getLogger(AuthenticationFilter.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+
+            if (!redirect || isResource) {
+                chain.doFilter(request, response);
+            }
+        } catch (IOException | ServletException t) {
             // If an exception is thrown somewhere down the filter chain,
             // we still want to execute our after processing, and then
             // rethrow the problem after that.
             problem = t;
-            t.printStackTrace();
+            //t.printStackTrace();
         }
         
-        doAfterProcessing(request, response);
+        //doAfterProcessing(request, response);
 
         // If there was a problem, we want to rethrow it if it is
         // a known type, otherwise log it.
         if (problem != null) {
-            if (problem instanceof ServletException) {
-                throw (ServletException) problem;
+            if (problem instanceof ServletException servletException) {
+                throw servletException;
             }
-            if (problem instanceof IOException) {
-                throw (IOException) problem;
+            if (problem instanceof IOException iOException) {
+                throw iOException;
             }
             sendProcessingError(problem, response);
         }
     }
 
     /**
-     * Return the filter configuration object for this filter.
+     * Return the filter configuration object for this fil
+     * @return ter.
      */
     public FilterConfig getFilterConfig() {
         return (this.filterConfig);
@@ -160,16 +139,19 @@ public class AuthenticationFilter implements Filter {
     /**
      * Destroy method for this filter
      */
+    @Override
     public void destroy() {        
     }
 
     /**
      * Init method for this filter
+     * @param filterConfig
      */
+    @Override
     public void init(FilterConfig filterConfig) {        
         this.filterConfig = filterConfig;
         if (filterConfig != null) {
-            if (debug) {                
+            if (DEBUG) {                
                 log("AuthenticationFilter:Initializing filter");
             }
         }
@@ -183,7 +165,7 @@ public class AuthenticationFilter implements Filter {
         if (filterConfig == null) {
             return ("AuthenticationFilter()");
         }
-        StringBuffer sb = new StringBuffer("AuthenticationFilter(");
+        StringBuilder sb = new StringBuilder("AuthenticationFilter(");
         sb.append(filterConfig);
         sb.append(")");
         return (sb.toString());
@@ -195,26 +177,24 @@ public class AuthenticationFilter implements Filter {
         if (stackTrace != null && !stackTrace.equals("")) {
             try {
                 response.setContentType("text/html");
-                PrintStream ps = new PrintStream(response.getOutputStream());
-                PrintWriter pw = new PrintWriter(ps);                
-                pw.print("<html>\n<head>\n<title>Error</title>\n</head>\n<body>\n"); //NOI18N
-
-                // PENDING! Localize this for next official release
-                pw.print("<h1>The resource did not process correctly</h1>\n<pre>\n");                
-                pw.print(stackTrace);                
-                pw.print("</pre></body>\n</html>"); //NOI18N
-                pw.close();
-                ps.close();
+                try (PrintStream ps = new PrintStream(response.getOutputStream()); PrintWriter pw = new PrintWriter(ps)) {
+                    pw.print("<html>\n<head>\n<title>Error</title>\n</head>\n<body>\n"); //NOI18N
+                    
+                    // PENDING! Localize this for next official release
+                    pw.print("<h1>The resource did not process correctly</h1>\n<pre>\n");
+                    pw.print(stackTrace);
+                    pw.print("</pre></body>\n</html>"); //NOI18N
+                }
                 response.getOutputStream().close();
-            } catch (Exception ex) {
+            } catch (IOException ex) {
             }
         } else {
             try {
-                PrintStream ps = new PrintStream(response.getOutputStream());
-                t.printStackTrace(ps);
-                ps.close();
+                try (PrintStream ps = new PrintStream(response.getOutputStream())) {
+                    t.printStackTrace(ps);
+                }
                 response.getOutputStream().close();
-            } catch (Exception ex) {
+            } catch (IOException ex) {
             }
         }
     }
@@ -228,7 +208,7 @@ public class AuthenticationFilter implements Filter {
             pw.close();
             sw.close();
             stackTrace = sw.getBuffer().toString();
-        } catch (Exception ex) {
+        } catch (IOException ex) {
         }
         return stackTrace;
     }
@@ -279,7 +259,7 @@ public class AuthenticationFilter implements Filter {
         Session.getDatosUsuario().selectOptionUnidad();
     }
     
-    private void autenticacion(ServletRequest request, ServletResponse response) throws Exception {
+    private boolean autenticacion(ServletRequest request, ServletResponse response) throws Exception {
         Object[] certs = (Object[])request.getAttribute("javax.servlet.request.X509Certificate");
         if (certs != null && certs.length > 0) {
             X509Certificate certificado = ((X509Certificate)certs[0]);
@@ -377,20 +357,18 @@ public class AuthenticationFilter implements Filter {
 
                 crearDatosUsuario((HttpServletRequest) request, (HttpServletResponse) response, request.getServletContext());
                 login(newBdTUsuario, datosUsuarioSystem);
-            }            
-            //((HttpServletRequest)request).getRequestDispatcher("/main.xhtml").forward(request, response);
-            // Redirecciono al formulario principal
-            //((HttpServletResponse)response).sendRedirect(request.getServletContext().getContextPath() + "/main.xhtml");
-            //RequestDispatcher dispatcher = request.getServletContext().getRequestDispatcher("/main.xhtml");
-            //dispatcher.forward((HttpServletRequest)request, (HttpServletResponse)response);
-            //FacesContext.getCurrentInstance().getExternalContext().dispatch("/main.xhtml");
-            //FacesContext.getCurrentInstance().getApplication()
-            //        .getNavigationHandler().handleNavigation(FacesContext.getCurrentInstance(), null, "main");
-            //FacesContext.getCurrentInstance().renderResponse();
-            //FacesContext.getCurrentInstance().responseComplete();
+            }
+            
+            // Forward a la pagina principal una vez logado.
+            filterConfig.getServletContext().getRequestDispatcher("/faces/main.xhtml").forward(request, response);
+            
+            return true;
         }
         else {
+            // Si no se encuentra el certificado o no es valido,
+            // le dejo en la pantalla de login.
             log("No se ha encontrado el certificado.");
+            return false;
         }
     }
 }

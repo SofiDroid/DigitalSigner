@@ -56,12 +56,10 @@ public class Session {
     }
 
     public static boolean isSessionActiva() {
-        if (FacesContext.getCurrentInstance() != null) {
-            DatosUsuario datosUsuario = (DatosUsuario)CDI.current().getBeanManager().getContext(SessionScoped.class).get(CDI.current().getBeanManager().getBeans("datosUsuario").iterator().next());
-            if (datosUsuario != null) {
-                if (datosUsuario.getBdTUsuario() != null) {
-                    return true;
-                }
+        DatosUsuario datosUsuario = (DatosUsuario)CDI.current().getBeanManager().getContext(SessionScoped.class).get(CDI.current().getBeanManager().getBeans("datosUsuario").iterator().next());
+        if (datosUsuario != null) {
+            if (datosUsuario.getBdTUsuario() != null) {
+                return true;
             }
         }
         return false;
