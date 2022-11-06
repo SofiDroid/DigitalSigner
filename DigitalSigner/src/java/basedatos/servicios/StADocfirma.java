@@ -71,9 +71,6 @@ public class StADocfirma extends StBase {
         if (Validation.isNullOrEmpty(newBdADocfirma.getIdDocumento())) {
             throw new RequiredFieldException("ID_DOCUMENTO");
         }
-        if (Validation.isNullOrEmpty(newBdADocfirma.getIdAutoridad())) {
-            throw new RequiredFieldException("ID_AUTORIDAD");
-        }
         if (Validation.isNullOrEmpty(newBdADocfirma.getEnOrden())) {
             throw new RequiredFieldException("EN_ORDEN");
         }
@@ -110,7 +107,10 @@ public class StADocfirma extends StBase {
         parametros.put("TSTBD", newBdADocfirma.getTstbd());
 
 
-        return executeNativeQueryParametros(newBdADocfirma.getInsert(), parametros, em);
+        int result = executeNativeQueryParametros(newBdADocfirma.getInsert(), parametros, em);
+        newBdADocfirma.setIdDocfirma(result);
+        
+        return result;
     }
 
     public int actualiza(BdADocfirma upBdADocfirma, EntityManager em) throws Exception {
@@ -120,9 +120,6 @@ public class StADocfirma extends StBase {
         }
         if (Validation.isNullOrEmpty(upBdADocfirma.getIdDocumento())) {
             throw new RequiredFieldException("ID_DOCUMENTO");
-        }
-        if (Validation.isNullOrEmpty(upBdADocfirma.getIdAutoridad())) {
-            throw new RequiredFieldException("ID_AUTORIDAD");
         }
         if (Validation.isNullOrEmpty(upBdADocfirma.getEnOrden())) {
             throw new RequiredFieldException("EN_ORDEN");

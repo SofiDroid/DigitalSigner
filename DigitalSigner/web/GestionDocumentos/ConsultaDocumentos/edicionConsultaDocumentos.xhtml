@@ -63,13 +63,9 @@
 
                     <sd:campoWebLupa id="txtTipoDocumento" beanClass="#{beanEdicion.getcTipoDocumento()}" />
 
-                    <p:fileUpload id="fuDocumento" />
+                    <sd:campoWebUpload id="fuDocumento"  beanClass="#{beanEdicion.getcFuDocumento()}" />
                     
-                    <sd:campoWebTexto id="txtCodigoFichero" beanClass="#{beanEdicion.getcCoFichero()}" />
-                    
-                    <sd:campoWebTexto id="txtCodigoExtension" beanClass="#{beanEdicion.getcCoExtension()}" />
-
-                    <sd:campoWebCombo id="txtSituacionDoc" beanClass="#{beanEdicion.getcSituacionDoc()}" />
+                    <sd:campoWebLupa id="txtSituacionDoc" beanClass="#{beanEdicion.getcSituacionDoc()}" />
                     
                 </p:panelGrid>
             </p:card>

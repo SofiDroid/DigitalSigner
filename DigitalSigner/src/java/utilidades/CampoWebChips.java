@@ -1,5 +1,7 @@
 package utilidades;
 
+import java.util.List;
+
 /**
  *
  * @author ihuegal
@@ -9,20 +11,12 @@ public class CampoWebChips extends CampoWeb {
     private boolean addOnPaste = true;
     private String separator = ",";
     private boolean unique = false;
-    private Integer maxElements = null;
-        
+    private Integer maxElements = 10;
+    private List<String> values = null;
+
     public CampoWebChips() {
-        super(Tipo.Descripcion);
+        super(Tipo.Chips);
         super.setMaxlength("255");
-    }
-
-    public void setValue(String value) {
-        super.setValue(((value != null && !value.isBlank()) ? value : null));
-    }
-
-    @Override
-    public String getValue() {
-        return ((super.getValue() != null  && !((String)super.getValue()).isBlank()) ? (String)super.getValue() : null);
     }
 
     public boolean isAddOnPaste() {
@@ -55,5 +49,13 @@ public class CampoWebChips extends CampoWeb {
 
     public void setMaxElements(Integer maxElements) {
         this.maxElements = maxElements;
+    }
+
+    public List<String> getValues() {
+        return values;
+    }
+
+    public void setValues(List<String> values) {
+        this.values = values;
     }
 }

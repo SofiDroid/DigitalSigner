@@ -1,5 +1,6 @@
 package utilidades;
 
+import java.util.List;
 import javax.faces.context.FacesContext;
 
 /**
@@ -17,7 +18,9 @@ public class CampoWeb {
         Check,
         Numero,
         Password,
-        Combo
+        Combo,
+        Chips,
+        Upload
     }
     
     private String clientId = "";

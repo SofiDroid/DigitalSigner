@@ -2,21 +2,18 @@ package basedatos.tablas;
 
 import basedatos.InterfazDAO;
 import basedatos.OperacionSQL;
-import init.AppInit;
-import java.util.Date;
 import java.util.HashMap;
-import utilidades.BaseDatos;
 
 /**
  *
  * @author ihuegal
  */
-public class BdDFirmante extends OperacionSQL implements InterfazDAO {
+public class BdAFirmante extends OperacionSQL implements InterfazDAO {
 
     protected String coNif;
     protected Integer idDocfirma;
 
-    public BdDFirmante() {
+    public BdAFirmante() {
         // NADA
     }
 
@@ -33,7 +30,7 @@ public class BdDFirmante extends OperacionSQL implements InterfazDAO {
         sb_sql.append("CO_NIF");
         sb_sql.append(",ID_DOCFIRMA");
         
-        sb_sql.append(" FROM BD_D_FIRMANTE WHERE 1=1 ");
+        sb_sql.append(" FROM BD_A_FIRMANTE WHERE 1=1 ");
         if (coNif != null) {
             sb_sql.append(" AND CO_NIF = :CO_NIF");
         }
@@ -46,7 +43,7 @@ public class BdDFirmante extends OperacionSQL implements InterfazDAO {
 
     public String getInsert()
     {
-        StringBuilder sb_sql = new StringBuilder("INSERT INTO BD_D_FIRMANTE (");
+        StringBuilder sb_sql = new StringBuilder("INSERT INTO BD_A_FIRMANTE (");
         sb_sql.append("CO_NIF");
         sb_sql.append(",ID_DOCFIRMA");
         
@@ -59,7 +56,7 @@ public class BdDFirmante extends OperacionSQL implements InterfazDAO {
 
     public String getDelete()
     {
-        StringBuilder sb_sql = new StringBuilder("DELETE BD_D_FIRMANTE ");
+        StringBuilder sb_sql = new StringBuilder("DELETE BD_A_FIRMANTE ");
         sb_sql.append(" WHERE ");
         sb_sql.append(" CO_NIF = ").append(":CO_NIF");
         sb_sql.append(" AND ID_DOCFIRMA = ").append(":ID_DOCFIRMA");

@@ -246,22 +246,35 @@ public class FiltroConsultaDocumentos implements Serializable {
                             BD_T_SITUACIONDOC situaciondoc ON (situaciondoc.ID_SITUACIONDOC = doc.ID_SITUACIONDOC)
                         INNER JOIN
                             BD_A_DOCFIRMA docfirma ON (docfirma.ID_DOCUMENTO = doc.ID_DOCUMENTO)
-                        INNER JOIN
+                        LEFT JOIN
+                            BD_A_FIRMANTE firmante ON (firmante.ID_DOCFIRMA = docfirma.ID_DOCFIRMA)
+                        LEFT JOIN
                             BD_T_AUTORIDAD aut ON (aut.ID_AUTORIDAD = docfirma.ID_AUTORIDAD)
-                        INNER JOIN
+                        LEFT JOIN
                             BD_A_AUTUSU autusu ON (autusu.ID_AUTORIDAD = aut.ID_AUTORIDAD)
-                        INNER JOIN
+                        LEFT JOIN
                             BD_T_USUARIO usuario ON (usuario.ID_USUARIO = autusu.ID_USUARIO)
-                        INNER JOIN
+                        LEFT JOIN
                             BD_T_UNIDAD uni ON (uni.ID_UNIDAD = aut.ID_UNIDAD)
                         WHERE 1 = 1
-                        AND EXISTS(SELECT -1
+                        AND (EXISTS(SELECT -1
                                     FROM
                                         BD_A_DOCFIRMA df
                                     INNER JOIN
                                         BD_A_AUTUSU au ON (au.ID_AUTORIDAD = df.ID_AUTORIDAD)
                                     WHERE df.ID_DOCUMENTO = doc.ID_DOCUMENTO
                                     AND au.ID_USUARIO = :ID_USUARIO)
+                            OR
+                             EXISTS(SELECT -1
+                                    FROM
+                                        BD_A_DOCFIRMA df
+                                    INNER JOIN
+                                        BD_A_FIRMANTE fir ON (fir.ID_DOCFIRMA = df.ID_DOCFIRMA)
+                                    INNER JOIN
+                                        BD_T_USUARIO usu ON (usu.CO_NIF = fir.CO_NIF)
+                                    WHERE df.ID_DOCUMENTO = doc.ID_DOCUMENTO
+                                    AND usu.ID_USUARIO = :ID_USUARIO)
+                            )
                         """;
             
             sql = filtros(sql);
@@ -327,14 +340,14 @@ public class FiltroConsultaDocumentos implements Serializable {
     
     public String verDetalle() {
         try {
-            //this.edicionUnidades = new EdicionUnidades(this, this.dsResultado.getSelectedRow().getColumnName("ID_UNIDAD").getValueInteger());
-            //this.edicionUnidades.setPaginaRetorno("filtroUnidades");
+            this.edicionConsultaDocumentos = new EdicionConsultaDocumentos(this, this.dsResultado.getSelectedRow().getColumnName("ID_DOCUMENTO").getValueInteger());
+            this.edicionConsultaDocumentos.setPaginaRetorno("filtroConsultaDocumentos");
         } catch (Exception ex) {
             LOG.error(ex.getMessage(), ex);
             Mensajes.showError("Error al navegar al detalle", ex.getMessage());
         }
         
-        return null; //"edicionUnidades";
+        return "edicionConsultaDocumentos";
     }
 
     public String verDocumento() {
@@ -367,14 +380,14 @@ public class FiltroConsultaDocumentos implements Serializable {
 
     public String nuevo() {
         try {
-            //this.edicionUnidades = new EdicionUnidades(this, null);
-            //this.edicionUnidades.setPaginaRetorno("filtroUnidades");
+            this.edicionConsultaDocumentos = new EdicionConsultaDocumentos(this, null);
+            this.edicionConsultaDocumentos.setPaginaRetorno("filtroConsultaDocumentos");
         } catch (Exception ex) {
             LOG.error(ex.getMessage(), ex);
             Mensajes.showError("Error al navegar al detalle", ex.getMessage());
         }
         
-        return null; //"edicionUnidades";
+        return "edicionConsultaDocumentos";
     }
 
     private void formatearCabeceras() throws SecurityException, NoSuchMethodException {
