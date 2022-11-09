@@ -28,6 +28,7 @@ import javax.faces.application.ResourceHandler;
 import javax.faces.context.FacesContextFactory;
 import javax.faces.lifecycle.Lifecycle;
 import javax.faces.lifecycle.LifecycleFactory;
+import javax.security.auth.x500.X500Principal;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -262,10 +263,29 @@ public class AuthenticationFilter implements Filter {
     private boolean autenticacion(ServletRequest request, ServletResponse response) throws Exception {
         Object[] certs = (Object[])request.getAttribute("javax.servlet.request.X509Certificate");
         if (certs != null && certs.length > 0) {
-            X509Certificate certificado = ((X509Certificate)certs[0]);
-            String cn = certificado.getSubjectX500Principal().getName().split(",")[0].substring(3);
-            String nombre = cn.split("\\|")[0];
-            String nif = cn.split("\\|")[1];
+            X509Certificate certificado = ((X509Certificate)certs[0]); 
+            String cn = certificado.getSubjectX500Principal().toString();
+            String nif = "";
+            String nombre = "";
+            if (cn.contains("GIVENNAME")) {
+                String[] campos = cn.split(",");
+                for (String campo : campos) {
+                    if (campo.trim().toUpperCase().contains("SERIALNUMBER")) {
+                        nif = campo.trim().split("=")[1];
+                    }
+                    if (campo.trim().contains("GIVENNAME")) {
+                        nombre += " " + campo.trim().split("=")[1];
+                    }
+                    if (campo.trim().contains("SURNAME")) {
+                        nombre = campo.trim().split("=")[1] + nombre;
+                    }
+                }
+            }
+            else {
+                cn = certificado.getSubjectX500Principal().getName().split(",")[0].substring(3);
+                nombre = cn.split("\\|")[0];
+                nif = cn.split("\\|")[1];
+            }
             
             DatosUsuario datosUsuarioSystem = new DatosUsuario();
             BdTUsuario bdTUsuarioSystem = new BdTUsuario();
@@ -347,6 +367,8 @@ public class AuthenticationFilter implements Filter {
                         newBdAUsutipousu.setFeDesactivo(null);
                         
                         stAUsutipousu.alta(newBdAUsutipousu, entityManager);
+                        
+                        entityManager.getTransaction().commit();
                     }
                     catch (Exception ex) {
                         entityManager.getTransaction().rollback();

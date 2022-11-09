@@ -79,9 +79,9 @@ public class StTUsuario extends StBase {
         if (Validation.isNullOrEmpty(newBdTUsuario.getCoUsuario())) {
             throw new RequiredFieldException("CO_USUARIO");
         }
-        if (Validation.isNullOrEmpty(newBdTUsuario.getCoPassword())) {
-            throw new RequiredFieldException("CO_PASSWORD");
-        }
+//        if (Validation.isNullOrEmpty(newBdTUsuario.getCoPassword())) {
+//            throw new RequiredFieldException("CO_PASSWORD");
+//        }
         if (Validation.isNullOrEmpty(newBdTUsuario.getDsNombre())) {
             throw new RequiredFieldException("DS_NOMBRE");
         }
