@@ -237,11 +237,9 @@ public class FiltroFirmaDocumentos implements Serializable {
                                  AND (aux.FE_ALTA <= CONVERT (date, SYSDATETIME())) AND (aux.FE_DESACTIVO IS NULL OR docfirma.FE_DESACTIVO >= CONVERT (date, SYSDATETIME()))) as TOTAL_FIRMAS,
                              docfirma.FE_FIRMA,
                              aut.ID_AUTORIDAD,
-                             aut.CO_AUTORIDAD,
-                             aut.DS_AUTORIDAD,
-                             uni.ID_UNIDAD,
-                             uni.CO_UNIDAD,
-                             uni.DS_UNIDAD,
+                             firmante.CO_NIF,
+                             ISNULL(aut.CO_AUTORIDAD,usuario.CO_NIF) as CO_AUTORIDAD,
+                             ISNULL(aut.DS_AUTORIDAD,usuario.DS_APELLIDO1 + ' ' + usuario.DS_APELLIDO2 + ', ' + usuario.DS_NOMBRE) as DS_AUTORIDAD,
                             (SELECT CAST(count(*) AS VARCHAR) FROM BD_A_DOCFIRMA firmas WHERE firmas.ID_DOCUMENTO = doc.ID_DOCUMENTO AND firmas.FE_FIRMA IS NOT NULL
                                 AND (firmas.FE_ALTA <= CONVERT (date, SYSDATETIME())) AND (firmas.FE_DESACTIVO IS NULL OR firmas.FE_DESACTIVO >= CONVERT (date, SYSDATETIME()))) + 
                             ' de ' +
@@ -255,17 +253,20 @@ public class FiltroFirmaDocumentos implements Serializable {
                              BD_T_SITUACIONDOC situaciondoc ON (situaciondoc.ID_SITUACIONDOC = doc.ID_SITUACIONDOC AND situaciondoc.CO_SITUACIONDOC = 'PENDIENTE_FIRMA')
                          INNER JOIN
                              BD_A_DOCFIRMA docfirma ON (docfirma.ID_DOCUMENTO = doc.ID_DOCUMENTO AND docfirma.FE_FIRMA IS NULL AND (docfirma.FE_ALTA <= CONVERT (date, SYSDATETIME())) AND (docfirma.FE_DESACTIVO IS NULL OR docfirma.FE_DESACTIVO >= CONVERT (date, SYSDATETIME())))
-                         INNER JOIN
+                         LEFT JOIN
+                             BD_A_FIRMANTE firmante ON (firmante.ID_DOCFIRMA = docfirma.ID_DOCFIRMA)
+                         LEFT JOIN
                              BD_T_AUTORIDAD aut ON (aut.ID_AUTORIDAD = docfirma.ID_AUTORIDAD AND (aut.FE_ALTA <= CONVERT (date, SYSDATETIME())) AND (aut.FE_DESACTIVO IS NULL OR aut.FE_DESACTIVO >= CONVERT (date, SYSDATETIME())))
-                         INNER JOIN
+                         LEFT JOIN
                              BD_A_AUTUSU autusu ON (autusu.ID_AUTORIDAD = aut.ID_AUTORIDAD AND (autusu.FE_ALTA <= CONVERT (date, SYSDATETIME())) AND (autusu.FE_DESACTIVO IS NULL OR autusu.FE_DESACTIVO >= CONVERT (date, SYSDATETIME())))
-                         INNER JOIN
-                             BD_T_USUARIO usuario ON (usuario.ID_USUARIO = autusu.ID_USUARIO)
-                         INNER JOIN
+                         LEFT JOIN
+                             BD_T_USUARIO usuario ON (usuario.CO_NIF = firmante.CO_NIF OR usuario.ID_USUARIO = autusu.ID_USUARIO)
+                         LEFT JOIN
                              BD_T_UNIDAD uni ON (uni.ID_UNIDAD = aut.ID_UNIDAD)
                          WHERE 1 = 1
                          AND (SELECT COUNT(*) FROM BD_A_DOCFIRMA WHERE ID_DOCUMENTO = doc.ID_DOCUMENTO AND FE_FIRMA IS NULL AND EN_ORDEN < docfirma.EN_ORDEN) = 0
-                         """;
+                         AND (docfirma.ID_AUTORIDAD IS NOT NULL OR firmante.ID_DOCFIRMA IS NOT NULL)
+                        """;
             
             sql = filtros(sql);
 
@@ -502,6 +503,9 @@ public class FiltroFirmaDocumentos implements Serializable {
         cabecera.getColumnName("ID_AUTORIDAD")
                 .setVisible(false);
 
+        cabecera.getColumnName("CO_NIF")
+                .setVisible(false);
+
         cabecera.getColumnName("CO_AUTORIDAD")
                 .setTitle("Autoridad")
                 .setWidth("10em")
@@ -510,16 +514,6 @@ public class FiltroFirmaDocumentos implements Serializable {
         cabecera.getColumnName("DS_AUTORIDAD")
                 .setVisible(false);
 
-        cabecera.getColumnName("ID_UNIDAD")
-                .setVisible(false);
-
-        cabecera.getColumnName("CO_UNIDAD")
-                .setVisible(false);
-
-        cabecera.getColumnName("DS_UNIDAD")
-                .setVisible(false);
-        
-        
         cabecera.getColumnName("FIRMAS")
                 .setTitle("Nº Firmas")
                 .setAlign(ColumnCabecera.ALIGN.CENTER)

@@ -340,9 +340,11 @@
                                             endDownloadParaFirma(respuesta, listaDocumentosFirma[elemento], elemento, formatoFirma[elemento]);
                                         } else if (tipoFirma[elemento] === "CO")
                                         {
+                                            PrimeFaces.error(respuesta);
                                             endDownloadParaCofirma(respuesta, listaDocumentosFirma[elemento], elemento, formatoFirma[elemento]);
                                         } else if (tipoFirma[elemento] === "CT")
                                         {
+                                            PrimeFaces.error(respuesta);
                                             endDownloadParaContraFirma(respuesta, listaDocumentosFirma[elemento], elemento, formatoFirma[elemento]);
                                         }
                                     }
@@ -420,9 +422,9 @@
                 }
 
                 // CoFirma
-                function endDownloadParaCoFirma(str, elemento, i, formato)
+                function endDownloadParaCofirma(str, elemento, i, formato)
                 {
-                    PrimeFaces.info('llamada a endDownloadParaCoFirma(str, elemento, i)');
+                    PrimeFaces.info('llamada a endDownloadParaCofirma(str, elemento, i)');
                     PrimeFaces.info('str lenght = ' + str.length);
                     PrimeFaces.info('elemento = ' + elemento);
                     PrimeFaces.info('i = ' + i);
@@ -445,7 +447,7 @@
 
                                     PrimeFaces.info('Tipo Co-Firma: ' + formato + "tri");
                                     PrimeFaces.info('llamando a AutoScript.coSign(...)');
-                                    AutoScript.coSign(str, "SHA256withRSA", formato + "tri", params, 
+                                    AutoScript.cosign(str, "SHA256withRSA", formato + "tri", params, 
                                         function prefirmaNotificacionSuccess(firmaBase64, certificadoB64)
                                         {
                                             PrimeFaces.info('La cofirma devuelve:');
@@ -460,7 +462,7 @@
                                     PrimeFaces.info('El fichero ' + elemento + ' su pesa ' + bytesToString(str.length, false) + ' (' + str.length + ')');
 
                                     PrimeFaces.info('Tipo Co-Firma: ' + formato);
-                                    AutoScript.counterSign(str, "SHA256withRSA", formato, params, 
+                                    AutoScript.cosign(str, "SHA256withRSA", formato, params, 
                                         function prefirmaNotificacionSuccess(firmaBase64, certificadoB64)
                                         {
                                             firmaNotificacionSuccess(firmaBase64, certificadoB64, elemento, i);
@@ -510,7 +512,7 @@
 
                                     PrimeFaces.info('Tipo Contra-Firma: ' + formato + "tri");
                                     PrimeFaces.info('llamando a AutoScript.counterSign(...)');
-                                    AutoScript.counterSign(str, "SHA256withRSA", formato + "tri", params, 
+                                    AutoScript.countersign(str, "SHA256withRSA", formato + "tri", params, 
                                         function prefirmaNotificacionSuccess(firmaBase64, certificadoB64)
                                         {
                                             PrimeFaces.info('La contrafirma devuelve:');
@@ -525,7 +527,7 @@
                                     PrimeFaces.info('El fichero ' + elemento + ' su pesa ' + bytesToString(str.length, false) + ' (' + str.length + ')');
 
                                     PrimeFaces.info('Tipo Contra-Firma: ' + formato);
-                                    AutoScript.counterSign(str, "SHA256withRSA", formato, params, 
+                                    AutoScript.countersign(str, "SHA256withRSA", formato, params, 
                                         function prefirmaNotificacionSuccess(firmaBase64, certificadoB64)
                                         {
                                             firmaNotificacionSuccess(firmaBase64, certificadoB64, elemento, i);
