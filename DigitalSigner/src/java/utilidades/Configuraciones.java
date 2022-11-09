@@ -42,7 +42,7 @@ public class Configuraciones {
 
             if (idConfiguracion != null) {
                 BdAConfvaluni filtroBdAConfvaluni = new BdAConfvaluni();
-                filtroBdAConfvaluni.setIdUnidad(datosUsuario.getBdTUnidad().getIdUnidad());
+                filtroBdAConfvaluni.setIdUnidad(1/*datosUsuario.getBdTUnidad().getIdUnidad()*/);
                 filtroBdAConfvaluni.setIdConfiguracion(idConfiguracion);
                 filtroBdTConfiguracion.setFeAlta(new Date());
                 filtroBdTConfiguracion.setFeDesactivo(new Date());

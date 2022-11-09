@@ -32,9 +32,11 @@ function probarDisponibilidadServlets(functionOK, functionERROR, URL_SERVLET_TRI
                 switch (self.xmlHttpReq.status)
                 {
                     case 200:
+                        PrimeFaces.info("200: Disponible OK");
                         disponibleOK(functionOK, functionERROR);
                         break;
                     case 404:
+                        PrimeFaces.info("Error 404");
                         disponibleERROR(functionOK, functionERROR);
                         break;
                     default:
@@ -44,7 +46,7 @@ function probarDisponibilidadServlets(functionOK, functionERROR, URL_SERVLET_TRI
                 }
             }
         };
-        self.xmlHttpReq.timeout = 2000; // TIMEOUT de 2 segundos para que responda el servlet trifase.
+        self.xmlHttpReq.timeout = 8000; // TIMEOUT de 2 segundos para que responda el servlet trifase.
         self.xmlHttpReq.ontimeout = function ()
         {
             PrimeFaces.info('timeout');
