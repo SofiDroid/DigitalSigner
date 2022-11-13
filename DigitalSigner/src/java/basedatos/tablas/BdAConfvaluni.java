@@ -128,9 +128,9 @@ public class BdAConfvaluni extends OperacionSQL implements InterfazDAO {
         if (idConfvaluni != null) {
             sb_sql.append(" AND CONFVALUNI.ID_CONFVALUNI = :ID_CONFVALUNI");
         }
-        if (idUnidad != null) {
-            sb_sql.append(" AND CONFVALUNI.ID_UNIDAD = :ID_UNIDAD");
-        }
+//        if (idUnidad != null) {
+//            sb_sql.append(" AND CONFVALUNI.ID_UNIDAD = :ID_UNIDAD");
+//        }
         if (idConfiguracion != null) {
             sb_sql.append(" AND CONFVALUNI.ID_CONFIGURACION = :ID_CONFIGURACION");
         }
