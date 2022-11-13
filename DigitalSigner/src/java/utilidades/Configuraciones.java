@@ -25,6 +25,13 @@ public class Configuraciones {
         this.datosUsuario = datosUsuario;
     }
     
+    /**
+     * Recupera un dato de configuración del sistema
+     * por unidad de forma jerarquica.
+     * 
+     * @param coConfiguracion
+     * @return 
+     */
     public String recuperaConfiguracion(String coConfiguracion) {
         try {
             Integer idConfiguracion = null;
@@ -42,13 +49,13 @@ public class Configuraciones {
 
             if (idConfiguracion != null) {
                 BdAConfvaluni filtroBdAConfvaluni = new BdAConfvaluni();
-                filtroBdAConfvaluni.setIdUnidad(1/*datosUsuario.getBdTUnidad().getIdUnidad()*/);
+                filtroBdAConfvaluni.setIdUnidad(datosUsuario.getBdTUnidad().getIdUnidad());
                 filtroBdAConfvaluni.setIdConfiguracion(idConfiguracion);
                 filtroBdTConfiguracion.setFeAlta(new Date());
                 filtroBdTConfiguracion.setFeDesactivo(new Date());
 
                 StAConfvaluni stAConfvaluni = new StAConfvaluni(datosUsuario);
-                ArrayList<BdAConfvaluni> listaBdAConfvaluni = stAConfvaluni.filtro(filtroBdAConfvaluni, null);
+                ArrayList<BdAConfvaluni> listaBdAConfvaluni = stAConfvaluni.filtroJerarquia(filtroBdAConfvaluni, null);
 
                 if (listaBdAConfvaluni != null && !listaBdAConfvaluni.isEmpty()) {
 
