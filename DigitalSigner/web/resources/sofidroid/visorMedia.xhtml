@@ -2,7 +2,8 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:cc="http://xmlns.jcp.org/jsf/composite"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
     <!-- INTERFACE -->
     <cc:interface>
@@ -19,7 +20,7 @@
             </p:media>
             <p:outputPanel rendered="#{cc.attrs.beanClass.resultadoValidacionFirmas ne null}" style="height: #{cc.attrs.beanClass.heightfirmas}">
                 <h3>Firmas</h3>
-                <p:repeat value="#{cc.attrs.beanClass.resultadoValidacionFirmas.listaFirmantes}" var="firmante">
+                <ui:repeat value="#{cc.attrs.beanClass.resultadoValidacionFirmas.listaFirmantes}" var="firmante">
                     <p:card styleClass="card">
                         <p:panelGrid columns="3" columnClasses="colFit, col-12, colFit">
 
@@ -32,7 +33,7 @@
 
                         </p:panelGrid>
                     </p:card>
-                </p:repeat>
+                </ui:repeat>
             </p:outputPanel>
         </p:dialog>
     </cc:implementation>
