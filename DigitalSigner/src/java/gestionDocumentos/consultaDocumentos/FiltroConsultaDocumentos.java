@@ -8,6 +8,7 @@ import basedatos.DataSet;
 import basedatos.RowCabecera;
 import basedatos.servicios.StDDocumento;
 import basedatos.tablas.BdDDocumento;
+import es.gob.afirma.signvalidation.DataAnalizerUtil;
 import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.Date;
@@ -356,15 +357,22 @@ public class FiltroConsultaDocumentos implements Serializable {
             BdDDocumento bdDDocumento = new StDDocumento(Session.getDatosUsuario()).item(idDocumento, null);
             byte[] binDocumento = bdDDocumento.getBlDocumento(null);
             ResultadoValidacionFirmas resultadoValidacionFirmas = null;
-            if (bdDDocumento.getCoExtension().equalsIgnoreCase("xsig")) {
-                AfirmaUtils afirmaUtils = new AfirmaUtils();
-                try {
+            AfirmaUtils afirmaUtils = new AfirmaUtils();
+            try {
+                if (DataAnalizerUtil.isSignedPDF(binDocumento)) {
+                    resultadoValidacionFirmas = afirmaUtils.validarFirmasPAdES(binDocumento, true, true, true, true);
+                }
+                else if (DataAnalizerUtil.isSignedXML(binDocumento)) {
                     resultadoValidacionFirmas = afirmaUtils.validarFirmas(binDocumento, true, true, true, true);
+                    binDocumento = afirmaUtils.recuperarDocumentoXSIG(binDocumento);
                 }
-                catch (Exception na) {
-                    LOG.error(na.getMessage(), na);
-                    Mensajes.showError("Error al recuperar firmantes del documento", na.getMessage());
-                }
+            }
+            catch (Exception na) {
+                LOG.error(na.getMessage(), na);
+                Mensajes.showError("Error al recuperar firmantes del documento", na.getMessage());
+            }
+            
+            if (DataAnalizerUtil.isSignedXML(binDocumento)) {
                 binDocumento = afirmaUtils.recuperarDocumentoXSIG(binDocumento);
             }
             this.visorDocumentos.setFilename(bdDDocumento.getCoFichero());

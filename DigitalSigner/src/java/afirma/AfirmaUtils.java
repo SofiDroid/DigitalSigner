@@ -1,10 +1,18 @@
 package afirma;
 
+import javax.xml.datatype.DatatypeFactory;
+import es.gob.afirma.core.signers.AOSimpleSignInfo;
+import es.gob.afirma.core.util.tree.AOTreeModel;
+import es.gob.afirma.core.util.tree.AOTreeNode;
+import es.gob.afirma.signers.pades.AOPDFSigner;
 import es.gob.afirma.signers.xml.Utils;
 import es.gob.afirma.signers.xml.dereference.CustomUriDereferencer;
+import es.gob.afirma.signvalidation.SignValidity;
+import static es.gob.afirma.signvalidation.SignValidity.SIGN_DETAIL_TYPE.KO;
 import excepciones.NoContentException;
 import excepciones.NoSignatureException;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.Key;
@@ -14,6 +22,7 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateExpiredException;
 import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.X509Certificate;
+import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
 import javax.xml.crypto.AlgorithmMethod;
@@ -39,6 +48,7 @@ import org.apache.tomcat.util.codec.binary.Base64;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import utilidades.Formateos;
 
 /**
  *
@@ -72,41 +82,88 @@ public class AfirmaUtils {
         resultadoValidacionFirmas.setCheckCertificates(validarCertificados);
         resultadoValidacionFirmas.setCheckCertReferences(validarReferencias);
         resultadoValidacionFirmas.setObtenerFirmantes(obtenerFirmantes);
+
+        if (validarFirmas) {
+            SignValidity signValidity = new es.gob.afirma.signvalidation.ValidateXMLSignature().validate(binFichero, validarCertificados);
+            switch (signValidity.getValidity()) {
+                case OK -> {
+                    resultadoValidacionFirmas.setBoValid(true);
+                    resultadoValidacionFirmas.setDsValidacion("Documento válido según las especificaciones establecidas.");
+                }
+                case UNKNOWN, KO -> {
+                    resultadoValidacionFirmas.setBoValid(false);
+                    String dsValidacion = obtenerMensajeErrorValidacion(signValidity.getError());
+                    if (dsValidacion == null) {
+                        dsValidacion = (signValidity.getErrorException() != null ? signValidity.getErrorException().getMessage() : null);
+                    }
+                    resultadoValidacionFirmas.setDsValidacion(dsValidacion);
+                }
+                default -> {
+                }
+            }
+        }
         
-        final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        dbf.setNamespaceAware(true);
-        final Document doc = dbf.newDocumentBuilder().parse(new ByteArrayInputStream(binFichero));
+        if (obtenerFirmantes) {
+            AOTreeModel signersStructure = new es.gob.afirma.signers.xades.AOXAdESSigner().getSignersStructure(binFichero, true);
+            for (int i = 0; i < signersStructure.getChildCount(signersStructure.getRoot()); i++) {
+                Firmante firmante = new Firmante();
+                AOSimpleSignInfo firma = (AOSimpleSignInfo)((AOTreeNode) signersStructure.getChild(signersStructure.getRoot(), i)).getUserObject();
+                firmante.setFecha(Formateos.dateToString(firma.getSigningTime(), Formateos.TipoFecha.FECHA_HORA_SEGUNDOS));
 
-        // Obtenemos el elemento Signature 
-        final NodeList nl = doc.getElementsByTagNameNS(XMLSignature.XMLNS, "Signature");
-        if (nl.getLength() == 0) {
-            throw new NoSignatureException();
-        }
-
-        for (int f = 0; f < nl.getLength(); f++)
-        {
-            DOMValidateContext valContext = new DOMValidateContext(
-                new KeyValueKeySelector(),
-                nl.item(f)
-            );
-            resultadoValidacionFirmas.getListaFirmantes().add(obtenerFirmante(valContext, 
-                    resultadoValidacionFirmas.isValidarFirmas(), 
-                    resultadoValidacionFirmas.isCheckCertificates(), 
-                    resultadoValidacionFirmas.isCheckCertReferences(),
-                    resultadoValidacionFirmas.isObtenerFirmantes()));
-        }
-
-        resultadoValidacionFirmas.setBoValid(true);
-        resultadoValidacionFirmas.setDsValidacion(/*Msg.getString("Afirma_valido")*/"Documento válido según las especificaciones establecidas.");
-        for (Firmante itemFirmante : resultadoValidacionFirmas.getListaFirmantes()) {
-            if (!itemFirmante.isValid()) {
-                resultadoValidacionFirmas.setBoValid(false);
-                resultadoValidacionFirmas.setDsValidacion(/*Msg.getString("Afirma_no_valido")*/"Documento no válido según las especificaciones establecidas.");
-                break;
+                String subjectDN = firma.getCerts()[0].getSubjectX500Principal().toString();
+                String nombreFirmante = subjectDN;
+                if (subjectDN.contains("CN=")) {
+                    nombreFirmante = subjectDN.substring(subjectDN.indexOf("CN=") + 3, subjectDN.indexOf(",", subjectDN.indexOf("CN=")));
+                }
+                firmante.setNombre(nombreFirmante);
+                try{
+                    firma.getCerts()[0].checkValidity();
+                    firmante.setValid(true);
+                }
+                catch (CertificateExpiredException | CertificateNotYetValidException ce) {
+                    firmante.setValid(false);
+                    firmante.setDsValidacion(ce.getMessage());
+                }
+                resultadoValidacionFirmas.getListaFirmantes().add(firmante);
             }
         }
         
         return resultadoValidacionFirmas;
+
+//        final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+//        dbf.setNamespaceAware(true);
+//        final Document doc = dbf.newDocumentBuilder().parse(new ByteArrayInputStream(binFichero));
+//
+//        // Obtenemos el elemento Signature 
+//        final NodeList nl = doc.getElementsByTagNameNS(XMLSignature.XMLNS, "Signature");
+//        if (nl.getLength() == 0) {
+//            throw new NoSignatureException();
+//        }
+//
+//        for (int f = 0; f < nl.getLength(); f++)
+//        {
+//            DOMValidateContext valContext = new DOMValidateContext(
+//                new KeyValueKeySelector(),
+//                nl.item(f)
+//            );
+//            resultadoValidacionFirmas.getListaFirmantes().add(obtenerFirmante(valContext, 
+//                    resultadoValidacionFirmas.isValidarFirmas(), 
+//                    resultadoValidacionFirmas.isCheckCertificates(), 
+//                    resultadoValidacionFirmas.isCheckCertReferences(),
+//                    resultadoValidacionFirmas.isObtenerFirmantes()));
+//        }
+//
+//        resultadoValidacionFirmas.setBoValid(true);      
+//        resultadoValidacionFirmas.setDsValidacion(/*Msg.getString("Afirma_valido")*/"Documento válido según las especificaciones establecidas.");
+//        for (Firmante itemFirmante : resultadoValidacionFirmas.getListaFirmantes()) {
+//            if (!itemFirmante.isValid()) {
+//                resultadoValidacionFirmas.setBoValid(false);
+//                resultadoValidacionFirmas.setDsValidacion(/*Msg.getString("Afirma_no_valido")*/"Documento no válido según las especificaciones establecidas.");
+//                break;
+//            }
+//        }
+//        
+//        return resultadoValidacionFirmas;
     }
     
     private static Firmante obtenerFirmante(DOMValidateContext valContext, boolean validarFirmas, boolean checkCertificates, boolean checkCertReferences, boolean obtenerFirmantes) {
@@ -220,7 +277,14 @@ public class AfirmaUtils {
                                         nodo = nodo.getChildNodes().item(k);
                                         if (nodo.getNodeName().equals("xades:SigningTime"))
                                         {
-                                            fechaFirma = nodo.getTextContent();
+                                            GregorianCalendar calendar;
+                                            try {
+                                                calendar = javax.xml.datatype.DatatypeFactory.newInstance().newXMLGregorianCalendar(nodo.getTextContent().trim()).toGregorianCalendar();
+                                                
+                                                fechaFirma = Formateos.dateToString(calendar.getTime(), Formateos.TipoFecha.FECHA_HORA_SEGUNDOS);
+                                            } catch (final Exception ex) {
+                                                fechaFirma = nodo.getTextContent();
+                                            }
                                         }
                                     }
                                 }
@@ -260,6 +324,86 @@ public class AfirmaUtils {
         }
         
         return nombreFirmante;
+    }
+    
+    public ResultadoValidacionFirmas validarFirmasPAdES(byte[] binFichero, boolean validarFirmas, boolean validarCertificados, boolean validarReferencias, boolean obtenerFirmantes) throws Exception {
+        ResultadoValidacionFirmas resultadoValidacionFirmas = new ResultadoValidacionFirmas();
+        resultadoValidacionFirmas.setValidarFirmas(validarFirmas);
+        resultadoValidacionFirmas.setCheckCertificates(validarCertificados);
+        resultadoValidacionFirmas.setCheckCertReferences(validarReferencias);
+        resultadoValidacionFirmas.setObtenerFirmantes(obtenerFirmantes);
+
+        if (validarFirmas) {
+            SignValidity signValidity = new es.gob.afirma.signvalidation.ValidatePdfSignature().validate(binFichero, validarCertificados);
+            switch (signValidity.getValidity()) {
+                case OK -> {
+                    resultadoValidacionFirmas.setBoValid(true);
+                    resultadoValidacionFirmas.setDsValidacion("Documento válido según las especificaciones establecidas.");
+                }
+                case UNKNOWN, KO -> {
+                    resultadoValidacionFirmas.setBoValid(false);
+                    String dsValidacion = obtenerMensajeErrorValidacion(signValidity.getError());
+                    if (dsValidacion == null) {
+                        dsValidacion = (signValidity.getErrorException() != null ? signValidity.getErrorException().getMessage() : null);
+                    }
+                    resultadoValidacionFirmas.setDsValidacion(dsValidacion);
+                }
+                default -> {
+                }
+            }
+        }
+        
+        if (obtenerFirmantes) {
+            AOTreeModel signersStructure = new AOPDFSigner().getSignersStructure(binFichero, true);
+            for (int i = 0; i < signersStructure.getChildCount(signersStructure.getRoot()); i++) {
+                Firmante firmante = new Firmante();
+                AOSimpleSignInfo firma = (AOSimpleSignInfo)((AOTreeNode) signersStructure.getChild(signersStructure.getRoot(), i)).getUserObject();
+                firmante.setFecha(Formateos.dateToString(firma.getSigningTime(), Formateos.TipoFecha.FECHA_HORA_SEGUNDOS));
+
+                String subjectDN = firma.getCerts()[0].getSubjectX500Principal().toString();
+                String nombreFirmante = subjectDN;
+                if (subjectDN.contains("CN=")) {
+                    nombreFirmante = subjectDN.substring(subjectDN.indexOf("CN=") + 3, subjectDN.indexOf(",", subjectDN.indexOf("CN=")));
+                }
+                firmante.setNombre(nombreFirmante);
+                try{
+                    firma.getCerts()[0].checkValidity();
+                    firmante.setValid(true);
+                }
+                catch (CertificateExpiredException | CertificateNotYetValidException ce) {
+                    firmante.setValid(false);
+                    firmante.setDsValidacion(ce.getMessage());
+                }
+                resultadoValidacionFirmas.getListaFirmantes().add(firmante);
+            }
+        }
+        
+        return resultadoValidacionFirmas;
+    }
+
+    private String obtenerMensajeErrorValidacion(SignValidity.VALIDITY_ERROR error) {
+        if (error != null) {
+            return switch (error) {
+                case ALGORITHM_NOT_SUPPORTED -> "Algoritmo no soportado.";
+                case CA_NOT_SUPPORTED -> "Emisor del certificado no válido.";
+                case CERTIFICATE_EXPIRED -> "Certificado de firma caducado.";
+                case CERTIFICATE_NOT_VALID_YET -> "El certificado de firma aun no es válido.";
+                case CERTIFICATE_PROBLEM -> "No se pudo extraer el certificado.";
+                case CORRUPTED_SIGN -> "Información de firma no consistente (firma corrupta).";
+                case CRL_PROBLEM -> "Existe un problema con las CRLs incrustadas en la firma.";
+                case NO_DATA -> "No se han encontrado datos firmados.";
+                case NO_MATCH_DATA -> "La firma no se corresponde con los datos firmados.";
+                case NO_SIGN -> "No se ha encontrado la firma dentro del documento.";
+                case ODF_UNKOWN_VALIDITY -> "Se trata de una firma ODF.";
+                case OOXML_UNKOWN_VALIDITY -> "Se trata de una firma OOXML.";
+                case PDF_UNKOWN_VALIDITY -> "Se trata de una firma PDF.";
+                case UNKOWN_ERROR -> "Firma inválida por error desconocido.";
+                case UNKOWN_SIGNATURE_FORMAT -> "No se reconoce el tipo de firma.";
+                default -> "ERROR DESCONOCIDO";
+            };
+        }
+        
+        return null;
     }
     
     static final class KeyValueKeySelector extends KeySelector {

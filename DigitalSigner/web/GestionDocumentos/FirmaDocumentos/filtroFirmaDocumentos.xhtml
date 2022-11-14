@@ -389,7 +389,7 @@
                                     AutoScript.sign(str, "SHA256withRSA", formato + "tri", params, 
                                         function prefirmaNotificacionSuccess(firmaBase64, certificadoB64)
                                         {
-                                            firmaNotificacionSuccess(firmaBase64, certificadoB64, elemento, i);
+                                            firmaNotificacionSuccess(firmaBase64, certificadoB64, elemento, i, formato);
                                         }, 
                                         firmaNotificacionError
                                     );
@@ -399,7 +399,7 @@
                                     AutoScript.sign(str, "SHA256withRSA", formato, params, 
                                         function prefirmaNotificacionSuccess(firmaBase64, certificadoB64)
                                         {
-                                            firmaNotificacionSuccess(firmaBase64, certificadoB64, elemento, i);
+                                            firmaNotificacionSuccess(firmaBase64, certificadoB64, elemento, i, formato);
                                         }, 
                                         firmaNotificacionError
                                     );
@@ -454,7 +454,7 @@
                                             PrimeFaces.info('firmaBase64 lenght = ' + firmaBase64.length);
                                             PrimeFaces.info('certificadoB64  lenght = ' + certificadoB64.length);
 
-                                            firmaNotificacionSuccess(firmaBase64, certificadoB64, elemento, i);
+                                            firmaNotificacionSuccess(firmaBase64, certificadoB64, elemento, i, formato);
                                         }, 
                                         firmaNotificacionError
                                     );
@@ -465,7 +465,7 @@
                                     AutoScript.cosign(str, "SHA256withRSA", formato, params, 
                                         function prefirmaNotificacionSuccess(firmaBase64, certificadoB64)
                                         {
-                                            firmaNotificacionSuccess(firmaBase64, certificadoB64, elemento, i);
+                                            firmaNotificacionSuccess(firmaBase64, certificadoB64, elemento, i, formato);
                                         }, 
                                         firmaNotificacionError
                                     );
@@ -519,7 +519,7 @@
                                             PrimeFaces.info('firmaBase64 lenght = ' + firmaBase64.length);
                                             PrimeFaces.info('certificadoB64  lenght = ' + certificadoB64.length);
 
-                                            firmaNotificacionSuccess(firmaBase64, certificadoB64, elemento, i);
+                                            firmaNotificacionSuccess(firmaBase64, certificadoB64, elemento, i, formato);
                                         }, 
                                         firmaNotificacionError
                                     );
@@ -530,7 +530,7 @@
                                     AutoScript.countersign(str, "SHA256withRSA", formato, params, 
                                         function prefirmaNotificacionSuccess(firmaBase64, certificadoB64)
                                         {
-                                            firmaNotificacionSuccess(firmaBase64, certificadoB64, elemento, i);
+                                            firmaNotificacionSuccess(firmaBase64, certificadoB64, elemento, i, formato);
                                         }, 
                                         firmaNotificacionError
                                     );
@@ -551,9 +551,9 @@
                     }, 10);
                 }
 
-                function firmaNotificacionSuccess(firmaBase64, certificadoB64, elemento, i)
+                function firmaNotificacionSuccess(firmaBase64, certificadoB64, elemento, i, formato)
                 {
-                    subeFirmado(firmaBase64, elemento, i);
+                    subeFirmado(firmaBase64, elemento, i, formato);
                 }
 
                 function firmaNotificacionError(tipoError, mensaje)
@@ -564,7 +564,7 @@
                     mandarRefrescarListado();
                 }
 
-                function subeFirmado(docFirmado, elemento, i)
+                function subeFirmado(docFirmado, elemento, i, formato)
                 {
                     refrescarProgreso(i + 1, numSeleccionados);
                     PrimeFaces.info(' (Subiendo)');
@@ -634,7 +634,7 @@
                                 }
                             };
                             PrimeFaces.info('encodeURIComponent(docFirmado): ' + encodeURIComponent(docFirmado));
-                            self.xmlHttpReq.send("indexFichero=" + elemento + "&data2=" + encodeURIComponent(docFirmado));
+                            self.xmlHttpReq.send("indexFichero=" + elemento + "&formato=" + formato + "&data2=" + encodeURIComponent(docFirmado));
                         } catch (e)
                         {
                             posicion = 0;

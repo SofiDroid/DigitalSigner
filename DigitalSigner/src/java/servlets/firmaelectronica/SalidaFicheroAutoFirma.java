@@ -19,6 +19,7 @@ import basedatos.tablas.BdTAutoridad;
 import basedatos.tablas.BdTSituaciondoc;
 import basedatos.tablas.BdTTipodocumento;
 import basedatos.tablas.BdTUsuario;
+import es.gob.afirma.signvalidation.DataAnalizerUtil;
 import gestionDocumentos.firmaDocumentos.FiltroFirmaDocumentos;
 import init.AppInit;
 import java.io.IOException;
@@ -104,6 +105,9 @@ public class SalidaFicheroAutoFirma extends HttpServlet
                         throw new Exception("- " + "idxFichero -> " + idxFichero + ": " + msg);
                     } 
                     
+                    //Obtener el formato de la firma (XAdES / PAdES)
+                    String sFormato = (String) request.getParameter("formato");
+                    
                     //Obtener los datos que vamos a guardar (el documento firmado)
                     Base64 B64E2 = new Base64();
                     byte[] idDocumentoFirmado = B64E2.decode((String) request.getParameter("data2"));
@@ -122,9 +126,15 @@ public class SalidaFicheroAutoFirma extends HttpServlet
 
                     if (validarFirma) {
                         // INICIO VALIDAR NIF Y FIRMA
+                        ResultadoValidacionFirmas resultadoValidacionFirmas = null;
                         AfirmaUtils afirmaUtils = new AfirmaUtils();
-                        ResultadoValidacionFirmas resultadoValidacionFirmas = afirmaUtils.validarFirmas(binDocumentoFirmado, true, true, true, true);
-                        if (!resultadoValidacionFirmas.isBoValid()) {
+                        if (DataAnalizerUtil.isSignedPDF(binDocumentoFirmado)) {
+                            resultadoValidacionFirmas = afirmaUtils.validarFirmasPAdES(binDocumentoFirmado, true, true, true, true);
+                        }
+                        else {
+                            resultadoValidacionFirmas = afirmaUtils.validarFirmas(binDocumentoFirmado, true, true, true, true);
+                        }
+                        if (resultadoValidacionFirmas != null && !resultadoValidacionFirmas.isBoValid()) {
                             //"Firma del documento no válida."
                             String msg = resultadoValidacionFirmas.getDsValidacion();
                             LOG.error(msg);
@@ -161,8 +171,16 @@ public class SalidaFicheroAutoFirma extends HttpServlet
                             //Actualizar el documento en BD_D_DOCUMENTOS
                             StDDocumento stDDocumento = new StDDocumento(Session.getDatosUsuario());
                             bdDDocumento.setBlDocumento(binDocumentoFirmado); // BL_DOCUMENTO: con el firmado
-                            bdDDocumento.setCoExtension("XSIG"); // CO_EXTENSION: "XSIG"
-                            bdDDocumento.setCoFichero(bdDDocumento.getCoFichero() + ".xsig"); // CO_FICHERO: el que habia reemplazando la extension a ".xsig"
+                            String extension;
+                            if (sFormato.equals("PAdES")) {
+                                bdDDocumento.setCoExtension("PDF"); // PAdES
+                                extension = ".pdf";
+                            }
+                            else {
+                                bdDDocumento.setCoExtension("XSIG"); // XAdES
+                                extension = ".xsig";
+                            }
+                            bdDDocumento.setCoFichero(bdDDocumento.getCoFichero().split("\\.")[0] + extension); // CO_FICHERO: el que habia reemplazando la extension a ".xsig"
                             
                             //Mirar si es el ultimo firmante
                             BdADocfirma filtroBdADocfirma = new BdADocfirma();
@@ -323,10 +341,7 @@ public class SalidaFicheroAutoFirma extends HttpServlet
                     catch (IOException ex)
                     {
                         LOG.error(ex.getMessage(), ex);
-                        // NADA, QUE LO HAGA EL PROCESO DESATENDIDO
                     }
-                    
-                    //Files.write(Paths.get("C:\\pruebas\\firmados", idDocumentoOriginal), binDocumentoFirmado);
                 }
                 catch(IOException | NumberFormatException ex)
                 {
