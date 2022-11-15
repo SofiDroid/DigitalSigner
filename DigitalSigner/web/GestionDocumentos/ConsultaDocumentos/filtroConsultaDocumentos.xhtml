@@ -41,17 +41,17 @@
                      styleClass="ui-panelgrid-blank ui-fluid"
                      style="border:0px none; background-color:transparent;">
 
-                        <sd:campoWebTexto id="txtCodigo" beanClass="#{filtroConsultaDocumentos.getcCoDocumento()}" />
+                        <sd:campoWebTexto id="txtCodigo" label="#{msg['lbl_FiltroConsultaDocumentos_CoDocumento']}" beanClass="#{filtroConsultaDocumentos.getcCoDocumento()}" />
 
-                        <sd:campoWebFechaRango id="txtFeAlta" beanClass="#{filtroConsultaDocumentos.getcFeAlta()}" />
+                        <sd:campoWebFechaRango id="txtFeAlta" label="#{msg['lbl_FiltroConsultaDocumentos_FeAlta']}" beanClass="#{filtroConsultaDocumentos.getcFeAlta()}" />
 
-                        <sd:campoWebTexto id="txtDescripcion" beanClass="#{filtroConsultaDocumentos.getcDsDocumento()}" />
+                        <sd:campoWebTexto id="txtDescripcion" label="#{msg['lbl_FiltroConsultaDocumentos_DsDocumento']}" beanClass="#{filtroConsultaDocumentos.getcDsDocumento()}" />
 
-                        <sd:campoWebFechaRango id="txtFeDesactivo" beanClass="#{filtroConsultaDocumentos.getcFeDesactivo()}" />
+                        <sd:campoWebFechaRango id="txtFeDesactivo" label="#{msg['lbl_FiltroConsultaDocumentos_FeDesactivo']}" beanClass="#{filtroConsultaDocumentos.getcFeDesactivo()}" />
 
-                        <sd:campoWebLupa id="txtTipoDocumento" beanClass="#{filtroConsultaDocumentos.getcTipodocumento()}" />
+                        <sd:campoWebLupa id="txtTipoDocumento" label="#{msg['lbl_FiltroConsultaDocumentos_TipoDocumento']}" beanClass="#{filtroConsultaDocumentos.getcTipodocumento()}" />
                         
-                        <sd:campoWebLupa id="txtSituacionDoc" beanClass="#{filtroConsultaDocumentos.getcSituaciondoc()}" />
+                        <sd:campoWebLupa id="txtSituacionDoc" label="#{msg['lbl_FiltroConsultaDocumentos_SituacionDoc']}" beanClass="#{filtroConsultaDocumentos.getcSituaciondoc()}" />
                         
                     </p:panelGrid>
                     <p:panelGrid columns="1"
@@ -60,7 +60,7 @@
                      styleClass="ui-panelgrid-blank ui-fluid"
                      style="border:0px none; background-color:transparent;">
 
-                        <sd:campoWebLupa id="txtAutoridad" beanClass="#{filtroConsultaDocumentos.getcAutoridad()}" />
+                        <sd:campoWebLupa id="txtAutoridad" label="#{msg['lbl_FiltroConsultaDocumentos_Autoridad']}" beanClass="#{filtroConsultaDocumentos.getcAutoridad()}" />
                         
                     </p:panelGrid>
                 </p:fieldset>

@@ -57,17 +57,17 @@
                      styleClass="ui-panelgrid-blank ui-fluid"
                      style="border:0px none; background-color:transparent;">
 
-                        <sd:campoWebTexto id="txtCodigo" beanClass="#{filtroFirmaDocumentos.getcCoDocumento()}" />
+                        <sd:campoWebTexto id="txtCodigo" label="#{msg['lbl_FiltroFirmaDocumentos_CoDocumento']}" beanClass="#{filtroFirmaDocumentos.getcCoDocumento()}" />
 
-                        <sd:campoWebFechaRango id="txtFeAlta" beanClass="#{filtroFirmaDocumentos.getcFeAlta()}" />
+                        <sd:campoWebFechaRango id="txtFeAlta" label="#{msg['lbl_FiltroFirmaDocumentos_FeAlta']}" beanClass="#{filtroFirmaDocumentos.getcFeAlta()}" />
 
-                        <sd:campoWebTexto id="txtDescripcion" beanClass="#{filtroFirmaDocumentos.getcDsDocumento()}" />
+                        <sd:campoWebTexto id="txtDescripcion" label="#{msg['lbl_FiltroFirmaDocumentos_DsDocumento']}" beanClass="#{filtroFirmaDocumentos.getcDsDocumento()}" />
 
-                        <sd:campoWebFechaRango id="txtFeDesactivo" beanClass="#{filtroFirmaDocumentos.getcFeDesactivo()}" />
+                        <sd:campoWebFechaRango id="txtFeDesactivo" label="#{msg['lbl_FiltroFirmaDocumentos_FeDesactivo']}" beanClass="#{filtroFirmaDocumentos.getcFeDesactivo()}" />
 
-                        <sd:campoWebLupa id="txtTipoDocumento" beanClass="#{filtroFirmaDocumentos.getcTipodocumento()}" />
+                        <sd:campoWebLupa id="txtTipoDocumento" label="#{msg['lbl_FiltroFirmaDocumentos_TipoDocumento']}" beanClass="#{filtroFirmaDocumentos.getcTipodocumento()}" />
                         
-                        <sd:campoWebLupa id="txtAutoridad" beanClass="#{filtroFirmaDocumentos.getcAutoridad()}" />
+                        <sd:campoWebLupa id="txtAutoridad" label="#{msg['lbl_FiltroFirmaDocumentos_Autoridad']}" beanClass="#{filtroFirmaDocumentos.getcAutoridad()}" />
 
                     </p:panelGrid>
                 </p:fieldset>

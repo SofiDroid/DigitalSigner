@@ -86,7 +86,7 @@ public class EdicionTiposDocumentos implements Serializable {
             this.cDsTipodocumento.setRequired(true);
             
             this.cDiFormatofirma = new CampoWebCombo();
-            this.cDiFormatofirma.setLabel("Formato firma");
+            this.cDiFormatofirma.setLabel(Msg.getString("lbl_EdicionTiposDocumentos_DiFormatoFirma"));
             this.cDiFormatofirma.setWidthLabel("100px");
             this.cDiFormatofirma.setWidth("6em");
             this.cDiFormatofirma.getOptions().put("XAdES","XAdES");

@@ -52,13 +52,13 @@
                      styleClass="ui-panelgrid-blank ui-fluid"
                      style="border:0px none;background-color:transparent;">
 
-                    <sd:campoWebTexto id="txtCodigoSituacionXML" beanClass="#{beanEdicion.getcCoSituacionXML()}" />
+                    <sd:campoWebTexto id="txtCodigoSituacionXML" label="#{msg['lbl_EdicionSituacionesXML_CoSituacionXML']}" beanClass="#{beanEdicion.getcCoSituacionXML()}" />
 
-                    <sd:campoWebTexto id="txtDescripcionSituacionXML" beanClass="#{beanEdicion.getcDsSituacionXML()}" />
+                    <sd:campoWebTexto id="txtDescripcionSituacionXML" label="#{msg['lbl_EdicionSituacionesXML_DsSituacionXML']}" beanClass="#{beanEdicion.getcDsSituacionXML()}" />
 
-                    <sd:campoWebFecha id="txtFeAlta" beanClass="#{beanEdicion.getcFeAlta()}" />
+                    <sd:campoWebFecha id="txtFeAlta" label="#{msg['lbl_EdicionSituacionesXML_FeAlta']}" beanClass="#{beanEdicion.getcFeAlta()}" />
 
-                    <sd:campoWebFecha id="txtFeDesactivo" beanClass="#{beanEdicion.getcFeDesactivo()}" />
+                    <sd:campoWebFecha id="txtFeDesactivo" label="#{msg['lbl_EdicionSituacionesXML_FeDesactivo']}" beanClass="#{beanEdicion.getcFeDesactivo()}" />
 
                 </p:panelGrid>
             </p:card>

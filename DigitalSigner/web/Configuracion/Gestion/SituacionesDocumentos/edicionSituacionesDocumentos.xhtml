@@ -52,13 +52,13 @@
                      styleClass="ui-panelgrid-blank ui-fluid"
                      style="border:0px none;background-color:transparent;">
 
-                    <sd:campoWebTexto id="txtCodigoSituaciondoc" beanClass="#{beanEdicion.getcCoSituaciondoc()}" />
+                    <sd:campoWebTexto id="txtCodigoSituaciondoc" label="#{msg['lbl_EdicionSituacionesDocumentos_CoSituaciondoc']}" beanClass="#{beanEdicion.getcCoSituaciondoc()}" />
 
-                    <sd:campoWebTexto id="txtDescripcionSituaciondoc" beanClass="#{beanEdicion.getcDsSituaciondoc()}" />
+                    <sd:campoWebTexto id="txtDescripcionSituaciondoc" label="#{msg['lbl_EdicionSituacionesDocumentos_DsSituaciondoc']}" beanClass="#{beanEdicion.getcDsSituaciondoc()}" />
 
-                    <sd:campoWebFecha id="txtFeAlta" beanClass="#{beanEdicion.getcFeAlta()}" />
+                    <sd:campoWebFecha id="txtFeAlta" label="#{msg['lbl_EdicionSituacionesDocumentos_FeAlta']}" beanClass="#{beanEdicion.getcFeAlta()}" />
 
-                    <sd:campoWebFecha id="txtFeDesactivo" beanClass="#{beanEdicion.getcFeDesactivo()}" />
+                    <sd:campoWebFecha id="txtFeDesactivo" label="#{msg['lbl_EdicionSituacionesDocumentos_FeDesactivo']}" beanClass="#{beanEdicion.getcFeDesactivo()}" />
 
                 </p:panelGrid>
             </p:card>

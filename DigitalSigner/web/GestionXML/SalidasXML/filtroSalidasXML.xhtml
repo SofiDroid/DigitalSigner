@@ -36,13 +36,13 @@
                      styleClass="ui-panelgrid-blank ui-fluid"
                      style="border:0px none; background-color:transparent;">
 
-                        <sd:campoWebNumero id="txtIdSalidaXML" beanClass="#{filtroSalidasXML.getcIdSalidaXML()}" />
+                        <sd:campoWebNumero id="txtIdSalidaXML" label="#{msg['lbl_FiltroSalidasXML_IdSalidaXML']}" beanClass="#{filtroSalidasXML.getcIdSalidaXML()}" />
 
-                        <sd:campoWebFechaRango id="txtFeAlta" beanClass="#{filtroSalidasXML.getcFeAlta()}" />
+                        <sd:campoWebFechaRango id="txtFeAlta" label="#{msg['lbl_FiltroSalidasXML_FeAlta']}" beanClass="#{filtroSalidasXML.getcFeAlta()}" />
 
-                        <sd:campoWebLupa id="txtSituacionXML" beanClass="#{filtroSalidasXML.getcSituacionxml()}" />
+                        <sd:campoWebLupa id="txtSituacionXML" label="#{msg['lbl_FiltroSalidasXML_Situacionxml']}" beanClass="#{filtroSalidasXML.getcSituacionxml()}" />
 
-                        <sd:campoWebFechaRango id="txtFeDesactivo" beanClass="#{filtroSalidasXML.getcFeDesactivo()}" />
+                        <sd:campoWebFechaRango id="txtFeDesactivo" label="#{msg['lbl_FiltroSalidasXML_FeDesactivo']}" beanClass="#{filtroSalidasXML.getcFeDesactivo()}" />
 
                     </p:panelGrid>
                 </p:fieldset>

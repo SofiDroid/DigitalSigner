@@ -7,14 +7,15 @@
     <!-- INTERFACE -->
     <cc:interface>
         <cc:attribute name = "beanClass" />
+        <cc:attribute name = "label" />
     </cc:interface>
 
     <!-- IMPLEMENTATION -->
     <cc:implementation>
         <p:panelGrid columns="2" columnClasses="colFit, col-12">
-            <p:outputLabel for="#{cc.attrs.id}" value="#{cc.attrs.beanClass.label}#{cc.attrs.beanClass.requiredChar}" escape="false" style="display: block;#{cc.attrs.beanClass.widthLabel}"/>
+            <p:outputLabel for="#{cc.attrs.id}" value="#{cc.attrs.label}#{cc.attrs.beanClass.requiredChar}" escape="false" style="display: block;#{cc.attrs.beanClass.widthLabel}"/>
             <p:selectBooleanCheckbox  id="#{cc.attrs.id}" value="#{cc.attrs.beanClass.value}" disabled="#{cc.attrs.beanClass.protegido}"
-                         required="#{cc.attrs.beanClass.required}" label="#{cc.attrs.beanClass.label}" />
+                         required="#{cc.attrs.beanClass.required}" label="#{cc.attrs.label}" />
         </p:panelGrid>
     </cc:implementation>
 </html>

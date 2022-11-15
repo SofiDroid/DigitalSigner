@@ -41,13 +41,13 @@
                      styleClass="ui-panelgrid-blank ui-fluid"
                      style="border:0px none; background-color:transparent;">
 
-                        <sd:campoWebTexto id="txtCodigoTipoDocumento" beanClass="#{filtroTiposDocumentos.getcCoTipodocumento()}" />
+                        <sd:campoWebTexto id="txtCodigoTipoDocumento" label="#{msg['lbl_FiltroTiposDocumentos_CoTipodocumento']}" beanClass="#{filtroTiposDocumentos.getcCoTipodocumento()}" />
 
-                        <sd:campoWebFechaRango id="txtFeAlta" beanClass="#{filtroTiposDocumentos.getcFeAlta()}" />
+                        <sd:campoWebFechaRango id="txtFeAlta" label="#{msg['lbl_FiltroTiposDocumentos_FeAlta']}" beanClass="#{filtroTiposDocumentos.getcFeAlta()}" />
 
-                        <sd:campoWebTexto id="txtDescripcionTipoDocumento" beanClass="#{filtroTiposDocumentos.getcDsTipodocumento()}" />
+                        <sd:campoWebTexto id="txtDescripcionTipoDocumento" label="#{msg['lbl_FiltroTiposDocumentos_DsTipodocumento']}" beanClass="#{filtroTiposDocumentos.getcDsTipodocumento()}" />
 
-                        <sd:campoWebFechaRango id="txtFeDesactivo" beanClass="#{filtroTiposDocumentos.getcFeDesactivo()}" />
+                        <sd:campoWebFechaRango id="txtFeDesactivo" label="#{msg['lbl_FiltroTiposDocumentos_FeDesactivo']}" beanClass="#{filtroTiposDocumentos.getcFeDesactivo()}" />
 
                     </p:panelGrid>
                 </p:fieldset>

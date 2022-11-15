@@ -41,21 +41,21 @@
                      styleClass="ui-panelgrid-blank ui-fluid"
                      style="border:0px none; background-color:transparent;">
 
-                        <sd:campoWebTexto id="txtNIF" beanClass="#{filtroUsuarios.getcCoNIF()}" />
+                        <sd:campoWebTexto id="txtNIF" label="#{msg['lbl_FiltroUsuarios_CoNIF']}" beanClass="#{filtroUsuarios.getcCoNIF()}" />
                         
-                        <sd:campoWebTexto id="txtCodigoUsuario" beanClass="#{filtroUsuarios.getcCoUsuario()}" />
+                        <sd:campoWebTexto id="txtCodigoUsuario" label="#{msg['lbl_FiltroUsuarios_CoUsuario']}" beanClass="#{filtroUsuarios.getcCoUsuario()}" />
 
-                        <sd:campoWebTexto id="txtNombre" beanClass="#{filtroUsuarios.getcDsNombre()}" />
+                        <sd:campoWebTexto id="txtNombre" label="#{msg['lbl_FiltroUsuarios_DsNombre']}" beanClass="#{filtroUsuarios.getcDsNombre()}" />
 
-                        <sd:campoWebCheckTriState id="chkAdmin" beanClass="#{filtroUsuarios.getcBoAdmin()}" />
+                        <sd:campoWebCheckTriState id="chkAdmin" sd:label="#{msg['lbl_FiltroUsuarios_BoAdmin']}" beanClass="#{filtroUsuarios.getcBoAdmin()}" />
 
-                        <sd:campoWebTexto id="txtApellido1" beanClass="#{filtroUsuarios.getcDsApellido1()}" />
+                        <sd:campoWebTexto id="txtApellido1" label="#{msg['lbl_FiltroUsuarios_DsApellido1']}" beanClass="#{filtroUsuarios.getcDsApellido1()}" />
 
-                        <sd:campoWebTexto id="txtApellido2" beanClass="#{filtroUsuarios.getcDsApellido2()}" />
+                        <sd:campoWebTexto id="txtApellido2" label="#{msg['lbl_FiltroUsuarios_DsApellido2']}" beanClass="#{filtroUsuarios.getcDsApellido2()}" />
 
-                        <sd:campoWebFechaRango id="txtFeAlta" beanClass="#{filtroUsuarios.getcFeAlta()}" />
+                        <sd:campoWebFechaRango id="txtFeAlta" label="#{msg['lbl_FiltroUsuarios_FeAlta']}" beanClass="#{filtroUsuarios.getcFeAlta()}" />
 
-                        <sd:campoWebFechaRango id="txtFeDesactivo" beanClass="#{filtroUsuarios.getcFeDesactivo()}" />
+                        <sd:campoWebFechaRango id="txtFeDesactivo" label="#{msg['lbl_FiltroUsuarios_FeDesactivo']}" beanClass="#{filtroUsuarios.getcFeDesactivo()}" />
 
                     </p:panelGrid>
                 </p:fieldset>

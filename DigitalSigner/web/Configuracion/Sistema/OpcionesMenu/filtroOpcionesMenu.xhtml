@@ -41,17 +41,17 @@
                      styleClass="ui-panelgrid-blank ui-fluid"
                      style="border:0px none; background-color:transparent;">
 
-                        <sd:campoWebTexto id="txtCodigoOpcionMenu" beanClass="#{filtroOpcionesMenu.getcCoOpcionMenu()}" />
+                        <sd:campoWebTexto id="txtCodigoOpcionMenu" label="#{msg['lbl_FiltroOpcionesMenu_CoOpcionMenu']}" beanClass="#{filtroOpcionesMenu.getcCoOpcionMenu()}" />
 
-                        <sd:campoWebFechaRango id="txtFeAlta" beanClass="#{filtroOpcionesMenu.getcFeAlta()}" />
+                        <sd:campoWebFechaRango id="txtFeAlta" label="#{msg['lbl_FiltroOpcionesMenu_FeAlta']}" beanClass="#{filtroOpcionesMenu.getcFeAlta()}" />
 
-                        <sd:campoWebTexto id="txtDescripcionOpcionMenu" beanClass="#{filtroOpcionesMenu.getcDsOpcionMenu()}" />
+                        <sd:campoWebTexto id="txtDescripcionOpcionMenu" label="#{msg['lbl_FiltroOpcionesMenu_DsOpcionMenu']}" beanClass="#{filtroOpcionesMenu.getcDsOpcionMenu()}" />
 
-                        <sd:campoWebFechaRango id="txtFeDesactivo" beanClass="#{filtroOpcionesMenu.getcFeDesactivo()}" />
+                        <sd:campoWebFechaRango id="txtFeDesactivo" label="#{msg['lbl_FiltroOpcionesMenu_FeDesactivo']}" beanClass="#{filtroOpcionesMenu.getcFeDesactivo()}" />
 
-                        <sd:campoWebTexto id="txtTitulo" beanClass="#{filtroOpcionesMenu.getcDsTitulo()}" />
+                        <sd:campoWebTexto id="txtTitulo" label="#{msg['lbl_FiltroOpcionesMenu_DsTitulo']}" beanClass="#{filtroOpcionesMenu.getcDsTitulo()}" />
 
-                        <sd:campoWebTexto id="txtRuta" beanClass="#{filtroOpcionesMenu.getcDsRuta()}" />
+                        <sd:campoWebTexto id="txtRuta" label="#{msg['lbl_FiltroOpcionesMenu_DsRuta']}" beanClass="#{filtroOpcionesMenu.getcDsRuta()}" />
 
                     </p:panelGrid>
                     <p:panelGrid columns="1"
@@ -60,7 +60,7 @@
                      styleClass="ui-panelgrid-blank ui-fluid"
                      style="border:0px none; background-color:transparent;">
                         
-                        <sd:campoWebLupa id="txtOpcionMenuPadre" beanClass="#{filtroOpcionesMenu.getcOpcionMenuPadre()}" />
+                        <sd:campoWebLupa id="txtOpcionMenuPadre" label="#{msg['lbl_FiltroOpcionesMenu_OpcionMenuPadre']}" beanClass="#{filtroOpcionesMenu.getcOpcionMenuPadre()}" />
                     
                     </p:panelGrid>
                 </p:fieldset>

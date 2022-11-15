@@ -41,13 +41,13 @@
                      styleClass="ui-panelgrid-blank ui-fluid"
                      style="border:0px none; background-color:transparent;">
 
-                        <sd:campoWebTexto id="txtCodigoUnidad" beanClass="#{filtroUnidades.getcCoUnidad()}" />
+                        <sd:campoWebTexto id="txtCodigoUnidad" label="#{msg['lbl_FiltroUnidades_CoUnidad']}" beanClass="#{filtroUnidades.getcCoUnidad()}" />
 
-                        <sd:campoWebFechaRango id="txtFeAlta" beanClass="#{filtroUnidades.getcFeAlta()}" />
+                        <sd:campoWebFechaRango id="txtFeAlta" label="#{msg['lbl_FiltroUnidades_FeAlta']}" beanClass="#{filtroUnidades.getcFeAlta()}" />
 
-                        <sd:campoWebTexto id="txtDescripcionUnidad" beanClass="#{filtroUnidades.getcDsUnidad()}" />
+                        <sd:campoWebTexto id="txtDescripcionUnidad" label="#{msg['lbl_FiltroUnidades_DsUnidad']}" beanClass="#{filtroUnidades.getcDsUnidad()}" />
 
-                        <sd:campoWebFechaRango id="txtFeDesactivo" beanClass="#{filtroUnidades.getcFeDesactivo()}" />
+                        <sd:campoWebFechaRango id="txtFeDesactivo" label="#{msg['lbl_FiltroUnidades_FeDesactivo']}" beanClass="#{filtroUnidades.getcFeDesactivo()}" />
 
                     </p:panelGrid>
                     <p:panelGrid columns="1"
@@ -56,7 +56,7 @@
                      styleClass="ui-panelgrid-blank ui-fluid"
                      style="border:0px none; background-color:transparent;">
 
-                        <sd:campoWebLupa id="txtUnidadPadre" beanClass="#{filtroUnidades.getcUnidadPadre()}" />
+                        <sd:campoWebLupa id="txtUnidadPadre" label="#{msg['lbl_FiltroUnidades_UnidadPadre']}" beanClass="#{filtroUnidades.getcUnidadPadre()}" />
                         
                     </p:panelGrid>
                 </p:fieldset>

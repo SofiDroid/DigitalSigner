@@ -60,31 +60,31 @@
                      styleClass="ui-panelgrid-blank ui-fluid"
                      style="border:0px none;background-color:transparent;">
 
-                    <sd:campoWebTexto id="txtNIF" beanClass="#{beanEdicion.getcCoNIF()}" />
+                    <sd:campoWebTexto id="txtNIF" label="#{msg['lbl_EdicionUsuarios_CoNIF']}" beanClass="#{beanEdicion.getcCoNIF()}" />
                     
-                    <sd:campoWebTexto id="txtCodigoUsuario" beanClass="#{beanEdicion.getcCoUsuario()}" />
+                    <sd:campoWebTexto id="txtCodigoUsuario" label="#{msg['lbl_EdicionUsuarios_CoUsuario']}" beanClass="#{beanEdicion.getcCoUsuario()}" />
 
-                    <sd:campoWebPassword id="txtPassword1" match="formulario:txtPassword2:txtPassword2" beanClass="#{beanEdicion.getcCoPassword1()}" />
+                    <sd:campoWebPassword id="txtPassword1" label="#{msg['lbl_EdicionUsuarios_CoPassword1']}" match="formulario:txtPassword2:txtPassword2" beanClass="#{beanEdicion.getcCoPassword1()}" />
 
-                    <sd:campoWebPassword id="txtPassword2" beanClass="#{beanEdicion.getcCoPassword2()}" />
+                    <sd:campoWebPassword id="txtPassword2" label="#{msg['lbl_EdicionUsuarios_CoPassword2']}" beanClass="#{beanEdicion.getcCoPassword2()}" />
 
-                    <sd:campoWebTexto id="txtNombre" beanClass="#{beanEdicion.getcDsNombre()}" />
+                    <sd:campoWebTexto id="txtNombre" label="#{msg['lbl_EdicionUsuarios_DsNombre']}" beanClass="#{beanEdicion.getcDsNombre()}" />
 
-                    <sd:campoWebTexto id="txtApellido1" beanClass="#{beanEdicion.getcDsApellido1()}" />
+                    <sd:campoWebTexto id="txtApellido1" label="#{msg['lbl_EdicionUsuarios_DsApellido1']}" beanClass="#{beanEdicion.getcDsApellido1()}" />
 
-                    <sd:campoWebTexto id="txtApellido2" beanClass="#{beanEdicion.getcDsApellido2()}" />
+                    <sd:campoWebTexto id="txtApellido2" label="#{msg['lbl_EdicionUsuarios_DsApellido2']}" beanClass="#{beanEdicion.getcDsApellido2()}" />
 
-                    <sd:campoWebNumero id="txtIntentos" beanClass="#{beanEdicion.getcEnIntentos()}" />
+                    <sd:campoWebNumero id="txtIntentos" label="#{msg['lbl_EdicionUsuarios_EnIntentos']}" beanClass="#{beanEdicion.getcEnIntentos()}" />
 
-                    <sd:campoWebNumero id="txtIntentosMax" beanClass="#{beanEdicion.getcEnIntentosMax()}" />
+                    <sd:campoWebNumero id="txtIntentosMax" label="#{msg['lbl_EdicionUsuarios_EnIntentosMax']}" beanClass="#{beanEdicion.getcEnIntentosMax()}" />
 
-                    <sd:campoWebCheck id="chkAdmin" beanClass="#{beanEdicion.getcBoAdmin()}" />
+                    <sd:campoWebCheck id="chkAdmin" label="#{msg['lbl_EdicionUsuarios_BoAdmin']}" beanClass="#{beanEdicion.getcBoAdmin()}" />
 
-                    <sd:campoWebFecha id="txtFeAlta" beanClass="#{beanEdicion.getcFeAlta()}" />
+                    <sd:campoWebFecha id="txtFeAlta" label="#{msg['lbl_EdicionUsuarios_FeAlta']}" beanClass="#{beanEdicion.getcFeAlta()}" />
 
-                    <sd:campoWebFecha id="txtFeDesactivo" beanClass="#{beanEdicion.getcFeDesactivo()}" />
+                    <sd:campoWebFecha id="txtFeDesactivo" label="#{msg['lbl_EdicionUsuarios_FeDesactivo']}" beanClass="#{beanEdicion.getcFeDesactivo()}" />
 
-                    <sd:campoWebTexto id="txtToken" beanClass="#{beanEdicion.getcToken()}" />
+                    <sd:campoWebTexto id="txtToken" label="#{msg['lbl_EdicionUsuarios_DsToken']}" beanClass="#{beanEdicion.getcToken()}" />
                     
                 </p:panelGrid>
             </p:card>
@@ -95,7 +95,7 @@
                     </p:toolbarGroup>
                     <p:toolbarGroup align="right" styleClass="gridTransparente letrasBlancasNegrita">
 
-                            <sd:campoWebLupa id="txtUnidad" beanClass="#{beanEdicion.getcUnidad()}" />
+                            <sd:campoWebLupa id="txtUnidad" label="#{msg['lbl_EdicionUsuarios_Unidad']}" beanClass="#{beanEdicion.getcUnidad()}" />
                             
                             <p:commandButton id="btnAddUnidad" icon="pi pi-plus-circle" styleClass="rounded-button ui-button-success" 
                                              style="height: 2rem;width: 2rem;margin-left:0.3rem" action="#{beanEdicion.addUnidad}" title="(alt+N) Nuevo"
@@ -121,7 +121,7 @@
                             <p:toolbarGroup align="right" styleClass="gridTransparente letrasBlancasNegrita">
 
                                 <p:outputPanel id="panelPerfil">
-                                    <sd:campoWebLupa id="txtPerfil" beanClass="#{beanEdicion.getcPerfil()}" />
+                                    <sd:campoWebLupa id="txtPerfil" label="#{msg['lbl_EdicionUsuarios_Perfil']}" beanClass="#{beanEdicion.getcPerfil()}" />
                                 </p:outputPanel>
                                 <p:commandButton id="btnAddPerfil" icon="pi pi-plus-circle" styleClass="rounded-button ui-button-success" 
                                                  style="height: 2rem;width: 2rem;margin-left:0.3rem" action="#{beanEdicion.addPerfil}" title="(alt+N) Nuevo"

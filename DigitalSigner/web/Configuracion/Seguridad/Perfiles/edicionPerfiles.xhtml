@@ -52,15 +52,15 @@
                      styleClass="ui-panelgrid-blank ui-fluid"
                      style="border:0px none;background-color:transparent;">
 
-                    <sd:campoWebTexto id="txtCodigoTipousuario" beanClass="#{beanEdicion.getcCoTipousuario()}" />
+                    <sd:campoWebTexto id="txtCodigoTipousuario" label="#{msg['lbl_EdicionPerfiles_CoTipousuario']}" beanClass="#{beanEdicion.getcCoTipousuario()}" />
 
-                    <sd:campoWebTexto id="txtDescripcionTipousuario" beanClass="#{beanEdicion.getcDsTipousuario()}" />
+                    <sd:campoWebTexto id="txtDescripcionTipousuario" label="#{msg['lbl_EdicionPerfiles_DsTipousuario']}" beanClass="#{beanEdicion.getcDsTipousuario()}" />
 
-                    <sd:campoWebFecha id="txtFeAlta" beanClass="#{beanEdicion.getcFeAlta()}" />
+                    <sd:campoWebFecha id="txtFeAlta" label="#{msg['lbl_EdicionPerfiles_FeAlta']}" beanClass="#{beanEdicion.getcFeAlta()}" />
 
-                    <sd:campoWebFecha id="txtFeDesactivo" beanClass="#{beanEdicion.getcFeDesactivo()}" />
+                    <sd:campoWebFecha id="txtFeDesactivo" label="#{msg['lbl_EdicionPerfiles_FeDesactivo']}" beanClass="#{beanEdicion.getcFeDesactivo()}" />
 
-                    <sd:campoWebLupa id="txtUnidad" beanClass="#{beanEdicion.getcUnidad()}" />
+                    <sd:campoWebLupa id="txtUnidad" label="#{msg['lbl_EdicionPerfiles_Unidad']}" beanClass="#{beanEdicion.getcUnidad()}" />
 
                 </p:panelGrid>
             </p:card>

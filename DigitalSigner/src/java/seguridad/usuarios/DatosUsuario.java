@@ -10,6 +10,7 @@ import basedatos.tablas.BdTUnidad;
 import basedatos.tablas.BdTUsuario;
 import java.util.ArrayList;
 import javax.servlet.http.HttpServletRequest;
+import org.primefaces.event.SelectEvent;
 import utilidades.CampoWebCodigo;
 import utilidades.CampoWebCombo;
 import utilidades.Mensajes;
@@ -52,6 +53,14 @@ public class DatosUsuario implements Serializable {
         }
     }
 
+    public void onPaisChange(SelectEvent e) {
+        if (e != null) {
+            this.setPais((Pais)e.getObject());
+            FacesContext.getCurrentInstance()
+               .getViewRoot().setLocale(this.getPais().getLocale());
+        }
+    } 
+    
     public Pais getPais() {
         return pais;
     }

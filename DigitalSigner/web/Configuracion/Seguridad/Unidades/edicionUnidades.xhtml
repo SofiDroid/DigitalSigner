@@ -52,15 +52,15 @@
                      styleClass="ui-panelgrid-blank ui-fluid"
                      style="border:0px none;background-color:transparent;">
 
-                    <sd:campoWebTexto id="txtCodigoUnidad" beanClass="#{beanEdicion.getcCoUnidad()}" />
+                    <sd:campoWebTexto id="txtCodigoUnidad" label="#{msg['lbl_EdicionUnidades_CoUnidad']}" beanClass="#{beanEdicion.getcCoUnidad()}" />
 
-                    <sd:campoWebTexto id="txtDescripcionUnidad" beanClass="#{beanEdicion.getcDsUnidad()}" />
+                    <sd:campoWebTexto id="txtDescripcionUnidad" label="#{msg['lbl_EdicionUnidades_DsUnidad']}" beanClass="#{beanEdicion.getcDsUnidad()}" />
 
-                    <sd:campoWebFecha id="txtFeAlta" beanClass="#{beanEdicion.getcFeAlta()}" />
+                    <sd:campoWebFecha id="txtFeAlta" label="#{msg['lbl_EdicionUnidades_FeAlta']}" beanClass="#{beanEdicion.getcFeAlta()}" />
 
-                    <sd:campoWebFecha id="txtFeDesactivo" beanClass="#{beanEdicion.getcFeDesactivo()}" />
+                    <sd:campoWebFecha id="txtFeDesactivo" label="#{msg['lbl_EdicionUnidades_FeDesactivo']}" beanClass="#{beanEdicion.getcFeDesactivo()}" />
 
-                    <sd:campoWebLupa id="txtUnidadPadre" beanClass="#{beanEdicion.getcUnidadPadre()}" />
+                    <sd:campoWebLupa id="txtUnidadPadre" label="#{msg['lbl_EdicionUnidades_UnidadPadre']}" beanClass="#{beanEdicion.getcUnidadPadre()}" />
 
                 </p:panelGrid>
             </p:card>

@@ -41,13 +41,13 @@
                      styleClass="ui-panelgrid-blank ui-fluid"
                      style="border:0px none; background-color:transparent;">
 
-                        <sd:campoWebTexto id="txtCodigoSituaciondoc" beanClass="#{filtroSituacionesDocumentos.getcCoSituaciondoc()}" />
+                        <sd:campoWebTexto id="txtCodigoSituaciondoc" label="#{msg['lbl_FiltroSituacionesDocumentos_CoSituaciondoc']}" beanClass="#{filtroSituacionesDocumentos.getcCoSituaciondoc()}" />
 
-                        <sd:campoWebFechaRango id="txtFeAlta" beanClass="#{filtroSituacionesDocumentos.getcFeAlta()}" />
+                        <sd:campoWebFechaRango id="txtFeAlta" label="#{msg['lbl_FiltroSituacionesDocumentos_FeAlta']}" beanClass="#{filtroSituacionesDocumentos.getcFeAlta()}" />
 
-                        <sd:campoWebTexto id="txtDescripcionSituaciondoc" beanClass="#{filtroSituacionesDocumentos.getcDsSituaciondoc()}" />
+                        <sd:campoWebTexto id="txtDescripcionSituaciondoc" label="#{msg['lbl_FiltroSituacionesDocumentos_DsSituaciondoc']}" beanClass="#{filtroSituacionesDocumentos.getcDsSituaciondoc()}" />
 
-                        <sd:campoWebFechaRango id="txtFeDesactivo" beanClass="#{filtroSituacionesDocumentos.getcFeDesactivo()}" />
+                        <sd:campoWebFechaRango id="txtFeDesactivo" label="#{msg['lbl_FiltroSituacionesDocumentos_FeDesactivo']}" beanClass="#{filtroSituacionesDocumentos.getcFeDesactivo()}" />
 
                     </p:panelGrid>
                 </p:fieldset>

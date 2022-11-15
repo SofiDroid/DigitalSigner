@@ -41,13 +41,13 @@
                      styleClass="ui-panelgrid-blank ui-fluid"
                      style="border:0px none; background-color:transparent;">
 
-                        <sd:campoWebTexto id="txtCodigoSituacionXML" beanClass="#{filtroSituacionesXML.getcCoSituacionXML()}" />
+                        <sd:campoWebTexto id="txtCodigoSituacionXML" label="#{msg['lbl_FiltroSituacionesXML_CoSituacionXML']}" beanClass="#{filtroSituacionesXML.getcCoSituacionXML()}" />
 
-                        <sd:campoWebFechaRango id="txtFeAlta" beanClass="#{filtroSituacionesXML.getcFeAlta()}" />
+                        <sd:campoWebFechaRango id="txtFeAlta" label="#{msg['lbl_FiltroSituacionesXML_FeAlta']}" beanClass="#{filtroSituacionesXML.getcFeAlta()}" />
 
-                        <sd:campoWebTexto id="txtDescripcionSituacionXML" beanClass="#{filtroSituacionesXML.getcDsSituacionXML()}" />
+                        <sd:campoWebTexto id="txtDescripcionSituacionXML" label="#{msg['lbl_FiltroSituacionesXML_DsSituacionXML']}" beanClass="#{filtroSituacionesXML.getcDsSituacionXML()}" />
 
-                        <sd:campoWebFechaRango id="txtFeDesactivo" beanClass="#{filtroSituacionesXML.getcFeDesactivo()}" />
+                        <sd:campoWebFechaRango id="txtFeDesactivo" label="#{msg['lbl_FiltroSituacionesXML_FeDesactivo']}" beanClass="#{filtroSituacionesXML.getcFeDesactivo()}" />
 
                     </p:panelGrid>
                 </p:fieldset>

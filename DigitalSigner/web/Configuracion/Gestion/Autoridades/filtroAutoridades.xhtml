@@ -41,13 +41,13 @@
                      styleClass="ui-panelgrid-blank ui-fluid"
                      style="border:0px none; background-color:transparent;">
 
-                        <sd:campoWebTexto id="txtCodigoAutoridad" beanClass="#{filtroAutoridades.getcCoAutoridad()}" />
+                        <sd:campoWebTexto id="txtCodigoAutoridad" label="#{msg['lbl_FiltroAutoridades_CoAutoridad']}" beanClass="#{filtroAutoridades.getcCoAutoridad()}" />
 
-                        <sd:campoWebFechaRango id="txtFeAlta" beanClass="#{filtroAutoridades.getcFeAlta()}" />
+                        <sd:campoWebFechaRango id="txtFeAlta" label="#{msg['lbl_FiltroAutoridades_FeAlta']}" beanClass="#{filtroAutoridades.getcFeAlta()}" />
 
-                        <sd:campoWebTexto id="txtDescripcionAutoridad" beanClass="#{filtroAutoridades.getcDsAutoridad()}" />
+                        <sd:campoWebTexto id="txtDescripcionAutoridad" label="#{msg['lbl_FiltroAutoridades_DsAutoridad']}" beanClass="#{filtroAutoridades.getcDsAutoridad()}" />
 
-                        <sd:campoWebFechaRango id="txtFeDesactivo" beanClass="#{filtroAutoridades.getcFeDesactivo()}" />
+                        <sd:campoWebFechaRango id="txtFeDesactivo" label="#{msg['lbl_FiltroAutoridades_FeDesactivo']}" beanClass="#{filtroAutoridades.getcFeDesactivo()}" />
 
                     </p:panelGrid>
                     <p:panelGrid columns="1"
@@ -56,7 +56,7 @@
                      styleClass="ui-panelgrid-blank ui-fluid"
                      style="border:0px none; background-color:transparent;">
 
-                        <sd:campoWebLupa id="txtUnidad" beanClass="#{filtroAutoridades.getcUnidad()}" />
+                        <sd:campoWebLupa id="txtUnidad" label="#{msg['lbl_FiltroAutoridades_Unidad']}" beanClass="#{filtroAutoridades.getcUnidad()}" />
                         
                     </p:panelGrid>
                 </p:fieldset>

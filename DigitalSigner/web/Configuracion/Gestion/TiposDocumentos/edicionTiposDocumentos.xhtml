@@ -53,15 +53,15 @@
                      styleClass="ui-panelgrid-blank ui-fluid"
                      style="border:0px none;background-color:transparent;">
 
-                    <sd:campoWebTexto id="txtCodigoTipoDocumento" beanClass="#{beanEdicion.getcCoTipodocumento()}" />
+                    <sd:campoWebTexto id="txtCodigoTipoDocumento" label="#{msg['lbl_EdicionTiposDocumentos_CoTipodocumento']}" beanClass="#{beanEdicion.getcCoTipodocumento()}" />
 
-                    <sd:campoWebTexto id="txtDescripcionTipoDocumento" beanClass="#{beanEdicion.getcDsTipodocumento()}" />
+                    <sd:campoWebTexto id="txtDescripcionTipoDocumento" label="#{msg['lbl_EdicionTiposDocumentos_DsTipodocumento']}" beanClass="#{beanEdicion.getcDsTipodocumento()}" />
 
-                    <sd:campoWebCombo id="txtFormatoFirmaTipoDocumento" beanClass="#{beanEdicion.getcDiFormatofirma()}" />
+                    <sd:campoWebCombo id="txtFormatoFirmaTipoDocumento" label="#{msg['lbl_EdicionTiposDocumentos_DiFormatoFirma']}" beanClass="#{beanEdicion.getcDiFormatofirma()}" />
 
-                    <sd:campoWebFecha id="txtFeAlta" beanClass="#{beanEdicion.getcFeAlta()}" />
+                    <sd:campoWebFecha id="txtFeAlta" label="#{msg['lbl_EdicionTiposDocumentos_FeAlta']}" beanClass="#{beanEdicion.getcFeAlta()}" />
 
-                    <sd:campoWebFecha id="txtFeDesactivo" beanClass="#{beanEdicion.getcFeDesactivo()}" />
+                    <sd:campoWebFecha id="txtFeDesactivo" label="#{msg['lbl_EdicionTiposDocumentos_FeDesactivo']}" beanClass="#{beanEdicion.getcFeDesactivo()}" />
 
                 </p:panelGrid>
             </p:card>
@@ -88,19 +88,19 @@
                         styleClass="ui-panelgrid-blank ui-fluid"
                         style="border:0px none;background-color:transparent;">
 
-                       <sd:campoWebNumero id="txtOrden" beanClass="#{beanEdicion.getcEnOrden()}" />
+                       <sd:campoWebNumero id="txtOrden" label="#{msg['lbl_EdicionTiposDocumentos_EnOrden']}" beanClass="#{beanEdicion.getcEnOrden()}" />
 
-                       <sd:campoWebCombo id="txtTipo" beanClass="#{beanEdicion.getcDiTipoFirma()}" />
+                       <sd:campoWebCombo id="txtTipo" label="#{msg['lbl_EdicionTiposDocumentos_DiTipoFirma']}" beanClass="#{beanEdicion.getcDiTipoFirma()}" />
 
-                       <sd:campoWebLupa id="txtAutoridad" beanClass="#{beanEdicion.getcAutoridad()}" />
+                       <sd:campoWebLupa id="txtAutoridad" label="#{msg['lbl_EdicionTiposDocumentos_Autoridad']}" beanClass="#{beanEdicion.getcAutoridad()}" />
 
-                       <sd:campoWebNumero id="txtFirmaPosX" beanClass="#{beanEdicion.getcDsFirmaPosX()}" />
+                       <sd:campoWebNumero id="txtFirmaPosX" label="#{msg['lbl_EdicionTiposDocumentos_DsFirmaPosX']}" beanClass="#{beanEdicion.getcDsFirmaPosX()}" />
 
-                       <sd:campoWebNumero id="txtFirmaPosY" beanClass="#{beanEdicion.getcDsFirmaPosY()}" />
+                       <sd:campoWebNumero id="txtFirmaPosY" label="#{msg['lbl_EdicionTiposDocumentos_DsFirmaPosY']}" beanClass="#{beanEdicion.getcDsFirmaPosY()}" />
 
-                       <sd:campoWebFecha id="txtFeAltaFirma" beanClass="#{beanEdicion.getcFeAltaFirma()}" />
+                       <sd:campoWebFecha id="txtFeAltaFirma" label="#{msg['lbl_EdicionTiposDocumentos_FeAltaFirma']}" beanClass="#{beanEdicion.getcFeAltaFirma()}" />
 
-                       <sd:campoWebFecha id="txtFeDesactivoFirma" beanClass="#{beanEdicion.getcFeDesactivoFirma()}" />
+                       <sd:campoWebFecha id="txtFeDesactivoFirma" label="#{msg['lbl_EdicionTiposDocumentos_FeDesactivoFirma']}" beanClass="#{beanEdicion.getcFeDesactivoFirma()}" />
 
                     </p:panelGrid>
                 </p:dialog>

@@ -7,12 +7,13 @@
     <!-- INTERFACE -->
     <cc:interface>
         <cc:attribute name = "beanClass" />
+        <cc:attribute name = "label" />
     </cc:interface>
 
     <!-- IMPLEMENTATION -->
     <cc:implementation>
         <p:panelGrid columns="2" columnClasses="colFit, col-12">
-            <p:outputLabel for="#{cc.attrs.id}_inicio" value="#{cc.attrs.beanClass.label}#{cc.attrs.beanClass.requiredChar}" escape="false" style="display: block;#{cc.attrs.beanClass.widthLabel}" />
+            <p:outputLabel for="#{cc.attrs.id}_inicio" value="#{cc.attrs.label}#{cc.attrs.beanClass.requiredChar}" escape="false" style="display: block;#{cc.attrs.beanClass.widthLabel}" />
             <p:outputPanel style="width: 15rem">
                 <p:datePicker id="#{cc.attrs.id}_inicio" style="#{cc.attrs.beanClass.width}"
                               showIcon="true" maxlength="10" showOnFocus="false"

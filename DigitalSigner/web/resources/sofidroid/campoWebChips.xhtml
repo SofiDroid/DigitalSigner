@@ -8,17 +8,18 @@
     <cc:interface>
         <cc:attribute name = "beanClass" />
         <cc:attribute name = "style" />
+        <cc:attribute name = "label" />
     </cc:interface>
 
     <!-- IMPLEMENTATION -->
     <cc:implementation>
         <p:panelGrid columns="2" columnClasses="colFit, col-12" style="#{cc.attrs.style}">
-            <p:outputLabel for="#{cc.attrs.id}" lang="#{cc.attrs.beanClass.lang}" value="#{cc.attrs.beanClass.label}#{cc.attrs.beanClass.requiredChar}" escape="false" style="display: block;#{cc.attrs.beanClass.widthLabel}"/>
+            <p:outputLabel for="#{cc.attrs.id}" lang="#{cc.attrs.beanClass.lang}" value="#{cc.attrs.label}#{cc.attrs.beanClass.requiredChar}" escape="false" style="display: block;#{cc.attrs.beanClass.widthLabel}"/>
             <p:chips id="#{cc.attrs.id}" widgetVar="#{cc.attrs.id}" addOnPaste="#{cc.attrs.beanClass.addOnPaste}" separator="#{cc.attrs.beanClass.separator}"
                      unique="#{cc.attrs.beanClass.unique}" max="#{cc.attrs.beanClass.maxElements}" immediate="true"
                      style="#{cc.attrs.beanClass.width}" maxlength="#{cc.attrs.beanClass.maxlength}"
                      value="#{cc.attrs.beanClass.values}" disabled="#{cc.attrs.beanClass.protegido}" required="#{cc.attrs.beanClass.required}"
-                     label="#{cc.attrs.beanClass.label}" />
+                     label="#{cc.attrs.label}" />
         </p:panelGrid>
     </cc:implementation>
 </html>

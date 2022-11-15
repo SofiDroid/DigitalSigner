@@ -53,19 +53,19 @@
                      styleClass="ui-panelgrid-blank ui-fluid"
                      style="border:0px none;background-color:transparent;">
 
-                    <sd:campoWebTexto id="txtCodigoDocumento" beanClass="#{beanEdicion.getcCoDocumento()}" />
+                    <sd:campoWebTexto id="txtCodigoDocumento" label="#{msg['lbl_EdicionConsultaDocumentos_CoDocumento']}" beanClass="#{beanEdicion.getcCoDocumento()}" />
 
-                    <sd:campoWebTexto id="txtDescripcionDocumento" beanClass="#{beanEdicion.getcDsDocumento()}" />
+                    <sd:campoWebTexto id="txtDescripcionDocumento" label="#{msg['lbl_EdicionConsultaDocumentos_DsDocumento']}" beanClass="#{beanEdicion.getcDsDocumento()}" />
 
-                    <sd:campoWebFecha id="txtFeAlta" beanClass="#{beanEdicion.getcFeAlta()}" />
+                    <sd:campoWebFecha id="txtFeAlta" label="#{msg['lbl_EdicionConsultaDocumentos_FeAlta']}" beanClass="#{beanEdicion.getcFeAlta()}" />
 
-                    <sd:campoWebFecha id="txtFeDesactivo" beanClass="#{beanEdicion.getcFeDesactivo()}" />
+                    <sd:campoWebFecha id="txtFeDesactivo" label="#{msg['lbl_EdicionConsultaDocumentos_FeDesactivo']}" beanClass="#{beanEdicion.getcFeDesactivo()}" />
 
-                    <sd:campoWebLupa id="txtTipoDocumento" beanClass="#{beanEdicion.getcTipoDocumento()}" />
+                    <sd:campoWebLupa id="txtTipoDocumento" label="#{msg['lbl_EdicionConsultaDocumentos_TipoDocumento']}" beanClass="#{beanEdicion.getcTipoDocumento()}" />
 
-                    <sd:campoWebUpload id="fuDocumento"  beanClass="#{beanEdicion.getcFuDocumento()}" />
+                    <sd:campoWebUpload id="fuDocumento" label="#{msg['lbl_EdicionConsultaDocumentos_Documento']}" beanClass="#{beanEdicion.getcFuDocumento()}" />
                     
-                    <sd:campoWebLupa id="txtSituacionDoc" beanClass="#{beanEdicion.getcSituacionDoc()}" />
+                    <sd:campoWebLupa id="txtSituacionDoc" label="#{msg['lbl_EdicionConsultaDocumentos_SituacionDoc']}" beanClass="#{beanEdicion.getcSituacionDoc()}" />
                     
                 </p:panelGrid>
             </p:card>
@@ -92,21 +92,21 @@
                         styleClass="ui-panelgrid-blank ui-fluid"
                         style="border:0px none;background-color:transparent;">
 
-                       <sd:campoWebNumero id="txtOrden" beanClass="#{beanEdicion.getcEnOrden()}" />
+                       <sd:campoWebNumero id="txtOrden" label="#{msg['lbl_EdicionConsultaDocumentos_EnOrden']}" beanClass="#{beanEdicion.getcEnOrden()}" />
 
-                       <sd:campoWebCombo id="txtTipo" beanClass="#{beanEdicion.getcDiTipoFirma()}" />
+                       <sd:campoWebCombo id="txtTipo" label="#{msg['lbl_EdicionConsultaDocumentos_DiTipoFirma']}" beanClass="#{beanEdicion.getcDiTipoFirma()}" />
 
-                       <sd:campoWebLupa id="txtAutoridad" beanClass="#{beanEdicion.getcAutoridad()}" />
+                       <sd:campoWebLupa id="txtAutoridad" label="#{msg['lbl_EdicionConsultaDocumentos_Autoridad']}" beanClass="#{beanEdicion.getcAutoridad()}" />
                        
-                       <sd:campoWebChips id="txtFirmantes" beanClass="#{beanEdicion.getcFirmantes()}" />
+                       <sd:campoWebChips id="txtFirmantes" label="#{msg['lbl_EdicionConsultaDocumentos_Firmantes']}" beanClass="#{beanEdicion.getcFirmantes()}" />
 
-                       <sd:campoWebNumero id="txtFirmaPosX" beanClass="#{beanEdicion.getcDsFirmaPosX()}" />
+                       <sd:campoWebNumero id="txtFirmaPosX" label="#{msg['lbl_EdicionConsultaDocumentos_DsFirmaPosX']}" beanClass="#{beanEdicion.getcDsFirmaPosX()}" />
 
-                       <sd:campoWebNumero id="txtFirmaPosY" beanClass="#{beanEdicion.getcDsFirmaPosY()}" />
+                       <sd:campoWebNumero id="txtFirmaPosY" label="#{msg['lbl_EdicionConsultaDocumentos_DsFirmaPosY']}" beanClass="#{beanEdicion.getcDsFirmaPosY()}" />
 
-                       <sd:campoWebFecha id="txtFeAltaFirma" beanClass="#{beanEdicion.getcFeAltaFirma()}" />
+                       <sd:campoWebFecha id="txtFeAltaFirma" label="#{msg['lbl_EdicionConsultaDocumentos_FeAltaFirma']}" beanClass="#{beanEdicion.getcFeAltaFirma()}" />
 
-                       <sd:campoWebFecha id="txtFeDesactivoFirma" beanClass="#{beanEdicion.getcFeDesactivoFirma()}" />
+                       <sd:campoWebFecha id="txtFeDesactivoFirma" label="#{msg['lbl_EdicionConsultaDocumentos_FeDesactivoFirma']}" beanClass="#{beanEdicion.getcFeDesactivoFirma()}" />
 
                     </p:panelGrid>
                 </p:dialog>

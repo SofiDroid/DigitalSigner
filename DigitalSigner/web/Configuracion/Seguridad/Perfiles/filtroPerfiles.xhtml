@@ -41,13 +41,13 @@
                      styleClass="ui-panelgrid-blank ui-fluid"
                      style="border:0px none; background-color:transparent;">
 
-                        <sd:campoWebTexto id="txtCodigoTipousuario" beanClass="#{filtroPerfiles.getcCoTipousuario()}" />
+                        <sd:campoWebTexto id="txtCodigoTipousuario" label="#{msg['lbl_FiltroPerfiles_CoTipousuario']}" beanClass="#{filtroPerfiles.getcCoTipousuario()}" />
 
-                        <sd:campoWebFechaRango id="txtFeAlta" beanClass="#{filtroPerfiles.getcFeAlta()}" />
+                        <sd:campoWebFechaRango id="txtFeAlta" label="#{msg['lbl_FiltroPerfiles_FeAlta']}" beanClass="#{filtroPerfiles.getcFeAlta()}" />
 
-                        <sd:campoWebTexto id="txtDescripcionTipousuario" beanClass="#{filtroPerfiles.getcDsTipousuario()}" />
+                        <sd:campoWebTexto id="txtDescripcionTipousuario" label="#{msg['lbl_FiltroPerfiles_DsTipousuario']}" beanClass="#{filtroPerfiles.getcDsTipousuario()}" />
 
-                        <sd:campoWebFechaRango id="txtFeDesactivo" beanClass="#{filtroPerfiles.getcFeDesactivo()}" />
+                        <sd:campoWebFechaRango id="txtFeDesactivo" label="#{msg['lbl_FiltroPerfiles_FeDesactivo']}" beanClass="#{filtroPerfiles.getcFeDesactivo()}" />
 
                     </p:panelGrid>
                     <p:panelGrid columns="1"
@@ -56,7 +56,7 @@
                      styleClass="ui-panelgrid-blank ui-fluid"
                      style="border:0px none; background-color:transparent;">
 
-                        <sd:campoWebLupa id="txtUnidad" beanClass="#{filtroPerfiles.getcUnidad()}" />
+                        <sd:campoWebLupa id="txtUnidad" label="#{msg['lbl_FiltroPerfiles_Unidad']}" beanClass="#{filtroPerfiles.getcUnidad()}" />
                         
                     </p:panelGrid>
                 </p:fieldset>
