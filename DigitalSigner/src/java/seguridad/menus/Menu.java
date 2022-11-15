@@ -246,9 +246,9 @@ public class Menu implements Serializable {
             for (Row itemRow : this.dsMenu.getRows()) {
                 if (idOpcionesMenu.equalsIgnoreCase(itemRow.getColumnName("ID_OPCIONMENU").getValueString())) {
                     permisos.setBoConsulta((Boolean)itemRow.getColumnName("BO_CONSULTA").getValue());
-                    permisos.setBoAlta((Boolean)itemRow.getColumnName("BO_CONSULTA").getValue());
-                    permisos.setBoEdicion((Boolean)itemRow.getColumnName("BO_CONSULTA").getValue());
-                    permisos.setBoBorrado((Boolean)itemRow.getColumnName("BO_CONSULTA").getValue());
+                    permisos.setBoAlta((Boolean)itemRow.getColumnName("BO_ALTA").getValue());
+                    permisos.setBoEdicion((Boolean)itemRow.getColumnName("BO_EDICION").getValue());
+                    permisos.setBoBorrado((Boolean)itemRow.getColumnName("BO_BORRADO").getValue());
                 }
             }
         }

@@ -32,7 +32,6 @@ public class BdATipousuopcper extends OperacionSQL implements InterfazDAO {
     public Object getClaseMapeada(HashMap<String,Object> bld) throws Exception {
         recuperaValorCampo(this, "idTipousuario", "ID_TIPOUSUARIO", bld);
         recuperaValorCampo(this, "idOpcionmenu", "ID_OPCIONMENU", bld);
-        recuperaValorCampo(this, "idPermiso", "ID_PERMISO", bld);
         recuperaValorCampo(this, "boConsulta", "BO_CONSULTA", bld);
         recuperaValorCampo(this, "boAlta", "BO_ALTA", bld);
         recuperaValorCampo(this, "boEdicion", "BO_EDICION", bld);
