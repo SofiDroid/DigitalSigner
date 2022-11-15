@@ -462,9 +462,9 @@ public class FiltroConsultaDocumentos implements Serializable {
 
         this.dsResultado.newColumn("btnDocumento");
         cabecera.getColumnName("btnDocumento")
-                .setTitle("Ver Documento")
+                .setTitle("Ver")
                 .setAlign(ColumnCabecera.ALIGN.CENTER)
-                .setWidth("10em")
+                .setWidth("5em")
                 .setTipo(ColumnBase.Tipo.MEDIA)
                 .setClase(this)
                 .setMethod(this.getClass().getMethod("verDocumento"))
@@ -473,9 +473,9 @@ public class FiltroConsultaDocumentos implements Serializable {
         
         this.dsResultado.newColumn("btnDescarga");
         cabecera.getColumnName("btnDescarga")
-                .setTitle("Descargar Documento")
+                .setTitle("Descargar")
                 .setAlign(ColumnCabecera.ALIGN.CENTER)
-                .setWidth("10em")
+                .setWidth("5em")
                 .setTipo(ColumnBase.Tipo.DESCARGA)
                 .setClase(this)
                 .setMethod(this.getClass().getMethod("descargarDocumento"))

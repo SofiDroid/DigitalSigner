@@ -7,17 +7,40 @@ import basedatos.ColumnCabecera;
 import basedatos.DataSet;
 import basedatos.Row;
 import basedatos.RowCabecera;
+import basedatos.servicios.StADocfirma;
+import basedatos.servicios.StADocrechazo;
+import basedatos.servicios.StAHistdoc;
 import basedatos.servicios.StDDocumento;
+import basedatos.servicios.StDSalidaxml;
+import basedatos.servicios.StTSituaciondoc;
+import basedatos.servicios.StTTipodocumento;
+import basedatos.tablas.BdADocfirma;
+import basedatos.tablas.BdADocrechazo;
+import basedatos.tablas.BdAHistdoc;
 import basedatos.tablas.BdDDocumento;
+import basedatos.tablas.BdTSituaciondoc;
+import basedatos.tablas.BdTTipodocumento;
 import es.gob.afirma.signvalidation.DataAnalizerUtil;
+import init.AppInit;
 import java.io.Serializable;
+import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Date;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
+import javax.xml.bind.JAXB;
+import jax.client.services.interfaces.documentnotification.Cabecera;
+import jax.client.services.interfaces.documentnotification.DocumentNotificationRequest;
+import jax.client.services.interfaces.documentnotification.Documento;
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.primefaces.context.PrimeRequestContext;
+import tomcat.persistence.EntityManager;
 import utilidades.CampoWebCodigo;
 import utilidades.CampoWebDescripcion;
 import utilidades.CampoWebFechaRango;
@@ -409,6 +432,134 @@ public class FiltroFirmaDocumentos implements Serializable {
         return new StDDocumento(Session.getDatosUsuario()).item(idDocumento, null);
     }
     
+    public void rechazar() {
+        try {
+            if (this.dsResultado.getSelectedRows() != null && !this.dsResultado.getSelectedRows().isEmpty()) {
+                ArrayList<Row> listaRowRechazadas = new ArrayList<>();
+                for (Row itemSelectedRow : this.dsResultado.getSelectedRows()) {
+                    rechazaDocumento(itemSelectedRow);
+                    listaRowRechazadas.add(itemSelectedRow);
+                }
+                for (Row itemRowRechazada : listaRowRechazadas) {
+                    this.dsResultado.getRows().remove(itemRowRechazada);
+                }
+                Mensajes.showInfo("Rechazar", "Documentos rechazados correctamente.");
+            }
+            else {
+                Mensajes.showWarn("Rechazar", "Debe seleccionar al menos un documento a rechazar.");
+            }
+        } catch (Exception ex) {
+            Mensajes.showException(this.getClass(), ex);
+        }
+    }
+    
+    private void rechazaDocumento(Row itemRow) throws Exception {
+        String dsObservaciones = "Documento rechazado en la firma.";
+        
+        Integer idDocumento = itemRow.getColumnaID().getValueInteger();
+                
+        // Recupero el documento para actualizarlo
+        StDDocumento stDDocumento = new StDDocumento(Session.getDatosUsuario());
+        BdDDocumento bdDDocumento = stDDocumento.item(idDocumento, null);
+
+        // INICIO TRANSACCION
+        try (EntityManager entityManager = AppInit.getEntityManager()) {
+            entityManager.getTransaction().begin();
+            try {
+                //Insertar rechazo
+                StADocrechazo stADocrechazo = new StADocrechazo(Session.getDatosUsuario());
+                BdADocrechazo bdADocrechazo = new BdADocrechazo();
+                bdADocrechazo.setIdDocumento(idDocumento);
+                bdADocrechazo.setDsObservaciones(dsObservaciones);
+                bdADocrechazo.setFeAlta(new Date());
+                stADocrechazo.alta(bdADocrechazo, entityManager);
+                
+                // ID_SITUACION: RECHAZADO
+                StTSituaciondoc stTSituaciondoc = new StTSituaciondoc(Session.getDatosUsuario());
+                BdTSituaciondoc filtroBdTSituaciondoc = new BdTSituaciondoc();
+                filtroBdTSituaciondoc.setCoSituaciondoc("RECHAZADO");                                
+                Integer idSituaciondoc = stTSituaciondoc.filtro(filtroBdTSituaciondoc, entityManager).get(0).getIdSituaciondoc();
+                bdDDocumento.setIdSituaciondoc(idSituaciondoc);
+                stDDocumento.actualiza(bdDDocumento, entityManager);
+
+                entityManager.getTransaction().commit();
+            }
+            catch (Exception ex) {
+                entityManager.getTransaction().rollback();
+                throw ex;
+            }
+        }
+        // FIN TRANSACCION
+        
+        StTTipodocumento stTTipodocumento = new StTTipodocumento(Session.getDatosUsuario());
+        BdTTipodocumento bdTTipodocumento = stTTipodocumento.item(bdDDocumento.getIdTipodocumento(), null);
+        
+        DocumentNotificationRequest documentNotificationRequest = new DocumentNotificationRequest();
+        documentNotificationRequest.setCabecera(new Cabecera());
+        documentNotificationRequest.getCabecera().setCoUnidad(Session.getDatosUsuario().getBdTUnidad().getCoUnidad());
+        documentNotificationRequest.setDocumento(new Documento());
+        documentNotificationRequest.getDocumento().setCoSituacionDoc("RECHAZADO");
+        documentNotificationRequest.getDocumento().setCoTipoDocumento(bdTTipodocumento.getCoTipodocumento());
+        documentNotificationRequest.getDocumento().setCoFichero(bdDDocumento.getCoFichero());
+        documentNotificationRequest.getDocumento().setCoExtension(bdDDocumento.getCoExtension());
+        documentNotificationRequest.getDocumento().setBlDocumento(bdDDocumento.getBlDocumento(null));
+        documentNotificationRequest.getDocumento().setDsDocumento(bdDDocumento.getDsDocumento());
+        documentNotificationRequest.getDocumento().setDsObservaciones(dsObservaciones);
+
+        // DAR DE ALTA EL XML DE SALIRA POR SI FALLA PODER REPROCESAR LA SALIDA
+        StringWriter sw = new StringWriter();
+        JAXB.marshal(documentNotificationRequest, sw);
+        String xmlString = sw.toString();
+
+        StDSalidaxml stDSalidaxml = new StDSalidaxml(Session.getDatosUsuario());
+        Integer idSalidaXML = stDSalidaxml.grabarSalidaXML(xmlString, bdDDocumento.getIdDocumento(), null);
+
+        //Notificacion por WebService de que el documento se ha firmado por el ultimo firmante.
+        boolean boNotificarWebService = Boolean.valueOf(new Configuraciones(Session.getDatosUsuario()).recuperaConfiguracion("NOTIFICAWS"));
+        if (boNotificarWebService) {
+
+            String resultado = documentNotification(documentNotificationRequest);
+
+            if (resultado.equalsIgnoreCase("OK")) {
+                stDSalidaxml.actualizarSalidaXML(idSalidaXML, bdDDocumento.getIdDocumento(), "PROCESADO");
+            }
+            else {
+                //Error en la comunicación
+                LOG.error(resultado);
+                stDSalidaxml.actualizarSalidaXML(idSalidaXML, bdDDocumento.getIdDocumento(), "ERROR");
+            }
+        }
+        //Fin Notificacion por WebService
+
+        //Notificacion por fichero XML en carpeta local/NFS
+        boolean boHiloGestorXML = Boolean.valueOf(new Configuraciones(Session.getDatosUsuario()).recuperaConfiguracion("HILOGESTORXML"));
+        if (boHiloGestorXML) {
+            try {
+                String sHiloGestorXML_Path = new Configuraciones(Session.getDatosUsuario()).recuperaConfiguracion("HILOGESTORXML_PATH");
+                if (sHiloGestorXML_Path == null || sHiloGestorXML_Path.isBlank()) {
+                    LOG.error("No se ha establecido el path de busqueda de XML, 'HILOGESTORXML_PATH'.");
+                    stDSalidaxml.actualizarSalidaXML(idSalidaXML, bdDDocumento.getIdDocumento(), "ERROR");
+                    return;
+                }
+
+                FileUtils.writeStringToFile(Paths.get(sHiloGestorXML_Path, "SALIDA", "SALIDA_" + idSalidaXML + ".xml").toFile(), xmlString, StandardCharsets.UTF_8);
+
+                stDSalidaxml.actualizarSalidaXML(idSalidaXML, bdDDocumento.getIdDocumento(), "PROCESADO");
+            }
+            catch (Exception ex) {
+                LOG.error(ex.getMessage(), ex);
+                stDSalidaxml.actualizarSalidaXML(idSalidaXML, bdDDocumento.getIdDocumento(), "ERROR");
+            }
+        }
+        //Fin Notificacion por fichero XML en carpeta local/NFS
+    }
+    
+    private static String documentNotification(jax.client.services.interfaces.documentnotification.DocumentNotificationRequest documentNotificationRequest) {
+        jax.client.services.interfaces.documentnotification.NotificationReceiver service = new jax.client.services.interfaces.documentnotification.NotificationReceiver();
+        jax.client.services.interfaces.documentnotification.NotificationReceiverImpl port = service.getNotificationReceiverImplPort();
+        return port.documentNotification(documentNotificationRequest);
+    }
+    
     public void prepararListaDocumentos() {
         String listaDocumento = "";
         String listaTiposFirma = "";
@@ -528,8 +679,8 @@ public class FiltroFirmaDocumentos implements Serializable {
         
         this.dsResultado.newColumn("btnDocumento");
         cabecera.getColumnName("btnDocumento")
-                .setTitle("Ver Documento")
-                .setWidth("10em")
+                .setTitle("Ver")
+                .setWidth("5em")
                 .setTipo(ColumnBase.Tipo.MEDIA)
                 .setClase(this)
                 .setMethod(this.getClass().getMethod("verDocumento"))
@@ -538,9 +689,10 @@ public class FiltroFirmaDocumentos implements Serializable {
         
         this.dsResultado.newColumn("btnDescarga");
         cabecera.getColumnName("btnDescarga")
-                .setTitle("Descargar Documento")
+                .setVisible(false)
+                .setTitle("Descargar")
                 .setAlign(ColumnCabecera.ALIGN.CENTER)
-                .setWidth("10em")
+                .setWidth("5em")
                 .setTipo(ColumnBase.Tipo.DESCARGA)
                 .setClase(this)
                 .setMethod(this.getClass().getMethod("descargarDocumento"))

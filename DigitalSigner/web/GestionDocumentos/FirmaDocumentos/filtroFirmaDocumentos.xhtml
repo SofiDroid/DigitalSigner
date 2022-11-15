@@ -28,6 +28,12 @@
                             <p:confirm header="#{msg['confirmacion']}" message="#{msg['confirmacion_firma']}" icon="pi pi-info-circle"/>
                         </p:commandButton>
 
+                        <p:commandButton id="btnRechazar" widgetVar="btnRechazar" icon="pi pi-directions-alt" styleClass="rounded-button ui-button-warning"
+                                         style="height: 2rem;width: 2rem;margin-left:0.3rem" title="(alt+R) Rechazar" action="#{filtroFirmaDocumentos.rechazar}"
+                                         update="panelResultado,mensaje" accesskey="r">
+                            <p:confirm header="#{msg['confirmacion']}" message="#{msg['confirmacion_rechazo']}" icon="pi pi-info-circle"/>
+                        </p:commandButton>
+
                         <p:commandButton id="btnBuscar" widgetVar="btnBuscar" icon="pi pi-search" styleClass="rounded-button ui-button-info" 
                                          style="height: 2rem;width: 2rem;margin-left:0.3rem" action="#{filtroFirmaDocumentos.buscar}" title="(alt+B) Buscar resultados"
                                          update="panelResultado,mensaje" accesskey="b" />
