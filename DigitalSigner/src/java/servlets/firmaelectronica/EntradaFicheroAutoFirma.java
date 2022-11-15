@@ -2,9 +2,7 @@ package servlets.firmaelectronica;
 
 import afirma.AfirmaUtils;
 import afirma.ResultadoValidacionFirmas;
-import basedatos.servicios.StTSituaciondoc;
 import basedatos.tablas.BdDDocumento;
-import basedatos.tablas.BdTSituaciondoc;
 import gestionDocumentos.firmaDocumentos.FiltroFirmaDocumentos;
 import init.AppInit;
 import java.io.IOException;

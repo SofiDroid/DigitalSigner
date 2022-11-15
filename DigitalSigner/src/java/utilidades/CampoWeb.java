@@ -1,6 +1,5 @@
 package utilidades;
 
-import java.util.List;
 import javax.faces.context.FacesContext;
 
 /**

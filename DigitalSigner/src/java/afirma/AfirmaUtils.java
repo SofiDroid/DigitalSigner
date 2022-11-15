@@ -1,6 +1,5 @@
 package afirma;
 
-import javax.xml.datatype.DatatypeFactory;
 import es.gob.afirma.core.signers.AOSimpleSignInfo;
 import es.gob.afirma.core.util.tree.AOTreeModel;
 import es.gob.afirma.core.util.tree.AOTreeNode;
@@ -10,9 +9,7 @@ import es.gob.afirma.signers.xml.dereference.CustomUriDereferencer;
 import es.gob.afirma.signvalidation.SignValidity;
 import static es.gob.afirma.signvalidation.SignValidity.SIGN_DETAIL_TYPE.KO;
 import excepciones.NoContentException;
-import excepciones.NoSignatureException;
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.Key;

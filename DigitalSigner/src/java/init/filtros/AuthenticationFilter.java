@@ -28,7 +28,6 @@ import javax.faces.application.ResourceHandler;
 import javax.faces.context.FacesContextFactory;
 import javax.faces.lifecycle.Lifecycle;
 import javax.faces.lifecycle.LifecycleFactory;
-import javax.security.auth.x500.X500Principal;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
