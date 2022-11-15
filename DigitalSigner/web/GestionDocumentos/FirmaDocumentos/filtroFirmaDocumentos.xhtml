@@ -17,29 +17,33 @@
             <p:card id="filtroCard" styleClass="card">
                 <p:toolbar>
                     <p:toolbarGroup align="left">
-                        <p:outputLabel value="Firma de documentos" style="font-size: large; font-weight: bold" /> 
+                        <p:outputLabel value="Firma de documentos - #{menu.permisos.leyenda}" style="font-size: large; font-weight: bold" /> 
                     </p:toolbarGroup>
                     <p:toolbarGroup align="right">
 
                         <p:commandButton id="btnFirmar" widgetVar="btnFirmar" icon="pi pi-user-edit" styleClass="rounded-button ui-button-danger"
                                          onstart="if (AutoScript.isAndroid()) { alert('Atención: Está firmando desde Android, solo se firmará el primer elemento seleccionado.') }"
                                          style="height: 2rem;width: 2rem;margin-left:0.3rem" title="(alt+F) Firmar" action="#{filtroFirmaDocumentos.prepararListaDocumentos}"
+                                         rendered="#{menu.permisos.boEdicion}"
                                          update="panelResultado,mensaje" process="@this,tblResultados" accesskey="f" oncomplete="recuperarListaFromBackBean(xhr, status, args)">
                             <p:confirm header="#{msg['confirmacion']}" message="#{msg['confirmacion_firma']}" icon="pi pi-info-circle"/>
                         </p:commandButton>
 
                         <p:commandButton id="btnRechazar" widgetVar="btnRechazar" icon="pi pi-directions-alt" styleClass="rounded-button ui-button-warning"
                                          style="height: 2rem;width: 2rem;margin-left:0.3rem" title="(alt+R) Rechazar" action="#{filtroFirmaDocumentos.rechazar}"
+                                         rendered="#{menu.permisos.boEdicion}"
                                          update="panelResultado,mensaje" accesskey="r">
                             <p:confirm header="#{msg['confirmacion']}" message="#{msg['confirmacion_rechazo']}" icon="pi pi-info-circle"/>
                         </p:commandButton>
 
                         <p:commandButton id="btnBuscar" widgetVar="btnBuscar" icon="pi pi-search" styleClass="rounded-button ui-button-info" 
                                          style="height: 2rem;width: 2rem;margin-left:0.3rem" action="#{filtroFirmaDocumentos.buscar}" title="(alt+B) Buscar resultados"
+                                         rendered="#{menu.permisos.boConsulta}"
                                          update="panelResultado,mensaje" accesskey="b" />
 
                         <p:commandButton id="btnLimpiar" icon="pi pi-filter-slash" styleClass="rounded-button ui-button-secondary" 
                                          style="height: 2rem;width: 2rem;margin-left:0.3rem" action="#{filtroFirmaDocumentos.limpiar}" title="(alt+L) Limpiar formulario"
+                                         rendered="#{menu.permisos.boConsulta}"
                                          update="fsFiltros,panelResultado,mensaje" accesskey="l" />
 
                     </p:toolbarGroup>

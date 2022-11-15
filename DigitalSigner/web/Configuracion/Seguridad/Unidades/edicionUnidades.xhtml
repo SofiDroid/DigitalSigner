@@ -18,23 +18,23 @@
             <p:card styleClass="card">
                 <p:toolbar>
                     <p:toolbarGroup align="left">
-                        <p:outputLabel value="Mantenimiento de Unidades - Detalle" style="font-size: large; font-weight: bold" /> 
+                        <p:outputLabel value="Mantenimiento de Unidades - Detalle - #{menu.permisos.leyenda}" style="font-size: large; font-weight: bold" /> 
                     </p:toolbarGroup>
                     <p:toolbarGroup align="right">
                         <p:commandButton id="btnGuardar" icon="pi pi-save" styleClass="rounded-button ui-button-success" 
                                          style="height: 2rem;width: 2rem;margin-left:0.3rem" action="#{beanEdicion.guardar}" title="(alt+S) Guardar"
                                          update="@form" accesskey="s" 
-                                         rendered="#{beanEdicion.modoFormulario eq 'EDICION' or beanEdicion.modoFormulario eq 'ALTA'}" />
+                                         rendered="#{(beanEdicion.modoFormulario eq 'EDICION' and menu.permisos.boEdicion) or (beanEdicion.modoFormulario eq 'ALTA' and menu.permisos.boAlta)}" />
 
                         <p:commandButton id="btnModificar" icon="pi pi-pencil" styleClass="rounded-button ui-button-primary" 
                                          style="height: 2rem;width: 2rem;margin-left:0.3rem" action="#{beanEdicion.modificar}" title="(alt+M) Modifcar"
                                          update="@form" accesskey="m" immediate="true"
-                                         rendered="#{beanEdicion.modoFormulario eq 'CONSULTA'}" />
+                                         rendered="#{beanEdicion.modoFormulario eq 'CONSULTA' and menu.permisos.boEdicion}" />
 
                         <p:commandButton id="btnEliminar" icon="pi pi-trash" styleClass="rounded-button ui-button-danger" 
                                          style="height: 2rem;width: 2rem;margin-left:0.3rem" action="#{beanEdicion.eliminar}" title="(alt+E) Eliminar"
                                          update="@form" accesskey="e" immediate="true"
-                                         rendered="#{beanEdicion.modoFormulario eq 'CONSULTA'}">
+                                         rendered="#{beanEdicion.modoFormulario eq 'CONSULTA' and menu.permisos.boBorrado}">
                             <p:confirm header="#{msg['confirmacion']}" message="#{msg['confirmacion_borrado']}" icon="pi pi-info-circle"/>
                         </p:commandButton>
                         
