@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package utilidades;
 
 import java.io.ByteArrayInputStream;
@@ -26,11 +22,18 @@ public class FileDownloadView {
             String filename = (String)Session.recuperarAtributo("filename");
             byte[] binDocumento = (byte[])Session.recuperarAtributo("binDocumento");
             if (filename != null && binDocumento != null) {
-                String mimeType;
-                try (ByteArrayInputStream bais = new ByteArrayInputStream(binDocumento)) {
-                    mimeType = URLConnection.guessContentTypeFromStream(bais);
+                String mimeType = null;
+                if (filename.toLowerCase().endsWith(".pdf")) {
+                    mimeType = "application/pdf";
                 }
-
+                else if (filename.toLowerCase().endsWith(".xsig")) {
+                    mimeType = "application/octet-stream";
+                }
+                if (mimeType == null) {
+                    try (ByteArrayInputStream bais = new ByteArrayInputStream(binDocumento)) {
+                        mimeType = URLConnection.guessContentTypeFromStream(bais);
+                    }
+                }
                 file = DefaultStreamedContent.builder()
                         .name(filename)
                         .contentType(mimeType)

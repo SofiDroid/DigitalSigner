@@ -11,6 +11,7 @@ import basedatos.servicios.StDDocumento;
 import basedatos.servicios.StTTipodocumento;
 import basedatos.tablas.BdDDocumento;
 import basedatos.tablas.BdTTipodocumento;
+import es.gob.afirma.signvalidation.DataAnalizerUtil;
 import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.Date;
@@ -344,20 +345,28 @@ public class FiltroFirmaDocumentos implements Serializable {
             BdDDocumento bdDDocumento = new StDDocumento(Session.getDatosUsuario()).item(idDocumento, null);
             byte[] binDocumento = bdDDocumento.getBlDocumento(null);
             ResultadoValidacionFirmas resultadoValidacionFirmas = null;
-            if (bdDDocumento.getCoExtension().equalsIgnoreCase("xsig")) {
-                AfirmaUtils afirmaUtils = new AfirmaUtils();
-                try {
+            AfirmaUtils afirmaUtils = new AfirmaUtils();
+            try {
+                if (DataAnalizerUtil.isSignedPDF(binDocumento)) {
+                    resultadoValidacionFirmas = afirmaUtils.validarFirmasPAdES(binDocumento, true, true, true, true);
+                }
+                else if (DataAnalizerUtil.isSignedXML(binDocumento)) {
                     resultadoValidacionFirmas = afirmaUtils.validarFirmas(binDocumento, true, true, true, true);
+                    binDocumento = afirmaUtils.recuperarDocumentoXSIG(binDocumento);
                 }
-                catch (Exception na) {
-                    LOG.error(na.getMessage(), na);
-                    Mensajes.showError("Error al recuperar firmantes del documento", na.getMessage());
-                }
+            }
+            catch (Exception na) {
+                LOG.error(na.getMessage(), na);
+                Mensajes.showError("Error al recuperar firmantes del documento", na.getMessage());
+            }
+            
+            if (DataAnalizerUtil.isSignedXML(binDocumento)) {
                 binDocumento = afirmaUtils.recuperarDocumentoXSIG(binDocumento);
             }
             this.visorDocumentos.setFilename(bdDDocumento.getCoFichero());
             this.visorDocumentos.setPlayer("pdf");
             this.visorDocumentos.setResultadoValidacionFirmas(resultadoValidacionFirmas);
+            this.visorDocumentos.setBinDocumento(binDocumento);
             Session.grabarAtributo("reportBytes", binDocumento);
         } catch (Exception ex) {
             Mensajes.showException(this.getClass(), ex);
@@ -529,5 +538,27 @@ public class FiltroFirmaDocumentos implements Serializable {
                 .setMethod(this.getClass().getMethod("verDocumento"))
                 .setIdVisorMedia("visorDocumentos")
                 .setUpdate("formulario:panelResultado,formulario:mensaje");
+        
+        this.dsResultado.newColumn("btnDescarga");
+        cabecera.getColumnName("btnDescarga")
+                .setTitle("Descargar Documento")
+                .setAlign(ColumnCabecera.ALIGN.CENTER)
+                .setWidth("10em")
+                .setTipo(ColumnBase.Tipo.DESCARGA)
+                .setClase(this)
+                .setMethod(this.getClass().getMethod("descargarDocumento"))
+                .setUpdate("formulario:panelResultado,formulario:mensaje");
+    }
+    
+    public void descargarDocumento() {
+        try {
+            Integer idDocumento = this.dsResultado.getSelectedRow().getColumnaID().getValueInteger();
+            BdDDocumento bdDDocumento = new StDDocumento(Session.getDatosUsuario()).item(idDocumento, null);
+            byte[] binDocumento = bdDDocumento.getBlDocumento(null);
+            Session.grabarAtributo("filename", bdDDocumento.getCoFichero());
+            Session.grabarAtributo("binDocumento", binDocumento);
+        } catch (Exception ex) {
+            Mensajes.showException(this.getClass(), ex);
+        }
     }
 }

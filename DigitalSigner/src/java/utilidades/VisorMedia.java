@@ -11,6 +11,7 @@ public class VisorMedia {
     private String extension = null;
     private String player = "pdf";
     private ResultadoValidacionFirmas resultadoValidacionFirmas = null;
+    private byte[] binDocumento = null;
 
     public String getFilename() {
         return filename;
@@ -64,5 +65,22 @@ public class VisorMedia {
 
     public void setExtension(String extension) {
         this.extension = extension;
+    }
+
+    public byte[] getBinDocumento() {
+        return binDocumento;
+    }
+
+    public void setBinDocumento(byte[] binDocumento) {
+        this.binDocumento = binDocumento;
+    }
+    
+    public void descargar() {
+        try {
+            Session.grabarAtributo("filename", this.filename);
+            Session.grabarAtributo("binDocumento", this.binDocumento);
+        } catch (Exception ex) {
+            Mensajes.showException(this.getClass(), ex);
+        }
     }
 }

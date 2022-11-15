@@ -378,6 +378,7 @@ public class FiltroConsultaDocumentos implements Serializable {
             this.visorDocumentos.setFilename(bdDDocumento.getCoFichero());
             this.visorDocumentos.setPlayer("pdf");
             this.visorDocumentos.setResultadoValidacionFirmas(resultadoValidacionFirmas);
+            this.visorDocumentos.setBinDocumento(binDocumento);
             Session.grabarAtributo("reportBytes", binDocumento);
         } catch (Exception ex) {
             Mensajes.showException(this.getClass(), ex);
@@ -469,8 +470,30 @@ public class FiltroConsultaDocumentos implements Serializable {
                 .setMethod(this.getClass().getMethod("verDocumento"))
                 .setIdVisorMedia("visorDocumentos")
                 .setUpdate("formulario:panelResultado,formulario:mensaje");
+        
+        this.dsResultado.newColumn("btnDescarga");
+        cabecera.getColumnName("btnDescarga")
+                .setTitle("Descargar Documento")
+                .setAlign(ColumnCabecera.ALIGN.CENTER)
+                .setWidth("10em")
+                .setTipo(ColumnBase.Tipo.DESCARGA)
+                .setClase(this)
+                .setMethod(this.getClass().getMethod("descargarDocumento"))
+                .setUpdate("formulario:panelResultado,formulario:mensaje");
     }
 
+    public void descargarDocumento() {
+        try {
+            Integer idDocumento = this.dsResultado.getSelectedRow().getColumnaID().getValueInteger();
+            BdDDocumento bdDDocumento = new StDDocumento(Session.getDatosUsuario()).item(idDocumento, null);
+            byte[] binDocumento = bdDDocumento.getBlDocumento(null);
+            Session.grabarAtributo("filename", bdDDocumento.getCoFichero());
+            Session.grabarAtributo("binDocumento", binDocumento);
+        } catch (Exception ex) {
+            Mensajes.showException(this.getClass(), ex);
+        }
+    }
+    
     public EdicionConsultaDocumentos getEdicionConsultaDocumentos() {
         return edicionConsultaDocumentos;
     }

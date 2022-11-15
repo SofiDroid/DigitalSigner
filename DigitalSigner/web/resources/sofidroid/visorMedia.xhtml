@@ -16,8 +16,17 @@
                   modal="true" width="70%" resizable="false" height="550px" header="Visor de documentos" >
             <!-- value="/documento.pdf" player="pdf" -->
             <p:media value="/documento.pdf" style="height: #{cc.attrs.beanClass.heightdoc}" player="#{cc.attrs.beanClass.player}" cache="false" width="100%">
-                Your browser can't display #{cc.attrs.beanClass.filename}.<a href="/documento.pdf">Descargar documento.</a>                
+                Your browser can't display #{cc.attrs.beanClass.filename}.
+                <p:commandButton title="#{itemColumn.tooltip}"
+                        value="#{msg['descarga']}"
+                        oncomplete="iniciarDescarga()"
+                        action="#{cc.attrs.beanClass.descargar}"
+                        icon="pi pi-download">
+                </p:commandButton>
             </p:media>
+            <p:remoteCommand name="iniciarDescarga">
+                <p:fileDownload value="#{fileDownloadView.file}" />
+            </p:remoteCommand>
             <p:outputPanel rendered="#{cc.attrs.beanClass.resultadoValidacionFirmas ne null}" style="height: #{cc.attrs.beanClass.heightfirmas}">
                 <h3>Firmas</h3>
                 <ui:repeat value="#{cc.attrs.beanClass.resultadoValidacionFirmas.listaFirmantes}" var="firmante">
