@@ -537,7 +537,7 @@ public class EdicionTiposDocumentos implements Serializable {
                 .setVisible(false);
 
         cabecera.getColumnName("EN_ORDEN")
-                .setTitle("Órden")
+                .setTitle("Orden")
                 .setWidth("6rem")
                 .setTipo(ColumnBase.Tipo.LINK)
                 .setClase(this)
