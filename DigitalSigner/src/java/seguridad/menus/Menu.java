@@ -27,11 +27,15 @@ public class Menu implements Serializable {
     private DataSet dsMenu;
     private Permisos permisos;
     public Menu() {
+        inicializar();
+    }
+
+    public void inicializar() {
         this.model = new DefaultMenuModel();
         cargarMenuUsuarioUnidad(Session.getDatosUsuario().getBdTUsuario().getIdUsuario(),
                             Session.getDatosUsuario().getBdTUnidad().getIdUnidad());
     }
-
+    
     public MenuModel getModel() {
         return model;
     }

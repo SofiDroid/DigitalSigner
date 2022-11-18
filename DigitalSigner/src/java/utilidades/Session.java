@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.handler.MessageContext;
+import seguridad.menus.Menu;
 import seguridad.usuarios.DatosUsuario;
 
 /**
@@ -96,6 +97,13 @@ public class Session {
     
     public static void limpiarOtrosBeans(String beanEnUso) {
         limpiarOtrosBeans(beanEnUso, false, false);
+    }
+    
+    public static void recargarMenu() {
+        Menu menu = (Menu)getNamedBean("menu");
+        if (menu != null) {
+            menu.inicializar();
+        }
     }
     
     public static void limpiarOtrosBeans(String beanEnUso, boolean boDatosUsuario, boolean boMenu) {

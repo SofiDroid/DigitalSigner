@@ -58,6 +58,7 @@ public class DatosUsuario implements Serializable {
             this.setPais((Pais)e.getObject());
             FacesContext.getCurrentInstance()
                .getViewRoot().setLocale(this.getPais().getLocale());
+            Session.recargarMenu();
         }
     } 
     
