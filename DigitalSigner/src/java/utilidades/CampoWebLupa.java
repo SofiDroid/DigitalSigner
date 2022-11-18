@@ -3,6 +3,8 @@ package utilidades;
 import basedatos.AutocompleteItem;
 import basedatos.DataSet;
 import basedatos.Row;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +27,8 @@ public class CampoWebLupa extends CampoWeb {
     private String update;
     private AutocompleteItem selectedItem;
     private final ArrayList<String> listaNotIN;
+    private Method onItemChanged = null;
+    private Object clase = null;
     
     public CampoWebLupa() {
         super(Tipo.Lupa);
@@ -128,7 +132,23 @@ public class CampoWebLupa extends CampoWeb {
     }
     
     public void setValue(AutocompleteItem item) {
+        boolean boHasChanged = false;
+        if ((this.selectedItem != null && item == null) ||
+            (this.selectedItem == null && item != null) ||
+            (this.selectedItem != null && item != null && this.selectedItem.getId().compareTo(item.getId()) != 0)) {
+            boHasChanged = true;
+        }
+        
         this.selectedItem = item;
+        
+        if (boHasChanged && this.onItemChanged != null) {
+            try {
+                this.onItemChanged.invoke(this.clase);
+            }
+            catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+                Mensajes.showException(this.getClass(), ex);
+            }
+        }
     }
     
     public List<AutocompleteItem> getListaAutocomplete() {
@@ -250,5 +270,10 @@ public class CampoWebLupa extends CampoWeb {
         if (value != null && this.listaNotIN.contains(value)) {
             this.listaNotIN.remove(value);
         }
+    }
+
+    public void setOnItemChanged(Object clase, Method metodo) {
+        this.clase = clase;
+        this.onItemChanged = metodo;
     }
 }

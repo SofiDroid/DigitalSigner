@@ -15,12 +15,13 @@
     <cc:implementation>
         <p:panelGrid columns="3" columnClasses="colFit, col-12" style="#{cc.attrs.style}">
             <p:outputLabel for="#{cc.attrs.id}" lang="#{cc.attrs.beanClass.lang}" value="#{cc.attrs.label}#{cc.attrs.beanClass.requiredChar}" escape="false" style="display: block;#{cc.attrs.beanClass.widthLabel}"/>
+            <p:inputText id="#{cc.attrs.id}_txt" disabled="true" value="#{cc.attrs.beanClass.filename}" />
             <p:fileUpload id="#{cc.attrs.id}" widgetVar="#{cc.attrs.id}" value="#{cc.attrs.beanClass.value}"  
-                          mode="simple" dragDropSupport="false" auto="false" skinSimple="true" required="#{cc.attrs.beanClass.required}"
-                                  invalidFileMessage="#{Msg['invalidFileMessage']}" invalidSizeMessage="#{Msg['invalidSizeMessage']}"
-                                  fileLimitMessage="#{Msg['fileLimitMessage']}" 
-                                  sizeLimit="20000000" fileLimit="1" allowTypes="/(\.|\/)(pdf)$/"
-                                  validateContentType="false" accept=".pdf" disabled="#{cc.attrs.beanClass.protegido}" />
+                        mode="simple" dragDropSupport="false" auto="false" skinSimple="true" required="#{cc.attrs.beanClass.required}"
+                        invalidFileMessage="#{Msg['invalidFileMessage']}" invalidSizeMessage="#{Msg['invalidSizeMessage']}"
+                        fileLimitMessage="#{Msg['fileLimitMessage']}"  label="Examinar..."
+                        sizeLimit="20000000" fileLimit="1" allowTypes="/(\.|\/)(pdf)$/"
+                        validateContentType="false" accept=".pdf" disabled="#{cc.attrs.beanClass.protegido}" />
             
         </p:panelGrid>
     </cc:implementation>

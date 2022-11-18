@@ -70,9 +70,9 @@
                 </p:panelGrid>
             </p:card>
             <p:card id="panelFirmas" styleClass="card">
-                <p:toolbar rendered="#{beanEdicion.modoFormulario eq 'EDICION' or beanEdicion.modoFormulario eq 'ALTA'}">
+                <p:toolbar rendered="#{beanEdicion.dsFirmas ne null and (beanEdicion.dsFirmas.modoFormulario eq 'EDICION' or beanEdicion.dsFirmas.modoFormulario eq 'ALTA')}">
                     <p:toolbarGroup align="right">
-                        <p:commandButton id="btnNuevaFirma" icon="pi pi-plus-circle" styleClass="rounded-button ui-button-success" 
+                        <p:commandButton id="btnNuevaFirma" icon="pi pi-plus-circle" styleClass="rounded-button ui-button-success" immediate="true" 
                                          style="height: 2rem;width: 2rem;margin-left:0.3rem" action="#{beanEdicion.nuevaFirma}" title="(alt+N) Nuevo"
                                          update="panelFirmas,mensaje" accesskey="n" oncomplete="PF('dlgFirmas').show()" />
                     </p:toolbarGroup>
@@ -84,7 +84,7 @@
                         <p:commandButton id="btnGuardarFirma" icon="pi pi-save" styleClass="rounded-button ui-button-success" 
                                          style="height: 2rem;width: 2rem;margin-left:0.3rem" action="#{beanEdicion.guardarFirma}" title="(alt+S) Guardar"
                                          oncomplete="if (args &amp;&amp; args.validationFailed) PF('dlgFirmas').show()" update="panelFirmas,mensaje"
-                                         rendered="#{beanEdicion.modoFormulario eq 'EDICION' or beanEdicion.modoFormulario eq 'ALTA'}" />
+                                         rendered="#{beanEdicion.dsFirmas.modoFormulario eq 'EDICION' or beanEdicion.dsFirmas.modoFormulario eq 'ALTA'}" />
                     </f:facet>
                     <p:panelGrid columns="1"
                         columnClasses="col-12"

@@ -26,6 +26,7 @@ public class ColumnBase {
     protected Method method = null;
     protected Object clase = null;
     protected String update = "@widgetVar(mensaje)";
+    protected String process = null;
     protected String tooltip = "";
     protected String oncomplete = "";
     protected String icon = "pi pi-file-pdf";
@@ -153,5 +154,13 @@ public class ColumnBase {
     public ColumnBase setIdVisorMedia(String idVisorMedia) {
         this.idVisorMedia = idVisorMedia;
         return this;
+    }
+
+    public String getProcess() {
+        return process;
+    }
+
+    public void setProcess(String process) {
+        this.process = process;
     }
 }

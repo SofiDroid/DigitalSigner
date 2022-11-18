@@ -46,7 +46,7 @@
                                 title="#{itemRow.getColumnName(itemColumn.name).tooltip}"
                                 value="#{itemRow.getColumnName(itemColumn.name)[itemColumn.valueString]}"
                                 action="#{itemColumn.ejecutarMetodo}"
-                                update="#{itemColumn.update}"
+                                update="#{itemColumn.update}" process="#{itemColumn.process}"
                                 oncomplete="#{itemColumn.oncomplete}">
                             <f:setPropertyActionListener target="#{cc.attrs.dataSet.selectedRow}" value="#{itemRow}" />
                         </p:commandLink>

@@ -170,8 +170,12 @@ public final class DataSet extends StBase {
     }
     
     public void clear() {
-        this.selectedRow = null;
         this.cabecera.columns.clear();
+        clearRows();
+    }
+    
+    public void clearRows() {
+        this.selectedRow = null;
         this.rows.clear();
     }
     

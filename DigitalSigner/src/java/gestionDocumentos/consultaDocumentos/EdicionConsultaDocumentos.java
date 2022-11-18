@@ -5,27 +5,29 @@ import basedatos.ColumnCabecera;
 import basedatos.DataSet;
 import basedatos.Row;
 import basedatos.RowCabecera;
+import basedatos.servicios.StAConftipodoc;
 import basedatos.servicios.StADocfirma;
 import basedatos.servicios.StAFirmante;
 import basedatos.servicios.StDDocumento;
+import basedatos.servicios.StTAutoridad;
+import basedatos.tablas.BdAConftipodoc;
 import basedatos.tablas.BdADocfirma;
 import basedatos.tablas.BdAFirmante;
 import basedatos.tablas.BdDDocumento;
+import basedatos.tablas.BdTAutoridad;
 import excepciones.FormModeException;
 import excepciones.RegistryNotFoundException;
 import excepciones.RequiredFieldException;
 import init.AppInit;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.Serializable;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.stream.Collectors;
 import javax.el.ELContext;
 import javax.faces.context.FacesContext;
-import org.primefaces.model.file.UploadedFile;
 import tomcat.persistence.EntityManager;
 import utilidades.CampoWebChips;
 import utilidades.CampoWebCodigo;
@@ -56,11 +58,8 @@ public class EdicionConsultaDocumentos implements Serializable {
     private CampoWebFecha cFeDesactivo = null;
     private CampoWebLupa cTipoDocumento = null;
     private CampoWebUpload cFuDocumento = null;
-    //private CampoWebCodigo cCoFichero = null;
-    //private CampoWebCodigo cCoExtension = null;
     private CampoWebLupa cSituacionDoc = null;
-    
-    
+        
     private DataSet dsFirmas = null;
     private ArrayList<Integer> listaFirmasEliminadasId = null;
     
@@ -118,7 +117,9 @@ public class EdicionConsultaDocumentos implements Serializable {
             this.cTipoDocumento.setConsulta(sql);
             this.cTipoDocumento.setColumnaID("ID_TIPODOCUMENTO");
             this.cTipoDocumento.setColumnaLabel("Tipo");
-            
+            this.cTipoDocumento.setUpdate("formulario:panelFirmas");
+            this.cTipoDocumento.setOnItemChanged(this, this.getClass().getMethod("cTipoDocumento_ItemChanged"));
+
             this.cFuDocumento = new CampoWebUpload();
             this.cFuDocumento.setLabel(Msg.getString("lbl_EdicionConsultaDocumentos_Documento"));
             this.cFuDocumento.setWidthLabel("100px");
@@ -192,10 +193,12 @@ public class EdicionConsultaDocumentos implements Serializable {
             if (idDocumento != null) {
                 recuperarRegistro(idDocumento);
                 inicializarDataSetFirmas(idDocumento);
+                cFuDocumento.setRequired(false);
             }
             else {
                 this.setModoFormulario(ModoFormulario.ALTA);
                 inicializarDataSetFirmas(null);
+                cFuDocumento.setRequired(true);
             }
         }
         catch (Exception ex) {
@@ -209,6 +212,80 @@ public class EdicionConsultaDocumentos implements Serializable {
         }
     }
 
+    public void cTipoDocumento_ItemChanged() {
+        try {
+            if (cTipoDocumento.getValue() != null) {
+                String codigo = cTipoDocumento.getValue().getLabel().split(" - ")[0].trim();
+                if (codigo.equalsIgnoreCase("GEN-XAdES") || codigo.equalsIgnoreCase("GEN-PAdES")) {
+                    //Limpiamos DataSet y habilitamos edicion para configuracion manual de las firmas.
+                    if (dsFirmas != null) {
+                        this.dsFirmas.setModoFormulario(this.modoFormulario);
+                    }
+                }
+                else {
+                    cargarFirmasPorTipoDocumento(cTipoDocumento.getValue().getId());
+                    this.dsFirmas.setModoFormulario(ModoFormulario.CONSULTA);
+                }
+            }
+            else {
+                if (dsFirmas != null) {
+                    this.dsFirmas.setModoFormulario(this.modoFormulario);
+                }
+            }
+        }
+        catch (Exception ex) {
+            Mensajes.showException(this.getClass(), ex);
+        }
+    }    
+    
+    private void cargarFirmasPorTipoDocumento(Integer idTipodocumento) throws Exception {
+        
+        StAConftipodoc stAConftipodoc = new StAConftipodoc(Session.getDatosUsuario());
+        BdAConftipodoc filtroBdAConftipodoc = new BdAConftipodoc();
+        filtroBdAConftipodoc.setIdTipodocumento(idTipodocumento);
+        filtroBdAConftipodoc.setFeAlta(new Date());
+        filtroBdAConftipodoc.setFeDesactivo(new Date());
+        ArrayList<BdAConftipodoc> listaBdAConftipodoc = stAConftipodoc.filtro(filtroBdAConftipodoc, null);
+        
+        if (listaBdAConftipodoc != null && !listaBdAConftipodoc.isEmpty())
+        {
+            this.dsFirmas.clearRows();
+            
+            listaBdAConftipodoc = (ArrayList<BdAConftipodoc>) listaBdAConftipodoc.stream()
+                    .sorted(Comparator.comparingInt(BdAConftipodoc::getEnOrden))
+                    .collect(Collectors.toList());
+            
+            for (BdAConftipodoc bdAConftipodoc : listaBdAConftipodoc) {
+                BdTAutoridad bdTAutoridad = new StTAutoridad(Session.getDatosUsuario()).item(bdAConftipodoc.getIdAutoridad(), null);
+                
+                Row newRow = this.dsFirmas.newRow();
+                newRow.getColumnName("ID_DOCFIRMA").setValue(null);
+                newRow.getColumnName("ID_DOCUMENTO").setValue(null);
+                newRow.getColumnName("ID_AUTORIDAD").setValue(bdAConftipodoc.getIdAutoridad());
+                newRow.getColumnName("EN_ORDEN").setValue(bdAConftipodoc.getEnOrden());
+                newRow.getColumnName("DI_TIPOFIRMA").setValue(bdAConftipodoc.getDiTipofirma());
+                newRow.getColumnName("DS_TIPOFIRMA").setValue(obtenerDsTipoFirma(bdAConftipodoc.getDiTipofirma()));
+                newRow.getColumnName("Autoridad").setValue(bdTAutoridad.getCoAutoridad() + " - " + bdTAutoridad.getDsAutoridad());
+                newRow.getColumnName("Firmantes").setValue(null);
+                newRow.getColumnName("DS_FIRMAPOSX").setValue(bdAConftipodoc.getDsFirmaposx());
+                newRow.getColumnName("DS_FIRMAPOSY").setValue(bdAConftipodoc.getDsFirmaposy());
+                newRow.getColumnName("FE_ALTA").setValue(bdAConftipodoc.getFeAlta());
+                newRow.getColumnName("FE_DESACTIVO").setValue(bdAConftipodoc.getFeDesactivo());
+
+                this.dsFirmas.getRows().add(newRow);
+            }
+        }
+    }
+    
+    private String obtenerDsTipoFirma(String diTipofirma) {
+        return switch (diTipofirma) {
+            case "F" -> "Firma";
+            case "CO" -> "Cofirma";
+            case "CT" -> "Contrafirma";
+            default -> "";
+        };
+    }
+    
     public void guardar() {
         try {
             validarCampos();
@@ -223,9 +300,9 @@ public class EdicionConsultaDocumentos implements Serializable {
                         this.bdDDocumento.setCoDocumento(null);//this.cCoDocumento.getValue());
                         this.bdDDocumento.setDsDocumento(this.cDsDocumento.getValue());
                         this.bdDDocumento.setIdTipodocumento(this.cTipoDocumento.getId());
-                        this.bdDDocumento.setBlDocumento(this.cFuDocumento.getValue().getContent());
-                        this.bdDDocumento.setCoFichero(this.cFuDocumento.getValue().getFileName());
-                        this.bdDDocumento.setCoExtension(this.cFuDocumento.getValue().getFileName().substring(this.cFuDocumento.getValue().getFileName().lastIndexOf(".") + 1).toUpperCase());
+                        this.bdDDocumento.setBlDocumento(this.cFuDocumento.getBinFichero());
+                        this.bdDDocumento.setCoFichero(this.cFuDocumento.getFilename());
+                        this.bdDDocumento.setCoExtension(this.cFuDocumento.getExtension());
                         this.bdDDocumento.setIdSituaciondoc(this.cSituacionDoc.getId());
                         this.bdDDocumento.setFeAlta(this.cFeAlta.getValue());
                         this.bdDDocumento.setFeDesactivo(this.cFeDesactivo.getValue());
@@ -279,9 +356,9 @@ public class EdicionConsultaDocumentos implements Serializable {
                         this.bdDDocumento.setCoDocumento(this.cCoDocumento.getValue());
                         this.bdDDocumento.setDsDocumento(this.cDsDocumento.getValue());
                         this.bdDDocumento.setIdTipodocumento(this.cTipoDocumento.getId());
-                        this.bdDDocumento.setBlDocumento(this.cFuDocumento.getValue().getContent());
-                        this.bdDDocumento.setCoFichero(this.cFuDocumento.getValue().getFileName());
-                        this.bdDDocumento.setCoExtension(this.cFuDocumento.getValue().getFileName().substring(this.cFuDocumento.getValue().getFileName().lastIndexOf(".") + 1).toUpperCase());
+                        this.bdDDocumento.setBlDocumento(this.cFuDocumento.getBinFichero());
+                        this.bdDDocumento.setCoFichero(this.cFuDocumento.getFilename());
+                        this.bdDDocumento.setCoExtension(this.cFuDocumento.getExtension());
                         this.bdDDocumento.setIdSituaciondoc(this.cSituacionDoc.getId());
                         this.bdDDocumento.setFeAlta(this.cFeAlta.getValue());
                         this.bdDDocumento.setFeDesactivo(this.cFeDesactivo.getValue());
@@ -360,6 +437,7 @@ public class EdicionConsultaDocumentos implements Serializable {
     public void modificar() {
         try {
             this.setModoFormulario(ModoFormulario.EDICION);
+            cTipoDocumento_ItemChanged();
         }
         catch (Exception ex) {
             Mensajes.showException(this.getClass(), ex);
@@ -412,8 +490,9 @@ public class EdicionConsultaDocumentos implements Serializable {
         this.cDsDocumento.setValue(null);
         this.cTipoDocumento.setId(null);
         this.cFuDocumento.setValue(null);
-//        this.cCoFichero.setValue(null);
-//        this.cCoExtension.setValue(null);
+        this.cFuDocumento.setFilename(null);
+        this.cFuDocumento.setExtension(null);
+        this.cFuDocumento.setBinFichero(null);
         this.cSituacionDoc.setValue(null);
         this.cFeAlta.setValue(null);
         this.cFeDesactivo.setValue(null);
@@ -463,15 +542,9 @@ public class EdicionConsultaDocumentos implements Serializable {
         if (Validation.isNullOrEmpty(this.cTipoDocumento.getId())) {
             throw new RequiredFieldException(this.cTipoDocumento.getLabel());
         }
-        if (Validation.isNullOrEmpty(cFuDocumento.getValue())) {
+        if (Validation.isNullOrEmpty(cFuDocumento.getValue()) && Validation.isNullOrEmpty(cFuDocumento.getBinFichero())) {
             throw new RequiredFieldException("Documento adjunto");
         }
-//        if (Validation.isNullOrEmpty(this.cCoFichero.getValue())) {
-//            throw new RequiredFieldException(this.cCoFichero.getLabel());
-//        }
-//        if (Validation.isNullOrEmpty(this.cCoExtension.getValue())) {
-//            throw new RequiredFieldException(this.cCoExtension.getLabel());
-//        }
         if (Validation.isNullOrEmpty(this.cSituacionDoc.getValue())) {
             throw new RequiredFieldException(this.cSituacionDoc.getLabel());
         }
@@ -503,6 +576,16 @@ public class EdicionConsultaDocumentos implements Serializable {
         }
     }
     
+    private void protegerCamposFirma(boolean boProtegido) {
+        this.cDiTipoFirma.setProtegido(boProtegido);
+        this.cAutoridad.setProtegido(boProtegido);
+        this.cFirmantes.setProtegido(boProtegido);
+        this.cDsFirmaPosX.setProtegido(boProtegido);
+        this.cDsFirmaPosY.setProtegido(boProtegido);
+        this.cFeAltaFirma.setProtegido(boProtegido);
+        this.cFeDesactivoFirma.setProtegido(boProtegido);
+    }
+    
     private void protegerCampos() throws Exception {
         switch (this.modoFormulario) {
             case CONSULTA, ELIMINADO -> {
@@ -510,38 +593,22 @@ public class EdicionConsultaDocumentos implements Serializable {
                 this.cDsDocumento.setProtegido(true);
                 this.cTipoDocumento.setProtegido(true);
                 this.cFuDocumento.setProtegido(true);
-//                this.cCoFichero.setProtegido(true);
-//                this.cCoExtension.setProtegido(true);
                 this.cSituacionDoc.setProtegido(true);
                 this.cFeAlta.setProtegido(true);
                 this.cFeDesactivo.setProtegido(true);
                 
-                this.cDiTipoFirma.setProtegido(true);
-                this.cAutoridad.setProtegido(true);
-                this.cFirmantes.setProtegido(true);
-                this.cDsFirmaPosX.setProtegido(true);
-                this.cDsFirmaPosY.setProtegido(true);
-                this.cFeAltaFirma.setProtegido(true);
-                this.cFeDesactivoFirma.setProtegido(true);
+                protegerCamposFirma(true);
             }
             case EDICION -> {
 //                this.cCoDocumento.setProtegido(false);
                 this.cDsDocumento.setProtegido(false);
                 this.cTipoDocumento.setProtegido(false);
                 this.cFuDocumento.setProtegido(false);
-//                this.cCoFichero.setProtegido(false);
-//                this.cCoExtension.setProtegido(false);
                 this.cSituacionDoc.setProtegido(false);
                 this.cFeAlta.setProtegido(false);
                 this.cFeDesactivo.setProtegido(false);
                 
-                this.cDiTipoFirma.setProtegido(false);
-                this.cAutoridad.setProtegido(false);
-                this.cFirmantes.setProtegido(false);
-                this.cDsFirmaPosX.setProtegido(false);
-                this.cDsFirmaPosY.setProtegido(false);
-                this.cFeAltaFirma.setProtegido(false);
-                this.cFeDesactivoFirma.setProtegido(false);
+                protegerCamposFirma(false);
             }
             case ALTA -> {
                 limpiar();
@@ -549,19 +616,11 @@ public class EdicionConsultaDocumentos implements Serializable {
                 this.cDsDocumento.setProtegido(false);
                 this.cTipoDocumento.setProtegido(false);
                 this.cFuDocumento.setProtegido(false);
-//                this.cCoFichero.setProtegido(false);
-//                this.cCoExtension.setProtegido(false);
                 this.cSituacionDoc.setProtegido(false);
                 this.cFeAlta.setProtegido(false);
                 this.cFeDesactivo.setProtegido(false);
                 
-                this.cDiTipoFirma.setProtegido(false);
-                this.cAutoridad.setProtegido(false);
-                this.cFirmantes.setProtegido(false);
-                this.cDsFirmaPosX.setProtegido(false);
-                this.cDsFirmaPosY.setProtegido(false);
-                this.cFeAltaFirma.setProtegido(false);
-                this.cFeDesactivoFirma.setProtegido(false);
+                protegerCamposFirma(false);
             }
             default -> throw new FormModeException();
         }
@@ -579,54 +638,9 @@ public class EdicionConsultaDocumentos implements Serializable {
         cFeAlta.setValue(this.bdDDocumento.getFeAlta());
         cFeDesactivo.setValue(this.bdDDocumento.getFeDesactivo());
         cTipoDocumento.setId(this.bdDDocumento.getIdTipodocumento());
-        cFuDocumento.setValue(new UploadedFile() {
-            @Override
-            public String getFileName() {
-                return bdDDocumento.getCoFichero();
-            }
-
-            @Override
-            public InputStream getInputStream() throws IOException {
-                return null;
-            }
-
-            @Override
-            public byte[] getContent() {
-                try {
-                    return bdDDocumento.getBlDocumento(null);
-                } catch (SQLException ex) {
-                    Mensajes.showException(EdicionConsultaDocumentos.class, ex);
-                }
-                return null;
-            }
-
-            @Override
-            public String getContentType() {
-                return null;
-            }
-
-            @Override
-            public long getSize() {
-                try {
-                    return bdDDocumento.getBlDocumento(null).length;
-                } catch (SQLException ex) {
-                    Mensajes.showException(EdicionConsultaDocumentos.class, ex);
-                }
-                return -1;
-            }
-
-            @Override
-            public void write(String string) throws Exception {
-                // NADA
-            }
-
-            @Override
-            public void delete() throws IOException {
-                // NADA
-            }
-        });
-        //cCoFichero.setValue(this.bdDDocumento.getCoFichero());
-        //cCoExtension.setValue(this.bdDDocumento.getCoExtension());
+        cFuDocumento.setFilename(this.bdDDocumento.getCoFichero());
+        cFuDocumento.setExtension(this.bdDDocumento.getCoExtension());
+        cFuDocumento.setBinFichero(this.bdDDocumento.getBlDocumento(null));
         cSituacionDoc.setId(this.bdDDocumento.getIdSituaciondoc());
     }
 
@@ -682,7 +696,7 @@ public class EdicionConsultaDocumentos implements Serializable {
                 .setTipo(ColumnBase.Tipo.LINK)
                 .setClase(this)
                 .setMethod(this.getClass().getMethod("verDetalle"))
-                .setOncomplete("PF('dlgFirmas').show()")
+                .setOncomplete("if (!(args && args.validationFailed)) PF('dlgFirmas').show()")
                 .setUpdate("formulario:panelFirmas,formulario:mensaje");
 
         cabecera.getColumnName("DI_TIPOFIRMA")
@@ -817,6 +831,15 @@ public class EdicionConsultaDocumentos implements Serializable {
     
     public void cerrarEdicionCamposFirma() {
         try {
+            this.cEnOrden.setValueInteger(null);
+            this.cDiTipoFirma.setValue(null);
+            this.cAutoridad.setId(null);
+            this.cFirmantes.setValues(null);
+            this.cDsFirmaPosX.setValueInteger(null);
+            this.cDsFirmaPosY.setValueInteger(null);
+            this.cFeAltaFirma.setValue(null);
+            this.cFeDesactivoFirma.setValue(null);
+            
             camposFirmaRequeridos(false);
         } catch (Exception ex) {
             Mensajes.showException(this.getClass(), ex);
@@ -826,6 +849,12 @@ public class EdicionConsultaDocumentos implements Serializable {
     public void verDetalle() {
         try {
             camposFirmaCargar(this.dsFirmas.getSelectedRow());
+            if (this.dsFirmas.getModoFormulario() == ModoFormulario.CONSULTA) {
+                protegerCamposFirma(true);
+            }
+            else {
+                protegerCamposFirma(false);
+            }
             camposFirmaRequeridos(true);
         } catch (Exception ex) {
             Mensajes.showException(this.getClass(), ex);
@@ -899,22 +928,6 @@ public class EdicionConsultaDocumentos implements Serializable {
     public void setcTipoDocumento(CampoWebLupa cTipoDocumento) {
         this.cTipoDocumento = cTipoDocumento;
     }
-
-//    public CampoWebCodigo getcCoFichero() {
-//        return cCoFichero;
-//    }
-//
-//    public void setcCoFichero(CampoWebCodigo cCoFichero) {
-//        this.cCoFichero = cCoFichero;
-//    }
-//
-//    public CampoWebCodigo getcCoExtension() {
-//        return cCoExtension;
-//    }
-//
-//    public void setcCoExtension(CampoWebCodigo cCoExtension) {
-//        this.cCoExtension = cCoExtension;
-//    }
 
     public CampoWebLupa getcSituacionDoc() {
         return cSituacionDoc;
@@ -1015,8 +1028,6 @@ public class EdicionConsultaDocumentos implements Serializable {
     private void camposFirmaRequeridos(boolean boRequerido) {
         this.cEnOrden.setRequired(boRequerido);
         this.cDiTipoFirma.setRequired(boRequerido);
-        //this.cAutoridad.setRequired(boRequerido);
-        //this.cFirmantes.setRequired(boRequerido);
         this.cDsFirmaPosX.setRequired(boRequerido);
         this.cDsFirmaPosY.setRequired(boRequerido);
         this.cFeAltaFirma.setRequired(boRequerido);
