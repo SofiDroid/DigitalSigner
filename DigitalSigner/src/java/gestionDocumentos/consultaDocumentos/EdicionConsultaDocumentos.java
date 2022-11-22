@@ -352,7 +352,6 @@ public class EdicionConsultaDocumentos implements Serializable {
 
                     //ACTUALIZACION
                     if (this.modoFormulario == ModoFormulario.EDICION) {
-                        this.bdDDocumento = new BdDDocumento();
                         this.bdDDocumento.setCoDocumento(this.cCoDocumento.getValue());
                         this.bdDDocumento.setDsDocumento(this.cDsDocumento.getValue());
                         this.bdDDocumento.setIdTipodocumento(this.cTipoDocumento.getId());

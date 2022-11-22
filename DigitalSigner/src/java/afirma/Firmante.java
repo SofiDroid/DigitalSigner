@@ -1,5 +1,7 @@
 package afirma;
 
+import java.util.Date;
+
 /**
  *
  * @author ihuegal
@@ -15,6 +17,8 @@ public class Firmante {
     private String dsCertValidacion = null;
     private String dsRefValidacion = null;
     private String dsValidacion = null;
+    private boolean isTimestamped = false;
+    private Date[] timestamps = null;
 
     public String getNombre() {
         return nombre;
@@ -94,5 +98,21 @@ public class Firmante {
 
     public void setDsRefValidacion(String dsRefValidacion) {
         this.dsRefValidacion = dsRefValidacion;
+    }
+
+    public boolean isIsTimestamped() {
+        return isTimestamped;
+    }
+
+    public void setIsTimestamped(boolean isTimestamped) {
+        this.isTimestamped = isTimestamped;
+    }
+
+    public Date[] getTimestamps() {
+        return timestamps;
+    }
+
+    public void setTimestamps(Date[] timestamp) {
+        this.timestamps = timestamps;
     }
 }
