@@ -1,5 +1,6 @@
 package afirma;
 
+import es.gob.afirma.core.misc.Base64;
 import es.gob.afirma.core.signers.AOSimpleSignInfo;
 import es.gob.afirma.core.util.tree.AOTreeModel;
 import es.gob.afirma.core.util.tree.AOTreeNode;
@@ -14,12 +15,16 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.cert.CertificateExpiredException;
 import java.security.cert.CertificateNotYetValidException;
+import java.util.Date;
 import java.util.Properties;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.apache.log4j.Logger;
-import org.apache.tomcat.util.codec.binary.Base64;
+import org.spongycastle.cert.X509CertificateHolder;
+import org.spongycastle.cms.CMSSignedData;
+import org.spongycastle.tsp.TimeStampToken;
+import org.spongycastle.util.CollectionStore;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import utilidades.Formateos;
@@ -43,7 +48,7 @@ public class AfirmaUtils {
             throw new NoContentException();
         }
         
-        return new Base64().decode(nl.item(0).getTextContent());
+        return Base64.decode(nl.item(0).getTextContent());
     }
     
     public ResultadoValidacionFirmas validarFirmas(String filename, boolean validarFirmas, boolean validarCertificados, boolean validarReferencias, boolean obtenerFirmantes) throws Exception {
@@ -100,10 +105,21 @@ public class AfirmaUtils {
                     firmante.setValid(false);
                     firmante.setDsValidacion(ce.getMessage());
                 }
-                firmante.setIsTimestamped(firma.isTimeStamped());
-                if (firma.isTimeStamped()) {
-                    firmante.setTimestamps(firma.getTimestampingTime());
+                /**
+                 * Esto no funciona, no está implementado para XAdES
+                 */
+//                firmante.setIsTimestamped(firma.isTimeStamped());
+//                if (firma.isTimeStamped()) {
+//                    firmante.setTimestamps(firma.getTimestampingTime());
+//                }
+                // Obtencion del TimeStamp y de la fecha limite del sello de tiempo
+                firmante.setIsTimestamped(isTimeStamed(binFichero));
+                if (firmante.isIsTimestamped()) {
+                    firmante.setTimestamp(Formateos.dateToString(getTimestampingTime(binFichero)[0], Formateos.TipoFecha.FECHA_HORA_SEGUNDOS));
+                    firmante.setTimestampLimit(Formateos.dateToString(getTimestampsLimit(binFichero)[0], Formateos.TipoFecha.FECHA_HORA_SEGUNDOS));
                 }
+                
+                
                 resultadoValidacionFirmas.getListaFirmantes().add(firmante);
             }
         }
@@ -161,7 +177,7 @@ public class AfirmaUtils {
                 }
                 firmante.setIsTimestamped(firma.isTimeStamped());
                 if (firma.isTimeStamped()) {
-                    firmante.setTimestamps(firma.getTimestampingTime());
+                    firmante.setTimestamp(Formateos.dateToString(firma.getTimestampingTime()[0], Formateos.TipoFecha.FECHA_HORA_SEGUNDOS));
                 }
                 resultadoValidacionFirmas.getListaFirmantes().add(firmante);
             }
@@ -266,5 +282,68 @@ public class AfirmaUtils {
         LOG.info("Fichero de configuración TSA cargado correctamente!");
         
         return prop;
+    }
+
+    private boolean isTimeStamed(byte[] binFichero) throws Exception {
+        
+        final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setNamespaceAware(true);
+        
+        final Document doc = dbf.newDocumentBuilder().parse(new ByteArrayInputStream(binFichero));
+
+        // Obtenemos el elemento EncapsulatedTimeStamp 
+        final NodeList nl_sellos = doc.getElementsByTagNameNS("http://uri.etsi.org/01903/v1.3.2#", "EncapsulatedTimeStamp");
+        
+        return (nl_sellos.getLength() > 0);
+    }
+
+    private Date[] getTimestampingTime(byte[] binFichero) throws Exception {
+        
+        final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setNamespaceAware(true);
+        
+        final Document doc = dbf.newDocumentBuilder().parse(new ByteArrayInputStream(binFichero));
+
+        // Obtenemos el elemento EncapsulatedTimeStamp 
+        final NodeList nl_sellos = doc.getElementsByTagNameNS("http://uri.etsi.org/01903/v1.3.2#", "EncapsulatedTimeStamp");
+        if (nl_sellos.getLength() > 0) {
+
+            CMSSignedData cmsSignedData = new CMSSignedData(Base64.decode(nl_sellos.item(0).getTextContent()));
+
+            TimeStampToken timeStampToken = new TimeStampToken(cmsSignedData);
+            
+            return new Date[]{timeStampToken.getTimeStampInfo().getGenTime()};
+        }
+        return new Date[]{};
+    }
+
+    private Date[] getTimestampsLimit(byte[] binFichero) throws Exception {
+        
+        final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setNamespaceAware(true);
+        
+        final Document doc = dbf.newDocumentBuilder().parse(new ByteArrayInputStream(binFichero));
+
+        // Obtenemos el elemento EncapsulatedTimeStamp 
+        final NodeList nl_sellos = doc.getElementsByTagNameNS("http://uri.etsi.org/01903/v1.3.2#", "EncapsulatedTimeStamp");
+        if (nl_sellos.getLength() > 0) {
+
+            CMSSignedData cmsSignedData = new CMSSignedData(Base64.decode(nl_sellos.item(0).getTextContent()));
+
+            TimeStampToken timeStampToken = new TimeStampToken(cmsSignedData);
+            
+            CollectionStore<X509CertificateHolder> listaCert = (CollectionStore<X509CertificateHolder>)timeStampToken.getCertificates();
+            Date fechahasta = null;
+            for (X509CertificateHolder certh : listaCert) {
+                if (fechahasta == null) {
+                    fechahasta = certh.getNotAfter();
+                }
+                if (fechahasta.compareTo(certh.getNotAfter()) > 0) {
+                    fechahasta = certh.getNotAfter();
+                }
+            }
+            return new Date[]{fechahasta};
+        }
+        return new Date[]{};
     }
 }

@@ -18,7 +18,8 @@ public class Firmante {
     private String dsRefValidacion = null;
     private String dsValidacion = null;
     private boolean isTimestamped = false;
-    private Date[] timestamps = null;
+    private String timestamp = null;
+    private String timestampLimit = null;
 
     public String getNombre() {
         return nombre;
@@ -108,11 +109,19 @@ public class Firmante {
         this.isTimestamped = isTimestamped;
     }
 
-    public Date[] getTimestamps() {
-        return timestamps;
+    public String getTimestamp() {
+        return timestamp;
     }
 
-    public void setTimestamps(Date[] timestamp) {
-        this.timestamps = timestamps;
+    public void setTimestamp(String timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public String getTimestampLimit() {
+        return timestampLimit;
+    }
+
+    public void setTimestampLimit(String timestampLimit) {
+        this.timestampLimit = timestampLimit;
     }
 }

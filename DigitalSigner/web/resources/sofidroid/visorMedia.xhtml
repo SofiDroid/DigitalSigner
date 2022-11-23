@@ -3,7 +3,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:cc="http://xmlns.jcp.org/jsf/composite"
       xmlns:p="http://primefaces.org/ui"
-      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
 
     <!-- INTERFACE -->
     <cc:interface>
@@ -35,8 +36,12 @@
 
                             <p:outputLabel value="#{firmante.fecha}" style="white-space: nowrap" />
 
-                            <p:outputLabel value="#{firmante.nombre}" />
-
+                            <p:outputPanel>
+                                <p:outputLabel value="#{firmante.nombre}" />
+                                <p:outputLabel rendered="#{firmante.isTimestamped}" value=" | (Sello: #{firmante.timestamp})"/>
+                                <p:outputLabel rendered="#{firmante.isTimestamped}" value=" | (Valido hasta: #{firmante.timestampLimit})"/>
+                            </p:outputPanel>
+                            
                             <p:avatar icon="pi pi-check" rendered="#{firmante.valid}" style="background-color: green; color: whitesmoke;" shape="circle" />
                             <p:avatar icon="pi pi-times" rendered="#{!firmante.valid}" style="background-color: darkred; color: whitesmoke;" shape="circle" />
 
