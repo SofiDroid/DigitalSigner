@@ -104,6 +104,7 @@ public class EdicionConsultaDocumentos implements Serializable {
             this.cFeAlta = new CampoWebFecha();
             this.cFeAlta.setLabel(Msg.getString("lbl_EdicionConsultaDocumentos_FeAlta"));
             this.cFeAlta.setWidthLabel("100px");
+            this.cFeAlta.setValue(new Date());
             this.cFeAlta.setRequired(true);
             
             this.cFeDesactivo = new CampoWebFecha();
@@ -123,7 +124,6 @@ public class EdicionConsultaDocumentos implements Serializable {
             this.cFuDocumento = new CampoWebUpload();
             this.cFuDocumento.setLabel(Msg.getString("lbl_EdicionConsultaDocumentos_Documento"));
             this.cFuDocumento.setWidthLabel("100px");
-            this.cFuDocumento.setRequired(true);
             
             this.cSituacionDoc = new CampoWebLupa();
             this.cSituacionDoc.setLabel(Msg.getString("lbl_EdicionConsultaDocumentos_SituacionDoc"));
@@ -183,6 +183,7 @@ public class EdicionConsultaDocumentos implements Serializable {
             this.cFeAltaFirma = new CampoWebFecha();
             this.cFeAltaFirma.setLabel(Msg.getString("lbl_EdicionConsultaDocumentos_FeAltaFirma"));
             this.cFeAltaFirma.setWidthLabel("100px");
+            this.cFeAltaFirma.setValue(new Date());
 
             this.cFeDesactivoFirma = new CampoWebFecha();
             this.cFeDesactivoFirma.setLabel(Msg.getString("lbl_EdicionConsultaDocumentos_FeDesactivoFirma"));
@@ -193,12 +194,10 @@ public class EdicionConsultaDocumentos implements Serializable {
             if (idDocumento != null) {
                 recuperarRegistro(idDocumento);
                 inicializarDataSetFirmas(idDocumento);
-                cFuDocumento.setRequired(false);
             }
             else {
                 this.setModoFormulario(ModoFormulario.ALTA);
                 inicializarDataSetFirmas(null);
-                cFuDocumento.setRequired(true);
             }
         }
         catch (Exception ex) {
@@ -343,6 +342,7 @@ public class EdicionConsultaDocumentos implements Serializable {
                         
                         entityManager.getTransaction().commit();
                                 
+                        this.cCoDocumento.setValue(this.bdDDocumento.getCoDocumento());
                         if (this.parent instanceof FiltroConsultaDocumentos filtroConsultaDocumentos) {
                             filtroConsultaDocumentos.getDsResultado().refrescarDatos();
                         }
@@ -493,7 +493,7 @@ public class EdicionConsultaDocumentos implements Serializable {
         this.cFuDocumento.setExtension(null);
         this.cFuDocumento.setBinFichero(null);
         this.cSituacionDoc.setValue(null);
-        this.cFeAlta.setValue(null);
+        this.cFeAlta.setValue(new Date());
         this.cFeDesactivo.setValue(null);
         
         this.cEnOrden.setValueInteger(null);
@@ -502,7 +502,7 @@ public class EdicionConsultaDocumentos implements Serializable {
         this.cFirmantes.setValues(null);
         this.cDsFirmaPosX.setValueInteger(null);
         this.cDsFirmaPosY.setValueInteger(null);
-        this.cFeAltaFirma.setValue(null);
+        this.cFeAltaFirma.setValue(new Date());
         this.cFeDesactivoFirma.setValue(null);
         
         listaFirmasEliminadasId.clear();
@@ -549,6 +549,9 @@ public class EdicionConsultaDocumentos implements Serializable {
         }
         if (Validation.isNullOrEmpty(this.cFeAlta.getValue())) {
             throw new RequiredFieldException(this.cFeAlta.getLabel());
+        }
+        if (this.dsFirmas.getRows().isEmpty()) {
+            throw new RequiredFieldException("Debe incluir al menos un firmante del documento.");
         }
     }
     
