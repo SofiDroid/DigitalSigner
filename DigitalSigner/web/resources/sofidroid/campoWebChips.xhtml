@@ -18,7 +18,7 @@
             <p:chips id="#{cc.attrs.id}" widgetVar="#{cc.attrs.id}" addOnPaste="#{cc.attrs.beanClass.addOnPaste}" separator="#{cc.attrs.beanClass.separator}"
                      unique="#{cc.attrs.beanClass.unique}" max="#{cc.attrs.beanClass.maxElements}" immediate="true"
                      style="#{cc.attrs.beanClass.width}" maxlength="#{cc.attrs.beanClass.maxlength}"
-                     value="#{cc.attrs.beanClass.values}" disabled="#{cc.attrs.beanClass.protegido}" required="#{cc.attrs.beanClass.required}"
+                     value="#{cc.attrs.beanClass.values}" disabled="#{cc.attrs.beanClass.protegido}" required="#{cc.attrs.beanClass.required}" requiredMessage="#{cc.attrs.label}: #{msg['requiredMessage']}"
                      label="#{cc.attrs.label}" />
         </p:panelGrid>
     </cc:implementation>

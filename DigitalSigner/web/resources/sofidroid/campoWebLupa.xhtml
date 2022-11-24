@@ -22,7 +22,7 @@
                                 value="#{cc.attrs.beanClass.value}"
                                 var="item" itemLabel="#{item.label}" 
                                 itemValue="#{item}" disabled="#{cc.attrs.beanClass.protegido}" converter="rowConverter"
-                                required="#{cc.attrs.beanClass.required}" forceSelection="true">
+                                required="#{cc.attrs.beanClass.required}" requiredMessage="#{cc.attrs.label}: #{msg['requiredMessage']}" forceSelection="true">
                 <p:ajax event="itemSelect" listener="#{cc.attrs.beanClass.onItemSelect}" update="@widgetVar(#{cc.attrs.id}),#{cc.attrs.beanClass.update}" />
                 <p:ajax event="clear" listener="#{cc.attrs.beanClass.onClear}" />
             </p:autoComplete>

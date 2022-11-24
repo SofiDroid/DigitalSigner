@@ -17,7 +17,7 @@
             <p:outputLabel for="#{cc.attrs.id}" lang="#{cc.attrs.beanClass.lang}" value="#{cc.attrs.label}#{cc.attrs.beanClass.requiredChar}" escape="false" style="display: block;#{cc.attrs.beanClass.widthLabel}"/>
             <p:inputText id="#{cc.attrs.id}_txt" disabled="true" value="#{cc.attrs.beanClass.filename}" />
             <p:fileUpload id="#{cc.attrs.id}" widgetVar="#{cc.attrs.id}" value="#{cc.attrs.beanClass.value}"  
-                        mode="simple" dragDropSupport="false" auto="false" skinSimple="true" required="#{cc.attrs.beanClass.required}"
+                        mode="simple" dragDropSupport="false" auto="false" skinSimple="true" required="#{cc.attrs.beanClass.required}" requiredMessage="#{cc.attrs.label}: #{msg['requiredMessage']}"
                         invalidFileMessage="#{Msg['invalidFileMessage']}" invalidSizeMessage="#{Msg['invalidSizeMessage']}"
                         fileLimitMessage="#{Msg['fileLimitMessage']}"  label="Examinar..."
                         sizeLimit="20000000" fileLimit="1" allowTypes="/(\.|\/)(pdf)$/"

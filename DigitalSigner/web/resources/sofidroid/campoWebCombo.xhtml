@@ -19,7 +19,7 @@
             <p:outputLabel for="#{cc.attrs.id}" value="#{cc.attrs.label}#{cc.attrs.beanClass.requiredChar}" escape="false" style="display: block;#{cc.attrs.beanClass.widthLabel}"/>
             <p:selectOneMenu id="#{cc.attrs.id}" style="#{cc.attrs.beanClass.width}" autoWidth="false"
                              value="#{cc.attrs.beanClass.value}" disabled="#{cc.attrs.beanClass.protegido}"
-                             required="#{cc.attrs.beanClass.required}" label="#{cc.attrs.label}"
+                             required="#{cc.attrs.beanClass.required}" requiredMessage="#{cc.attrs.label}: #{msg['requiredMessage']}" label="#{cc.attrs.label}"
                              hideNoSelectionOption="#{not empty cc.attrs.beanClass.value}">
                 <p:ajax update="@this,#{cc.attrs.beanClass.update}" process="@this" listener="#{cc.attrs.beanClass.onSelect}" oncomplete="#{cc.attrs.oncomplete}" />
                     <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" noSelectionOption="true"/>

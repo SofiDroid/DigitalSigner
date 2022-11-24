@@ -169,6 +169,7 @@ public class Menu implements Serializable {
                                 /*.icon("pi pi-save")*/
                                 .onclick("SeleccionarMenu([{name: 'idOpcionesMenu', value: '" + idOpcionesMenu + "'}]);")
                                 .command(dsRuta)
+                                .immediate(true)
                                 .build();
                         if (!model.getElements().isEmpty()) {
                             boolean encontrado = false;

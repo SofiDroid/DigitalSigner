@@ -17,7 +17,7 @@
             <p:inputNumber id="#{cc.attrs.id}" size="#{cc.attrs.beanClass.size}" value="#{cc.attrs.beanClass.value}" 
                            symbol=" #{cc.attrs.beanClass.moneda}" symbolPosition="s" decimalSeparator="," thousandSeparator="."
                            minValue="#{cc.attrs.beanClass.minValue}" maxValue="#{cc.attrs.beanClass.maxValue}"
-                           decimalPlaces="#{cc.attrs.beanClass.numDecimales}" required="#{cc.attrs.beanClass.required}"
+                           decimalPlaces="#{cc.attrs.beanClass.numDecimales}" required="#{cc.attrs.beanClass.required}" requiredMessage="#{cc.attrs.label}: #{msg['requiredMessage']}"
                            disabled="#{cc.attrs.beanClass.protegido}" />
         </p:panelGrid>
     </cc:implementation>

@@ -19,7 +19,7 @@
                           showButtonBar="true" monthNavigator="true" yearNavigator="true" 
                           mask="true" locale="#{datosUsuario.pais.locale}" value="#{cc.attrs.beanClass.value}"
                           disabled="#{cc.attrs.beanClass.protegido}"
-                          required="#{cc.attrs.beanClass.required}" label="#{cc.attrs.label}" />
+                          required="#{cc.attrs.beanClass.required}" requiredMessage="#{cc.attrs.label}: #{msg['requiredMessage']}" label="#{cc.attrs.label}" />
         </p:panelGrid>
     </cc:implementation>
 </html>
