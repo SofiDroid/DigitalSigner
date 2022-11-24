@@ -96,6 +96,7 @@ public class EdicionTiposDocumentos implements Serializable {
             this.cFeAlta = new CampoWebFecha();
             this.cFeAlta.setLabel(Msg.getString("lbl_EdicionTiposDocumentos_FeAlta"));
             this.cFeAlta.setWidthLabel("100px");
+            this.cFeAlta.setValue(new Date());
             this.cFeAlta.setRequired(true);
             
             this.cFeDesactivo = new CampoWebFecha();
@@ -354,7 +355,7 @@ public class EdicionTiposDocumentos implements Serializable {
         this.cCoTipodocumento.setValue(null);
         this.cDsTipodocumento.setValue(null);
         this.cDiFormatofirma.setValue(null);
-        this.cFeAlta.setValue(null);
+        this.cFeAlta.setValue(new Date());
         this.cFeDesactivo.setValue(null);
         
         this.cEnOrden.setValueInteger(null);

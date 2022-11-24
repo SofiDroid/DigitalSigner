@@ -157,6 +157,7 @@ public class EdicionUsuarios implements Serializable {
             this.cFeAlta = new CampoWebFecha();
             this.cFeAlta.setLabel(Msg.getString("lbl_EdicionUsuarios_FeAlta"));
             this.cFeAlta.setWidthLabel("100px");
+            this.cFeAlta.setValue(new Date());
             this.cFeAlta.setRequired(true);
             
             this.cFeDesactivo = new CampoWebFecha();
@@ -801,7 +802,7 @@ public class EdicionUsuarios implements Serializable {
         this.cEnIntentos.setValue(null);
         this.cEnIntentosMax.setValue(null);
         this.cBoAdmin.setValue(null);
-        this.cFeAlta.setValue(null);
+        this.cFeAlta.setValue(new Date());
         this.cFeDesactivo.setValue(null);
         this.cUnidad.setId(null);
         

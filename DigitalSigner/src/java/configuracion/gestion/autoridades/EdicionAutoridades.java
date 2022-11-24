@@ -77,6 +77,7 @@ public class EdicionAutoridades implements Serializable {
             this.cFeAlta = new CampoWebFecha();
             this.cFeAlta.setLabel(Msg.getString("lbl_EdicionAutoridades_FeAlta"));
             this.cFeAlta.setWidthLabel("100px");
+            this.cFeAlta.setValue(new Date());
             this.cFeAlta.setRequired(true);
             
             this.cFeDesactivo = new CampoWebFecha();
@@ -388,7 +389,7 @@ public class EdicionAutoridades implements Serializable {
     public void limpiar() {
         this.cCoAutoridad.setValue(null);
         this.cDsAutoridad.setValue(null);
-        this.cFeAlta.setValue(null);
+        this.cFeAlta.setValue(new Date());
         this.cFeDesactivo.setValue(null);
         this.cUnidad.setId(null);
         this.cUsuario.setId(null);

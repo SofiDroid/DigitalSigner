@@ -7,6 +7,7 @@ import excepciones.RegistryNotFoundException;
 import excepciones.RequiredFieldException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import javax.el.ELContext;
 import javax.faces.context.FacesContext;
 import utilidades.CampoWebCodigo;
@@ -98,6 +99,7 @@ public class EdicionOpcionesMenu implements Serializable {
             this.cFeAlta = new CampoWebFecha();
             this.cFeAlta.setLabel(Msg.getString("lbl_EdicionOpcionesMenu_FeAlta"));
             this.cFeAlta.setWidthLabel("100px");
+            this.cFeAlta.setValue(new Date());
             this.cFeAlta.setRequired(true);
             
             this.cFeDesactivo = new CampoWebFecha();
@@ -226,7 +228,7 @@ public class EdicionOpcionesMenu implements Serializable {
         this.cDsTitulo.setValue(null);
         this.cDsTooltip.setValue(null);
         this.cDsRuta.setValue(null);
-        this.cFeAlta.setValue(null);
+        this.cFeAlta.setValue(new Date());
         this.cFeDesactivo.setValue(null);
     }
     

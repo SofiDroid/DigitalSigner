@@ -6,6 +6,7 @@ import excepciones.FormModeException;
 import excepciones.RegistryNotFoundException;
 import excepciones.RequiredFieldException;
 import java.io.Serializable;
+import java.util.Date;
 import javax.el.ELContext;
 import javax.faces.context.FacesContext;
 import utilidades.CampoWebCodigo;
@@ -59,6 +60,7 @@ public class EdicionSituacionesDocumentos implements Serializable {
             this.cFeAlta = new CampoWebFecha();
             this.cFeAlta.setLabel(Msg.getString("lbl_EdicionSituacionesDocumentos_FeAlta"));
             this.cFeAlta.setWidthLabel("100px");
+            this.cFeAlta.setValue(new Date());
             this.cFeAlta.setRequired(true);
             
             this.cFeDesactivo = new CampoWebFecha();
@@ -163,7 +165,7 @@ public class EdicionSituacionesDocumentos implements Serializable {
     public void limpiar() {
         this.cCoSituaciondoc.setValue(null);
         this.cDsSituaciondoc.setValue(null);
-        this.cFeAlta.setValue(null);
+        this.cFeAlta.setValue(new Date());
         this.cFeDesactivo.setValue(null);
     }
     

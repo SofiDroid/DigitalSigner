@@ -13,6 +13,7 @@ import init.AppInit;
 import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import javax.el.ELContext;
 import javax.faces.context.FacesContext;
 import org.primefaces.model.CheckboxTreeNode;
@@ -150,6 +151,7 @@ public class EdicionPerfiles implements Serializable {
             this.cFeAlta = new CampoWebFecha();
             this.cFeAlta.setLabel(Msg.getString("lbl_EdicionPerfiles_FeAlta"));
             this.cFeAlta.setWidthLabel("100px");
+            this.cFeAlta.setValue(new Date());
             this.cFeAlta.setRequired(true);
             
             this.cFeDesactivo = new CampoWebFecha();
@@ -349,7 +351,7 @@ public class EdicionPerfiles implements Serializable {
     public void limpiar() {
         this.cCoTipousuario.setValue(null);
         this.cDsTipousuario.setValue(null);
-        this.cFeAlta.setValue(null);
+        this.cFeAlta.setValue(new Date());
         this.cFeDesactivo.setValue(null);
         this.cUnidad.setId(null);
         limpiarNodos(this.treeOpcionesMenu);
