@@ -529,15 +529,17 @@ public class EdicionPerfiles implements Serializable {
     }
     
     private void limpiarNodos(TreeNode<OpcionMenuPermisos> nodo) {
-        if (nodo.getChildCount() > 0) {
-            for (TreeNode<OpcionMenuPermisos> subNodo : nodo.getChildren()) {
-                limpiarNodos(subNodo);
+        if (nodo != null) {
+            if (nodo.getChildCount() > 0) {
+                for (TreeNode<OpcionMenuPermisos> subNodo : nodo.getChildren()) {
+                    limpiarNodos(subNodo);
+                }
             }
+            nodo.getData().setChkConsulta(false);
+            nodo.getData().setChkAlta(false);
+            nodo.getData().setChkEdicion(false);
+            nodo.getData().setChkBorrado(false);
         }
-        nodo.getData().setChkConsulta(false);
-        nodo.getData().setChkAlta(false);
-        nodo.getData().setChkEdicion(false);
-        nodo.getData().setChkBorrado(false);
     }
     
     public TreeNode<OpcionMenuPermisos> createCheckboxDocuments(Integer idTipousuario) {

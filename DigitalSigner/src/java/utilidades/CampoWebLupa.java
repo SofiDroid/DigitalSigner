@@ -176,7 +176,7 @@ public class CampoWebLupa extends CampoWeb {
     }
     
     public void onClear() {
-            this.setValue(null);
+        this.setValue(null);
     }
 
     public Integer getQueryDelay() {

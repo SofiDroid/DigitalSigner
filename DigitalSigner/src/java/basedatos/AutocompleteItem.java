@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package basedatos;
 
 /**
@@ -34,5 +30,10 @@ public class AutocompleteItem {
 
     public void setLabel(String label) {
         this.label = label;
+    }
+
+    @Override
+    public String toString() {
+        return "AutocompleteItem{" + "id=" + id + ", label=" + label + '}';
     }
 }

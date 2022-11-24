@@ -213,7 +213,7 @@ public class EdicionConsultaDocumentos implements Serializable {
 
     public void cTipoDocumento_ItemChanged() {
         try {
-            if (cTipoDocumento.getValue() != null) {
+            if (cTipoDocumento.getValue() != null && cTipoDocumento.getValue().getLabel() != null) {
                 String codigo = cTipoDocumento.getValue().getLabel().split(" - ")[0].trim();
                 if (codigo.equalsIgnoreCase("GEN-XAdES") || codigo.equalsIgnoreCase("GEN-PAdES")) {
                     //Limpiamos DataSet y habilitamos edicion para configuracion manual de las firmas.

@@ -32,7 +32,7 @@ public class ConversorRow implements Converter<AutocompleteItem> {
     
     @Override
     public String getAsString(FacesContext fc, UIComponent uic, AutocompleteItem value) {
-        if (value != null) {
+        if (value != null && value.getId() != null) {
             return value.getId() + "#" + value.getLabel();
         } else {
             return null;
