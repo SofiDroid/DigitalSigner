@@ -13,6 +13,6 @@ Requisitos:
 - El cliente solo necesita tener la aplicación Autofirma instalada en su PC.
 
 
-El proyecto es código abierto, solo pido que respetéis la autoria de los fuentes.
+El proyecto es código abierto, solo pido que respetéis la autoría de los fuentes.
 
 Saludos
